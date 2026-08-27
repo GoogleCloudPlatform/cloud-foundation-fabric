@@ -92,7 +92,9 @@ The silent-gap condition needs a family whose declared type yields
 and at least one GLOBAL address, in the same in-scope project. With only
 global addresses present the declared type yields zero, the pre-existing
 zero-yield warning fires, and the tool is loud — a real bug, but not
-THIS bug. A test estate built only from a freshly created global address
+THIS bug. (With several scopes, remember the aggregate warning can stay
+quiet while one scope's own declaration yielded nothing — the per-scope
+`_meta.scopes[].zero_yield_types` record is the loud one there.) A test estate built only from a freshly created global address
 therefore validates that siblings are swept, and validates nothing about
 the silence.
 
@@ -227,28 +229,40 @@ container at the type's `levels`, and its JSON becomes inventory
 entries:
 
 ```yaml
-types:
-  # IAM deny policies: managed by modules/organization, modules/folder
-  # and modules/project, and absent from the CAI catalogue entirely.
-  - type: iam.googleapis.com/DenyPolicy
-    levels: [organization, folder]
-    enumerate:
-      # `gcloud` is implicit and is the only executable a manifest can
-      # name. The tool appends --format=json and one container argument.
-      command: [iam, policies, list, --kind=denypolicies]
-      # Optional: the shape of that container argument, when the command
-      # does not take --organization/--folder/--project=<id>. Fields:
-      # {container} (e.g. organizations/1) and {container_id} (1).
-      container_arg: '--attachment-point=cloudresourcemanager.googleapis.com/{container}'
-      # Key template. Fields: {container}, {container_id} and
-      # {item.<dotted.path>} into each returned JSON object. Where the
-      # type has a CAI name format, mirror it, so entries from the two
-      # sources dedupe instead of double-counting.
-      key: '//iam.googleapis.com/{container}/denypolicies/{item.name}'
+    types:   # a scope's own list — the only position types are declared in
+      # IAM deny policies: managed by modules/organization,
+      # modules/folder and modules/project, and absent from the CAI
+      # catalogue entirely.
+      - type: iam.googleapis.com/DenyPolicy
+        levels: [organization, folder]
+        enumerate:
+          # `gcloud` is implicit and is the only executable a manifest
+          # can name. The tool appends --format=json and one container
+          # argument.
+          command: [iam, policies, list, --kind=denypolicies]
+          # Optional: the shape of that container argument, when the
+          # command does not take --organization/--folder/--project=<id>.
+          # Fields: {container} (e.g. organizations/1) and
+          # {container_id} (1).
+          container_arg: '--attachment-point=cloudresourcemanager.googleapis.com/{container}'
+          # Key template. Fields: {container}, {container_id} and
+          # {item.<dotted.path>} into each returned JSON object. Where
+          # the type has a CAI name format, mirror it, so entries from
+          # the two sources dedupe instead of double-counting.
+          key: '//iam.googleapis.com/{container}/denypolicies/{item.name}'
 ```
 
+Declared in one scope's list, the command runs only for that scope's
+containers; another scope may declare the same type with a different
+`enumerate:` block. What it may not do is inherit: per-scope lists
+never inherit anything, so the block is repeated in every scope that
+needs it.
+
 **The mechanism is per hierarchy container**, because that is the shape
-of the manifest's `levels`. A command that enumerates inside another
+of `levels` — the type entry's `levels` intersected with its scope's.
+An empty intersection is refused when the manifest is parsed (a
+per-scope declaration that can never fire is a mistake, not a
+leftover), unless the entry lists `unknown`. A command that enumerates inside another
 resource — `gcloud storage managed-folders list gs://BUCKET` — cannot be
 expressed as an `enumerate:` block: there is no container flag to fill
 in. Those types are enumerated out of band and named in the run report
@@ -312,8 +326,8 @@ agent may draft one; a human signs it, exactly as with waivers.
 
 ## Rules
 
-1. When the manifest declares a type, confirm it appears in the CAI
-   supported-types list. If it does not, it gets a native enumerator, an
+1. When a scope's `types:` list declares a type, confirm it appears in
+   the CAI supported-types list. If it does not, it gets a native enumerator, an
    out-of-band enumeration recorded in the report, or a signed waiver —
    one of the three, always. Never a quiet removal from the manifest.
 2. Any count mismatch between CAI and a service API is a **failure to
@@ -330,6 +344,11 @@ agent may draft one; a human signs it, exactly as with waivers.
    `inventory.json` carries this for declared enumerators;
    `_meta.split_type_sweeps` carries entries that came from CAI under a
    different type than the one declared; out-of-band enumeration is on
-   you to quote.
-5. New blind spots discovered during an engagement get added here (this
+   you to quote. Per-scope yields live in
+   `_meta.scopes[].declared_types` / `zero_yield_types` — the aggregate
+   table can hide a scope whose own declaration yielded nothing.
+5. A scope's `types:` list narrows the denominator, so it belongs to
+   the Scope Approval gate like any other narrowing. A convergence
+   claim is bounded per scope, not per manifest — report it that way.
+6. New blind spots discovered during an engagement get added here (this
    file is reference documentation, not a frozen tool).

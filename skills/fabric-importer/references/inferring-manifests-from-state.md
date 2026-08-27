@@ -154,6 +154,11 @@ scopes:
   - name: org-foundation
     root: organizations/123456789012
     levels: [organization, folder]
+    types:
+      - type: iam
+        levels: [organization, folder, project]
+      - type: cloudresourcemanager.googleapis.com/Folder
+        levels: [organization, folder]
 
   - name: stage-projects
     root: organizations/123456789012
@@ -161,6 +166,14 @@ scopes:
     include:
       - projects/111111111111   # prj-prod-audit-logs-0
       - projects/222222222222   # prj-prod-iac-core-0
+    types:
+      - type: iam
+        levels: [organization, folder, project]
+      - type: iam.googleapis.com/ServiceAccount
+        levels: [project]
+        iam: true
 ```
 
 This prevents project-level queries from accidentally scanning every unrelated project in the organization while still managing org-level policies and folders.
+
+Every scope carries its own `types:` list; the generator filters the inferred types per scope (a type whose `levels` cannot fire at a scope's levels is left out, because `inventory.py` refuses dead per-scope declarations) but keeps each entry's full inferred `levels` — the intersection with the scope's `levels` happens at collect time, so the entry reads the same in every scope that carries it. Narrowing a generated list further — dropping a type or a level from one scope but not another — is a normal human refinement of the draft. Regenerating the manifest discards such refinements, so refine after generation, not before.

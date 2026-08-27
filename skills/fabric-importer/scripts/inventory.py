@@ -1259,9 +1259,10 @@ def _verify_split_parity(assets, declared_types, sibling_map, scope,
   })
 
 
-def validate_manifest_types(types):
+def validate_manifest_types(types, where='manifest'):
   """Fails closed on manifest mistakes that silently shrink the
-  denominator.
+  denominator. Called once per scope: each scope carries its own
+  `types:` list, and `where` names the scope in every message.
 
   - An unrecognised `levels` value (e.g. `org` for `organization`) used
     to drop every entry of that type with no output at all — the exact
@@ -1274,16 +1275,16 @@ def validate_manifest_types(types):
   for t in types:
     tt = t.get('type')
     if not tt:
-      raise SystemExit('manifest type entry without a `type:` field')
+      raise SystemExit(f'{where} type entry without a `type:` field')
     if tt in seen:
       raise SystemExit(
-          f'manifest declares type {tt!r} more than once; duplicate '
+          f'{where} declares type {tt!r} more than once; duplicate '
           'entries silently narrow the denominator (last one wins) — '
           'merge them into a single entry')
     seen.add(tt)
     if tt == PAM_GRANT_TYPE:
       raise SystemExit(
-          f'manifest type {tt!r} is machine-managed runtime state: active '
+          f'{where} type {tt!r} is machine-managed runtime state: active '
           'PAM grants are enumerated automatically whenever IAM is '
           'collected, and their temporary bindings are stripped from the '
           'denominator (never mapped, never waived — see '
@@ -1291,28 +1292,44 @@ def validate_manifest_types(types):
     if t.get('enumerate') is not None:
       if tt in PSEUDO_TYPES:
         raise SystemExit(
-            f'manifest type {tt!r} is a pseudo-type enumerated by this tool; '
+            f'{where} type {tt!r} is a pseudo-type enumerated by this tool; '
             '`enumerate` is for types CAI does not model')
       validate_native_spec(tt, t['enumerate'])
     bad = set(t.get('levels') or []) - VALID_LEVELS
     if bad:
       raise SystemExit(
-          f'manifest type {tt!r} declares invalid level(s) '
+          f'{where} type {tt!r} declares invalid level(s) '
           f'{sorted(bad)}; valid levels: {sorted(VALID_LEVELS)}. An '
           'unrecognised level would silently drop every entry of this '
           'type from the denominator')
 
 
 def parse_and_validate_scopes(manifest, registry=None):
-  """Parses single or multiple scopes from manifest and validates them."""
-  if 'scopes' in manifest:
-    scopes = manifest['scopes']
-    if not isinstance(scopes, list) or not scopes:
-      raise SystemExit("manifest 'scopes' must be a non-empty list")
-  elif 'scope' in manifest:
-    scopes = [manifest['scope']]
-  else:
-    raise SystemExit("manifest must declare either 'scope' or 'scopes'")
+  """Parses and validates the manifest's `scopes` list.
+
+  The grammar is scopes-only: `scopes:` is required and every scope
+  carries its own `types:` list. The retired top-level `scope:` /
+  `types:` grammar is refused with migration instructions rather than
+  a bare unknown-key error — silently accepting half of it would
+  change what the denominator means.
+  """
+  legacy = [k for k in ('scope', 'types') if k in manifest]
+  if legacy:
+    raise SystemExit(
+        f'manifest declares retired top-level key(s) {legacy}. The '
+        'grammar is scopes-only and every scope carries its own '
+        "'types:' list:\n"
+        '  scopes:\n'
+        '    - root: organizations/<id>\n'
+        '      levels: [organization, folder]\n'
+        '      types:\n'
+        '        - type: iam\n'
+        '          levels: [organization, folder]\n'
+        "Move the old top-level 'types:' entries into every scope that "
+        'should collect them.')
+  scopes = manifest.get('scopes')
+  if not isinstance(scopes, list) or not scopes:
+    raise SystemExit("manifest must declare a non-empty 'scopes' list")
 
   validated_scopes = []
   for i, s in enumerate(scopes):
@@ -1371,12 +1388,39 @@ def parse_and_validate_scopes(manifest, registry=None):
           f"scope #{i + 1} declares invalid level(s) {sorted(bad_levels)}; "
           f"valid levels: {sorted(VALID_LEVELS)}")
 
+    name = s.get('name', f'scope-{i + 1}')
+    label = f'#{i + 1} ({name!r})'
+    if 'types' not in s:
+      raise SystemExit(
+          f"scope {label} declares no 'types' list. Every scope carries "
+          'its own list — a scope without one would collect nothing '
+          'while reading as in scope')
+    scope_types = s['types']
+    if not isinstance(scope_types, list) or not scope_types:
+      raise SystemExit(
+          f"scope {label} has an empty or non-list 'types'. An empty "
+          'list is a scope that collects nothing, and that is the one '
+          'thing no scope may say quietly — delete the scope or declare '
+          'what it collects')
+    validate_manifest_types(scope_types, where=f'scope {label}')
+    for t in scope_types:
+      t_levels = set(t.get('levels') or ('organization', 'folder', 'project'))
+      if 'unknown' in t_levels or t_levels & scope_levels:
+        continue
+      raise SystemExit(
+          f'scope {label} declares type {t["type"]!r} at levels '
+          f'{sorted(t_levels)} but its own levels are '
+          f'{sorted(scope_levels)}: the declaration can never match an '
+          'asset. A per-scope entry that cannot fire reads as coverage '
+          'and produces none — fix the levels or remove the entry')
+
     validated_scopes.append({
-        'name': s.get('name', f'scope-{i + 1}'),
+        'name': name,
         'root': root,
         'include': s.get('include') or [],
         'exclude': s.get('exclude') or [],
         'levels': scope_levels,
+        'types': scope_types,
     })
   return validated_scopes
 
@@ -1422,41 +1466,23 @@ def collect(manifest, include_deleted=False, include_auto_generated=None,
       include_pam_grants=include_pam_grants)
   registry = ProjectRegistry()
   scopes = parse_and_validate_scopes(manifest, registry)
-  types = manifest.get('types') or []
-  validate_manifest_types(types)
 
-  manifest_levels_by_type = {
-      t['type']: set(t.get('levels') or ['organization', 'folder', 'project'])
-      for t in types
-  }
-  iam_types = {
+  # Every scope carries its own `types:` list, so every type-derived
+  # structure (levels, leaf-IAM opt-ins, native enumerators) is resolved
+  # per scope inside the loop below. Built-in native-enumerator notices
+  # are printed once here, for the union across scopes.
+  builtin_native = sorted({
       t['type']
-      for t in types
-      if t.get('iam') and t.get('type') not in PSEUDO_TYPES
-  }
-  # Types the manifest enumerates natively are never sent to CAI: that is
-  # the whole point of declaring one.
-  # Built-in enumerators apply automatically; a manifest block overrides
-  # one for the same type.
-  declared = {t['type'] for t in types}
-  native_specs = {
-      t: dict(spec)
-      for t, spec in NATIVE_ENUMERATORS.items()
-      if t in declared and t not in PSEUDO_TYPES
-  }
-  native_sources = {t: 'builtin' for t in native_specs}
-  for t in types:
-    if t.get('enumerate'):
-      native_specs[t['type']] = t['enumerate']
-      native_sources[t['type']] = 'manifest'
-  if native_specs:
-    for t in sorted(native_specs):
-      if native_sources[t] == 'builtin':
-        print(
-            f'NOTICE: {t} is not modelled by Cloud Asset Inventory; using '
-            'the built-in gcloud\nenumerator. It stays in the denominator '
-            'and must be mapped or waived like any other asset.',
-            file=sys.stderr)
+      for s in scopes
+      for t in s['types']
+      if t['type'] in NATIVE_ENUMERATORS and t['type'] not in PSEUDO_TYPES and
+      not t.get('enumerate')
+  })
+  for t in builtin_native:
+    print(
+        f'NOTICE: {t} is not modelled by Cloud Asset Inventory; using '
+        'the built-in gcloud\nenumerator. It stays in the denominator '
+        'and must be mapped or waived like any other asset.', file=sys.stderr)
 
   all_entries = []
   scope_summaries = []
@@ -1468,6 +1494,35 @@ def collect(manifest, include_deleted=False, include_auto_generated=None,
     scope_levels = s['levels']
     include = s['include']
     exclude = s['exclude']
+    types = s['types']
+
+    # This scope's type-derived structures. A scope's list REPLACES any
+    # other scope's — there is no manifest-global list to fall back to.
+    manifest_levels_by_type = {
+        t['type']: set(
+            t.get('levels') or
+            ['organization', 'folder', 'project']) for t in types
+    }
+    iam_types = {
+        t['type']
+        for t in types
+        if t.get('iam') and t.get('type') not in PSEUDO_TYPES
+    }
+    # Types this scope enumerates natively are never sent to CAI: that
+    # is the whole point of declaring one. Built-in enumerators apply
+    # automatically; a manifest block overrides one for the same type,
+    # in the scope that declares it.
+    declared = {t['type'] for t in types}
+    native_specs = {
+        t: dict(spec)
+        for t, spec in NATIVE_ENUMERATORS.items()
+        if t in declared and t not in PSEUDO_TYPES
+    }
+    native_sources = {t: 'builtin' for t in native_specs}
+    for t in types:
+      if t.get('enumerate'):
+        native_specs[t['type']] = t['enumerate']
+        native_sources[t['type']] = 'manifest'
 
     scope_flag = {
         'organizations': '--organization',
@@ -1709,16 +1764,44 @@ def collect(manifest, include_deleted=False, include_auto_generated=None,
     # Filter this scope's entries by its effective levels
     scope_entries = apply_level_filter(scope_entries, effective_levels_by_type,
                                        report=False)
+    # Stamp provenance: which scope collected the entry. Overlapping
+    # scopes are merged at dedupe time into a sorted list, so the field
+    # is honest about multiple collectors instead of last-wins.
+    for e in scope_entries:
+      e['scopes'] = [s['name']]
+    # Per-scope yield table. The aggregate table alone cannot show a
+    # type that yields zero in one scope and non-zero in another — the
+    # exact shape of a type declared in the wrong scope.
+    uniq = {e['key']: e['asset_type'] for e in scope_entries}
+    declared_list = [t['type'] for t in types]
+    per_type = {d: 0 for d in declared_list}
+    for at in uniq.values():
+      if at in per_type:
+        per_type[at] += 1
     scope_summaries.append({
         'name': s['name'],
         'root': root,
         'levels': sorted(scope_levels),
-        'yield_count': len({e['key'] for e in scope_entries}),
+        'yield_count': len(uniq),
+        'declared_types': per_type,
+        'zero_yield_types': [d for d in declared_list if per_type[d] == 0],
     })
     all_entries += scope_entries
 
-  # Dedupe merged streams across all scopes
-  entries = list({e['key']: e for e in all_entries}.values())
+  # Dedupe merged streams across all scopes, merging scope attribution:
+  # an asset that two scopes both collect names both, deterministically.
+  merged = {}
+  for e in all_entries:
+    prev = merged.get(e['key'])
+    if prev is None:
+      merged[e['key']] = e
+    else:
+      for n in e.get('scopes', []):
+        if n not in prev.setdefault('scopes', []):
+          prev['scopes'].append(n)
+  entries = list(merged.values())
+  for e in entries:
+    e['scopes'] = sorted(e.get('scopes', []))
   entries.sort(key=lambda e: e['key'])
 
   print(f'\n{api_call_summary()}', file=sys.stderr)
@@ -2008,23 +2091,38 @@ def main():
       kwargs['verify_search_parity'] = True
     entries, registry, scope_summaries = collect(manifest, **kwargs)
 
-    # Per-declared-type yield table.
-    declared = [t['type'] for t in manifest.get('types') or []]
+    # Per-declared-type yield table: aggregate across scopes, then per
+    # scope. With per-scope type lists the aggregate alone can hide a
+    # scope whose own declaration yielded nothing.
+    declared = sorted(
+        {d for ss in scope_summaries for d in ss.get('declared_types', {})})
     type_counts = {
         d: sum(1 for e in entries if e['asset_type'] == d) for d in declared
     }
-    print('\nper-declared-type yield:', file=sys.stderr)
+    print('\nper-declared-type yield (all scopes):', file=sys.stderr)
     for d in declared:
       print(f'  {d}: {type_counts[d]}', file=sys.stderr)
     zero_yield = [d for d in declared if type_counts[d] == 0]
     if zero_yield:
       print(
-          '\nWARNING: declared type(s) yielded ZERO entries. Confirm '
-          'each type string\nagainst live `gcloud asset list` output '
-          '(a mistyped asset type matches\nnothing and exits 0):',
-          file=sys.stderr)
+          '\nWARNING: declared type(s) yielded ZERO entries in every '
+          'scope that declares\nthem. Confirm each type string against '
+          'live `gcloud asset list` output\n(a mistyped asset type '
+          'matches nothing and exits 0):', file=sys.stderr)
       for d in zero_yield:
         print(f'  - {d}', file=sys.stderr)
+    for ss in scope_summaries:
+      hidden = [
+          d for d in ss.get('zero_yield_types', []) if d not in zero_yield
+      ]
+      if hidden:
+        print(
+            f'\nWARNING: scope {ss["name"]!r} declared type(s) that '
+            'yielded ZERO entries in\nthat scope. The aggregate table '
+            'above cannot show this (the type is\nnon-zero elsewhere); '
+            'confirm the declaration belongs in this scope:', file=sys.stderr)
+        for d in hidden:
+          print(f'  - {d}', file=sys.stderr)
 
     # Provenance metadata
     payload = json.dumps(

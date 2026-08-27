@@ -22,13 +22,12 @@
 # singletons. See COVERAGE.md.
 # ---------------------------------------------------------------------------
 
-scope:
-  root: organizations/000000000000
-
-types:
-  - type: identity.accesscontextmanager.googleapis.com/AccessPolicy      # [V]
-    levels: [organization]
-  - type: identity.accesscontextmanager.googleapis.com/AccessLevel       # [V]
-    levels: [organization, unknown]
-  - type: identity.accesscontextmanager.googleapis.com/ServicePerimeter  # [V]
-    levels: [organization, unknown]
+scopes:
+  - root: organizations/000000000000
+    types:
+      - type: identity.accesscontextmanager.googleapis.com/AccessPolicy      # [V]
+        levels: [organization]
+      - type: identity.accesscontextmanager.googleapis.com/AccessLevel       # [V]
+        levels: [organization, unknown]
+      - type: identity.accesscontextmanager.googleapis.com/ServicePerimeter  # [V]
+        levels: [organization, unknown]

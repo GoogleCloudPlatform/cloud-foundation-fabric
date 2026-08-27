@@ -45,15 +45,22 @@ verdict is never evidence of convergence.
 
 **Which decisions need a human.** The pattern behind this table is that
 every human-owned artifact either narrows what the gates check or is
-irreversible. Scope narrows the denominator; a waiver removes an entry
-from it; a benign rule removes an entry from the residual set; an apply
+irreversible. Scope narrows the denominator — on two axes, since each
+scope carries its own `types:` list, and the tool refuses the shapes
+where that narrowing would be invisible (a scope without a list, an
+empty list, a declaration whose levels cannot match its scope), because
+each of those would shrink the denominator while still exiting 0. A
+waiver removes an entry from the denominator; a benign rule removes an
+entry from the residual set; an apply
 cannot be undone. Everything else — module choice, file layout, instance
 keys, raw-vs-module calls — is falsifiable by the plan and can be
 model-owned. Use that test when something new appears: *does this shrink
 what is checked, or is it irreversible?* If yes, a human decides.
 
 The manifest is human-owned for that reason, and it is why a manifest is
-the only place an operator may declare a native (non-CAI) enumerator.
+the only place an operator may declare a native (non-CAI) enumerator —
+in the `types:` list of each scope that needs it, swept only in that
+scope, since per-scope lists never inherit.
 Cloud Asset Inventory does not model every GCP resource, and a type it
 cannot see is invisible to both gates at once, so such types are
 enumerated with a read-only `gcloud` command and merged into the same
@@ -103,16 +110,17 @@ it was meant to support.
 
 ## 3. Convergence definition
 
-A run is converged when, for the manifest-declared scope:
+A run is converged when, for every manifest-declared scope:
 
 1. `coverage.py` exits 0 — every in-scope inventory key is mapped to
    emitted import blocks or human-waived; and
 2. `verify_plan.py` exits 0 — every planned change is a clean import,
    no-op, or matches a reviewed benign-drift rule.
 
-Both are required. The manifest bounds the claim: convergence says
-nothing about undeclared types/levels, and the run report must say so
-plainly.
+Both are required. The manifest bounds the claim, scope by scope:
+convergence says nothing about types or levels a scope did not declare,
+and each scope declares its own list — so the run report must state the
+bound per scope, not as a single sentence about "the manifest".
 
 ## 4. Incremental discipline
 

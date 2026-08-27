@@ -21,29 +21,28 @@
 # Note: KMS keyrings cannot be deleted in GCP; CAS pools bill monthly.
 # ---------------------------------------------------------------------------
 
-scope:
-  root: organizations/000000000000
-  # include:
-  #   - folders/222222222222         # security folder number
-
-types:
-  - type: iam                                              # [V]
-    levels: [project]
-  - type: org-policy                                       # [V]
-    levels: [folder, project]
-  - type: cloudresourcemanager.googleapis.com/Project      # [V]
-    levels: [folder]
-  - type: serviceusage.googleapis.com/Service              # [V]
-    levels: [project]
-  - type: iam.googleapis.com/ServiceAccount                # [V]
-    levels: [project]
-    iam: true
-  - type: cloudkms.googleapis.com/KeyRing                  # [V] modules/kms
-    levels: [project]
-  - type: cloudkms.googleapis.com/CryptoKey                # [V] modules/kms
-    levels: [project]
-    iam: true          # per-key IAM is leaf IAM - opt in explicitly
-  - type: privateca.googleapis.com/CaPool                  # [V] modules/certificate-authority-service
-    levels: [project]
-  # - type: privateca.googleapis.com/CertificateAuthority  # [C]
-  #   levels: [project]
+scopes:
+  - root: organizations/000000000000
+    # include:
+    #   - folders/222222222222         # security folder number
+    types:
+      - type: iam                                              # [V]
+        levels: [project]
+      - type: org-policy                                       # [V]
+        levels: [folder, project]
+      - type: cloudresourcemanager.googleapis.com/Project      # [V]
+        levels: [folder]
+      - type: serviceusage.googleapis.com/Service              # [V]
+        levels: [project]
+      - type: iam.googleapis.com/ServiceAccount                # [V]
+        levels: [project]
+        iam: true
+      - type: cloudkms.googleapis.com/KeyRing                  # [V] modules/kms
+        levels: [project]
+      - type: cloudkms.googleapis.com/CryptoKey                # [V] modules/kms
+        levels: [project]
+        iam: true          # per-key IAM is leaf IAM - opt in explicitly
+      - type: privateca.googleapis.com/CaPool                  # [V] modules/certificate-authority-service
+        levels: [project]
+      # - type: privateca.googleapis.com/CertificateAuthority  # [C]
+      #   levels: [project]
