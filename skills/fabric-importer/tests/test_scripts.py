@@ -46,6 +46,15 @@ import manifest_from_state  # noqa: E402
 import manifest_init  # noqa: E402
 import verify_plan  # noqa: E402
 
+# A harmless declared type for tests that need a grammar-valid manifest
+# but stub every gcloud call: the scopes-only grammar refuses an empty
+# `types:` list, so "a manifest that collects nothing" is expressed as
+# one type whose (stubbed) sweep returns no assets.
+_NOOP_TYPES = [{
+    'type': 'storage.googleapis.com/Bucket',
+    'levels': ['project'],
+}]
+
 _BENIGN_RULES = [
     {
         'resource': 'google_folder',
@@ -943,12 +952,13 @@ class TestInventoryHelpers(unittest.TestCase):
     # end - a silently shrunken denominator is never acceptable.
     with self.assertRaises(SystemExit) as ctx:
       self._collect_with_failing_sweep({
-          'scope': {
-              'root': 'organizations/1'
-          },
-          'types': [{
-              'type': 'storage.googleapis.com/Bucket',
-              'levels': ['project']
+          'scopes': [{
+              'root':
+                  'organizations/1',
+              'types': [{
+                  'type': 'storage.googleapis.com/Bucket',
+                  'levels': ['project']
+              }]
           }]
       })
     self.assertEqual(ctx.exception.code, 3)
@@ -959,12 +969,16 @@ class TestInventoryHelpers(unittest.TestCase):
     exited 3 with stale messages — and a caller retrying after a
     transient error could never get a clean result."""
     inventory.SWEEP_FAILURES.append('stale failure from an earlier run')
-    entries, _, _ = inventory.collect({
-        'scope': {
-            'root': 'organizations/1'
-        },
-        'types': []
-    })
+    real = inventory.run_json
+    inventory.run_json = lambda cmd, **kw: []
+    try:
+      entries, _, _ = inventory.collect(
+          {'scopes': [{
+              'root': 'organizations/1',
+              'types': _NOOP_TYPES
+          }]})
+    finally:
+      inventory.run_json = real
     self.assertEqual(entries, [])
     self.assertEqual(inventory.SWEEP_FAILURES, [])
 
@@ -975,27 +989,29 @@ class TestInventoryHelpers(unittest.TestCase):
     for field in ('include', 'exclude'):
       with self.assertRaises(SystemExit) as ctx:
         inventory.parse_and_validate_scopes(
-            {'scope': {
+            {'scopes': [{
                 'root': 'organizations/1',
                 field: ['12345']
-            }})
+            }]})
       self.assertIn('ambiguous', str(ctx.exception))
 
   def test_misspelled_include_prefix_is_refused(self):
     with self.assertRaises(SystemExit) as ctx:
       inventory.parse_and_validate_scopes(
-          {'scope': {
+          {'scopes': [{
               'root': 'organizations/1',
               'include': ['folder/22']
-          }})
+          }]})
     self.assertIn('unsupported prefix', str(ctx.exception))
 
   def test_bare_project_id_include_is_still_accepted(self):
-    scopes = inventory.parse_and_validate_scopes(
-        {'scope': {
+    scopes = inventory.parse_and_validate_scopes({
+        'scopes': [{
             'root': 'organizations/1',
-            'include': ['my-app-prod']
-        }})
+            'include': ['my-app-prod'],
+            'types': _NOOP_TYPES,
+        }]
+    })
     self.assertEqual(scopes[0]['include'], ['my-app-prod'])
 
   def test_unresolvable_project_id_is_recorded_not_swallowed(self):
@@ -1593,12 +1609,12 @@ class TestInventoryManifestValidation(unittest.TestCase):
   def test_collect_validates_before_any_enumeration(self):
     with self.assertRaises(SystemExit) as ctx:
       inventory.collect({
-          'scope': {
-              'root': 'organizations/1'
-          },
-          'types': [{
-              'type': 'iam',
-              'levels': ['orgs']
+          'scopes': [{
+              'root': 'organizations/1',
+              'types': [{
+                  'type': 'iam',
+                  'levels': ['orgs']
+              }]
           }]
       })
     self.assertIn('invalid level', str(ctx.exception))
@@ -1652,12 +1668,13 @@ class TestApiCallLoggingAndPaging(unittest.TestCase):
     try:
       with contextlib.redirect_stderr(io.StringIO()):
         inventory.collect({
-            'scope': {
-                'root': 'organizations/1'
-            },
-            'types': [{
-                'type': 'storage.googleapis.com/Bucket',
-                'levels': ['project']
+            'scopes': [{
+                'root':
+                    'organizations/1',
+                'types': [{
+                    'type': 'storage.googleapis.com/Bucket',
+                    'levels': ['project']
+                }]
             }]
         })
     finally:
@@ -1694,7 +1711,11 @@ class TestApiCallLoggingAndPaging(unittest.TestCase):
       return [], inventory.ProjectRegistry(), []
 
     with tempfile.NamedTemporaryFile('w', suffix='.yaml', delete=False) as f:
-      yaml.safe_dump({'scope': {'root': 'organizations/1'}, 'types': []}, f)
+      yaml.safe_dump(
+          {'scopes': [{
+              'root': 'organizations/1',
+              'types': _NOOP_TYPES
+          }]}, f)
       mpath = f.name
     try:
       inventory.collect = fake_collect
@@ -1763,7 +1784,11 @@ class TestApiCallLoggingAndPaging(unittest.TestCase):
     inventory.run_json = lambda cmd, **kw: []
     try:
       with contextlib.redirect_stderr(io.StringIO()):
-        inventory.collect({'scope': {'root': 'organizations/1'}, 'types': []})
+        inventory.collect(
+            {'scopes': [{
+                'root': 'organizations/1',
+                'types': _NOOP_TYPES
+            }]})
     finally:
       inventory.run_json = real
     self.assertEqual(inventory.API_CALLS, [])
@@ -1809,12 +1834,13 @@ class TestNonCaiEnumeration(unittest.TestCase):
       with self.assertRaises(SystemExit) as ctx:
         self._collect(
             {
-                'scope': {
-                    'root': 'organizations/1'
-                },
-                'types': [{
-                    'type': 'logging.googleapis.com/OrganizationSettings',
-                    'levels': ['organization']
+                'scopes': [{
+                    'root':
+                        'organizations/1',
+                    'types': [{
+                        'type': 'logging.googleapis.com/OrganizationSettings',
+                        'levels': ['organization']
+                    }]
                 }]
             }, handler)
     self.assertEqual(ctx.exception.code, 3)
@@ -1842,12 +1868,13 @@ class TestNonCaiEnumeration(unittest.TestCase):
       with self.assertRaises(SystemExit):
         self._collect(
             {
-                'scope': {
-                    'root': 'organizations/1'
-                },
-                'types': [{
-                    'type': 'logging.googleapis.com/OrganizationSettings',
-                    'levels': ['organization']
+                'scopes': [{
+                    'root':
+                        'organizations/1',
+                    'types': [{
+                        'type': 'logging.googleapis.com/OrganizationSettings',
+                        'levels': ['organization']
+                    }]
                 }]
             }, handler)
     self.assertFalse([c for c in calls if 'search-all-resources' in c])
@@ -1869,12 +1896,13 @@ class TestNonCaiEnumeration(unittest.TestCase):
       with self.assertRaises(SystemExit) as ctx:
         self._collect(
             {
-                'scope': {
-                    'root': 'organizations/1'
-                },
-                'types': [{
-                    'type': 'storage.googleapis.com/Bucket',
-                    'levels': ['project']
+                'scopes': [{
+                    'root':
+                        'organizations/1',
+                    'types': [{
+                        'type': 'storage.googleapis.com/Bucket',
+                        'levels': ['project']
+                    }]
                 }]
             }, handler)
     self.assertEqual(ctx.exception.code, 3)
@@ -1883,17 +1911,18 @@ class TestNonCaiEnumeration(unittest.TestCase):
     self.assertTrue([c for c in calls if 'search-all-resources' in c])
 
   _EXCLUSION_MANIFEST = {
-      'scope': {
-          'root': 'organizations/1'
-      },
-      'types': [{
-          'type': 'logging.googleapis.com/LogExclusion',
-          'levels': ['organization'],
-          'enumerate': {
-              'command': ['logging', 'exclusions', 'list'],
-              'key': '//logging.googleapis.com/{container}/exclusions/'
-                     '{item.name}',
-          },
+      'scopes': [{
+          'root':
+              'organizations/1',
+          'types': [{
+              'type': 'logging.googleapis.com/LogExclusion',
+              'levels': ['organization'],
+              'enumerate': {
+                  'command': ['logging', 'exclusions', 'list'],
+                  'key': '//logging.googleapis.com/{container}/exclusions/'
+                         '{item.name}',
+              },
+          }]
       }]
   }
 
@@ -1955,12 +1984,13 @@ class TestNonCaiEnumeration(unittest.TestCase):
     with contextlib.redirect_stderr(buf):
       entries, _, _ = self._collect(
           {
-              'scope': {
-                  'root': 'organizations/1'
-              },
-              'types': [{
-                  'type': 'iam.googleapis.com/DenyPolicy',
-                  'levels': ['organization']
+              'scopes': [{
+                  'root':
+                      'organizations/1',
+                  'types': [{
+                      'type': 'iam.googleapis.com/DenyPolicy',
+                      'levels': ['organization']
+                  }]
               }]
           }, handler)
     self.assertEqual(len(entries), 1)
@@ -1982,17 +2012,19 @@ class TestNonCaiEnumeration(unittest.TestCase):
     with contextlib.redirect_stderr(io.StringIO()):
       self._collect(
           {
-              'scope': {
-                  'root': 'organizations/1'
-              },
-              'types': [{
-                  'type': 'iam.googleapis.com/DenyPolicy',
-                  'levels': ['organization'],
-                  'enumerate': {
-                      'command':
-                          ['iam', 'policies', 'list', '--kind=denypolicies'],
-                      'key': '//custom/{container}/{item.name}',
-                  },
+              'scopes': [{
+                  'root':
+                      'organizations/1',
+                  'types': [{
+                      'type': 'iam.googleapis.com/DenyPolicy',
+                      'levels': ['organization'],
+                      'enumerate': {
+                          'command': [
+                              'iam', 'policies', 'list', '--kind=denypolicies'
+                          ],
+                          'key': '//custom/{container}/{item.name}',
+                      },
+                  }]
               }]
           }, handler)
     self.assertEqual(inventory.NATIVE_SWEEPS[0]['source'], 'manifest')
@@ -2016,12 +2048,13 @@ class TestNonCaiEnumeration(unittest.TestCase):
       with self.assertRaises(SystemExit) as ctx:
         self._collect(
             {
-                'scope': {
-                    'root': 'organizations/1'
-                },
-                'types': [{
-                    'type': 'storage.googleapis.com/ManagedFolder',
-                    'levels': ['project']
+                'scopes': [{
+                    'root':
+                        'organizations/1',
+                    'types': [{
+                        'type': 'storage.googleapis.com/ManagedFolder',
+                        'levels': ['project']
+                    }]
                 }]
             }, handler)
     self.assertEqual(ctx.exception.code, 3)
@@ -2046,8 +2079,17 @@ class TestNonCaiEnumeration(unittest.TestCase):
   def test_native_sweeps_do_not_leak_into_the_next_collect(self):
     inventory.NATIVE_SWEEPS.append({'asset_type': 'stale'})
     inventory.UNSUPPORTED_CAI_TYPES.append('stale')
-    with contextlib.redirect_stderr(io.StringIO()):
-      inventory.collect({'scope': {'root': 'organizations/1'}, 'types': []})
+    real = inventory.run_json
+    inventory.run_json = lambda cmd, **kw: []
+    try:
+      with contextlib.redirect_stderr(io.StringIO()):
+        inventory.collect(
+            {'scopes': [{
+                'root': 'organizations/1',
+                'types': _NOOP_TYPES
+            }]})
+    finally:
+      inventory.run_json = real
     self.assertEqual(inventory.NATIVE_SWEEPS, [])
     self.assertEqual(inventory.UNSUPPORTED_CAI_TYPES, [])
 
@@ -2056,7 +2098,7 @@ class TestNonCaiEnumeration(unittest.TestCase):
     a green gate - the exact failure mode this tool exists to prevent -
     so it fails rather than deduplicating."""
     manifest = json.loads(json.dumps(self._EXCLUSION_MANIFEST))
-    manifest['types'][0]['enumerate']['key'] = (
+    manifest['scopes'][0]['types'][0]['enumerate']['key'] = (
         '//logging.googleapis.com/{container}/exclusions/fixed')
 
     def handler(cmd, **kwargs):
@@ -2136,21 +2178,23 @@ class TestNonCaiEnumeration(unittest.TestCase):
     with contextlib.redirect_stderr(io.StringIO()):
       entries, _, _ = self._collect(
           {
-              'scope': {
-                  'root': 'organizations/1'
-              },
-              'types': [{
-                  'type': 'iam.googleapis.com/DenyPolicy',
-                  'levels': ['organization'],
-                  'enumerate': {
-                      'command':
-                          ['iam', 'policies', 'list', '--kind=denypolicies'],
-                      'container_arg':
-                          '--attachment-point=cloudresourcemanager.'
-                          'googleapis.com/{container}',
-                      'key': '//iam.googleapis.com/{container}/'
-                             'denypolicies/{item.name}',
-                  },
+              'scopes': [{
+                  'root':
+                      'organizations/1',
+                  'types': [{
+                      'type': 'iam.googleapis.com/DenyPolicy',
+                      'levels': ['organization'],
+                      'enumerate': {
+                          'command': [
+                              'iam', 'policies', 'list', '--kind=denypolicies'
+                          ],
+                          'container_arg':
+                              '--attachment-point=cloudresourcemanager.'
+                              'googleapis.com/{container}',
+                          'key': '//iam.googleapis.com/{container}/'
+                                 'denypolicies/{item.name}',
+                      },
+                  }]
               }]
           }, handler)
     self.assertIn(
@@ -2232,15 +2276,16 @@ class TestNonCaiEnumeration(unittest.TestCase):
     with self.assertRaises(SystemExit):
       self._collect(
           {
-              'scope': {
-                  'root': 'organizations/1'
-              },
-              'types': [{
-                  'type': 'logging.googleapis.com/LogExclusion',
-                  'enumerate': {
-                      'command': ['logging', 'settings', 'update'],
-                      'key': '{item.name}'
-                  }
+              'scopes': [{
+                  'root':
+                      'organizations/1',
+                  'types': [{
+                      'type': 'logging.googleapis.com/LogExclusion',
+                      'enumerate': {
+                          'command': ['logging', 'settings', 'update'],
+                          'key': '{item.name}'
+                      }
+                  }]
               }]
           }, handler)
     self.assertEqual(calls, [])
@@ -2371,8 +2416,8 @@ class TestManifestInit(unittest.TestCase):
     ]
     draft = manifest_init.draft_manifest(survey, 'organizations/1')
     parsed = yaml.safe_load(draft)
-    self.assertEqual(parsed['scope']['root'], 'organizations/1')
-    types = {t['type'] for t in parsed['types']}
+    self.assertEqual(parsed['scopes'][0]['root'], 'organizations/1')
+    types = {t['type'] for t in parsed['scopes'][0]['types']}
     # Foundation pseudo-types and discovered foundation types enabled.
     self.assertIn('iam', types)
     self.assertIn('org-policy', types)
@@ -2406,7 +2451,7 @@ class TestManifestInit(unittest.TestCase):
         self.assertTrue(os.path.exists(out_path))
         with open(out_path, "r") as f:
           parsed = yaml.safe_load(f)
-        self.assertEqual(parsed["scope"]["root"], "organizations/1")
+        self.assertEqual(parsed["scopes"][0]["root"], "organizations/1")
       finally:
         sys.argv = sys_argv
 
@@ -2414,7 +2459,7 @@ class TestManifestInit(unittest.TestCase):
 class TestMultiScopeAndProjectRegistry(unittest.TestCase):
 
   def test_parse_single_scope(self):
-    manifest = {'scope': {'root': 'organizations/123'}}
+    manifest = {'scopes': [{'root': 'organizations/123', 'types': _NOOP_TYPES}]}
     scopes = inventory.parse_and_validate_scopes(manifest)
     self.assertEqual(len(scopes), 1)
     self.assertEqual(scopes[0]['root'], 'organizations/123')
@@ -2424,15 +2469,22 @@ class TestMultiScopeAndProjectRegistry(unittest.TestCase):
     manifest = {
         'scopes': [
             {
-                'name': 'org',
-                'root': 'organizations/123',
-                'levels': ['organization', 'folder']
+                'name':
+                    'org',
+                'root':
+                    'organizations/123',
+                'levels': ['organization', 'folder'],
+                'types': [{
+                    'type': 'iam',
+                    'levels': ['organization', 'folder']
+                }],
             },
             {
                 'name': 'workload',
                 'root': 'projects/456',
                 'levels': ['project'],
-                'include': ['projects/456']
+                'include': ['projects/456'],
+                'types': _NOOP_TYPES,
             },
         ]
     }
@@ -2445,7 +2497,7 @@ class TestMultiScopeAndProjectRegistry(unittest.TestCase):
 
   def test_invalid_scope_root_rejected(self):
     with self.assertRaises(SystemExit):
-      inventory.parse_and_validate_scopes({'scope': {'root': ''}})
+      inventory.parse_and_validate_scopes({'scopes': [{'root': ''}]})
 
   def test_invalid_scope_levels_rejected(self):
     with self.assertRaises(SystemExit):
@@ -2485,6 +2537,411 @@ class TestMultiScopeAndProjectRegistry(unittest.TestCase):
 
     # Exclusion with alphanumeric ID
     self.assertFalse(inventory.in_subtree(asset, [], ['my-app'], reg))
+
+
+class TestPerScopeTypes(unittest.TestCase):
+  """The scopes-only grammar: every scope carries its own `types:` list.
+
+  The list decides the denominator, so every shape in which it could
+  quietly mean "collect less" is refused, not warned: the retired
+  top-level grammar, a scope without a list, an empty list, and a
+  declaration whose levels can never intersect its scope's.
+  """
+
+  def setUp(self):
+    self._real_run_json = inventory.run_json
+
+  def tearDown(self):
+    inventory.run_json = self._real_run_json
+
+  def _collect(self, manifest, handler):
+    inventory.run_json = handler
+    with contextlib.redirect_stderr(io.StringIO()):
+      return inventory.collect(manifest)
+
+  def test_legacy_top_level_scope_is_refused_with_migration_help(self):
+    with self.assertRaises(SystemExit) as ctx:
+      inventory.parse_and_validate_scopes(
+          {'scope': {
+              'root': 'organizations/1'
+          }})
+    msg = str(ctx.exception)
+    self.assertIn('retired top-level key', msg)
+    self.assertIn("'scope'", msg)
+    # The message must show the new shape, not just reject the old one.
+    self.assertIn('scopes:', msg)
+    self.assertIn('types:', msg)
+
+  def test_legacy_top_level_types_is_refused_with_migration_help(self):
+    with self.assertRaises(SystemExit) as ctx:
+      inventory.parse_and_validate_scopes({
+          'scopes': [{
+              'root': 'organizations/1',
+              'types': _NOOP_TYPES
+          }],
+          'types': _NOOP_TYPES,
+      })
+    self.assertIn('retired top-level key', str(ctx.exception))
+    self.assertIn("'types'", str(ctx.exception))
+
+  def test_scope_without_types_is_refused(self):
+    with self.assertRaises(SystemExit) as ctx:
+      inventory.parse_and_validate_scopes(
+          {'scopes': [{
+              'root': 'organizations/1'
+          }]})
+    self.assertIn("declares no 'types'", str(ctx.exception))
+
+  def test_empty_types_list_is_refused(self):
+    with self.assertRaises(SystemExit) as ctx:
+      inventory.parse_and_validate_scopes(
+          {'scopes': [{
+              'root': 'organizations/1',
+              'types': []
+          }]})
+    self.assertIn('empty or non-list', str(ctx.exception))
+
+  def test_dead_per_scope_declaration_is_refused(self):
+    """A type whose levels cannot intersect its scope's levels reads as
+    coverage and produces none."""
+    with self.assertRaises(SystemExit) as ctx:
+      inventory.parse_and_validate_scopes({
+          'scopes': [{
+              'root':
+                  'organizations/1',
+              'levels': ['project'],
+              'types': [{
+                  'type': 'iam.googleapis.com/Role',
+                  'levels': ['organization']
+              }],
+          }]
+      })
+    self.assertIn('can never match', str(ctx.exception))
+
+  def test_unknown_level_exempts_the_dead_declaration_check(self):
+    scopes = inventory.parse_and_validate_scopes({
+        'scopes': [{
+            'root':
+                'organizations/1',
+            'levels': ['project'],
+            'types': [{
+                'type': 'iam.googleapis.com/Role',
+                'levels': ['organization', 'unknown']
+            }],
+        }]
+    })
+    self.assertEqual(len(scopes), 1)
+
+  def test_duplicate_type_message_names_the_scope(self):
+    with self.assertRaises(SystemExit) as ctx:
+      inventory.parse_and_validate_scopes({
+          'scopes': [{
+              'name': 'net',
+              'root': 'organizations/1',
+              'types': _NOOP_TYPES + _NOOP_TYPES,
+          }]
+      })
+    msg = str(ctx.exception)
+    self.assertIn('more than once', msg)
+    self.assertIn('net', msg)
+
+  def test_same_type_in_two_scopes_with_different_settings_is_valid(self):
+    """Repeating a type across scopes with different levels/iam is the
+    point of per-scope lists, not a duplicate."""
+    scopes = inventory.parse_and_validate_scopes({
+        'scopes': [
+            {
+                'name':
+                    'a',
+                'root':
+                    'organizations/1',
+                'levels': ['organization', 'folder'],
+                'types': [{
+                    'type': 'iam',
+                    'levels': ['organization', 'folder']
+                }],
+            },
+            {
+                'name': 'b',
+                'root': 'folders/2',
+                'levels': ['project'],
+                'types': [{
+                    'type': 'iam',
+                    'levels': ['project']
+                }],
+            },
+        ]
+    })
+    self.assertEqual([s['name'] for s in scopes], ['a', 'b'])
+
+  def test_sweeps_are_isolated_per_scope(self):
+    """A type declared in one scope is swept only there: the other
+    scope's CAI call must not ask for it."""
+    calls = []
+
+    def handler(cmd, **kwargs):
+      del kwargs
+      calls.append(' '.join(cmd))
+      return []
+
+    self._collect(
+        {
+            'scopes': [
+                {
+                    'name':
+                        'org',
+                    'root':
+                        'organizations/1',
+                    'types': [{
+                        'type': 'storage.googleapis.com/Bucket',
+                        'levels': ['project']
+                    }],
+                },
+                {
+                    'name':
+                        'net',
+                    'root':
+                        'folders/2',
+                    'types': [{
+                        'type': 'compute.googleapis.com/Network',
+                        'levels': ['project']
+                    }],
+                },
+            ]
+        }, handler)
+    org_sweeps = [
+        c for c in calls if '--organization=1' in c and '--asset-types=' in c
+    ]
+    folder_sweeps = [
+        c for c in calls if '--folder=2' in c and '--asset-types=' in c
+    ]
+    self.assertTrue(org_sweeps)
+    self.assertTrue(folder_sweeps)
+    self.assertTrue(all('Bucket' in c for c in org_sweeps))
+    self.assertTrue(all('Network' not in c for c in org_sweeps))
+    self.assertTrue(all('Network' in c for c in folder_sweeps))
+    self.assertTrue(all('Bucket' not in c for c in folder_sweeps))
+
+  def test_native_enumerator_runs_only_in_its_scope(self):
+    calls = []
+
+    def handler(cmd, **kwargs):
+      del kwargs
+      calls.append(' '.join(cmd))
+      return []
+
+    self._collect(
+        {
+            'scopes': [
+                {
+                    'name':
+                        'org',
+                    'root':
+                        'organizations/1',
+                    'levels': ['organization'],
+                    'types': [{
+                        'type': 'logging.googleapis.com/LogExclusion',
+                        'levels': ['organization'],
+                        'enumerate': {
+                            'command': ['logging', 'exclusions', 'list'],
+                            'key': ('//logging.googleapis.com/{container}/'
+                                    'exclusions/{item.name}'),
+                        },
+                    }],
+                },
+                {
+                    'name':
+                        'net',
+                    'root':
+                        'folders/2',
+                    'levels': ['folder'],
+                    'types': [{
+                        'type': 'storage.googleapis.com/Bucket',
+                        'levels': ['folder']
+                    }],
+                },
+            ]
+        }, handler)
+    exclusion_calls = [c for c in calls if 'exclusions list' in c]
+    self.assertTrue(exclusion_calls)
+    self.assertTrue(all('--organization=1' in c for c in exclusion_calls))
+    self.assertFalse([c for c in exclusion_calls if '--folder=2' in c])
+
+  def test_leaf_iam_opt_in_is_per_scope(self):
+    """`iam: true` is a property of one scope's type entry: the scope
+    that declared it mints the #iam entry, the scope that did not
+    contributes only the resource entry."""
+    sa_name = ('//iam.googleapis.com/projects/p1/serviceAccounts/'
+               'sa@p1.iam.gserviceaccount.com')
+
+    def handler(cmd, **kwargs):
+      del kwargs
+      joined = ' '.join(cmd)
+      if 'privilegedaccessmanager' in joined:
+        return []
+      if '--content-type=iam-policy' in joined:
+        return [{
+            'name': sa_name,
+            'assetType': 'iam.googleapis.com/ServiceAccount',
+            'ancestors': ['projects/9', 'organizations/1'],
+            'iamPolicy': {
+                'bindings': [{
+                    'role': 'roles/iam.serviceAccountUser',
+                    'members': ['user:a@example.com'],
+                }]
+            },
+        }]
+      if '--content-type=resource' in joined and 'ServiceAccount' in joined:
+        return [{
+            'name': sa_name,
+            'assetType': 'iam.googleapis.com/ServiceAccount',
+            'ancestors': ['projects/9', 'organizations/1'],
+        }]
+      return []
+
+    entries, _, summaries = self._collect(
+        {
+            'scopes': [
+                {
+                    'name':
+                        'with-iam',
+                    'root':
+                        'organizations/1',
+                    'types': [{
+                        'type': 'iam.googleapis.com/ServiceAccount',
+                        'levels': ['project'],
+                        'iam': True,
+                    }],
+                },
+                {
+                    'name':
+                        'without-iam',
+                    'root':
+                        'organizations/1',
+                    'types': [{
+                        'type': 'iam.googleapis.com/ServiceAccount',
+                        'levels': ['project'],
+                    }],
+                },
+            ]
+        }, handler)
+    by_key = {e['key']: e for e in entries}
+    self.assertIn(sa_name, by_key)
+    self.assertIn(f'{sa_name}#iam', by_key)
+    self.assertEqual(by_key[sa_name]['scopes'], ['with-iam', 'without-iam'])
+    self.assertEqual(by_key[f'{sa_name}#iam']['scopes'], ['with-iam'])
+    del summaries
+
+  def test_scope_attribution_is_merged_and_sorted(self):
+    """An asset collected by two overlapping scopes names both, sorted
+    — never last-wins."""
+    bucket = {
+        'name': '//storage.googleapis.com/projects/_/buckets/b1',
+        'assetType': 'storage.googleapis.com/Bucket',
+        'ancestors': ['projects/9', 'organizations/1'],
+    }
+
+    def handler(cmd, **kwargs):
+      del kwargs
+      joined = ' '.join(cmd)
+      if '--content-type=resource' in joined and 'Bucket' in joined:
+        return [dict(bucket)]
+      return []
+
+    entries, _, summaries = self._collect(
+        {
+            'scopes': [
+                {
+                    'name':
+                        'zeta',
+                    'root':
+                        'organizations/1',
+                    'types': [{
+                        'type': 'storage.googleapis.com/Bucket',
+                        'levels': ['project']
+                    }],
+                },
+                {
+                    'name':
+                        'alpha',
+                    'root':
+                        'organizations/1',
+                    'types': [{
+                        'type': 'storage.googleapis.com/Bucket',
+                        'levels': ['project']
+                    }],
+                },
+            ]
+        }, handler)
+    self.assertEqual(len(entries), 1)
+    self.assertEqual(entries[0]['scopes'], ['alpha', 'zeta'])
+    self.assertEqual([s['yield_count'] for s in summaries], [1, 1])
+
+  def test_scope_summaries_carry_per_scope_yield_tables(self):
+    """The aggregate table cannot show a type that yields zero in one
+    scope and non-zero in another; the per-scope table is the only
+    place that shape is visible."""
+    bucket = {
+        'name': '//storage.googleapis.com/projects/_/buckets/b1',
+        'assetType': 'storage.googleapis.com/Bucket',
+        'ancestors': ['projects/9', 'organizations/1'],
+    }
+
+    def handler(cmd, **kwargs):
+      del kwargs
+      joined = ' '.join(cmd)
+      if ('--organization=1' in joined and
+          '--content-type=resource' in joined and 'Bucket' in joined):
+        return [dict(bucket)]
+      return []
+
+    _, _, summaries = self._collect(
+        {
+            'scopes': [
+                {
+                    'name':
+                        'org',
+                    'root':
+                        'organizations/1',
+                    'types': [{
+                        'type': 'storage.googleapis.com/Bucket',
+                        'levels': ['project']
+                    }],
+                },
+                {
+                    'name':
+                        'net',
+                    'root':
+                        'folders/2',
+                    'types': [{
+                        'type': 'storage.googleapis.com/Bucket',
+                        'levels': ['project']
+                    }],
+                },
+            ]
+        }, handler)
+    by_name = {s['name']: s for s in summaries}
+    self.assertEqual(by_name['org']['declared_types'],
+                     {'storage.googleapis.com/Bucket': 1})
+    self.assertEqual(by_name['org']['zero_yield_types'], [])
+    self.assertEqual(by_name['net']['declared_types'],
+                     {'storage.googleapis.com/Bucket': 0})
+    self.assertEqual(by_name['net']['zero_yield_types'],
+                     ['storage.googleapis.com/Bucket'])
+
+  def test_shipped_example_manifests_are_grammar_valid(self):
+    """The examples are the templates users copy; an example that
+    violates the tool's own grammar ships the violation."""
+    examples_dir = os.path.join(os.path.dirname(__file__), '..', 'examples')
+    manifests = sorted(
+        f for f in os.listdir(examples_dir)
+        if f.startswith('import-manifest.') and f.endswith('.yaml'))
+    self.assertTrue(manifests)
+    for fname in manifests:
+      with open(os.path.join(examples_dir, fname), encoding='utf-8') as f:
+        parsed = yaml.safe_load(f)
+      scopes = inventory.parse_and_validate_scopes(parsed)
+      self.assertTrue(scopes, msg=fname)
 
 
 class TestDeletedContainersFilter(unittest.TestCase):
@@ -2660,17 +3117,18 @@ class TestDeletedContainersFilter(unittest.TestCase):
     inventory.run_json = fake
     try:
       manifest = {
-          'scope': {
-              'root': 'organizations/1'
-          },
-          'types': [
-              {
-                  'type': 'cloudresourcemanager.googleapis.com/Folder'
-              },
-              {
-                  'type': 'cloudresourcemanager.googleapis.com/Project'
-              },
-          ]
+          'scopes': [{
+              'root':
+                  'organizations/1',
+              'types': [
+                  {
+                      'type': 'cloudresourcemanager.googleapis.com/Folder'
+                  },
+                  {
+                      'type': 'cloudresourcemanager.googleapis.com/Project'
+                  },
+              ]
+          }]
       }
       # Default: excludes deleted folder 222 and its child project 333
       entries_default, reg_default, _ = inventory.collect(
@@ -2788,17 +3246,18 @@ class TestDeletedContainersFilter(unittest.TestCase):
     inventory.run_json = fake
     try:
       manifest = {
-          'scope': {
-              'root': 'organizations/1'
-          },
-          'types': [
-              {
-                  'type': 'logging.googleapis.com/LogSink'
-              },
-              {
-                  'type': 'logging.googleapis.com/LogBucket'
-              },
-          ]
+          'scopes': [{
+              'root':
+                  'organizations/1',
+              'types': [
+                  {
+                      'type': 'logging.googleapis.com/LogSink'
+                  },
+                  {
+                      'type': 'logging.googleapis.com/LogBucket'
+                  },
+              ]
+          }]
       }
       # Default: excludes _Default and _Required sinks and buckets
       entries_default, _, _ = inventory.collect(manifest,
@@ -3014,10 +3473,10 @@ class TestDeletedContainersFilter(unittest.TestCase):
       manifest = {
           'scopes': [{
               'name': 'p1',
-              'root': 'projects/12345'
-          }],
-          'types': [{
-              'type': 'compute.googleapis.com/Route'
+              'root': 'projects/12345',
+              'types': [{
+                  'type': 'compute.googleapis.com/Route'
+              }],
           }],
       }
 
@@ -3186,20 +3645,22 @@ class TestDeletedContainersFilter(unittest.TestCase):
     try:
       manifest = {
           'scopes': [{
-              'name': 'p1',
-              'root': 'projects/12345'
+              'name':
+                  'p1',
+              'root':
+                  'projects/12345',
+              'types': [
+                  {
+                      'type': 'logging.googleapis.com/LogSink'
+                  },
+                  {
+                      'type': 'logging.googleapis.com/LogBucket'
+                  },
+                  {
+                      'type': 'compute.googleapis.com/Route'
+                  },
+              ],
           }],
-          'types': [
-              {
-                  'type': 'logging.googleapis.com/LogSink'
-              },
-              {
-                  'type': 'logging.googleapis.com/LogBucket'
-              },
-              {
-                  'type': 'compute.googleapis.com/Route'
-              },
-          ],
       }
 
       # 1. Default: only user route survives (all 3 auto-generated filtered)
@@ -3722,15 +4183,18 @@ class TestManifestFromState(unittest.TestCase):
                                                  folders, types_found,
                                                  ['s.tfstate'])
     parsed = yaml.safe_load(text)
-    # Must be accepted by the tool that consumes it...
+    # Must be accepted by the tool that consumes it (which also
+    # validates every scope's own types list)...
     scopes = inventory.parse_and_validate_scopes(parsed)
-    inventory.validate_manifest_types(parsed['types'])
     # ... the project seen only as a number must be prefixed, not bare...
     self.assertIn('projects/987654321', parsed['scopes'][-1]['include'])
     # ... and a type declared at `unknown` needs `unknown` in some scope,
     # or it intersects to the empty set and is swept then discarded.
     unknown_types = [
-        t['type'] for t in parsed['types'] if 'unknown' in t['levels']
+        t['type']
+        for s in parsed['scopes']
+        for t in s['types']
+        if 'unknown' in t['levels']
     ]
     self.assertTrue(unknown_types)
     self.assertTrue(any('unknown' in s['levels'] for s in scopes))
@@ -3898,12 +4362,13 @@ class TestCaiSplitTypes(unittest.TestCase):
   """
 
   _MANIFEST = {
-      'scope': {
-          'root': 'projects/my-prj'
-      },
-      'types': [{
-          'type': 'compute.googleapis.com/Address',
-          'levels': ['project']
+      'scopes': [{
+          'root':
+              'projects/my-prj',
+          'types': [{
+              'type': 'compute.googleapis.com/Address',
+              'levels': ['project']
+          }]
       }],
   }
 
@@ -4021,12 +4486,13 @@ class TestCaiSplitTypes(unittest.TestCase):
     own type would match no manifest entry and be filtered by the
     permissive default instead of by the operator's `levels`."""
     manifest = {
-        'scope': {
-            'root': 'projects/my-prj'
-        },
-        'types': [{
-            'type': 'compute.googleapis.com/Address',
-            'levels': ['project']
+        'scopes': [{
+            'root':
+                'projects/my-prj',
+            'types': [{
+                'type': 'compute.googleapis.com/Address',
+                'levels': ['project']
+            }]
         }],
     }
     calls = []
@@ -4084,13 +4550,14 @@ class TestCaiSplitTypes(unittest.TestCase):
       return []
 
     manifest = {
-        'scope': {
-            'root': 'organizations/1',
+        'scopes': [{
+            'root':
+                'organizations/1',
             'include': ['projects/111'],
-        },
-        'types': [{
-            'type': 'compute.googleapis.com/Address',
-            'levels': ['project']
+            'types': [{
+                'type': 'compute.googleapis.com/Address',
+                'levels': ['project']
+            }]
         }],
     }
     buf = io.StringIO()

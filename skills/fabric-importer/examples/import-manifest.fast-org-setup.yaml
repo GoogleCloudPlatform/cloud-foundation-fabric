@@ -21,48 +21,48 @@
 # Maturity legend (see COVERAGE.md): [V] live-verified  [C] cookbook
 # rules exist, not yet plan-tested  [N] new territory (fallback +
 # capability-gap report). Validate counts with `inventory.py collect`
-# before mapping; adjust scope.include to your IaC folder/projects.
+# before mapping; adjust the scope's include to your IaC folder/projects.
 # ---------------------------------------------------------------------------
 
-scope:
-  root: organizations/000000000000   # <- your org id
-  # include/exclude match CAI `ancestors` (NUMERIC project ids).
-  # Restrict project-level types to the org-setup projects:
-  # include:
-  #   - projects/111111111111        # iac-core project NUMBER; see the
-  #     "RECIPES" section in import-manifest.org-foundation.yaml for
-  #     selecting specific projects (incl. the include-vs-exclude trap)
-
-types:
-  - type: iam                                              # [V]
-    levels: [organization, project]
-  - type: org-policy                                       # [V]
-    levels: [organization]
-  - type: iam.googleapis.com/Role                          # [V] (org custom roles)
-    levels: [organization]
-  - type: logging.googleapis.com/LogSink                   # [V]
-    levels: [organization]
-  - type: cloudresourcemanager.googleapis.com/Folder       # [V]
-    levels: [organization, folder]
-  - type: cloudresourcemanager.googleapis.com/Project      # [V]
-    levels: [organization, folder]
-  - type: serviceusage.googleapis.com/Service              # [V]
-    levels: [project]
-  - type: iam.googleapis.com/ServiceAccount                # [V]
-    levels: [project]
-    iam: true          # impersonation grants enter the denominator
-  - type: logging.googleapis.com/LogBucket                 # [V]
-    levels: [project]
-  - type: storage.googleapis.com/Bucket                    # [V] state buckets
-    levels: [project]
-  - type: iam.googleapis.com/WorkloadIdentityPool          # [V] WIF federation
-    levels: [project]
-  - type: cloudresourcemanager.googleapis.com/TagKey       # [V] Resource Manager tags
-    levels: [organization]
-  - type: cloudresourcemanager.googleapis.com/TagValue     # [V]
-    levels: [organization]
-  - type: cloudresourcemanager.googleapis.com/TagBinding   # [V]
-    levels: [organization, folder, project]
-  # --- Optional additional types ---
-  # - type: cloudbilling.googleapis.com/BillingAccount     # [N] billing IAM
-  #   levels: [organization]
+scopes:
+  - root: organizations/000000000000   # <- your org id
+    # include/exclude match CAI `ancestors` (NUMERIC project ids).
+    # Restrict project-level types to the org-setup projects:
+    # include:
+    #   - projects/111111111111        # iac-core project NUMBER; see
+    #     import-manifest.multi-domain.yaml for selecting specific
+    #     projects per scope, and import-manifest.org-foundation.yaml
+    #     for the include-vs-exclude numeric-id trap
+    types:
+      - type: iam                                              # [V]
+        levels: [organization, project]
+      - type: org-policy                                       # [V]
+        levels: [organization]
+      - type: iam.googleapis.com/Role                          # [V] (org custom roles)
+        levels: [organization]
+      - type: logging.googleapis.com/LogSink                   # [V]
+        levels: [organization]
+      - type: cloudresourcemanager.googleapis.com/Folder       # [V]
+        levels: [organization, folder]
+      - type: cloudresourcemanager.googleapis.com/Project      # [V]
+        levels: [organization, folder]
+      - type: serviceusage.googleapis.com/Service              # [V]
+        levels: [project]
+      - type: iam.googleapis.com/ServiceAccount                # [V]
+        levels: [project]
+        iam: true          # impersonation grants enter the denominator
+      - type: logging.googleapis.com/LogBucket                 # [V]
+        levels: [project]
+      - type: storage.googleapis.com/Bucket                    # [V] state buckets
+        levels: [project]
+      - type: iam.googleapis.com/WorkloadIdentityPool          # [V] WIF federation
+        levels: [project]
+      - type: cloudresourcemanager.googleapis.com/TagKey       # [V] Resource Manager tags
+        levels: [organization]
+      - type: cloudresourcemanager.googleapis.com/TagValue     # [V]
+        levels: [organization]
+      - type: cloudresourcemanager.googleapis.com/TagBinding   # [V]
+        levels: [organization, folder, project]
+      # --- Optional additional types ---
+      # - type: cloudbilling.googleapis.com/BillingAccount     # [N] billing IAM
+      #   levels: [organization]

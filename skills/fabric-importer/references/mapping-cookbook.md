@@ -93,42 +93,39 @@ map of family → style, where family names are the canonical-map rows
 and styles are family-specific: `per-instance` (default) or `factory`
 for module-instance families (those without a factory carrier reject
 `factory`), and `additive` (default) or `authoritative` for the `iam`
-pseudo-family (see "Organization and containers: IAM"). It is valid in **two positions**:
+pseudo-family (see "Organization and containers: IAM"). It lives on
+the scope entry, like everything else in the manifest: the grammar is
+scopes-only, and there is no top-level position.
 
-1. **Top level** — the manifest-wide default. This is the only
-   position available in singular-`scope:` manifests (no scope
-   entries, nothing to override).
-2. **Per scope** (`scopes[].emission`) — same map, same enum,
-   overriding the top level for assets collected by that scope.
-
-Resolution, per family, most specific wins:
+Resolution, per family:
 
 ```text
-scopes[].emission.<family>  →  emission.<family>  →  per-instance
+scopes[].emission.<family>  →  built-in default (per-instance / additive)
 ```
 
-Omission at either level means "defer", never "per-instance": a scope
-without an `emission:` block (or without a given family key) inherits
-the top level, and only when both are silent does the built-in
-per-instance default apply.
+Omission means the built-in default — for `emission` only. **Do not
+generalise this to `types:`.** Both keys sit on a scope entry, and
+there the resemblance stops: `emission` is denominator-neutral (it
+decides how collected assets are written, and a missing family key
+falls back safely), while `types:` decides what is collected at all —
+every scope must declare its full list, and an omission is a refused
+manifest, not a default. A wrong emission choice still faces both
+gates; a wrong type list shrinks the denominator the gates are
+measured against.
 
 ```yaml
-emission:                    # top level: manifest-wide defaults
-  folder: factory            # -> project-factory hierarchy data/
-  project: per-instance
-  iam: additive              # default; authoritative is the opt-in
-
 scopes:
   - name: org-foundation
     levels: [organization, folder]
-    # no emission: -> inherits folder: factory from the top level
+    # types: … (each scope carries its own list — elided here)
+    emission:
+      folder: factory        # -> project-factory hierarchy data/
 
   - name: sandbox
     levels: [folder, project]
     include: [folders/333333333333]
-    emission:
-      folder: per-instance   # override for this scope only;
-                             # project still inherits the top level
+    # types: …
+    # no emission: -> built-in defaults (per-instance; iam additive)
 ```
 
 ### Subtree-granular emission (scope splitting)
@@ -137,7 +134,10 @@ Emission granularity follows scope granularity: to manage *some*
 folders via factory and others per-instance, split the tree into
 scopes along subtree boundaries and give each its own `emission:` —
 scope `include`/`exclude` already speak subtrees (CAI `ancestors`
-matching), so no new selector machinery is needed:
+matching), so no new selector machinery is needed. Remember the
+coupling: every scope carries its own `types:` list, so a scope added
+for emission reasons declares its list like any other (usually a copy
+of the list it split from):
 
 ```yaml
 scopes:
@@ -145,6 +145,9 @@ scopes:
     root: organizations/000000000000
     include: [folders/111111111111]
     levels: [folder]
+    types: &folder-types
+      - type: cloudresourcemanager.googleapis.com/Folder
+        levels: [organization, folder]
     emission:
       folder: factory
 
@@ -152,6 +155,7 @@ scopes:
     root: organizations/000000000000
     exclude: [folders/111111111111]
     levels: [folder]
+    types: *folder-types      # same list; YAML anchors avoid drift
 ```
 
 Rules that make the split sound (from `project-factory` source,
@@ -298,11 +302,46 @@ join artifacts, and determinism and auditability win.
   destinations, IAM bindings without their SA principals — as long as
   convergence does not depend on the referenced side and the report
   names it. The manifest decides scope.
-- Manifest `scope.include` / `scope.exclude` match the CAI `ancestors`
-  array, which stores numeric ids (`projects/123456789` — the project
-  NUMBER, never the project id string). See the recipes in
-  `examples/import-manifest.org-foundation.yaml` for selecting specific
-  projects, including the include-vs-exclude trap.
+- Scopes narrow on two axes: subtrees (`include`/`exclude`) and what
+  is collected inside them (`levels`, and each scope's own `types:`
+  list). Both are Scope-Approval-gate surface: they move the
+  denominator.
+- Manifest `include` / `exclude` match the CAI `ancestors` array,
+  which stores numeric ids. Both spellings work: `projects/123456789`
+  (the project NUMBER) matches directly, and a project ID is resolved
+  to its number by `inventory.py` via `gcloud projects describe` —
+  prefer the number where known, since resolution needs the describe
+  permission. See `examples/import-manifest.org-foundation.yaml` for
+  the include-vs-exclude trap and
+  `examples/import-manifest.multi-domain.yaml` for selecting specific
+  projects per scope.
+
+#### Per-scope type declaration (`scopes[].types`)
+
+Every scope carries its own `types:` list — there is no other place
+to declare types, so what a scope collects is exactly what is written
+on it. The same type may appear in several scopes with different
+`levels`, `iam` or `enumerate`; an `enumerate:` block is swept only
+in the scopes whose list names it.
+
+Fail-closed rules (all refuse the manifest before any API call):
+
+- a scope without a `types:` list, or with `types: []`, is refused —
+  an empty list is a scope that collects nothing, and that is the one
+  thing no scope may say quietly;
+- a type whose `levels` cannot intersect its scope's `levels` is
+  refused as a dead declaration (an entry listing `unknown` is
+  exempt): it reads as coverage and produces none;
+- a duplicate `type:` inside one scope's list is refused.
+
+Provenance in `inventory.json`: each `_meta.scopes[]` entry records
+its own `declared_types` yield counts and `zero_yield_types`;
+`_meta.declared_types` is the aggregate; every inventory entry names
+the scope(s) that collected it (`scopes: [...]`, merged and sorted
+when scopes overlap). **Read the per-scope counts, not only the
+aggregate** — a type that yields zero in one scope and non-zero in
+another never appears in the aggregate zero-yield warning. Same
+discipline as `_meta.split_parity`: read the record, not the key.
 
 ### Serialization traps
 

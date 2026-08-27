@@ -59,7 +59,7 @@ Gate on steps that are hard to reverse, costly, or where human judgment is requi
 
 | Gate | When | What the human decides |
 | :--- | :--- | :--- |
-| **Scope Approval** | Manifest drafting, before any enumeration | Reviews and commits `import-manifest.yaml`: which resource types, hierarchy levels (org/folder/project), and included/excluded subtrees are in scope. |
+| **Scope Approval** | Manifest drafting, before any enumeration | Reviews and commits `import-manifest.yaml`: which resource types each scope declares, at which hierarchy levels (org/folder/project), under which included/excluded subtrees. |
 | **Waiver Signing** | Completeness Gate (`coverage.py`) | Reviews deliberate exclusions in `waivers.yaml` and signs them with attribution (`signed_by`) for unmanaged or auto-generated resources (e.g. default log sinks, default compute service accounts). |
 | **Benign Drift Review** | Plan Convergence Gate (`verify_plan.py`) | Evaluates proposed cosmetic provider quirks (e.g. computed labels, default timeouts) and commits reviewed entries to `scripts/benign-drift.yaml`. |
 | **Final Review & Apply** | Handover, before `terraform apply` | Inspects the final zero-drift plan, run report, and input provenance digests before running `terraform apply` on their own schedule. |
@@ -73,7 +73,7 @@ flowchart TD
     subgraph S0["Discovery &amp; scope declaration"]
         MA["<b>Mode A: State-Driven Inference</b><br/><code>manifest_from_state.py</code><br/><i>(Existing .tfstate files)</i>"]
         MB["<b>Mode B: Live Cloud Survey</b><br/><code>inventory.py survey</code> &amp;<br/><code>manifest_init.py</code><br/><i>(Untracked brownfield)</i>"]
-        Draft["Draft <code>import-manifest.yaml</code><br/><i>(Resource types, levels &amp; subtree filters)</i>"]
+        Draft["Draft <code>import-manifest.yaml</code><br/><i>(Scopes, each with its own<br/>types, levels &amp; subtree filters)</i>"]
         G_Scope{"<b>Gate: Scope Approval</b><br/>Human reviews &amp; commits manifest"}
         Stop_Scope["Stop / Re-scope"]
     end
@@ -155,8 +155,10 @@ flowchart TD
 ### Step 0 — establish the manifest (with the user)
 
 The manifest is the user's contract: which resource types, at which
-levels, under which subtrees. Never invent it silently. If one exists,
-confirm it; otherwise run one of the drafting workflows:
+levels, under which subtrees — declared per scope, since `scopes:` is
+a list and **every scope carries its own `types:` list**. Never invent
+it silently. If one exists, confirm it; otherwise run one of the
+drafting workflows:
 
 **Option A — Inferred from existing Terraform state(s)** (preferred when migrating existing TF):
 
@@ -182,12 +184,28 @@ with per-level counts, commented out; foundation types are pre-enabled):
   org foundation first, workloads later. Show them
   `examples/import-manifest.org-foundation.yaml` as the reference.)
 - At which levels? (e.g. org IAM yes, project IAM no.)
+- Same depth everywhere, or different depths per subtree? (Different ⇒
+  several scopes, each with its own `types:` list —
+  `examples/import-manifest.multi-domain.yaml` is the reference.)
 - Any subtrees to exclude (sandboxes, decommissioning trees)?
 
-When writing `scope.include`/`scope.exclude`, note that CAI `ancestors`
+When writing a scope's `include`/`exclude`, note that CAI `ancestors`
 store NUMERIC project numbers; `inventory.py` automatically resolves
 alphanumeric project IDs to numbers during enumeration, but project numbers
 remain supported and canonical.
+
+**Per-scope `types:` rules (fail-closed, exit 1 before any API call).**
+A scope's list is the only place types are declared, so what a scope
+collects is exactly what is written on it. The same type may appear in
+several scopes with different `levels`, `iam` or `enumerate`. The
+validator refuses: a scope without a `types:` list or with `types: []`
+(a scope that collects nothing may not say so quietly); a type whose
+`levels` cannot intersect its scope's `levels` (dead declaration —
+entries listing `unknown` are exempt); a duplicate `type:` within one
+list; and the retired top-level `scope:`/`types:` grammar, which is
+rejected with migration instructions. Unlike `types:`, a scope's
+`emission:` map inherits built-in defaults for omitted families — it
+is denominator-neutral; do not reason from one knob to the other.
 
 The user commits the manifest. Scope changes later = manifest edit +
 incremental re-run, never a rewrite.
@@ -223,8 +241,9 @@ exact failure the gates exist to prevent.
 
 `inventory.py` does this for you where it can: it ships built-in gcloud
 enumerators for types known to be absent from the CAI catalogue
-(`NATIVE_ENUMERATORS`), so declaring the type in the manifest is enough
-— the tool skips CAI, sweeps with gcloud, and says so. Where no
+(`NATIVE_ENUMERATORS`), so declaring the type in a scope's `types:`
+list is enough — the tool skips CAI, sweeps with gcloud in that scope,
+and says so. Where no
 enumerator exists it refuses to proceed rather than guess, and it
 separates that case from a permission failure. Three remedies, in order:
 
@@ -258,17 +277,19 @@ separates that case from a permission failure. Three remedies, in order:
   which in the report. See
   [references/cai-blind-spots.md](./references/cai-blind-spots.md).
 - **CAI genuinely does not model the type, and no built-in covers it.**
-  Give it a native enumerator in the manifest — a read-only gcloud
-  command run per in-scope container, normalized into inventory
-  entries. It also overrides a built-in when you know better:
+  Give it a native enumerator — a read-only gcloud command run per
+  in-scope container, normalized into inventory entries. The
+  `enumerate:` block lives in the `types:` list of each scope that
+  needs it (per-scope lists never inherit), and also overrides a
+  built-in when you know better:
 
   ```yaml
-  - type: iam.googleapis.com/DenyPolicy       # not in the CAI catalogue
-    levels: [organization, folder]
-    enumerate:
-      command: [iam, policies, list, --kind=denypolicies]
-      container_arg: '--attachment-point=cloudresourcemanager.googleapis.com/{container}'
-      key: '//iam.googleapis.com/{container}/denypolicies/{item.name}'
+      - type: iam.googleapis.com/DenyPolicy   # not in the CAI catalogue
+        levels: [organization, folder]
+        enumerate:
+          command: [iam, policies, list, --kind=denypolicies]
+          container_arg: '--attachment-point=cloudresourcemanager.googleapis.com/{container}'
+          key: '//iam.googleapis.com/{container}/denypolicies/{item.name}'
   ```
 
   The manifest is human-owned: draft the block, a human commits it.
@@ -536,7 +557,13 @@ believe deserves attention. State whether `--verify-search-parity` was
 run and what it found. An empty `_meta.split_parity` means the probe did
 not run; a clean probe is a record whose `only_in_search` is empty.
 Reporting an unchecked table as clean is exactly the kind of claim this
-section exists to prevent. Plain facts; no "100%" claims beyond what the
+section exists to prevent. Quote the **per-scope** yield tables
+(`_meta.scopes[].declared_types` / `zero_yield_types`), not only the
+aggregate `_meta.declared_types`: a type can be non-zero org-wide while
+the one scope that declared it yielded nothing, and only the per-scope
+record shows that. Convergence claims are bounded per scope — state
+each scope's declared surface, not one sentence about "the manifest".
+Plain facts; no "100%" claims beyond what the
 gates literally verified.
 
 The report MUST include the verbatim stdout of both final gate runs —

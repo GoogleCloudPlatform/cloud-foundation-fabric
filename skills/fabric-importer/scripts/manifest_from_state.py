@@ -478,31 +478,54 @@ def _project_rooted_manifest(projects, project_numbers, types_found,
   ]
   has_unknown = any('unknown' in v['levels'] for v in types_found.values())
   levels = ['project'] + (['unknown'] if has_unknown else [])
+  type_lines = _type_lines(types_found, set(levels))
+  if not type_lines:
+    raise SystemExit(
+        'ERROR: no inferred type can fire at project level, so a '
+        'project-rooted manifest would declare scopes that collect '
+        'nothing — inventory.py refuses those. Write the manifest by '
+        'hand.')
   for i, entry in enumerate(_project_include_lines(projects, project_numbers)):
     root = entry.strip().lstrip('- ').split()[0]
     lines += [
         f'  - name: project-{i + 1}',
         f'    root: {root}',
         f'    levels: [{", ".join(levels)}]',
-        '',
-    ]
-  return '\n'.join(lines + _type_lines(types_found)) + '\n'
+    ] + type_lines + ['']
+  while lines and lines[-1] == '':
+    lines.pop()
+  return '\n'.join(lines) + '\n'
 
 
-def _type_lines(types_found):
-  """The `types:` block, shared by every manifest shape."""
-  lines = ['types:']
+def _type_lines(types_found, scope_levels, indent='    '):
+  """One scope's `types:` block, filtered to the entries that can fire
+  there.
+
+  Every scope carries its own list, and inventory.py rejects an entry
+  whose levels cannot intersect its scope's levels (unless the entry
+  declares `unknown`). Emitting the full inferred list into every scope
+  would therefore produce an invalid manifest; this filter mirrors the
+  validator exactly. Returns [] when nothing can fire — the caller must
+  then skip the scope, because an empty `types:` list is refused too.
+  """
+  lines = [f'{indent}types:']
   pseudo_order = ['iam', 'org-policy']
   ordered_types = [pt for pt in pseudo_order if pt in types_found]
   ordered_types += [t for t in sorted(types_found) if t not in pseudo_order]
+  emitted = 0
   for t in ordered_types:
+    t_levels = set(
+        types_found[t]['levels']) or {'organization', 'folder', 'project'}
+    if 'unknown' not in t_levels and not t_levels & scope_levels:
+      continue
     levels = sorted(types_found[t]['levels'],
                     key=lambda lvl: LEVEL_ORDER.get(lvl, 99))
-    lines.append(f'  - type: {t}')
-    lines.append(f'    levels: [{", ".join(levels)}]')
+    lines.append(f'{indent}  - type: {t}')
+    lines.append(f'{indent}    levels: [{", ".join(levels)}]')
     for fk, fv in sorted(types_found[t]['flags'].items()):
-      lines.append(f'    {fk}: {str(fv).lower()}')
-  return lines
+      lines.append(f'{indent}    {fk}: {str(fv).lower()}')
+    emitted += 1
+  return lines if emitted else []
 
 
 def generate_manifest(org_ids, projects, project_numbers, folders, types_found,
@@ -568,18 +591,26 @@ def generate_manifest(org_ids, projects, project_numbers, folders, types_found,
   # discarded (pseudo-types are skipped outright). Retaining an
   # unclassifiable asset is the whole point of the level.
   has_unknown = any('unknown' in v['levels'] for v in types_found.values())
+  emitted_scopes = 0
   if has_org_level or has_unknown:
     # A folder root cannot carry organization-level assets; declaring it
     # anyway asks inventory.py for a sweep that cannot match.
     levels = ['organization', 'folder'] if root_is_org else ['folder']
     if has_unknown:
       levels.append('unknown')
-    lines += [
-        '  - name: org-foundation',
-        f'    root: {scope_root}',
-        f'    levels: [{", ".join(levels)}]',
-        '',
-    ]
+    type_lines = _type_lines(types_found, set(levels))
+    if type_lines:
+      lines += [
+          '  - name: org-foundation',
+          f'    root: {scope_root}',
+          f'    levels: [{", ".join(levels)}]',
+      ] + type_lines + ['']
+      emitted_scopes += 1
+    else:
+      print(
+          'WARNING: no inferred type can fire at the org-foundation '
+          "scope's levels, so the scope was not emitted (a scope's "
+          '`types:` list may not be empty).', file=sys.stderr)
     if not root_is_org:
       org_only = sorted(
           t for t, v in types_found.items() if v['levels'] == {'organization'})
@@ -596,14 +627,29 @@ def generate_manifest(org_ids, projects, project_numbers, folders, types_found,
     levels = ['project']
     if has_unknown:
       levels.append('unknown')
-    lines += [
-        '  - name: stage-projects',
-        f'    root: {scope_root}',
-        f'    levels: [{", ".join(levels)}]',
-        '    include:',
-    ] + include + ['']
+    type_lines = _type_lines(types_found, set(levels))
+    if type_lines:
+      lines += [
+          '  - name: stage-projects',
+          f'    root: {scope_root}',
+          f'    levels: [{", ".join(levels)}]',
+          '    include:',
+      ] + include + type_lines + ['']
+      emitted_scopes += 1
+    else:
+      print(
+          'WARNING: project include(s) were discovered but no inferred '
+          'type can fire at project level, so no stage-projects scope '
+          'was emitted.', file=sys.stderr)
 
-  return '\n'.join(lines + _type_lines(types_found)) + '\n'
+  if not emitted_scopes:
+    raise SystemExit(
+        'ERROR: no scope could be emitted — every candidate scope would '
+        'carry an empty `types:` list, which inventory.py refuses. '
+        'Write the manifest by hand.')
+  while lines and lines[-1] == '':
+    lines.pop()
+  return '\n'.join(lines) + '\n'
 
 
 def main():

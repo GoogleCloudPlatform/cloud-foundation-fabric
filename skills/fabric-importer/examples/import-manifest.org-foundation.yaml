@@ -20,177 +20,126 @@
 # policies, org log sinks, the folder hierarchy, and folder IAM.
 #
 # A manifest is the user-owned contract for a fabric-importer run:
-#   - inventory.py collects ONLY what is declared here (the completeness
+#   - inventory.py collects ONLY what the scopes declare (the completeness
 #     denominator becomes "what you asked for", not "everything");
 #   - coverage.py fails the run until every collected asset is mapped to a
 #     Terraform address or waived by a human;
-#   - re-runs are incremental: widen this manifest (or let the org grow)
-#     and only the delta is added to the workspace. Existing addresses are
-#     never rewritten.
+#   - re-runs are incremental: widen a scope's `types:` list (or let the
+#     org grow) and only the delta is added to the workspace. Existing
+#     addresses are never rewritten.
+#
+# The grammar is scopes-only: `scopes:` is a list, and EVERY scope carries
+# its own `types:` list. One estate, different depths per subtree = several
+# scopes, each with its own list — see import-manifest.multi-domain.yaml
+# for the worked multi-scope example and the fail-closed rules.
 # ---------------------------------------------------------------------------
 
-scope:
+scopes:
+
   # Root of the import. organizations/N, folders/N and projects/N are all
   # valid roots; everything below is evaluated inside this subtree.
-  root: organizations/000000000000   # <- replace with your org id
+  - root: organizations/000000000000   # <- replace with your org id
 
-  # Optional: restrict to specific subtrees inside the root. An asset is
-  # in scope only if one of these appears among its ancestors. Omit to
-  # cover the whole root.
-  # include:
-  #   - folders/111111111111
+    # Optional: restrict to specific subtrees inside the root. An asset is
+    # in scope only if one of these appears among its ancestors. Omit to
+    # cover the whole root.
+    # include:
+    #   - folders/111111111111
 
-  # Optional: carve out subtrees. Exclusion wins over inclusion.
-  #
-  # NOTE (live-verified): include/exclude match against the CAI
-  # `ancestors` array, which stores NUMERIC ids. Both spellings work:
-  # `projects/123456789` (the project NUMBER) matches directly, and a
-  # project ID is resolved to its number by inventory.py via
-  # `gcloud projects describe`. Prefer the number where you know it —
-  # resolution needs the describe permission, and a project that cannot
-  # be resolved is reported as an enumeration failure rather than
-  # silently matching nothing.
-  # exclude:
-  #   - projects/123456789012
-  #
-  # -------------------------------------------------------------------
-  # RECIPES: importing only SPECIFIC projects or combining scopes
-  # -------------------------------------------------------------------
-  #
-  # (a) Multi-scope manifest (Org/Folder governance + Selected Projects):
-  #     Use `scopes:` to declare separate roots and level boundaries.
-  #     Alphanumeric project IDs (e.g. 'my-app-prod') are resolved to
-  #     project numbers automatically; see the NOTE above.
-  #
-  #   scopes:
-  #     - name: org-foundation
-  #       root: organizations/000000000000
-  #       levels: [organization, folder]
-  #
-  #     - name: logging-and-apps
-  #       root: organizations/000000000000
-  #       levels: [project]
-  #       include:
-  #         - my-app-prod              # project ID, or projects/<number>
-  #         - my-app-dev
-  #
-  # (b) Projects-only manifest (no organization/folder-level types):
-  #     A plain include or direct project root:
-  #
-  #   scopes:
-  #     - root: projects/my-app-prod
-  #       levels: [project]
-  #
-  # Widening later (adding a project or scope) is safe and incremental:
-  # only the new assets appear in the worklist. Types' `levels` still
-  # apply on top of scope.
+    # Optional: carve out subtrees. Exclusion wins over inclusion.
+    #
+    # NOTE (live-verified): include/exclude match against the CAI
+    # `ancestors` array, which stores NUMERIC ids. Both spellings work:
+    # `projects/123456789` (the project NUMBER) matches directly, and a
+    # project ID is resolved to its number by inventory.py via
+    # `gcloud projects describe`. Prefer the number where you know it —
+    # resolution needs the describe permission, and a project that cannot
+    # be resolved is reported as an enumeration failure rather than
+    # silently matching nothing.
+    # exclude:
+    #   - projects/123456789012
 
-# ---------------------------------------------------------------------
-# Optional: emission style, per resource family. This is YOUR call —
-# the scripts do not consume it; it directs step-3 mapping (see the
-# cookbook's "Factory emission (opt-in)" section, normative).
-#
-#   per-instance (default) : one module instance per container, HCL
-#                            inputs, shallow chosen addresses.
-#   factory                : data-driven YAML via the family's Fabric
-#                            factory carrier (canonical map names it;
-#                            FACTORIES.md is the full catalog).
-#
-# An org foundation is the canonical factory case: folder tree, folder
-# IAM and org policies maintained as hierarchical data/ YAML via
-# project-factory — the imported workspace doubles as the day-2
-# operating model. Mind the tradeoffs (4-level nesting cap, data-path =
-# key so directory moves re-key the subtree, deeper import addresses).
-#
-# emission is valid in TWO positions:
-#   - here (top level): manifest-wide default — the only position in a
-#     singular-`scope:` manifest like this one;
-#   - per scope (scopes[].emission): same map, overrides the top level
-#     for that scope's assets.
-# Resolution per family: scopes[].emission -> top-level emission ->
-# per-instance. Omission defers to the next level; it never means
-# per-instance directly.
-#
-# emission:
-#   folder: factory
-#   project: per-instance
-#   iam: additive       # default — google_*_iam_member per tuple; an
-#                       # apply can never strip unmanaged members. Use
-#                       # `authoritative` to make IAM fully declarative
-#
-# To factory-manage only SOME folders, split the tree into scopes
-# along subtree boundaries (include/exclude) and set emission per
-# scope — see "Subtree-granular emission (scope splitting)" in the
-# cookbook's factory-emission section:
-#
-#   scopes:
-#     - name: teams
-#       root: organizations/000000000000
-#       include: [folders/111111111111]
-#       levels: [folder]
-#       emission: {folder: factory}
-#     - name: rest
-#       root: organizations/000000000000
-#       exclude: [folders/111111111111]
-#       levels: [folder]           # inherits/defaults to per-instance
+    # Optional: emission style, per resource family. YOUR call — the
+    # scripts do not consume it; it directs step-3 mapping (the
+    # cookbook's "Factory emission (opt-in)" section is normative).
+    #   per-instance (default) : one module instance per container.
+    #   factory                : data-driven YAML via the family's
+    #                            Fabric factory carrier.
+    # An org foundation is the canonical factory case: folder tree,
+    # folder IAM and org policies maintained as hierarchical data/ YAML
+    # via project-factory.
+    #
+    # `emission` is per scope and INHERITS: a family key you omit gets
+    # the built-in default (per-instance; additive for iam). `types:`
+    # does NOT: every scope declares its full list, and an omission is
+    # an error, not inheritance. Types decide the denominator; emission
+    # only decides how collected assets are written. Do not reason from
+    # one knob to the other.
+    #
+    # emission:
+    #   folder: factory
+    #   iam: additive     # default — google_*_iam_member per tuple; an
+    #                     # apply can never strip unmanaged members. Use
+    #                     # `authoritative` to make IAM fully declarative
 
-types:
-  # -------------------------------------------------------------------
-  # IAM policies (pseudo-type). CAI models IAM as a content type attached
-  # to resources, not as an asset type, hence the reserved name `iam`.
-  # `levels` controls WHERE bindings are replicated:
-  #   organization -> org IAM bindings + audit configs
-  #                   (including logging_data_access)
-  #   folder       -> folder IAM bindings
-  # Project-level IAM stays unmanaged in this example (add `project` to
-  # take it over). Only container-attached IAM (org/folder/project) is
-  # covered by this pseudo-type; IAM on leaf assets (tag values, buckets,
-  # service accounts, ...) needs explicit per-type manifest entries.
-  # -------------------------------------------------------------------
-  - type: iam
-    levels: [organization, folder]
+    types:
+      # ---------------------------------------------------------------
+      # IAM policies (pseudo-type). CAI models IAM as a content type
+      # attached to resources, not as an asset type, hence the reserved
+      # name `iam`. `levels` controls WHERE bindings are replicated:
+      #   organization -> org IAM bindings + audit configs
+      #                   (including logging_data_access)
+      #   folder       -> folder IAM bindings
+      # Project-level IAM stays unmanaged in this example (add `project`
+      # to take it over). Only container-attached IAM is covered by this
+      # pseudo-type; IAM on leaf assets (tag values, buckets, service
+      # accounts, ...) needs an `iam: true` opt-in on the leaf type's
+      # own entry.
+      # ---------------------------------------------------------------
+      - type: iam
+        levels: [organization, folder]
 
-  # -------------------------------------------------------------------
-  # Org policies (pseudo-type; CAI content type org-policy). One
-  # inventory entry per (resource, constraint) pair, so coverage is
-  # per-constraint. This example covers org-level only; folder-level
-  # policies were discovered-but-unmodelled — declaring only
-  # [organization] here makes that same restriction explicit and honest:
-  # folder policies are then out of scope BY DECLARATION rather than
-  # silently dropped.
-  # -------------------------------------------------------------------
-  - type: org-policy
-    levels: [organization]
+      # ---------------------------------------------------------------
+      # Org policies (pseudo-type; CAI content type org-policy). One
+      # inventory entry per (resource, constraint) pair, so coverage is
+      # per-constraint. This example covers org-level only; declaring
+      # [organization] makes the folder-level restriction explicit and
+      # honest: folder policies are out of scope BY DECLARATION rather
+      # than silently dropped.
+      # ---------------------------------------------------------------
+      - type: org-policy
+        levels: [organization]
 
-  # -------------------------------------------------------------------
-  # Custom IAM roles. Fabric target: modules/organization factory,
-  # data/custom-roles/<role_id>.yaml. Org-level only;
-  # project-level custom roles would need `project` here.
-  # -------------------------------------------------------------------
-  - type: iam.googleapis.com/Role
-    levels: [organization]
+      # ---------------------------------------------------------------
+      # Custom IAM roles. Fabric target: modules/organization factory,
+      # data/custom-roles/<role_id>.yaml. Org-level only; project-level
+      # custom roles would need `project` here.
+      # ---------------------------------------------------------------
+      - type: iam.googleapis.com/Role
+        levels: [organization]
 
-  # -------------------------------------------------------------------
-  # Log sinks. Fabric target: modules/organization logging_sinks locals
-  # (with iam=false; _Default/_Required are quarantined). Folder and
-  # project sinks stay unmanaged here.
-  # -------------------------------------------------------------------
-  - type: logging.googleapis.com/LogSink
-    levels: [organization]
+      # ---------------------------------------------------------------
+      # Log sinks. Fabric target: modules/organization logging_sinks
+      # locals (with iam=false; _Default/_Required are quarantined).
+      # Folder and project sinks stay unmanaged here.
+      # ---------------------------------------------------------------
+      - type: logging.googleapis.com/LogSink
+        levels: [organization]
 
-  # -------------------------------------------------------------------
-  # Folder hierarchy. Fabric target: one modules/folder instance per
-  # folder (stable instance keys; parent chaining by module reference).
-  # `levels` refers to the CONTAINER of the asset: a folder whose parent
-  # is the org sits at level `organization`, a nested folder at `folder`.
-  # -------------------------------------------------------------------
-  - type: cloudresourcemanager.googleapis.com/Folder
-    levels: [organization, folder]
+      # ---------------------------------------------------------------
+      # Folder hierarchy. Fabric target: one modules/folder instance per
+      # folder (stable instance keys; parent chaining by module
+      # reference). `levels` refers to the CONTAINER of the asset: a
+      # folder whose parent is the org sits at level `organization`, a
+      # nested folder at `folder`.
+      # ---------------------------------------------------------------
+      - type: cloudresourcemanager.googleapis.com/Folder
+        levels: [organization, folder]
 
 # ---------------------------------------------------------------------------
 # What this manifest deliberately does NOT cover (would have been silent
-# gaps in v1; here they are visible declarations — add entries to take
-# them over):
+# gaps in v1; here they are visible declarations — add entries to the
+# scope's `types:` list to take them over):
 #
 #   - type: cloudresourcemanager.googleapis.com/Project
 #     levels: [organization, folder]
@@ -213,30 +162,20 @@ types:
 # ---------------------------------------------------------------------------
 # TYPES CLOUD ASSET INVENTORY DOES NOT MODEL
 #
-# CAI is the default source of the denominator, not its boundary. A type
-# CAI cannot see would be invisible to BOTH gates at once, so it is
-# enumerated by other means and merged into the same inventory --
-# `gcloud` first. Declare it with an `enumerate:` block: the command runs
-# once per in-scope container at the declared levels, with the container
-# flag (--organization/--folder/--project) and --format=json appended.
+# A type CAI cannot see would be invisible to BOTH gates at once, so it
+# is enumerated by other means and merged into the same inventory —
+# `gcloud` first. Declare it with an `enumerate:` block in the `types:`
+# list of every scope that needs it (per-scope lists never inherit):
 #
 #   - type: iam.googleapis.com/DenyPolicy      # not in the CAI catalogue
 #     levels: [organization, folder]
 #     enumerate:
 #       command: [iam, policies, list, --kind=denypolicies]
-#       # Optional: only when the command does not take
-#       # --organization/--folder/--project=<id>.
 #       container_arg: '--attachment-point=cloudresourcemanager.googleapis.com/{container}'
 #       key: '//iam.googleapis.com/{container}/denypolicies/{item.name}'
 #
-# Refused by design: anything that is not a read-only verb, and
-# --format/--filter/--limit/--page-size/--flatten/--sort-by/--uri --
-# narrowing belongs in `scope` above, where it is reviewed, not in a flag
-# that shrinks the denominator invisibly. A key template that renders the
-# same key twice is fatal for the same reason.
-#
-# See references/cai-blind-spots.md for the full ladder (CAI -> gcloud ->
-# REST API -> signed waiver): not every gap has a gcloud command. Log
-# exclusions, for instance, are neither a CAI type nor a gcloud group,
-# and have to be enumerated against the REST API and reported by hand.
+# Guard rails (read-only verbs only, no --filter/--limit, unique key
+# templates), the built-in enumerator table, and the full ladder (CAI ->
+# gcloud -> REST API -> signed waiver) are in
+# references/cai-blind-spots.md.
 # ---------------------------------------------------------------------------

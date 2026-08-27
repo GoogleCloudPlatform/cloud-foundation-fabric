@@ -60,31 +60,32 @@ def draft_manifest(survey_entries, scope_root):
   lines = [
       '# Import manifest drafted by manifest_init.py — review with care.',
       '# Uncomment the types you want under management; restrict levels',
-      '# and scope to keep plans small. See examples/ for a documented',
+      '# and scope to keep plans small. Every scope carries its own',
+      '# types: list; split into several scopes to import different',
+      '# types under different subtrees. See examples/ for a documented',
       '# reference manifest.',
       '',
-      'scope:',
-      f'  root: {scope_root}',
-      '  # include: [folders/1234]   # optional subtree restriction',
-      '  # exclude: [projects/foo]   # optional subtree exclusion',
-      '',
-      'types:',
+      'scopes:',
+      f'  - root: {scope_root}',
+      '    # include: [folders/1234]   # optional subtree restriction',
+      '    # exclude: [projects/foo]   # optional subtree exclusion',
+      '    types:',
   ]
 
   def type_block(asset_type, levels, count_note, enabled):
-    prefix = '  ' if enabled else '  # '
+    prefix = '      ' if enabled else '      # '
     out = [f'{prefix}- type: {asset_type}{count_note}']
     out.append(f'{prefix}  levels: [{", ".join(levels)}]')
     return out
 
   # Pseudo-types first (IAM policies and org policies are content types in
   # CAI, not asset types, so a survey cannot count them).
-  lines.append('  # -- IAM policies and org policies (pseudo-types; not')
-  lines.append('  #    counted by a resource survey) --')
+  lines.append('      # -- IAM policies and org policies (pseudo-types; not')
+  lines.append('      #    counted by a resource survey) --')
   for pseudo, levels in FOUNDATION_PSEUDO.items():
     lines += type_block(pseudo, levels, '', enabled=True)
   lines.append('')
-  lines.append('  # -- discovered resource types (count by level) --')
+  lines.append('      # -- discovered resource types (count by level) --')
 
   for asset_type in sorted(counts):
     per_level = counts[asset_type]

@@ -24,13 +24,13 @@ The important part is what that file contains. **It names resource types, not
 resources.** You never write a list of your 47 org policies. You write:
 
 ```yaml
-scope:
-  root: organizations/123456789012
-types:
-  - type: org-policy
-    levels: [organization]
-  - type: cloudresourcemanager.googleapis.com/Folder
-    levels: [organization, folder]
+scopes:
+  - root: organizations/123456789012
+    types:
+      - type: org-policy
+        levels: [organization]
+      - type: cloudresourcemanager.googleapis.com/Folder
+        levels: [organization, folder]
 ```
 
 That means "in this organization, take over org policies attached at org level,
@@ -57,6 +57,59 @@ estate need a manifest first. Neither is a gate, neither produces anything
 binding, and you can skip both if you already know your scope. Run them anyway
 the first time: the gap between "what Terraform manages" and "what exists" is
 usually the most useful thing discovered all week.
+
+### Different depth per subtree: per-scope `types:`
+
+One estate rarely wants the same depth everywhere — governance at org and
+folder level, the full connectivity stack in the networking folder, two named
+workload projects and nothing else. `scopes:` is a list, and **every scope
+carries its own `types:` list**; there is no other place to declare types, so
+what a scope collects is exactly what is written on it:
+
+```yaml
+scopes:
+  - name: org-foundation
+    root: organizations/123456789012
+    levels: [organization, folder]
+    types:
+      - type: org-policy
+        levels: [organization, folder]
+      - type: cloudresourcemanager.googleapis.com/Folder
+        levels: [organization, folder]
+
+  - name: workloads
+    root: organizations/123456789012
+    levels: [project]
+    include:
+      - projects/111111111111
+    types:
+      - type: iam
+        levels: [project]
+      - type: storage.googleapis.com/Bucket
+        levels: [project]
+```
+
+The same type may appear in several scopes with different `levels`, `iam` or
+`enumerate`. Because a type list decides the denominator, the rules fail the
+run with a message rather than warning — before any API call, exit 1:
+
+| Rule | Why |
+|---|---|
+| Every scope declares `types:`; `types: []` is rejected | A scope that collects nothing passes every check by not collecting |
+| A type whose `levels` cannot intersect its scope's `levels` is rejected | A dead declaration reads like coverage and produces none (an entry listing `unknown` is exempt) |
+| A type declared twice in one list is rejected | Last-wins would quietly narrow levels |
+| The retired grammar (top-level `scope:` / `types:`) is rejected with migration instructions | Half-accepting it would change what the denominator means |
+
+`examples/import-manifest.multi-domain.yaml` is a worked four-scope manifest;
+`examples/import-manifest.org-foundation.yaml` is the single-scope reference.
+
+Afterwards, read the **per-scope** tables in `inventory.json`:
+`_meta.scopes[].declared_types` and `_meta.scopes[].zero_yield_types`.
+`_meta.declared_types` is the aggregate across scopes, and the aggregate can
+hide a scope whose own declaration yielded nothing — a type non-zero org-wide
+and zero in the one scope you cared about. Every inventory entry (and
+therefore every worklist entry) also names the scope(s) that collected it in
+its `scopes` field.
 
 ### `survey` and `collect` are not the same thing
 
@@ -115,7 +168,7 @@ Gate on steps that are hard to reverse, costly, or where human judgment is requi
 
 | Gate | When | What the human decides |
 | :--- | :--- | :--- |
-| **Scope Approval** | Manifest drafting, before any enumeration | Reviews and commits `import-manifest.yaml`: which resource types, hierarchy levels (org/folder/project), and included/excluded subtrees are in scope. |
+| **Scope Approval** | Manifest drafting, before any enumeration | Reviews and commits `import-manifest.yaml`: which resource types each scope declares, at which hierarchy levels (org/folder/project), under which included/excluded subtrees. |
 | **Waiver Signing** | Completeness Gate (`coverage.py`) | Reviews deliberate exclusions in `waivers.yaml` and signs them with attribution (`signed_by`) for unmanaged or auto-generated resources (e.g. default log sinks, default compute service accounts). |
 | **Benign Drift Review** | Plan Convergence Gate (`verify_plan.py`) | Evaluates proposed cosmetic provider quirks (e.g. computed labels, default timeouts) and commits reviewed entries to `scripts/benign-drift.yaml`. |
 | **Final Review & Apply** | Handover, before `terraform apply` | Inspects the final zero-drift plan, run report, and input provenance digests before running `terraform apply` on their own schedule. |
@@ -160,7 +213,7 @@ and binding.
 
 ```mermaid
 flowchart TD
-    T["One type declared<br/>in the manifest"] --> Q1{"pseudo-type?"}
+    T["One type declared in a<br/>scope's types: list"] --> Q1{"pseudo-type?"}
     Q1 -- "iam" --> S1["asset list<br/>--content-type=iam-policy"]
     Q1 -- "org-policy" --> S2["three streams merged:<br/>org-policy content type<br/>+ orgpolicy Policy assets<br/>+ gcloud org-policies list<br/>per container"]
     Q1 -- "no, a real asset type" --> Q2{"enumerator registered?<br/>built-in table, or a<br/>manifest enumerate: block"}
@@ -179,7 +232,9 @@ flowchart TD
 
 No path exits with "skip it". Every branch ends in the denominator or in a stop,
 because an unenumerated asset is invisible to both gates at once — it would pass
-every check by not existing.
+every check by not existing. The funnel runs once per scope: the same type can
+enter it from two scopes' lists with different levels, and a type declared in
+only one scope is swept only there.
 
 ### Funnel 2: how a worklist item becomes code
 
@@ -242,7 +297,7 @@ middle two is to force the module to fit, or to call the leftover diff benign.
 ## Step-by-Step Operator Guide
 
 ### 1. Declare the Scope (`import-manifest.yaml`)
-You and the agent agree on an `import-manifest.yaml` declaring which resource types to import (e.g., folders, service accounts, VPC networks, org policies), at which container levels (organization, folder, or project), and which subtrees to include or exclude.
+You and the agent agree on an `import-manifest.yaml` declaring, per scope, which resource types to import (e.g., folders, service accounts, VPC networks, org policies), at which container levels (organization, folder, or project), and which subtrees to include or exclude — see [Different depth per subtree](#different-depth-per-subtree-per-scope-types).
 
 This is the only file you author, and it names types, not resources. The two
 options below are drafting aids that answer different questions — A tells you
@@ -261,7 +316,10 @@ See [references/inferring-manifests-from-state.md](./references/inferring-manife
 uv run scripts/inventory.py survey --scope organizations/ORG_ID --out survey.json
 uv run scripts/manifest_init.py --survey survey.json --scope organizations/ORG_ID --out import-manifest.yaml
 ```
-Ready-made examples aligned with FAST stages are provided in [`examples/`](./examples/).
+Ready-made examples aligned with FAST stages are provided in
+[`examples/`](./examples/); `import-manifest.org-foundation.yaml` is the
+single-scope reference and `import-manifest.multi-domain.yaml` the per-scope
+multi-domain one.
 
 ### 2. Enumerate the Denominator (`inventory.json`)
 The enumeration script queries Cloud Asset Inventory (CAI) and service APIs to construct the exact denominator of all matching live assets:
@@ -280,15 +338,17 @@ type string is wrong (checked against the
 [supported types list](https://cloud.google.com/asset-inventory/docs/supported-asset-types)),
 or the type needs a native enumerator declared in the manifest — a
 read-only `gcloud` command run per in-scope container, normalized into
-the same inventory (this also overrides a built-in):
+the same inventory (this also overrides a built-in). The block lives in
+the `types:` list of each scope that needs it; per-scope lists never
+inherit:
 
 ```yaml
-  - type: iam.googleapis.com/DenyPolicy       # not in the CAI catalogue
-    levels: [organization, folder]
-    enumerate:
-      command: [iam, policies, list, --kind=denypolicies]
-      container_arg: '--attachment-point=cloudresourcemanager.googleapis.com/{container}'
-      key: '//iam.googleapis.com/{container}/denypolicies/{item.name}'
+      - type: iam.googleapis.com/DenyPolicy   # not in the CAI catalogue
+        levels: [organization, folder]
+        enumerate:
+          command: [iam, policies, list, --kind=denypolicies]
+          container_arg: '--attachment-point=cloudresourcemanager.googleapis.com/{container}'
+          key: '//iam.googleapis.com/{container}/denypolicies/{item.name}'
 ```
 
 CAI is also not one taxonomy but two, and they disagree. For a few
@@ -337,6 +397,14 @@ scope stays auditable without making the run unreadable: on a large
 estate the per-container sweeps produce a pair of lines per container,
 and those would bury the warnings that decide whether the denominator
 can be trusted.
+
+Provenance is per scope: each `_meta.scopes[]` entry records its own
+`declared_types` yield counts and `zero_yield_types`, and every
+inventory entry names the scope(s) that collected it.
+`_meta.declared_types` is the aggregate — read the per-scope counts
+too, because a type that yields zero in one scope and non-zero in
+another does not show up in the aggregate zero-yield warning (the
+per-scope warning on stderr does).
 
 CAI listings request the largest page each API allows (1000 for
 `asset list`, 500 for `search-all-resources`), which is what decides how
@@ -416,8 +484,12 @@ Exit codes — `coverage.py`: `0` reconciled, `1` malformed input, `2` gaps
 or problems. `verify_plan.py`: `0` converged, `1` malformed input, `2`
 residual changes, `3` converged but ADVISORY (a substituted `--rules`
 file). A substituted ruleset can never exit `0`; a residual plan still
-exits `2`. Note that argparse usage errors also exit `2`, so read the
-message, not only the code.
+exits `2`. `inventory.py`: `0` ok, `1` a manifest the validator refuses
+(retired grammar, missing/empty per-scope `types:`, duplicate type,
+invalid level, dead per-scope declaration — printed with the reason
+before any API call), `3` a partial denominator (unsupported type,
+tolerated sweep failure, split-parity gap). Note that argparse usage
+errors also exit `2`, so read the message, not only the code.
 
 There is no checked-in expected digest. To check a recorded gate run,
 compute `uv run scripts/integrity.py` from a pristine checkout of the
@@ -462,7 +534,7 @@ Three human-owned files govern the process. The agent may propose edits, but onl
 
 | File | Purpose |
 |---|---|
-| `import-manifest.yaml` | Declares in-scope resource types, container levels, and subtree filters. |
+| `import-manifest.yaml` | Declares the scopes, each with its own resource-type list, container levels, and subtree filters. |
 | `waivers.yaml` | Written waivers for resources deliberately excluded from management (e.g. `_Default` log sinks, default compute service accounts). Requires a `signed_by` attribute. |
 | `scripts/benign-drift.yaml` | Scoped provider quirks accepted as cosmetic diffs (e.g., computed provider labels or default timeouts). |
 | `references/address-map.yaml` | The fielded subset of the mapping cookbook: asset type, module, address pattern, import ID, verification round. Advisory, not a gate input — see below. |
@@ -487,6 +559,7 @@ skills/fabric-importer/
 │   └── benign-drift.yaml        #   Human-reviewed provider quirk ruleset
 ├── examples/                    # Manifest and waiver templates
 │   ├── import-manifest.org-foundation.yaml
+│   ├── import-manifest.multi-domain.yaml
 │   ├── import-manifest.fast-org-setup.yaml
 │   ├── import-manifest.fast-security.yaml
 │   ├── import-manifest.fast-vpcsc.yaml

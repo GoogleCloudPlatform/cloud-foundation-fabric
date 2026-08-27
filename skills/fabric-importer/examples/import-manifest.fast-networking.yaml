@@ -22,48 +22,47 @@
 # networking folder. See COVERAGE.md.
 # ---------------------------------------------------------------------------
 
-scope:
-  root: organizations/000000000000
-  # include:
-  #   - folders/333333333333         # networking folder number
-
-types:
-  - type: iam                                              # [V]
-    levels: [project]
-  - type: org-policy                                       # [V]
-    levels: [folder, project]
-  - type: cloudresourcemanager.googleapis.com/Project      # [V]
-    levels: [folder]
-  - type: serviceusage.googleapis.com/Service              # [V]
-    levels: [project]
-  - type: iam.googleapis.com/ServiceAccount                # [V]
-    levels: [project]
-    iam: true
-  - type: compute.googleapis.com/Network                   # [V]
-    levels: [project]
-  - type: compute.googleapis.com/Subnetwork                # [V]
-    levels: [project]
-  - type: compute.googleapis.com/Route                     # [V] (dynamic routes waived)
-    levels: [project]
-  - type: dns.googleapis.com/ManagedZone                   # [V] modules/dns
-    levels: [project]
-  - type: dns.googleapis.com/Policy                        # [N] DNS server policies
-    levels: [project]
-  - type: dns.googleapis.com/ResponsePolicy                # [N]
-    levels: [project]
-  - type: networkconnectivity.googleapis.com/Hub           # [N] NCC hub
-    levels: [project]
-  - type: networkconnectivity.googleapis.com/Spoke         # [V] NCC linked-VPC spoke (raw fallback)
-    levels: [project]
-  - type: compute.googleapis.com/Router                    # [V] modules/net-cloudnat (router + NAT)
-    levels: [project]
-  - type: compute.googleapis.com/Address                   # [N] reserved addresses
-    levels: [project]
-  # - type: compute.googleapis.com/FirewallPolicy          # [C] net-firewall-policy
-  #   levels: [folder]
-  # - type: compute.googleapis.com/VpnGateway              # [C] net-vpn-*
-  #   levels: [project]
-  # - type: compute.googleapis.com/VpnTunnel               # [C]
-  #   levels: [project]
-  # - type: compute.googleapis.com/InterconnectAttachment  # [C] vlan attachments
-  #   levels: [project]
+scopes:
+  - root: organizations/000000000000
+    # include:
+    #   - folders/333333333333         # networking folder number
+    types:
+      - type: iam                                              # [V]
+        levels: [project]
+      - type: org-policy                                       # [V]
+        levels: [folder, project]
+      - type: cloudresourcemanager.googleapis.com/Project      # [V]
+        levels: [folder]
+      - type: serviceusage.googleapis.com/Service              # [V]
+        levels: [project]
+      - type: iam.googleapis.com/ServiceAccount                # [V]
+        levels: [project]
+        iam: true
+      - type: compute.googleapis.com/Network                   # [V]
+        levels: [project]
+      - type: compute.googleapis.com/Subnetwork                # [V]
+        levels: [project]
+      - type: compute.googleapis.com/Route                     # [V] (dynamic routes waived)
+        levels: [project]
+      - type: dns.googleapis.com/ManagedZone                   # [V] modules/dns
+        levels: [project]
+      - type: dns.googleapis.com/Policy                        # [N] DNS server policies
+        levels: [project]
+      - type: dns.googleapis.com/ResponsePolicy                # [N]
+        levels: [project]
+      - type: networkconnectivity.googleapis.com/Hub           # [N] NCC hub
+        levels: [project]
+      - type: networkconnectivity.googleapis.com/Spoke         # [V] NCC linked-VPC spoke (raw fallback)
+        levels: [project]
+      - type: compute.googleapis.com/Router                    # [V] modules/net-cloudnat (router + NAT)
+        levels: [project]
+      - type: compute.googleapis.com/Address                   # [N] reserved addresses
+        levels: [project]
+      # - type: compute.googleapis.com/FirewallPolicy          # [C] net-firewall-policy
+      #   levels: [folder]
+      # - type: compute.googleapis.com/VpnGateway              # [C] net-vpn-*
+      #   levels: [project]
+      # - type: compute.googleapis.com/VpnTunnel               # [C]
+      #   levels: [project]
+      # - type: compute.googleapis.com/InterconnectAttachment  # [C] vlan attachments
+      #   levels: [project]
