@@ -203,7 +203,10 @@ validator refuses: a scope without a `types:` list or with `types: []`
 `levels` cannot intersect its scope's `levels` (dead declaration —
 entries listing `unknown` are exempt); a duplicate `type:` within one
 list; and the retired top-level `scope:`/`types:` grammar, which is
-rejected with migration instructions. Unlike `types:`, a scope's
+rejected with migration instructions — a manifest from an earlier
+engagement is migrated per
+[references/manifest-migration.md](./references/manifest-migration.md).
+Unlike `types:`, a scope's
 `emission:` map inherits built-in defaults for omitted families — it
 is denominator-neutral; do not reason from one knob to the other.
 
@@ -628,6 +631,10 @@ missing permission when one is needed.
   `scripts/address_map.py`, never read by the gates
 - [references/inferring-manifests-from-state.md](./references/inferring-manifests-from-state.md)
   — inferring import manifests from existing Terraform states
+- [references/manifest-migration.md](./references/manifest-migration.md)
+  — the manifest grammar changed to scopes-only with per-scope
+  `types:` lists; how to migrate a manifest written for the retired
+  grammar, and what stayed identical
 - [references/cai-blind-spots.md](./references/cai-blind-spots.md) —
   where the CAI denominator is incomplete and what to do about it
 - [references/operating-contract.md](./references/operating-contract.md)

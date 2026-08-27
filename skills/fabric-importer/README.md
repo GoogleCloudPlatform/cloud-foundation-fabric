@@ -98,7 +98,7 @@ run with a message rather than warning — before any API call, exit 1:
 | Every scope declares `types:`; `types: []` is rejected | A scope that collects nothing passes every check by not collecting |
 | A type whose `levels` cannot intersect its scope's `levels` is rejected | A dead declaration reads like coverage and produces none (an entry listing `unknown` is exempt) |
 | A type declared twice in one list is rejected | Last-wins would quietly narrow levels |
-| The retired grammar (top-level `scope:` / `types:`) is rejected with migration instructions | Half-accepting it would change what the denominator means |
+| The retired grammar (top-level `scope:` / `types:`) is rejected with migration instructions | Half-accepting it would change what the denominator means — see [references/manifest-migration.md](./references/manifest-migration.md) |
 
 `examples/import-manifest.multi-domain.yaml` is a worked four-scope manifest;
 `examples/import-manifest.org-foundation.yaml` is the single-scope reference.
@@ -569,6 +569,7 @@ skills/fabric-importer/
 │   ├── mapping-cookbook.md      #   Traps, reasoning, capability gaps (prose)
 │   ├── address-map.yaml         #   Addresses, import IDs, asset types (data)
 │   ├── inferring-manifests-from-state.md # State-driven manifest inference workflow
+│   ├── manifest-migration.md    #   Migrating manifests from the retired grammar
 │   ├── cai-blind-spots.md       #   Known CAI gaps and service API mitigations
 │   └── operating-contract.md    #   Safety invariants and trust boundaries
 └── tests/                       # Unit test suite
