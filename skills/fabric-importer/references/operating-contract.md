@@ -10,7 +10,7 @@ from deterministic codegen. That only holds if the boundary is respected:
 
 | Layer | Contents | Who may change it |
 |---|---|---|
-| Frozen scripts | everything in `scripts/`: `inventory.py`, `coverage.py`, `verify_plan.py`, `benign-drift.yaml`, `manifest_init.py`, `manifest_from_state.py`, `integrity.py` | Humans, via code review only. The model may run them, never edit them. |
+| Frozen scripts | everything in `scripts/`, rulesets included (`benign-drift.yaml`) | Humans, via code review only. The model may run them, never edit them. |
 | Human-owned run files | `import-manifest.yaml`, `waivers.yaml` | Humans. The model drafts/proposes; a human commits. |
 | Model workspace | `tf/`, `coverage-map.yaml`, reports, worklists | The model — with immutable-address discipline (§4). |
 

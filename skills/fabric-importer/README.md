@@ -256,44 +256,6 @@ Three of those four outcomes are successes. That matters: the temptation at the
 middle two is to force the module to fit, or to call the leftover diff benign.
 
 ---
-
-### Terminal / ASCII alternative
-
-```text
-  [what Terraform manages]          [what actually exists]
-  (manifest_from_state.py)      (inventory.py survey + manifest_init.py)
-              |                                |
-              +----------------+---------------+
-                               v
-                  Draft import-manifest.yaml
-                               |
-                  +------------v-------------+
-                  |  HUMAN GATE: scope       |  <-- types and levels,
-                  |  approved and committed  |      never a list of resources
-                  +------------v-------------+
-                               v
-            inventory.py collect --> inventory.json (the denominator)
-                               |
-                               v
-            coverage.py --worklist-out --> worklist.yaml
-                               |
-                               v
-            AGENT: module config + import blocks + coverage-map.yaml
-                               |
-                               v
-            GATE 1 coverage.py     (denominator vs the text of the code)
-              | missing? --> HUMAN GATE: sign a waiver, or write the code
-              | reconciled (exit 0)
-                               v
-            terraform plan --> GATE 2 verify_plan.py   (plan vs reality)
-              | residual? --> fix the code, or HUMAN GATE: accept benign drift
-              | converged (exit 0)
-                               v
-            Run report --> widen the manifest, next round
-                       \--> HUMAN GATE: apply sign-off --> terraform apply
-```
-
----
 ## Step-by-Step Operator Guide
 
 ### 1. Declare the Scope (`import-manifest.yaml`)
@@ -330,42 +292,24 @@ uv run scripts/inventory.py collect --manifest import-manifest.yaml --out invent
 CAI is the default source of the denominator, not its boundary. CAI does
 not model every GCP resource, and a type it cannot see would otherwise be
 invisible to both gates at once — so the tool routes around it rather
-than shrinking the denominator. For types known to be absent from the
-catalogue it ships built-in `gcloud` enumerators and uses them
-automatically; declaring the type is all it takes. Where no enumerator
-exists the run stops with the remedy instead of guessing: either the
-type string is wrong (checked against the
+than shrinking the denominator: built-in `gcloud` enumerators for types
+known to be absent from the catalogue (declaring the type is all it
+takes), automatic sibling sweeps for the Compute families whose primary
+CAI surface splits them into separate scoped types (accounted under the
+declared type, real type preserved in `_meta.split_type_sweeps`), and a
+hard stop with the remedy where no enumerator exists — either the type
+string is wrong (checked against the
 [supported types list](https://cloud.google.com/asset-inventory/docs/supported-asset-types)),
-or the type needs a native enumerator declared in the manifest — a
-read-only `gcloud` command run per in-scope container, normalized into
-the same inventory (this also overrides a built-in). The block lives in
-the `types:` list of each scope that needs it; per-scope lists never
-inherit:
+or the manifest needs a native `enumerate:` block: a read-only `gcloud`
+command run per in-scope container, normalized into the same inventory,
+declared in the `types:` list of each scope that needs it (per-scope
+lists never inherit). The full ladder (CAI → gcloud → REST API → signed
+waiver), the enumerator syntax and guard rails, and the split-taxonomy
+mechanics are in
+[references/cai-blind-spots.md](./references/cai-blind-spots.md).
 
-```yaml
-      - type: iam.googleapis.com/DenyPolicy   # not in the CAI catalogue
-        levels: [organization, folder]
-        enumerate:
-          command: [iam, policies, list, --kind=denypolicies]
-          container_arg: '--attachment-point=cloudresourcemanager.googleapis.com/{container}'
-          key: '//iam.googleapis.com/{container}/denypolicies/{item.name}'
-```
-
-CAI is also not one taxonomy but two, and they disagree. For a few
-Compute families the list surface (`asset list`, the primary sweep)
-splits the family by scope into separate asset types, while
-`search-all-resources` unifies them:
-`compute.googleapis.com/GlobalAddress`, `.../GlobalForwardingRule`,
-`.../RegionBackendService` and `.../RegionDisk` exist only on the list
-surface. Declaring the unified type therefore used to collect only part
-of the family — with no error, no failed sweep, and a non-zero yield, so
-every guard stayed quiet. The tool now sweeps the known siblings
-alongside the declared type at no extra API cost and accounts them under
-it, preserving the real type per entry (`cai_list_type`) and in
-`_meta.split_type_sweeps`.
-
-That table is a frozen snapshot of a document Google changes, so check
-it against live CAI at least once per engagement:
+The split-type table is a frozen snapshot of a document Google changes,
+so check it against live CAI at least once per engagement:
 
 ```bash
 uv run scripts/inventory.py collect --manifest import-manifest.yaml \
@@ -374,29 +318,14 @@ uv run scripts/inventory.py collect --manifest import-manifest.yaml \
 
 It costs one extra `search-all-resources` call per scope and fails the
 run if the search surface returns an asset the list sweep did not.
-`_meta.split_parity` is EMPTY when the probe did not run; a probe that
-ran and found nothing is a record whose `only_in_search` is empty. Read
-the record, not the key — the two are not the same claim.
 
-Every run closes with a one-line cost summary on stderr:
-
-```
-7 gcloud call(s) in 12.0s: asset list x5, org-policies list x2
-```
-
-Add `--verbose` (after the subcommand) to see each command as it runs,
-with its outcome, duration and item count:
-
-```
-[api   1] gcloud --quiet asset list --format=json --page-size=1000 --organization=123 --content-type=resource --asset-types=...
-[api   1] ok in 4.2s, 1841 item(s)
-```
-
-The full log is written to `_meta.api_calls` either way, so the cost of a
-scope stays auditable without making the run unreadable: on a large
-estate the per-container sweeps produce a pair of lines per container,
-and those would bury the warnings that decide whether the denominator
-can be trusted.
+The run stays auditable without becoming unreadable: every run closes
+with a one-line cost summary on stderr (`7 gcloud call(s) in 12.0s:
+asset list x5, org-policies list x2`), `--verbose` (after the
+subcommand) prints each command as it runs with outcome, duration and
+item count, the full log is written to `_meta.api_calls`, and every
+non-CAI sweep is recorded verbatim in `_meta.native_sweeps` so a
+reviewer can re-run it.
 
 Provenance is per scope: each `_meta.scopes[]` entry records its own
 `declared_types` yield counts and `zero_yield_types`, and every
@@ -405,16 +334,6 @@ inventory entry names the scope(s) that collected it.
 too, because a type that yields zero in one scope and non-zero in
 another does not show up in the aggregate zero-yield warning (the
 per-scope warning on stderr does).
-
-CAI listings request the largest page each API allows (1000 for
-`asset list`, 500 for `search-all-resources`), which is what decides how
-many HTTP requests each command turns into.
-
-Every such sweep is recorded verbatim in `_meta.native_sweeps` so a
-reviewer can re-run it. See
-[references/cai-blind-spots.md](./references/cai-blind-spots.md) for the
-full ladder (CAI → gcloud → REST API → signed waiver) and the guard
-rails.
 
 ### 3. Compute Delta Worklist
 The completeness tool reconciles the denominator against any existing code and written waivers. This is the same program that runs as gate 1 in step 5 — the same comparison, run for a different reason. Here it tells you what is left to do; there it decides whether anything is. On the first round everything is outstanding, so the worklist is the whole denominator. On later rounds it is only the delta, which is what makes repeated rounds cheap:

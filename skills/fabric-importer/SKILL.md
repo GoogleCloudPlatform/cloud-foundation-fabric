@@ -12,13 +12,11 @@ your output. Trust comes from the gates, not from you.
 
 ## Trust boundary (non-negotiable)
 
-- **Frozen scripts** — everything in `scripts/`: `inventory.py`,
-  `coverage.py`, `verify_plan.py`, `benign-drift.yaml`,
-  `manifest_init.py`, `manifest_from_state.py`, `integrity.py`. You may
-  RUN them; you must NEVER modify them or their rulesets.
-  `manifest_from_state.py` is frozen for the same reason as the gates:
-  it decides the SCOPE the denominator is built from, so editing it
-  shrinks what "complete" means. Both gates print runtime provenance and active input hashes;
+- **Frozen scripts** — everything in `scripts/`, rulesets included
+  (`benign-drift.yaml`). You may RUN them; you must NEVER modify them.
+  The helpers are frozen for the same reason as the gates: they decide
+  the SCOPE the denominator is built from, so editing one shrinks what
+  "complete" means. Both gates print runtime provenance and active input hashes;
   a reviewer compares them against a clean checkout. If a gate is
   genuinely broken, report it with evidence — do not patch around it.
 - **Human-owned files**: the import manifest and the waiver ledger. You
@@ -55,100 +53,14 @@ your output. Trust comes from the gates, not from you.
 
 ## Human-in-the-Loop Gates
 
-Gate on steps that are hard to reverse, costly, or where human judgment is required (e.g. narrowing scope, waiving assets, or accepting provider drift). Keep mechanical, reversible steps (asset collection, scaffolding, linting, plan checks) autonomous. Gates are **blocking**: if running non-interactively and confirmation cannot be obtained, stop — never assume approval.
-
-| Gate | When | What the human decides |
-| :--- | :--- | :--- |
-| **Scope Approval** | Manifest drafting, before any enumeration | Reviews and commits `import-manifest.yaml`: which resource types each scope declares, at which hierarchy levels (org/folder/project), under which included/excluded subtrees. |
-| **Waiver Signing** | Completeness Gate (`coverage.py`) | Reviews deliberate exclusions in `waivers.yaml` and signs them with attribution (`signed_by`) for unmanaged or auto-generated resources (e.g. default log sinks, default compute service accounts). |
-| **Benign Drift Review** | Plan Convergence Gate (`verify_plan.py`) | Evaluates proposed cosmetic provider quirks (e.g. computed labels, default timeouts) and commits reviewed entries to `scripts/benign-drift.yaml`. |
-| **Final Review & Apply** | Handover, before `terraform apply` | Inspects the final zero-drift plan, run report, and input provenance digests before running `terraform apply` on their own schedule. |
-
----
-
-## Step-by-Step Workflow
-
-```mermaid
-flowchart TD
-    subgraph S0["Discovery &amp; scope declaration"]
-        MA["<b>Mode A: State-Driven Inference</b><br/><code>manifest_from_state.py</code><br/><i>(Existing .tfstate files)</i>"]
-        MB["<b>Mode B: Live Cloud Survey</b><br/><code>inventory.py survey</code> &amp;<br/><code>manifest_init.py</code><br/><i>(Untracked brownfield)</i>"]
-        Draft["Draft <code>import-manifest.yaml</code><br/><i>(Scopes, each with its own<br/>types, levels &amp; subtree filters)</i>"]
-        G_Scope{"<b>Gate: Scope Approval</b><br/>Human reviews &amp; commits manifest"}
-        Stop_Scope["Stop / Re-scope"]
-    end
-
-    subgraph S1["Inventory enumeration"]
-        Collect["<b>CAI &amp; API Enumeration</b><br/><code>inventory.py collect</code>"]
-        InvFile[("<b>Frozen Denominator</b><br/><code>inventory.json</code>")]
-    end
-
-    subgraph S2["Canonical scaffolding &amp; mapping"]
-        Worklist["<b>Compute Delta Worklist</b><br/><code>coverage.py --worklist-out</code>"]
-        Emit["<b>Agent Emits Terraform &amp; Mappings</b><br/>• Canonical Fabric Module calls<br/>• Native <code>import {}</code> blocks<br/>• <code>tf/coverage-map.yaml</code>"]
-    end
-
-    subgraph S3["GATE 1 — completeness"]
-        Gate1{"<b>Gate 1: Completeness</b><br/><code>coverage.py --require-signed-waivers</code><br/><i>Every asset mapped or waived?</i>"}
-        GWaiver{"<b>Gate: Waiver Signing</b><br/>Human signs deliberate exclusion<br/>in <code>waivers.yaml</code>"}
-    end
-
-    subgraph S4["GATE 2 — plan convergence"]
-        PlanExec["<b>Plan &amp; Drift Evaluation</b><br/><code>terraform plan</code> &amp;<br/><code>verify_plan.py</code>"]
-        Gate2{"<b>Gate 2: Plan Convergence</b><br/><i>Zero unexpected changes?<br/>(clean imports, no-ops,<br/>reviewed-benign)</i>"}
-        GDrift{"<b>Gate: Benign Drift Review</b><br/>Human accepts verified provider quirk<br/>in <code>benign-drift.yaml</code>"}
-    end
-
-    subgraph S5["Output &amp; handover"]
-        Report["<b>Generate Run Report</b><br/>Audit trail, capability gaps &amp;<br/>gate input SHA256 digests"]
-        GApply{"<b>Gate: Apply Sign-off</b><br/>Human operator reviews plan"}
-        Workspace(["<b>Zero-Drift Production Fabric Workspace</b><br/><code>tf/</code> ready for <code>terraform apply</code>"])
-    end
-
-    %% Flow connections
-    MA --> Draft
-    MB --> Draft
-    Draft --> G_Scope
-    G_Scope -->|Human Rejects| Stop_Scope
-    G_Scope -->|Human Approves &amp; Commits| Collect
-
-    Collect --> InvFile
-    InvFile --> Worklist
-    Worklist --> Emit
-    Emit --> Gate1
-
-    %% Gate 1 loops
-    Gate1 -->|Missing / Unmapped Assets| GWaiver
-    GWaiver -->|"Sign Waiver (signed_by)"| Gate1
-    GWaiver -->|In-Scope Resource| Emit
-    Gate1 -->|"100% Covered (Exit 0)"| PlanExec
-
-    %% Gate 2 loops
-    PlanExec --> Gate2
-    Gate2 -->|Residual Diff / Attribute Mismatch| GDrift
-    GDrift -->|Fix HCL / Module Inputs / ForceNew| Emit
-    GDrift -->|"Accept Quirk (Review &amp; Commit)"| Gate2
-    Gate2 -->|"Zero Drift (Exit 0)"| Report
-
-    %% Final Step
-    Report --> GApply
-    GApply -->|Reviewed &amp; Approved| Workspace
-
-    %% Styling & Classes
-    classDef gate fill:#fff3e0,stroke:#e65100,stroke-width:2px,color:#e65100;
-    classDef step fill:#e8f0fe,stroke:#1a73e8,stroke-width:2px,color:#1a73e8;
-    classDef file fill:#f1f8e9,stroke:#33691e,stroke-width:2px,color:#33691e;
-    classDef terminal fill:#fce8e6,stroke:#c5221f,stroke-width:2px,color:#c5221f;
-    classDef success fill:#e6f4ea,stroke:#137333,stroke-width:3px,color:#137333;
-
-    class G_Scope,GWaiver,Gate1,Gate2,GDrift,GApply gate;
-    class MA,MB,Draft,Collect,Worklist,Emit,PlanExec,Report step;
-    class InvFile file;
-    class Stop_Scope terminal;
-    class Workspace success;
-```
-
----
+Four decisions are human-owned and BLOCKING: scope approval (the
+manifest), waiver signing (`signed_by` in `waivers.yaml`), benign-drift
+acceptance (`scripts/benign-drift.yaml`), and the final apply sign-off.
+Each is called out at its step below; the README's gate table is the
+operator-facing contract. Keep mechanical, reversible steps (asset
+collection, scaffolding, linting, plan checks) autonomous. If running
+non-interactively and confirmation cannot be obtained, stop — never
+assume approval.
 
 ## Operational Workflow
 
@@ -237,86 +149,48 @@ if you explicitly need to capture them in the denominator.
 **CAI is the default source of the denominator, never the boundary of
 it.** Cloud Asset Inventory does not model every GCP resource. A type it
 does not support must be enumerated by other means and merged into the
-same denominator — `gcloud <service> list|describe` first, the service
-REST API only where gcloud has no surface at all. It is never dropped:
-an unenumerated asset is invisible to BOTH gates at once, which is the
-exact failure the gates exist to prevent.
+same denominator — never dropped: an unenumerated asset is invisible to
+BOTH gates at once, which is the exact failure the gates exist to
+prevent. `inventory.py` handles the known cases itself: built-in gcloud
+enumerators for types absent from the CAI catalogue
+(`NATIVE_ENUMERATORS`), automatic sibling sweeps for the Compute
+families whose list surface splits them into separate scoped types
+(stamped in `_meta.split_type_sweeps`, per entry as `cai_list_type`),
+and a hard stop — separated from permission failures — where no
+enumerator exists. When a sweep stops, or a declared type yields less
+than you expected, read
+[references/cai-blind-spots.md](./references/cai-blind-spots.md) BEFORE
+working around it: it holds the full remedy ladder (wrong type string →
+split CAI taxonomy → native `enumerate:` block, declared in the `types:`
+list of each scope that needs it, since per-scope lists never inherit →
+REST API), the guard rails for enumerator blocks, and the built-in
+table. The manifest is human-owned: you draft an enumerator block, a
+human commits it; one that worked belongs in your report as a proposed
+addition to the built-in table.
 
-`inventory.py` does this for you where it can: it ships built-in gcloud
-enumerators for types known to be absent from the CAI catalogue
-(`NATIVE_ENUMERATORS`), so declaring the type in a scope's `types:`
-list is enough — the tool skips CAI, sweeps with gcloud in that scope,
-and says so. Where no
-enumerator exists it refuses to proceed rather than guess, and it
-separates that case from a permission failure. Three remedies, in order:
+The split-type table is a frozen snapshot of a doc that changes, so
+check it against live CAI at least once per engagement:
 
-- **The type string is wrong.** The common case. Check it against the
-  [supported types list](https://cloud.google.com/asset-inventory/docs/supported-asset-types)
-  — CAI calls the Logs Router settings singleton
-  `logging.googleapis.com/Settings`, not `.../OrganizationSettings`.
-- **The type string is right, but only for the other CAI surface.** CAI
-  has TWO asset-type taxonomies. For a few Compute families the
-  list surface (`asset list`, the primary sweep) splits the family by
-  scope into separate types — `compute.googleapis.com/GlobalAddress`,
-  `.../GlobalForwardingRule`, `.../RegionBackendService`,
-  `.../RegionDisk` — while `search-all-resources` unifies them. This
-  one does not raise: the declared type is supported, the sweep
-  succeeds, the yield is non-zero, and the split-off assets are simply
-  never asked for. `inventory.py` sweeps the known siblings
-  automatically and accounts them under the declared type (stamped in
-  `_meta.split_type_sweeps`, and per entry as `cai_list_type`). The
-  table is a frozen snapshot of a doc that changes, so check it against
-  live CAI at least once per engagement:
+```bash
+uv run scripts/inventory.py collect --manifest import-manifest.yaml \
+  --out inventory.json --verify-search-parity
+```
 
-  ```bash
-  uv run scripts/inventory.py collect --manifest import-manifest.yaml \
-    --out inventory.json --verify-search-parity
-  ```
-
-  One extra call per scope; fatal if the search surface returns an asset
-  the list sweep did not. `_meta.split_parity` EMPTY means the probe did
-  not run; a probe that ran and found nothing is a record whose
-  `only_in_search` is empty. Read the record, not the key — and say
-  which in the report. See
-  [references/cai-blind-spots.md](./references/cai-blind-spots.md).
-- **CAI genuinely does not model the type, and no built-in covers it.**
-  Give it a native enumerator — a read-only gcloud command run per
-  in-scope container, normalized into inventory entries. The
-  `enumerate:` block lives in the `types:` list of each scope that
-  needs it (per-scope lists never inherit), and also overrides a
-  built-in when you know better:
-
-  ```yaml
-      - type: iam.googleapis.com/DenyPolicy   # not in the CAI catalogue
-        levels: [organization, folder]
-        enumerate:
-          command: [iam, policies, list, --kind=denypolicies]
-          container_arg: '--attachment-point=cloudresourcemanager.googleapis.com/{container}'
-          key: '//iam.googleapis.com/{container}/denypolicies/{item.name}'
-  ```
-
-  The manifest is human-owned: draft the block, a human commits it.
-  Guard rails (read-only verbs only, no `--filter`/`--limit`, unique key
-  templates), the built-in table, and the full ladder — including what
-  to do when gcloud has no surface either, or when the command is scoped
-  to a bucket rather than a container — are in
-  [references/cai-blind-spots.md](./references/cai-blind-spots.md). An
-  enumerator that worked belongs in your report as a proposed addition
-  to the built-in table.
+One extra call per scope; fatal if the search surface returns an asset
+the list sweep did not. `_meta.split_parity` EMPTY means the probe did
+not run; a probe that ran and found nothing is a record whose
+`only_in_search` is empty. Read the record, not the key — and say which
+in the report.
 
 Every entry that did not come from CAI is stamped into
-`inventory.json`'s `_meta.native_sweeps` with the verbatim command, and
-belongs in the step-5 report. Entries that came from CAI under a
-different asset type than the one declared are stamped into
-`_meta.split_type_sweeps` and belong there too.
-
-Collection closes with a one-line cost summary (`N gcloud call(s) in
-Xs: …`) and records every command it ran in `_meta.api_calls`. Add
-`--verbose` after the subcommand to watch each call as it happens —
-useful when a sweep is slow and you want to know which one. Quote the
-summary line in the report: on a large estate the per-container
-org-policy sweep dominates the run, and this is what makes that visible
-instead of guessed at.
+`inventory.json`'s `_meta.native_sweeps` with the verbatim command;
+those entries, and `_meta.split_type_sweeps`, belong in the step-5
+report. Collection closes with a one-line cost summary (`N gcloud
+call(s) in Xs: …`) and records every command it ran in
+`_meta.api_calls`; add `--verbose` after the subcommand to watch each
+call as it happens, and quote the summary line in the report — on a
+large estate the per-container org-policy sweep dominates the run, and
+this is what makes that visible instead of guessed at.
 
 ### Step 2 — get your worklist
 
@@ -364,20 +238,14 @@ declarative as the day-2 model; the cookbook's container-IAM rules
 cover both and the tradeoff.
 
 **Machine-managed IAM is excluded, never imported — and never part of
-the denominator.** Privileged Access Manager grant bindings — temporary
-time-bound conditional bindings that PAM injects on grant activation
-and revokes itself — are stripped by `inventory.py` before the
-denominator is formed: whenever IAM is collected, active grants are
-enumerated through CAI (`privilegedaccessmanager.googleapis.com/Grant`,
-one call per scope) and matching bindings are removed
-deterministically by (target, role, requester) from the grant itself.
-There is nothing to map and nothing to waive — a container whose
-policy is only grant bindings mints no `#iam` entry at all. Stripped
-bindings are stamped in `_meta.pam_grant_exclusions` and belong in the
-step-5 report, like `deleted:` principal tombstones (which remain a
-mapping-time exclusion). The cookbook's container-IAM rules are
-normative. PAM *entitlements* are ordinary importable configuration —
-only *grants* are excluded.
+the denominator.** `inventory.py` strips Privileged Access Manager
+grant bindings deterministically before the denominator is formed —
+nothing to map, nothing to waive — and stamps them in
+`_meta.pam_grant_exclusions`; report them in step 5, like `deleted:`
+principal tombstones (which remain a mapping-time exclusion). PAM
+*entitlements* are ordinary importable configuration; only *grants*
+are excluded. The cookbook's container-IAM rules are normative,
+including the strip mechanics.
 
 When the cookbook has no section for a type — which is the normal case,
 not an error — follow the method below. The cookbook is the precipitate
@@ -425,19 +293,15 @@ treat an absent cookbook section as licence to reason loosely.
 The loop:
 
 1. **Census the type.** Confirm the CAI asset-type string against live
-   `gcloud asset list` output before trusting it. Type strings taken
-   from module knowledge have been wrong before. Record what CAI
-   actually returns, including which enumeration path had to be used.
-   A non-zero yield is NOT confirmation that the type is complete: for
-   split families the list surface answers happily with only part of
-   the family (see step 1's second remedy). Where the type has any
-   global/regional/zonal distinction, census it on BOTH surfaces —
-   `asset list --asset-types=T` against `asset search-all-resources
-   --asset-types=T` — and reconcile the counts before trusting either.
-   If CAI does not model the type at all, that is not a dead end and
-   not a reason to narrow the manifest: enumerate it with `gcloud` (or
-   the REST API) and merge it into the same denominator — see step 1 and
-   `references/cai-blind-spots.md`.
+   `gcloud asset list` output — type strings from module knowledge have
+   been wrong before, and a non-zero yield is NOT proof the type is
+   complete (split families answer happily with part of the family).
+   Record which enumeration path had to be used. Where the type has any
+   global/regional/zonal distinction, census BOTH surfaces and
+   reconcile the counts before trusting either; where CAI does not
+   model the type at all, enumerate it another way and merge it into
+   the same denominator (step 1, `references/cai-blind-spots.md`) —
+   never narrow the manifest around it.
 2. **Find the module and read its source.** Canonical module map first,
    then `modules/` in this repository. Read the resource blocks for
    addresses and `for_each` key formats, and the variables file for the
@@ -461,18 +325,14 @@ The loop:
      `templatestring()`.
    Only after those does the question "is this benign?" become
    answerable.
-6. **Land on one of three outcomes — all legitimate:**
-   - *Clean convergence.* The module expresses the live resource.
-   - *Module capability gap.* The module exists but cannot express an
-     attribute that changes how the resource behaves. Emit a raw
-     resource mirroring the live values, name it in the report's module
-     capability gaps section with the module evaluated and the attribute
-     missing, and treat it as upstream-Fabric-issue material. This is a
-     successful outcome, not a failure.
-   - *No module covers the type.* Same as above, plus note whether a
-     module is worth proposing upstream.
-   A residual you cannot explain is none of these. Report it and stop —
-   never rationalise it into green.
+6. **Land on one of three outcomes — all legitimate:** clean
+   convergence; a *module capability gap* (the module cannot express an
+   attribute that changes behaviour — emit a raw resource mirroring
+   live values, name the module and the missing attribute in the
+   report's capability-gaps section; a successful outcome and
+   upstream-Fabric-issue material); or *no module covers the type*
+   (same, plus whether a module is worth proposing upstream). A
+   residual you cannot explain is none of these: report it and stop.
 7. **Write the cookbook entry as part of your report.** A type you
    mapped and verified is knowledge the next engagement should not have
    to rediscover: the CAI type string, the module addresses and
@@ -603,20 +463,11 @@ activating and the run cannot pick up a stale system PyYAML. Where `uv`
 is genuinely unavailable, `python3` >= 3.10 with PyYAML installed works
 and the arguments are identical — say which you used in the report.
 
-Discovery IAM — the read-only grant on the scope root (same table as the
-README):
-
-- `roles/viewer`
-- `roles/resourcemanager.organizationViewer`
-- `roles/resourcemanager.folderViewer`
-- `roles/iam.securityReviewer`
-- `roles/orgpolicy.policyViewer`
-- `roles/cloudasset.viewer`
-- `roles/accesscontextmanager.policyReader` (when VPC-SC is in scope)
-
-This covers org foundation, folders, projects, networking, and storage;
-families verified later (KMS, CAS, VPC-SC, BigQuery, Pub/Sub, Tags, WIF)
-may need additional per-service viewer roles — the plan gate names the
+Discovery IAM — grant the read-only role set from the README's "Minimal
+Read-Only IAM Permissions" table on the scope root. It covers org
+foundation, folders, projects, networking, and storage; families
+verified later (KMS, CAS, VPC-SC, BigQuery, Pub/Sub, Tags, WIF) may
+need additional per-service viewer roles — the plan gate names the
 missing permission when one is needed.
 
 ## References
