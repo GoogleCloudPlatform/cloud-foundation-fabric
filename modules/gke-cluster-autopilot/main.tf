@@ -359,12 +359,12 @@ resource "google_container_cluster" "cluster" {
   dynamic "secret_manager_config" {
     for_each = var.enable_features.secret_manager_config != null ? [""] : []
     content {
-      enabled = var.enable_features.secret_manager_config.enabled
+      enabled = var.enable_features.secret_manager_config
       dynamic "rotation_config" {
-        for_each = try(var.enable_features.secret_manager_config.rotation_config, null) != null ? [""] : []
+        for_each = var.enable_features.secret_manager_rotation_config != null ? [""] : []
         content {
-          enabled           = var.enable_features.secret_manager_config.rotation_config.enabled
-          rotation_interval = var.enable_features.secret_manager_config.rotation_config.rotation_interval
+          enabled           = var.enable_features.secret_manager_rotation_config.enabled
+          rotation_interval = var.enable_features.secret_manager_rotation_config.rotation_interval
         }
       }
     }

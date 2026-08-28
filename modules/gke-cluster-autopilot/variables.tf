@@ -130,12 +130,10 @@ variable "enable_features" {
         rotation_interval = optional(string)
       }))
     }))
-    secret_manager_config = optional(object({
-      enabled = bool
-      rotation_config = optional(object({
-        enabled           = optional(bool)
-        rotation_interval = optional(string)
-      }))
+    secret_manager_config = optional(bool)
+    secret_manager_rotation_config = optional(object({
+      enabled           = optional(bool)
+      rotation_interval = optional(string)
     }))
     security_posture_config = optional(object({
       mode               = string
