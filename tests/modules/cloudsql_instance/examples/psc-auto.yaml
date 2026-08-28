@@ -76,14 +76,40 @@ values:
     switch_transaction_logs_to_cloud_storage_enabled: null
     timeouts: null
   module.db.google_sql_database_instance.replicas["replica1"]:
+    backupdr_backup: null
     clone: []
     database_version: POSTGRES_13
+    deletion_policy: DELETE
+    deletion_protection: false
+    final_backup_description: null
+    include_replicas_for_major_version_upgrade: null
     master_instance_name: myprefix-db
     name: myprefix-replica1
+    point_in_time_restore_context: []
     project: project-id
     region: us-central1
+    restore_backup_context: []
+    root_password: null
+    root_password_wo: null
+    root_password_wo_version: null
     settings:
-    - edition: ENTERPRISE
+    - activation_policy: ALWAYS
+      active_directory_config: []
+      advanced_machine_features: []
+      auto_upgrade_enabled: null
+      availability_type: ZONAL
+      collation: null
+      database_flags: []
+      deletion_protection_enabled: false
+      deny_maintenance_period: []
+      disk_autoresize: true
+      disk_autoresize_limit: 0
+      disk_type: PD_SSD
+      edition: ENTERPRISE
+      enable_dataplex_integration: null
+      enable_google_ml_integration: null
+      entraid_config: []
+      final_backup_config: []
       ip_configuration:
       - allocated_ip_range: null
         authorized_networks: []
@@ -99,6 +125,17 @@ values:
           - consumer_network: projects/xxx/global/networks/aaa
             consumer_service_project_id: project-id
           psc_enabled: true
+        server_ca_pool: null
+        server_certificate_rotation_mode: null
+      maintenance_window: []
+      password_validation_policy: []
+      pricing_plan: PER_USE
+      retain_backups_on_delete: null
+      sql_server_audit_config: []
+      tier: db-g1-small
+      time_zone: null
+    switch_transaction_logs_to_cloud_storage_enabled: null
+    timeouts: null
 
 counts:
   google_sql_database_instance: 2
