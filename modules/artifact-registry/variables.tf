@@ -123,6 +123,14 @@ variable "format" {
       standard = optional(bool)
     }))
     go = optional(object({
+      remote = optional(object({
+        common_repository           = optional(string)
+        disable_upstream_validation = optional(bool)
+        upstream_credentials = optional(object({
+          username                = string
+          password_secret_version = string
+        }))
+      }))
       standard = optional(bool)
     }))
     googet = optional(object({
