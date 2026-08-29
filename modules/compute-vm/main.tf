@@ -101,6 +101,18 @@ resource "google_compute_instance_iam_binding" "default" {
   depends_on = [google_compute_instance.default]
 }
 
+resource "google_iap_tunnel_instance_iam_binding" "default" {
+  project  = local.project_id
+  for_each = var.iap_tunnel_iam
+  zone     = local.zone
+  instance = var.name
+  role     = lookup(local.ctx.custom_roles, each.key, each.key)
+  members = [
+    for m in each.value : lookup(local.ctx.iam_principals, m, m)
+  ]
+  depends_on = [google_compute_instance.default]
+}
+
 resource "google_compute_instance_group" "unmanaged" {
   count   = try(var.group.membership, null) == null && var.group != null && !local.is_template ? 1 : 0
   project = local.project_id
