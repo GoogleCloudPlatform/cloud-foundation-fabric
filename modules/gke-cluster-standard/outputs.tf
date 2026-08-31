@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-output "backup_plan_id" {
+output "backup_plan_ids" {
   description = "GKE backup plan ids."
   value = {
     for k, v in google_gke_backup_backup_plan.backup_plan : k => v.id
