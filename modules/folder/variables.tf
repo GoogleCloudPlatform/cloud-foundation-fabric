@@ -78,7 +78,7 @@ variable "assured_workload_config" {
   })
   default = null
   validation {
-    condition = try(contains([
+    condition = var.assured_workload_config == null ? true : contains([
       "ASSURED_WORKLOADS_FOR_PARTNERS",
       "AU_REGIONS_AND_US_SUPPORT",
       "AUSTRALIA_DATA_BOUNDARY_AND_SUPPORT",
@@ -124,19 +124,20 @@ variable "assured_workload_config" {
       "US_DATA_BOUNDARY_FOR_HEALTHCARE_AND_LIFE_SCIENCES",
       "US_DATA_BOUNDARY_FOR_HEALTHCARE_AND_LIFE_SCIENCES_WITH_SUPPORT",
       "US_REGIONAL_ACCESS"
-    ], var.assured_workload_config.compliance_regime), true)
+    ], coalesce(var.assured_workload_config.compliance_regime, "-"))
     error_message = "Field assured_workload_config.compliance_regime must be one of the values listed in https://cloud.google.com/assured-workloads/docs/reference/rest/Shared.Types/ComplianceRegime"
   }
   validation {
-    condition = try(var.assured_workload_config.partner == null || contains([
-      "LOCAL_CONTROLS_BY_S3NS",
-      "PARTNER_UNSPECIFIED",
-      "SOVEREIGN_CONTROLS_BY_CNTXT_NO_EKM",
-      "SOVEREIGN_CONTROLS_BY_CNTXT",
-      "SOVEREIGN_CONTROLS_BY_PSN",
-      "SOVEREIGN_CONTROLS_BY_SIA_MINSAIT",
-      "SOVEREIGN_CONTROLS_BY_T_SYSTEMS",
-    ], var.assured_workload_config.partner), true)
+    condition = var.assured_workload_config == null ? true : (
+      var.assured_workload_config.partner == null || contains([
+        "LOCAL_CONTROLS_BY_S3NS",
+        "PARTNER_UNSPECIFIED",
+        "SOVEREIGN_CONTROLS_BY_CNTXT_NO_EKM",
+        "SOVEREIGN_CONTROLS_BY_CNTXT",
+        "SOVEREIGN_CONTROLS_BY_PSN",
+        "SOVEREIGN_CONTROLS_BY_SIA_MINSAIT",
+        "SOVEREIGN_CONTROLS_BY_T_SYSTEMS",
+    ], var.assured_workload_config.partner))
     error_message = "Field assured_workload_config.partner must be null or one of the values listed in https://cloud.google.com/assured-workloads/docs/reference/rest/Shared.Types/Partner"
   }
 }
