@@ -1,0 +1,69 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  google_compute_router.cr:
+    name: spoke-ra-cr
+    network: projects/test-project/global/networks/test-vpc
+    project: test-project
+    region: europe-west1
+  google_compute_router_interface.intf_0:
+    name: spoke-ra-cr-intf0
+    private_ip_address: 10.0.16.14
+    project: test-project
+    region: europe-west1
+    router: spoke-ra-cr
+    subnetwork: projects/test-project/regions/europe-west1/subnetworks/test-subnetwork
+  google_compute_router_interface.intf_1:
+    name: spoke-ra-cr-intf1
+    private_ip_address: 10.0.16.15
+    project: test-project
+    redundant_interface: spoke-ra-cr-intf0
+    region: europe-west1
+    router: spoke-ra-cr
+    subnetwork: projects/test-project/regions/europe-west1/subnetworks/test-subnetwork
+  google_compute_router_peer.peer_0["0"]:
+    interface: spoke-ra-cr-intf0
+    name: spoke-ra-cr-nva-vm-peer1
+    peer_asn: 65001
+    peer_ip_address: 10.0.16.10
+    project: test-project
+    region: europe-west1
+    router: spoke-ra-cr
+    router_appliance_instance: https://www.googleapis.com/compute/v1/projects/test-project/zones/europe-west1-b/instances/nva-vm
+  google_compute_router_peer.peer_1["0"]:
+    interface: spoke-ra-cr-intf1
+    name: spoke-ra-cr-nva-vm-peer2
+    peer_asn: 65001
+    peer_ip_address: 10.0.16.10
+    project: test-project
+    region: europe-west1
+    router: spoke-ra-cr
+    router_appliance_instance: https://www.googleapis.com/compute/v1/projects/test-project/zones/europe-west1-b/instances/nva-vm
+  google_network_connectivity_hub.hub[0]:
+    name: ncc-hub
+    project: test-project
+  google_network_connectivity_spoke.spoke_ra:
+    location: europe-west1
+    name: spoke-ra
+    project: test-project
+
+counts:
+  google_compute_router: 1
+  google_compute_router_interface: 2
+  google_compute_router_peer: 2
+  google_network_connectivity_hub: 1
+  google_network_connectivity_spoke: 1
+  modules: 0
+  resources: 7

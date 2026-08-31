@@ -1,0 +1,38 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  google_compute_external_vpn_gateway.default[0]:
+    name: peer-vpn-gw-vpngw-a
+    project: test-project
+  google_compute_ha_vpn_gateway.default:
+    name: vpn-gw-vpngw-a
+    network: test-net
+    project: test-project
+    region: europe-west8
+  google_compute_router.default[0]:
+    name: router-vpngw-a
+    network: test-net
+    project: test-project
+    region: europe-west8
+  random_id.default:
+    byte_length: 8
+
+counts:
+  google_compute_external_vpn_gateway: 1
+  google_compute_ha_vpn_gateway: 1
+  google_compute_router: 1
+  modules: 0
+  random_id: 1
+  resources: 4
