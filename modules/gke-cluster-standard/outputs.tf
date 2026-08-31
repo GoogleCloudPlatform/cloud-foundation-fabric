@@ -14,6 +14,13 @@
  * limitations under the License.
  */
 
+output "backup_plan_id" {
+  description = "GKE backup plan ids."
+  value = {
+    for k, v in google_gke_backup_backup_plan.backup_plan : k => v.id
+  }
+}
+
 output "ca_certificate" {
   description = "Public certificate of the cluster (base64-encoded)."
   value = (
