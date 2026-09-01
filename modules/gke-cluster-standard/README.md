@@ -544,7 +544,7 @@ module "cluster-1" {
 
 | name | description | sensitive |
 |---|---|:---:|
-| [backup_plan_id](outputs.tf#L17) | GKE backup plan ids. |  |
+| [backup_plan_ids](outputs.tf#L17) | GKE backup plan ids. |  |
 | [ca_certificate](outputs.tf#L24) | Public certificate of the cluster (base64-encoded). | ✓ |
 | [cluster](outputs.tf#L32) | Cluster resource. | ✓ |
 | [dns_endpoint](outputs.tf#L38) | Control plane DNS endpoint. |  |
