@@ -89,3 +89,15 @@ resource "mongodbatlas_privatelink_endpoint_service" "default" {
   private_endpoint_ip_address = module.addresses.psc[local.psc_endpoint_key].address.address
   gcp_project_id              = var.project_id
 }
+
+resource "mongodbatlas_database_user" "database_user" {
+  username           = var.database_user.database_user_name
+  password           = var.database_user.database_user_password
+  project_id         = mongodbatlas_project.default.id
+  auth_database_name = "admin"
+
+  roles {
+    role_name     = "readAnyDatabase"
+    database_name = "admin"
+  }
+}
