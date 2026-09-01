@@ -34,7 +34,7 @@ locals {
     ]
   ])
   pubsub_topics = {
-    for k, v in module.pubsub: k => v.id
+    for k, v in module.pubsub : k => v.id
   }
 }
 
