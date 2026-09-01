@@ -33,6 +33,9 @@ locals {
       }
     ]
   ])
+  pubsub_topics = {
+    for k, v in module.pubsub: k => v.id
+  }
 }
 
 module "pubsub" {
