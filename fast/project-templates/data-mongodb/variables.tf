@@ -33,9 +33,50 @@ variable "atlas_config" {
 variable "database_user" {
   description = "MongoDB Atlas database user configuration."
   type = object({
-    database_user_name     = string
-    database_user_password = string
+    auth_database_name  = optional(string, "admin")
+    aws_iam_type        = optional(string)
+    description         = optional(string)
+    labels              = optional(map(string), {})
+    ldap_auth_type      = optional(string)
+    oidc_auth_type      = optional(string)
+    password            = optional(string)
+    password_wo         = optional(string)
+    password_wo_version = optional(number)
+    roles = optional(
+      map(object({
+        collection_name = optional(string)
+        database_name   = string
+        role_name       = string
+      })),
+      {
+        read_any_database = {
+          database_name = "admin"
+          role_name     = "readAnyDatabase"
+        }
+      }
+    )
+    scopes = optional(map(object({
+      type = string
+    })), {})
+    username  = string
+    x509_type = optional(string)
   })
+
+  validation {
+    condition = !(
+      var.database_user.password != null &&
+      var.database_user.password_wo != null
+    )
+    error_message = "Only one of password or password_wo can be set."
+  }
+
+  validation {
+    condition = (
+      var.database_user.password_wo == null ||
+      var.database_user.password_wo_version != null
+    )
+    error_message = "password_wo_version must be set when password_wo is set."
+  }
 }
 
 variable "name" {

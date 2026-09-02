@@ -37,8 +37,23 @@ atlas_config = {
   }
 }
 database_user = {
-  database_user_name     = "my-db-user"
-  database_user_password = "s3cr3t-p4ssw0rd"
+  username            = "my-db-user"
+  password_wo         = "s3cr3t-p4ssw0rd"
+  password_wo_version = 1
+  labels = {
+    environment = "test"
+  }
+  roles = {
+    app = {
+      database_name = "app"
+      role_name     = "readWrite"
+    }
+  }
+  scopes = {
+    test-0 = {
+      type = "CLUSTER"
+    }
+  }
 }
 project_id = "my-prod-shared-mongodb-0"
 vpc_config = {
@@ -55,9 +70,9 @@ vpc_config = {
 |---|---|:---:|:---:|:---:|
 | [atlas_config](variables.tf#L17) | MongoDB Atlas configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
 | [database_user](variables.tf#L33) | MongoDB Atlas database user configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
-| [project_id](variables.tf#L48) | Project id where the registries will be created. | <code>string</code> | ✓ |  |
-| [vpc_config](variables.tf#L53) | VPC configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
-| [name](variables.tf#L41) | Prefix used for all resource names. | <code>string</code> |  | <code>&#34;mongodb&#34;</code> |
+| [project_id](variables.tf#L89) | Project id where the registries will be created. | <code>string</code> | ✓ |  |
+| [vpc_config](variables.tf#L94) | VPC configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| [name](variables.tf#L82) | Prefix used for all resource names. | <code>string</code> |  | <code>&#34;mongodb&#34;</code> |
 
 ## Outputs
 
@@ -85,8 +100,23 @@ module "test" {
     }
   }
   database_user = {
-    database_user_name     = "my-db-user"
-    database_user_password = "s3cr3t-p4ssw0rd"
+    username            = "my-db-user"
+    password_wo         = "s3cr3t-p4ssw0rd"
+    password_wo_version = 1
+    labels = {
+      environment = "test"
+    }
+    roles = {
+      app = {
+        database_name = "app"
+        role_name     = "readWrite"
+      }
+    }
+    scopes = {
+      test-0 = {
+        type = "CLUSTER"
+      }
+    }
   }
   project_id = "my-prod-shared-mongodb-0"
   vpc_config = {
