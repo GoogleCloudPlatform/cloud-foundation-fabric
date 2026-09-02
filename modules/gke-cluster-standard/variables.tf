@@ -261,7 +261,6 @@ variable "enable_features" {
     }))
     vertical_pod_autoscaling = optional(bool, false)
     workload_identity        = optional(bool, true)
-    enterprise_cluster       = optional(bool)
   })
   default = {}
   validation {
