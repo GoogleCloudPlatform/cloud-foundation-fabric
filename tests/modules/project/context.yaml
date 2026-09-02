@@ -76,7 +76,7 @@ values:
     value_extractor: null
   google_logging_project_sink.sink["test-pubsub"]:
     custom_writer_identity: null
-    description: test-pubsub (Terraform-managed).
+    description: ''
     destination: pubsub.googleapis.com/projects/test-prod-audit-logs-0/topics/audit-logs
     disabled: false
     exclusions: []

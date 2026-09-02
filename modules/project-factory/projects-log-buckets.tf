@@ -34,6 +34,9 @@ locals {
       }
     ]
   ])
+  log_buckets = {
+    for k, v in module.log-buckets : k => v.id
+  }
 }
 
 module "log-buckets" {
