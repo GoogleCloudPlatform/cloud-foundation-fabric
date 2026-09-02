@@ -649,9 +649,13 @@ resource "google_gke_backup_backup_plan" "backup_plan" {
     backup_retain_days      = try(each.value.retention_policy_days)
     locked                  = try(each.value.retention_policy_lock)
   }
-  backup_schedule {
-    cron_schedule = each.value.schedule
+  dynamic "backup_schedule" {
+    for_each = each.value.schedule != null ? [""] : []
+    content {
+      cron_schedule = each.value.schedule
+    }
   }
+
   backup_config {
     include_volume_data = each.value.include_volume_data
     include_secrets     = each.value.include_secrets
