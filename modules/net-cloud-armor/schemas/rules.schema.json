@@ -1,0 +1,153 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Cloud Armor Rules",
+  "type": "object",
+  "additionalProperties": false,
+  "patternProperties": {
+    "^[a-z0-9_-]+$": {
+      "$ref": "#/$defs/rule"
+    }
+  },
+  "$defs": {
+    "rule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "priority",
+        "action"
+      ],
+      "properties": {
+        "priority": {
+          "type": "number"
+        },
+        "action": {
+          "type": "string",
+          "enum": [
+            "allow",
+            "deny(403)",
+            "deny(404)",
+            "deny(502)",
+            "throttle",
+            "rate_based_ban",
+            "redirect"
+          ]
+        },
+        "description": {
+          "type": "string"
+        },
+        "preview": {
+          "type": "boolean"
+        },
+        "preconfigured_waf": {
+          "type": "string"
+        },
+        "threat_intel_feed": {
+          "type": "string"
+        },
+        "expression": {
+          "type": "string"
+        },
+        "src_ip_ranges": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "header_action": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/header_action"
+          }
+        },
+        "rate_limit_options": {
+          "$ref": "#/$defs/rate_limit_options"
+        },
+        "redirect_options": {
+          "$ref": "#/$defs/redirect_options"
+        }
+      }
+    },
+    "header_action": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "header_name",
+        "header_value"
+      ],
+      "properties": {
+        "header_name": {
+          "type": "string"
+        },
+        "header_value": {
+          "type": "string"
+        }
+      }
+    },
+    "rate_limit_options": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "exceed_action",
+        "rate_limit_threshold"
+      ],
+      "properties": {
+        "conform_action": {
+          "type": "string"
+        },
+        "exceed_action": {
+          "type": "string"
+        },
+        "enforce_on_key": {
+          "type": "string"
+        },
+        "enforce_on_key_name": {
+          "type": "string"
+        },
+        "ban_duration_sec": {
+          "type": "number"
+        },
+        "rate_limit_threshold": {
+          "$ref": "#/$defs/threshold"
+        },
+        "ban_threshold": {
+          "$ref": "#/$defs/threshold"
+        }
+      }
+    },
+    "threshold": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "count",
+        "interval_sec"
+      ],
+      "properties": {
+        "count": {
+          "type": "number"
+        },
+        "interval_sec": {
+          "type": "number"
+        }
+      }
+    },
+    "redirect_options": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "GOOGLE_RECAPTCHA",
+            "EXTERNAL_302"
+          ]
+        },
+        "target": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}
