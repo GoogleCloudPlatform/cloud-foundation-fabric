@@ -956,36 +956,55 @@ The following examples demonstrate how to configure CMEK encryption for differen
 
 For composer v3:
 
-```
+```hcl
 module "project" {
-  source  =  "./fabric/modules/project"
+  source          = "./fabric/modules/project"
   billing_account = var.billing_account_id
   name            = "project"
   prefix          = var.prefix
   parent          = var.folder_id
   services = [
     "composer.googleapis.com",
+    "storage.googleapis.com"
   ]
   service_encryption_key_ids = {
     "composer.googleapis.com" = [module.kms.keys.key-regional.id]
   }
 }
+
+module "kms" {
+  source     = "./fabric/modules/kms"
+  project_id = var.project_id
+  keyring = {
+    location = var.region
+    name     = "${var.prefix}-keyring"
+  }
+  keys = {
+    "key-regional" = {}
+  }
+}
+# tftest modules=2 resources=10 e2e
 ```
 
 For composer v2:
 
-```
+```hcl
 module "project" {
-  source  =  "./fabric/modules/project"
+  source          = "./fabric/modules/project"
   billing_account = var.billing_account_id
   name            = "project"
   prefix          = var.prefix
   parent          = var.folder_id
   services = [
+    "artifactregistry.googleapis.com",
     "composer.googleapis.com",
+    "compute.googleapis.com",
+    "container.googleapis.com",
+    "pubsub.googleapis.com",
+    "storage.googleapis.com"
   ]
   service_encryption_key_ids = {
-    "composer.googleapis.com"         = [module.kms.keys.key-regional.id]
+    "composer.googleapis.com" = [module.kms.keys.key-regional.id]
     # Composer v2 dependencies
     "artifactregistry.googleapis.com" = [module.kms.keys.key-regional.id]
     "container-engine-robot"          = [module.kms.keys.key-regional.id]
@@ -993,6 +1012,19 @@ module "project" {
     "pubsub.googleapis.com"           = [module.kms.keys.key-regional.id]
   }
 }
+
+module "kms" {
+  source     = "./fabric/modules/kms"
+  project_id = var.project_id
+  keyring = {
+    location = var.region
+    name     = "${var.prefix}-keyring"
+  }
+  keys = {
+    "key-regional" = {}
+  }
+}
+# tftest modules=2 resources=27 e2e
 ```
 
 ## Custom Security Health Analytics Modules
@@ -1573,11 +1605,11 @@ Additionally, the Privileged Access Manager Service Agent must be created and gr
 
 ```hcl
 module "project" {
-  source              = "./fabric/modules/project"
-  billing_account     = var.billing_account_id
-  name                = "project"
-  parent              = var.folder_id
-  prefix              = var.prefix
+  source          = "./fabric/modules/project"
+  billing_account = var.billing_account_id
+  name            = "project"
+  parent          = var.folder_id
+  prefix          = var.prefix
   pam_entitlements = {
     net-admins = {
       max_request_duration = "3600s"
@@ -1595,6 +1627,7 @@ module "project" {
     }
   }
 }
+# tftest modules=1 resources=2
 ```
 
 ### Privileged Access Manager (PAM) Entitlements Factory
@@ -1605,7 +1638,7 @@ Note that entitlements defined via `pam_entitlements` take precedence over those
 
 ```hcl
 module "project" {
-  source  =  "./fabric/modules/project"
+  source          = "./fabric/modules/project"
   billing_account = var.billing_account_id
   name            = "project"
   parent          = var.folder_id
@@ -1614,6 +1647,25 @@ module "project" {
     pam_entitlements = "configs/pam-entitlements/"
   }
 }
+# tftest modules=1 resources=2 files=pam
+```
+
+```yaml
+# yaml-language-server: $schema=../schemas/pam-entitlements.schema.json
+
+net-admins:
+  max_request_duration: 3600s
+  eligible_users:
+    - group:gcp-network-admins@example.com
+  privileged_access:
+    - role: roles/compute.networkAdmin
+    - role: roles/compute.admin
+  manual_approvals:
+    require_approver_justification: true
+    steps:
+      - approvers:
+          - group:gcp-organization-admins@example.com
+# tftest-file id=pam path=configs/pam-entitlements/entitlements.yaml schema=pam-entitlements.schema.json
 ```
 
 ## VPC Service Controls
