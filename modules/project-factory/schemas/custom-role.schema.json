@@ -1,0 +1,20 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Custom Role",
+  "type": "object",
+  "additionalProperties": false,
+  "description": "Custom roles which will be created in your project. Created custom roles can be later referenced in IAM sections using YAML interpolation variable $custom_roles:my_role_name. Custom role names cannot contain hyphens (-). You can add only permissions to custom roles, so nesting roles is not possible.",
+  "patternProperties": {
+    "^[a-zA-Z0-9_\\.]{3,64}$": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[a-zA-Z-]+\\.[a-zA-Z-]+\\.[a-zA-Z-]+$",
+        "examples": [
+          "compute.instances.start",
+          "compute.instances.stop"
+        ]
+      }
+    }
+  }
+}
