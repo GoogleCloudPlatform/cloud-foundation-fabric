@@ -48,12 +48,7 @@ variable "database_user" {
         database_name   = string
         role_name       = string
       })),
-      {
-        read_any_database = {
-          database_name = "admin"
-          role_name     = "readAnyDatabase"
-        }
-      }
+      {}
     )
     scopes = optional(map(object({
       type = string
