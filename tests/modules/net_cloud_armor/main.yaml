@@ -1,0 +1,66 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  google_compute_security_policy.default:
+    adaptive_protection_config:
+      - layer_7_ddos_defense_config:
+          - enable: true
+            rule_visibility: STANDARD
+            threshold_configs: []
+    description: Test security policy
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    labels: null
+    name: test-policy
+    project: test-project
+    recaptcha_options_config: []
+    rule:
+      - action: deny(403)
+        description: Default rule.
+        header_action: []
+        match:
+          - config:
+              - src_ip_ranges:
+                  - '*'
+            expr: []
+            expr_options: []
+            versioned_expr: SRC_IPS_V1
+        preconfigured_waf_config: []
+        preview: false
+        priority: 2147483647
+        rate_limit_options: []
+        redirect_options: []
+      - action: deny(403)
+        description: OWASP rule
+        header_action: []
+        match:
+          - config: []
+            expr:
+              - expression: evaluatePreconfiguredWaf('sqli-v33-stable')
+            expr_options: []
+            versioned_expr: ''
+        preconfigured_waf_config: []
+        preview: false
+        priority: 1000
+        rate_limit_options: []
+        redirect_options: []
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    type: CLOUD_ARMOR
+
+counts:
+  google_compute_security_policy: 1
+  modules: 0
+  resources: 1
