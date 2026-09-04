@@ -1,0 +1,75 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  google_iam_workload_identity_pool.default:
+    attestation_rules: []
+    deletion_policy: DELETE
+    description: Test WIF Pool description
+    disabled: false
+    display_name: Test WIF Pool
+    inline_certificate_issuance_config: []
+    inline_trust_config: []
+    project: test-project
+    timeouts: null
+    workload_identity_pool_id: foo-test-pool
+  google_iam_workload_identity_pool_iam_binding.default["roles/iam.workloadIdentityPoolViewer"]:
+    condition: []
+    members:
+    - user:admin@example.com
+    project: test-project
+    role: roles/iam.workloadIdentityPoolViewer
+    workload_identity_pool_id: foo-test-pool
+  google_iam_workload_identity_pool_provider.default["github"]:
+    attribute_condition: assertion.repository_owner == 'test-org'
+    attribute_mapping:
+      attribute.repository: assertion.repository
+      attribute.repository_owner: assertion.repository_owner
+      google.subject: assertion.sub
+    aws: []
+    deletion_policy: DELETE
+    description: GitHub provider
+    disabled: false
+    display_name: GitHub Actions
+    oidc:
+    - allowed_audiences: null
+      issuer_uri: https://token.actions.githubusercontent.com
+      jwks_json: null
+    project: test-project
+    saml: []
+    timeouts: null
+    workload_identity_pool_id: foo-test-pool
+    workload_identity_pool_provider_id: foo-github
+    x509: []
+  google_service_account_iam_member.impersonation["ci:0"]:
+    condition: []
+    member: principalSet://iam.googleapis.com/projects/test-project/locations/global/workloadIdentityPools/foo-test-pool/attribute.repository/test-org/test-repo
+    role: roles/iam.workloadIdentityUser
+    service_account_id: projects/test-project/serviceAccounts/test-sa@test-project.iam.gserviceaccount.com
+
+counts:
+  google_iam_workload_identity_pool: 1
+  google_iam_workload_identity_pool_iam_binding: 1
+  google_iam_workload_identity_pool_provider: 1
+  google_service_account_iam_member: 1
+  modules: 0
+  resources: 4
+
+outputs:
+  id: __missing__
+  name: __missing__
+  pool: __missing__
+  provider_ids: __missing__
+  provider_names: __missing__
+  providers: __missing__
