@@ -15,7 +15,7 @@ This Terraform can of course be deployed using any pre-existing project. In that
 
 ## Variable Configuration
 
-Configuration is mostly done via the `atlas_config` and `vpc_config` variables. Note that:
+Configuration is mostly done via the `atlas_config`, `database_user`, and `vpc_config` variables. Note that:
 
 - VPC configuration can be set to reference a Shared VPC Host network like shown below, or an in-project network if that is preferred
 - the PSC CIDR block is used to allocate the required 50 endpoint addresses in the VPC, so it needs to be large enough to accommodate them
@@ -36,6 +36,25 @@ atlas_config = {
     private_key = "xxxxx-xxxx-xxxx-xxxx-xxxxxxxx"
   }
 }
+database_user = {
+  username            = "my-db-user"
+  password_wo         = "s3cr3t-p4ssw0rd"
+  password_wo_version = 1
+  labels = {
+    environment = "test"
+  }
+  roles = {
+    app = {
+      database_name = "app"
+      role_name     = "readWrite"
+    }
+  }
+  scopes = {
+    test-0 = {
+      type = "CLUSTER"
+    }
+  }
+}
 project_id = "my-prod-shared-mongodb-0"
 vpc_config = {
   network_name   = "dev-spoke-0"
@@ -50,9 +69,10 @@ vpc_config = {
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
 | [atlas_config](variables.tf#L17) | MongoDB Atlas configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
-| [project_id](variables.tf#L40) | Project id where the registries will be created. | <code>string</code> | ✓ |  |
-| [vpc_config](variables.tf#L45) | VPC configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
-| [name](variables.tf#L33) | Prefix used for all resource names. | <code>string</code> |  | <code>&#34;mongodb&#34;</code> |
+| [database_user](variables.tf#L33) | MongoDB Atlas database user configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| [project_id](variables.tf#L89) | Project id where the registries will be created. | <code>string</code> | ✓ |  |
+| [vpc_config](variables.tf#L94) | VPC configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| [name](variables.tf#L82) | Prefix used for all resource names. | <code>string</code> |  | <code>&#34;mongodb&#34;</code> |
 
 ## Outputs
 
@@ -79,6 +99,25 @@ module "test" {
       private_key = "xxxxx-xxxx-xxxx-xxxx-xxxxxxxx"
     }
   }
+  database_user = {
+    username            = "my-db-user"
+    password_wo         = "s3cr3t-p4ssw0rd"
+    password_wo_version = 1
+    labels = {
+      environment = "test"
+    }
+    roles = {
+      app = {
+        database_name = "app"
+        role_name     = "readWrite"
+      }
+    }
+    scopes = {
+      test-0 = {
+        type = "CLUSTER"
+      }
+    }
+  }
   project_id = "my-prod-shared-mongodb-0"
   vpc_config = {
     network_name   = "dev-spoke-0"
@@ -86,5 +125,5 @@ module "test" {
     psc_cidr_block = "10.8.11.192/26"
   }
 }
-# tftest modules=2 resources=6
+# tftest modules=2 resources=7
 ```
