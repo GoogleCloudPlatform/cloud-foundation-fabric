@@ -43,14 +43,19 @@ resource "google_secret_manager_regional_secret" "default" {
       )
     }
   }
-  # dynamic "rotation" {
-  #   for_each = try(each.value.rotation_config, null) == null ? [] : [""]
-  #   content {
-  #     next_rotation_time = each.value.rotation_config.next_time
-  #     rotation_period    = each.value.rotation_config.period
-  #   }
-  # }
-  # topics
+  dynamic "rotation" {
+    for_each = try(each.value.rotation_config, null) == null ? [] : [""]
+    content {
+      next_rotation_time = each.value.rotation_config.next_time
+      rotation_period    = each.value.rotation_config.period
+    }
+  }
+  dynamic "topics" {
+    for_each = coalesce(try(each.value.topics, null), [])
+    content {
+      name = topics.value
+    }
+  }
   lifecycle {
     ignore_changes = [
       rotation[0].next_rotation_time
