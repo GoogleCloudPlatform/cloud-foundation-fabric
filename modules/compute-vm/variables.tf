@@ -235,6 +235,12 @@ variable "iam" {
   default     = {}
 }
 
+variable "iap_tunnel_iam" {
+  description = "IAP tunnel IAM bindings in {ROLE => [MEMBERS]} format."
+  type        = map(list(string))
+  default     = {}
+}
+
 variable "instance_schedule" {
   description = "Assign or create and assign an instance schedule policy. Set active to null to detach a policy from vm before destroying."
   type = object({
