@@ -71,7 +71,7 @@ module "kms" {
   keys                  = each.value.keys
   tag_bindings          = each.value.tag_bindings
   context = merge(local.ctx, {
-    project_ids = merge(local.ctx.project_ids, module.factory.project_ids)
+    project_ids    = merge(local.ctx.project_ids, module.factory.project_ids)
     iam_principals = merge(local.ctx.iam_principals, module.factory.iam_principals)
   })
   depends_on = [module.factory]
