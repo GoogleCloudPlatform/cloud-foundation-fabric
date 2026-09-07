@@ -1,0 +1,313 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Cloud Armor Rules",
+  "type": "object",
+  "additionalProperties": false,
+  "patternProperties": {
+    "^[a-z0-9_-]+$": {
+      "$ref": "#/$defs/rule"
+    }
+  },
+  "$defs": {
+    "rule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "priority",
+        "action"
+      ],
+      "properties": {
+        "priority": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2147483646
+        },
+        "action": {
+          "type": "string",
+          "pattern": "^(allow|deny|deny\\((403|404|502)\\)|throttle|rate_based_ban|redirect)$"
+        },
+        "description": {
+          "type": "string"
+        },
+        "preview": {
+          "type": "boolean"
+        },
+        "match": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "src_ip_ranges": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "expression": {
+              "type": "string"
+            },
+            "recaptcha_options": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "action_token_site_keys": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "session_token_site_keys": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "network_match": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "dest_ip_ranges": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "dest_ports": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "ip_protocols": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "src_asns": {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              }
+            },
+            "src_ip_ranges": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "src_ports": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "src_region_codes": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "user_defined_fields": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "header_action": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "preconfigured_waf_config": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "exclusions"
+          ],
+          "properties": {
+            "exclusions": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/waf_exclusion"
+              }
+            }
+          }
+        },
+        "rate_limit_options": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "exceed_action",
+            "rate_limit_threshold"
+          ],
+          "properties": {
+            "exceed_action": {
+              "type": "string"
+            },
+            "rate_limit_threshold": {
+              "$ref": "#/$defs/threshold"
+            },
+            "ban_duration_sec": {
+              "type": "integer"
+            },
+            "ban_threshold": {
+              "$ref": "#/$defs/threshold"
+            },
+            "enforce_on_key": {
+              "type": "string",
+              "enum": [
+                "ALL",
+                "IP",
+                "HTTP_HEADER",
+                "XFF_IP",
+                "HTTP_COOKIE",
+                "HTTP_PATH",
+                "SNI",
+                "REGION_CODE",
+                "TLS_JA3_FINGERPRINT",
+                "TLS_JA4_FINGERPRINT",
+                "USER_IP"
+              ]
+            },
+            "enforce_on_key_name": {
+              "type": "string"
+            },
+            "enforce_on_key_configs": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "type"
+                ],
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            "exceed_redirect_options": {
+              "$ref": "#/$defs/redirect_options"
+            }
+          }
+        },
+        "redirect_options": {
+          "$ref": "#/$defs/redirect_options"
+        }
+      }
+    },
+    "waf_exclusion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "target_rule_set"
+      ],
+      "properties": {
+        "target_rule_set": {
+          "type": "string"
+        },
+        "target_rule_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "request_cookies": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/waf_field_param"
+          }
+        },
+        "request_headers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/waf_field_param"
+          }
+        },
+        "request_query_params": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/waf_field_param"
+          }
+        },
+        "request_uris": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/waf_field_param"
+          }
+        }
+      }
+    },
+    "waf_field_param": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "operator"
+      ],
+      "properties": {
+        "operator": {
+          "type": "string",
+          "enum": [
+            "EQUALS",
+            "STARTS_WITH",
+            "ENDS_WITH",
+            "CONTAINS",
+            "EQUALS_ANY"
+          ]
+        },
+        "value": {
+          "type": "string"
+        }
+      }
+    },
+    "threshold": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "count",
+        "interval_sec"
+      ],
+      "properties": {
+        "count": {
+          "type": "integer"
+        },
+        "interval_sec": {
+          "type": "integer"
+        }
+      }
+    },
+    "redirect_options": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "GOOGLE_RECAPTCHA",
+            "EXTERNAL_302"
+          ]
+        },
+        "target": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

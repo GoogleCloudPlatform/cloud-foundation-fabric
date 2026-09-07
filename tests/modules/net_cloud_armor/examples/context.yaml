@@ -1,0 +1,73 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.cloud-armor.google_compute_region_security_policy.regional[0]:
+    advanced_options_config: []
+    ddos_protection_config: []
+    deletion_policy: DELETE
+    description: Terraform managed.
+    name: waf-regional
+    project: project-id
+    region: europe-west1
+    rules: []
+    timeouts: null
+    type: CLOUD_ARMOR
+    user_defined_fields: []
+  module.cloud-armor.google_compute_region_security_policy_rule.regional["allow-corp"]:
+    action: allow
+    deletion_policy: DELETE
+    description: null
+    match:
+    - config:
+      - src_ip_ranges:
+        - 192.0.2.0/24
+      expr: []
+      versioned_expr: SRC_IPS_V1
+    network_match: []
+    preconfigured_waf_config: []
+    preview: false
+    priority: 100
+    project: project-id
+    rate_limit_options: []
+    region: europe-west1
+    security_policy: waf-regional
+    timeouts: null
+  module.cloud-armor.google_compute_region_security_policy_rule.regional_default[0]:
+    action: allow
+    deletion_policy: DELETE
+    description: Default rule.
+    match:
+    - config:
+      - src_ip_ranges:
+        - '*'
+      expr: []
+      versioned_expr: SRC_IPS_V1
+    network_match: []
+    preconfigured_waf_config: []
+    preview: false
+    priority: 2147483647
+    project: project-id
+    rate_limit_options: []
+    region: europe-west1
+    security_policy: waf-regional
+    timeouts: null
+
+counts:
+  google_compute_region_security_policy: 1
+  google_compute_region_security_policy_rule: 2
+  modules: 1
+  resources: 3
+
+outputs: {}
