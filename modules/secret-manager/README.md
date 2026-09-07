@@ -7,6 +7,7 @@ This module allows managing one or more secrets with versions and IAM bindings. 
 - [Regional Secrets](#regional-secrets)
 - [IAM Bindings](#iam-bindings)
 - [Secret Versions](#secret-versions)
+- [Secret Rotation](#secret-rotation)
 - [Context Interpolations](#context-interpolations)
 - [Variables](#variables)
 - [Outputs](#outputs)
@@ -153,6 +154,29 @@ module "secret-manager" {
 ```txt
 foo-secret
 # tftest-file id=0 path=test-data/secret-b.txt
+```
+
+## Secret Rotation
+
+Automated rotation schedules and Pub/Sub notification topics can be configured on both global and regional secrets via `rotation_config` and `topics`. Note that the Secret Manager API requires at least one Pub/Sub topic when rotation is configured.
+
+```hcl
+module "secret-manager" {
+  source     = "./fabric/modules/secret-manager"
+  project_id = var.project_id
+  secrets = {
+    test-rotated = {
+      rotation_config = {
+        period    = "7776000s" # 90 days
+        next_time = "2026-12-01T00:00:00Z"
+      }
+      topics = [
+        "projects/project-id/topics/secret-rotation-topic"
+      ]
+    }
+  }
+}
+# tftest modules=1 resources=1 skip-tofu
 ```
 
 ## Context Interpolations
