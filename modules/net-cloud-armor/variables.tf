@@ -80,16 +80,6 @@ variable "advanced_options_config" {
   }
 }
 
-variable "context" {
-  description = "Context-specific interpolations."
-  type = object({
-    locations   = optional(map(string), {})
-    project_ids = optional(map(string), {})
-  })
-  default  = {}
-  nullable = false
-}
-
 variable "ddos_protection" {
   description = "DDoS protection level. Only supported by regional policies of type CLOUD_ARMOR_NETWORK."
   type        = string

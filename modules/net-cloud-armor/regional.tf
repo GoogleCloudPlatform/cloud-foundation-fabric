@@ -18,7 +18,7 @@
 
 resource "google_compute_region_security_policy" "regional" {
   count       = local.is_global ? 0 : 1
-  project     = local.project_id
+  project     = var.project_id
   region      = local.region
   name        = var.name
   description = var.description
@@ -71,7 +71,7 @@ resource "google_compute_region_security_policy" "regional" {
 
 resource "google_compute_region_security_policy_rule" "regional_default" {
   count           = local.is_global ? 0 : 1
-  project         = local.project_id
+  project         = var.project_id
   region          = local.region
   security_policy = google_compute_region_security_policy.regional[0].name
   priority        = 2147483647
@@ -100,7 +100,7 @@ resource "google_compute_region_security_policy_rule" "regional_default" {
 resource "google_compute_region_security_policy_rule" "regional" {
   # Terraform's type system barfs in the condition if we use the locals map
   for_each        = toset(local.is_global ? [] : keys(local.rules))
-  project         = local.project_id
+  project         = var.project_id
   region          = local.region
   security_policy = google_compute_region_security_policy.regional[0].name
   priority        = local.rules[each.key].priority

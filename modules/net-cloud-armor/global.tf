@@ -18,7 +18,7 @@
 
 resource "google_compute_security_policy" "global" {
   count       = local.is_global ? 1 : 0
-  project     = local.project_id
+  project     = var.project_id
   name        = var.name
   description = var.description
   type        = var.type
@@ -102,7 +102,7 @@ resource "google_compute_security_policy" "global" {
 
 resource "google_compute_security_policy_rule" "global_default" {
   count           = local.is_global ? 1 : 0
-  project         = local.project_id
+  project         = var.project_id
   security_policy = google_compute_security_policy.global[0].name
   priority        = 2147483647
   action          = var.default_rule_config.action
@@ -119,7 +119,7 @@ resource "google_compute_security_policy_rule" "global_default" {
 resource "google_compute_security_policy_rule" "global" {
   # Terraform's type system barfs in the condition if we use the locals map
   for_each        = toset(local.is_global ? keys(local.rules) : [])
-  project         = local.project_id
+  project         = var.project_id
   security_policy = google_compute_security_policy.global[0].name
   priority        = local.rules[each.key].priority
   action          = local.rules[each.key].action
