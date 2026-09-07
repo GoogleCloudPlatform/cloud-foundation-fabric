@@ -1229,6 +1229,7 @@ After applying this change, you can update the backend service to point to the n
       port_name     = "http"
     }
   }
+# tftest skip reason=tutorial-step
 ```
 
 If you prefer to maintain the original naming convention, you can modify `neg-0` to point to the `hello2` service. After making this change, switch the backend configuration back to `neg-0`, and finally remove `neg-1`.
