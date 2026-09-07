@@ -2,7 +2,7 @@
 
 This module provisions and configures [Cloud Armor security policies](https://cloud.google.com/armor/docs/security-policy-overview) along with their rules. It handles both global and regional policies through a unified interface, validating at plan time that all requested features are compatible with the selected policy scope and type.
 
-Attach the policy to load balancers using the `id` output, which can be passed to the `security_policy` (or `edge_security_policy`) attribute of backend services or buckets managed by the `net-lb-app-ext`, `net-lb-app-ext-regional` and `net-lb-app-int` modules. Cross-region internal Application Load Balancers, internal proxy Network Load Balancers, and internal passthrough Network Load Balancers do not support Cloud Armor, so their corresponding modules omit the attribute.
+Attach the policy to load balancers using the `id` output, which can be passed to the `security_policy` (or `edge_security_policy`) attribute of backend services or buckets managed by the `net-lb-app-ext`, `net-lb-app-ext-regional`, `net-lb-app-int`, and `net-lb-ext` modules, or via the `security_policies` key of their `context` variable. Cross-region internal Application Load Balancers, internal proxy Network Load Balancers, and internal passthrough Network Load Balancers do not support Cloud Armor, so their corresponding modules omit the attribute.
 
 The baseline rule at priority `2147483647` is always managed by the module via the `default_rule_config` variable and cannot be defined in `rules`.
 
@@ -318,7 +318,7 @@ throttle:
 
 | Feature | Global `CLOUD_ARMOR` | Global `CLOUD_ARMOR_EDGE` | Regional `CLOUD_ARMOR` | Regional `CLOUD_ARMOR_NETWORK` |
 |---|:---:|:---:|:---:|:---:|
-| Load balancers | global external ALB (`net-lb-app-ext`), global proxy NLB | global external ALB (`net-lb-app-ext` backend buckets and CDN backends) | regional external ALB (`net-lb-app-ext-regional`), regional internal ALB (`net-lb-app-int`) | regional external passthrough NLB |
+| Load balancers | global external ALB (`net-lb-app-ext`), global proxy NLB | global external ALB (`net-lb-app-ext` backend buckets and CDN backends) | regional external ALB (`net-lb-app-ext-regional`), regional internal ALB (`net-lb-app-int`) | regional external passthrough NLB (`net-lb-ext`) |
 | `match` (IP ranges, CEL expressions) | ✓ | ✓ | ✓ | |
 | `network_match`, `user_defined_fields`, `ddos_protection` | | | | ✓ |
 | `preconfigured_waf_config`, `rate_limit_options` | ✓ | ✓ | ✓ | ✓ |
