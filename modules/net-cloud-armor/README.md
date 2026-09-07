@@ -14,7 +14,6 @@ The baseline rule at priority `2147483647` is always managed by the module via t
   - [Network edge policy](#network-edge-policy)
   - [Edge policy for backend buckets](#edge-policy-for-backend-buckets)
   - [Rules factory](#rules-factory)
-  - [Context](#context)
 - [Scope and type support matrix](#scope-and-type-support-matrix)
 - [Recipes](#recipes)
 - [Files](#files)
@@ -315,37 +314,6 @@ throttle:
 # tftest-file id=rules path=configs/rules.yaml schema=rules.schema.json
 ```
 
-### Context
-
-Project and region parameters support context-based interpolation.
-
-```hcl
-module "cloud-armor" {
-  source     = "./fabric/modules/net-cloud-armor"
-  project_id = "$project_ids:net"
-  region     = "$locations:ew1"
-  name       = "waf-regional"
-  context = {
-    locations = {
-      ew1 = "europe-west1"
-    }
-    project_ids = {
-      net = var.project_id
-    }
-  }
-  rules = {
-    allow-corp = {
-      priority = 100
-      action   = "allow"
-      match = {
-        src_ip_ranges = ["192.0.2.0/24"]
-      }
-    }
-  }
-}
-# tftest modules=1 resources=3 inventory=context.yaml
-```
-
 ## Scope and type support matrix
 
 | Feature | Global `CLOUD_ARMOR` | Global `CLOUD_ARMOR_EDGE` | Regional `CLOUD_ARMOR` | Regional `CLOUD_ARMOR_NETWORK` |
@@ -382,21 +350,20 @@ Incompatible feature and policy combinations fail validation at plan time.
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [name](variables.tf#L145) | Policy name. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L151) | Project id where the policy will be created. | <code>string</code> | ✓ |  |
+| [name](variables.tf#L135) | Policy name. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L141) | Project id where the policy will be created. | <code>string</code> | ✓ |  |
 | [adaptive_protection_config](variables.tf#L17) | Adaptive Protection configuration. Only supported by global policies. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [advanced_options_config](variables.tf#L52) | Advanced options configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [context](variables.tf#L83) | Context-specific interpolations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [ddos_protection](variables.tf#L93) | DDoS protection level. Only supported by regional policies of type CLOUD_ARMOR_NETWORK. | <code>string</code> |  | <code>null</code> |
-| [default_rule_config](variables.tf#L106) | Configuration for the default rule with lowest priority, which is always present in a policy. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [description](variables.tf#L123) | Policy description. | <code>string</code> |  | <code>&#34;Terraform managed.&#34;</code> |
-| [factories_config](variables.tf#L129) | Paths to data files and folders that enable factory functionality. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [labels](variables.tf#L138) | Policy labels. Only supported by global policies. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [recaptcha_options_config](variables.tf#L157) | reCAPTCHA configuration options. Only supported by global policies. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [region](variables.tf#L165) | Policy region. Leave null or set to 'global' for a global policy. | <code>string</code> |  | <code>null</code> |
-| [rules](variables.tf#L171) | Policy rules. Use `match` for CLOUD_ARMOR, CLOUD_ARMOR_EDGE and CLOUD_ARMOR_INTERNAL_SERVICE policies, `network_match` for CLOUD_ARMOR_NETWORK policies. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [type](variables.tf#L310) | Policy type. Global policies support CLOUD_ARMOR, CLOUD_ARMOR_EDGE and CLOUD_ARMOR_INTERNAL_SERVICE, regional policies support CLOUD_ARMOR, CLOUD_ARMOR_EDGE and CLOUD_ARMOR_NETWORK. | <code>string</code> |  | <code>&#34;CLOUD_ARMOR&#34;</code> |
-| [user_defined_fields](variables.tf#L327) | User-defined fields for CLOUD_ARMOR_NETWORK policies, keyed by field name. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [ddos_protection](variables.tf#L83) | DDoS protection level. Only supported by regional policies of type CLOUD_ARMOR_NETWORK. | <code>string</code> |  | <code>null</code> |
+| [default_rule_config](variables.tf#L96) | Configuration for the default rule with lowest priority, which is always present in a policy. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [description](variables.tf#L113) | Policy description. | <code>string</code> |  | <code>&#34;Terraform managed.&#34;</code> |
+| [factories_config](variables.tf#L119) | Paths to data files and folders that enable factory functionality. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [labels](variables.tf#L128) | Policy labels. Only supported by global policies. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [recaptcha_options_config](variables.tf#L147) | reCAPTCHA configuration options. Only supported by global policies. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [region](variables.tf#L155) | Policy region. Leave null or set to 'global' for a global policy. | <code>string</code> |  | <code>null</code> |
+| [rules](variables.tf#L161) | Policy rules. Use `match` for CLOUD_ARMOR, CLOUD_ARMOR_EDGE and CLOUD_ARMOR_INTERNAL_SERVICE policies, `network_match` for CLOUD_ARMOR_NETWORK policies. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [type](variables.tf#L300) | Policy type. Global policies support CLOUD_ARMOR, CLOUD_ARMOR_EDGE and CLOUD_ARMOR_INTERNAL_SERVICE, regional policies support CLOUD_ARMOR, CLOUD_ARMOR_EDGE and CLOUD_ARMOR_NETWORK. | <code>string</code> |  | <code>&#34;CLOUD_ARMOR&#34;</code> |
+| [user_defined_fields](variables.tf#L317) | User-defined fields for CLOUD_ARMOR_NETWORK policies, keyed by field name. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
 

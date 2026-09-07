@@ -15,21 +15,10 @@
  */
 
 locals {
-  ctx = {
-    for k, v in var.context : k => {
-      for kk, vv in v : "${local.ctx_p}${k}:${kk}" => vv
-    }
-  }
-  ctx_p      = "$"
   is_global  = var.region == null || var.region == "global"
   is_network = var.type == "CLOUD_ARMOR_NETWORK"
-  project_id = lookup(local.ctx.project_ids, var.project_id, var.project_id)
-  region = (
-    local.is_global
-    ? null
-    : lookup(local.ctx.locations, var.region, var.region)
-  )
-  rules = merge(local.factory_rules, var.rules)
+  region     = local.is_global ? null : var.region
+  rules      = merge(local.factory_rules, var.rules)
   # rule-level consistency checks depending on policy scope and type,
   # surfaced via preconditions in the rule resources
   rule_errors = {
