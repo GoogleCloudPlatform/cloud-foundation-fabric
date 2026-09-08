@@ -54,6 +54,110 @@ values:
     timeouts: null
   ? module.project-factory.module.automation-service-accounts["test-0/automation/auto-tag-test"].google_tags_tag_binding.binding["project-level"]
   : timeouts: null
+  module.project-factory.module.buckets["test-0/attrs-test"].google_pubsub_topic.topic[0]:
+    deletion_policy: DELETE
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    ingestion_data_source_settings: []
+    kms_key_name: null
+    labels: null
+    message_retention_duration: null
+    message_transforms: []
+    name: attrs-test-notifications
+    project: foo-test-0
+    schema_settings: []
+    tags: null
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+  module.project-factory.module.buckets["test-0/attrs-test"].google_pubsub_topic_iam_binding.binding[0]:
+    condition: []
+    members:
+    - serviceAccount:service-1234567890@gs-project-accounts.iam.gserviceaccount.com
+    role: roles/pubsub.publisher
+  module.project-factory.module.buckets["test-0/attrs-test"].google_storage_bucket.bucket[0]:
+    autoclass:
+    - enabled: false
+    cors:
+    - max_age_seconds: 3600
+      method:
+      - GET
+      origin:
+      - https://example.com
+      response_header:
+      - Content-Type
+    custom_placement_config:
+    - data_locations:
+      - EUROPE-WEST1
+      - EUROPE-WEST4
+    default_event_based_hold: true
+    deletion_policy: DELETE
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    enable_object_retention: null
+    encryption: []
+    force_destroy: false
+    hierarchical_namespace:
+    - enabled: false
+    ip_filter:
+    - allow_all_service_agent_access: true
+      allow_cross_org_vpcs: null
+      mode: Enabled
+      public_network_source:
+      - allowed_ip_cidr_ranges:
+        - 192.0.2.0/24
+      vpc_network_sources: []
+    labels: null
+    lifecycle_rule: []
+    location: EU
+    logging: []
+    name: foo-test-0-attrs-test
+    project: foo-test-0
+    public_access_prevention: enforced
+    requester_pays: true
+    retention_policy: []
+    rpo: DEFAULT
+    storage_class: STANDARD
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+    uniform_bucket_level_access: true
+    versioning:
+    - enabled: false
+    website:
+    - main_page_suffix: index.html
+      not_found_page: 404.html
+  module.project-factory.module.buckets["test-0/attrs-test"].google_storage_notification.notification[0]:
+    bucket: foo-test-0-attrs-test
+    custom_attributes: null
+    event_types: null
+    object_name_prefix: null
+    payload_format: JSON_API_V1
+  module.project-factory.module.log-buckets["test-0/audit-logs"].google_logging_log_view.views["audit-view"]:
+    description: Test log view.
+    filter: LOG_ID("cloudaudit.googleapis.com/activity")
+    location: global
+    name: audit-view
+    timeouts: null
+  ? module.project-factory.module.log-buckets["test-0/audit-logs"].google_logging_log_view_iam_binding.authoritative["audit-view.roles/logging.viewAccessor"]
+  : condition: []
+    location: global
+    members:
+    - user:user1@example.com
+    name: audit-view
+    role: roles/logging.viewAccessor
+  module.project-factory.module.log-buckets["test-0/audit-logs"].google_logging_project_bucket_config.bucket[0]:
+    bucket_id: audit-logs
+    cmek_settings: []
+    description: Test log bucket description.
+    enable_analytics: false
+    index_configs: []
+    location: global
+    locked: false
+    project: foo-test-0
+    retention_days: 365
+  module.project-factory.module.log-buckets["test-0/audit-logs"].google_tags_tag_binding.binding["project-level"]:
+    timeouts: null
   module.project-factory.module.projects-iam["test-0"].google_project_iam_member.bindings["test_context"]:
     condition:
     - description: null
@@ -278,19 +382,25 @@ values:
     triggers_replace: null
 
 counts:
+  google_logging_log_view: 1
+  google_logging_log_view_iam_binding: 1
+  google_logging_project_bucket_config: 1
   google_project: 3
   google_project_iam_member: 6
   google_project_service: 10
   google_project_service_identity: 3
+  google_pubsub_topic: 1
+  google_pubsub_topic_iam_binding: 1
   google_service_account: 3
-  google_storage_bucket: 1
+  google_storage_bucket: 2
+  google_storage_notification: 1
   google_storage_project_service_account: 1
-  google_tags_tag_binding: 4
+  google_tags_tag_binding: 5
   google_tags_tag_key: 1
   google_tags_tag_value: 1
   google_tags_tag_value_iam_binding: 1
-  modules: 10
-  resources: 36
+  modules: 12
+  resources: 44
   terraform_data: 2
 
 outputs: {}

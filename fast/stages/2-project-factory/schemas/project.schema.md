@@ -365,12 +365,32 @@
   <br>*additional properties: false*
   - **name**: *string*
   - **create**: *boolean*
-  - **description**: *string*
+  - **autoclass**: *boolean*
+  - **cors**: *object*
+    <br>*additional properties: false*
+    - **origin**: *array*
+      - items: *string*
+    - **method**: *array*
+      - items: *string*
+    - **response_header**: *array*
+      - items: *string*
+    - **max_age_seconds**: *number*
+  - **default_event_based_hold**: *boolean*
+  - **enable_hierarchical_namespace**: *boolean*
   - **encryption_key**: *string*
   - **iam**: *reference([iam](#refs-iam))*
   - **iam_bindings**: *reference([iam_bindings](#refs-iam_bindings))*
   - **iam_bindings_additive**: *reference([iam_bindings_additive](#refs-iam_bindings_additive))*
+  - **iam_by_principals**: *reference([iam_by_principals](#refs-iam_by_principals))*
   - **force_destroy**: *boolean*
+  - **ip_filter**: *object*
+    <br>*additional properties: false*
+    - **allow_cross_org_vpcs**: *boolean*
+    - **allow_all_service_agent_access**: *boolean*
+    - **public_network_sources**: *array*
+      - items: *string*
+    - **vpc_network_sources**: *object*
+      <br>*additional properties: array*
   - **labels**: *reference([labels](#refs-labels))*
   - **lifecycle_rules**: *object*
     <br>*additional properties: false*
@@ -412,7 +432,28 @@
       - **iam**: *reference([iam](#refs-iam))*
       - **iam_bindings**: *reference([iam_bindings](#refs-iam_bindings))*
       - **iam_bindings_additive**: *reference([iam_bindings_additive](#refs-iam_bindings_additive))*
+  - **notification_config**: *object*
+    <br>*additional properties: false*
+    - ⁺**enabled**: *boolean*
+    - ⁺**payload_format**: *string*
+      <br>*enum: ['JSON_API_V1', 'NONE']*
+    - ⁺**sa_email**: *string*
+    - ⁺**topic_name**: *string*
+    - **create_topic**: *object*
+      <br>*additional properties: false*
+      - **create**: *boolean*
+      - **kms_key_id**: *string*
+    - **event_types**: *array*
+      - items: *string*
+    - **custom_attributes**: *object*
+      <br>*additional properties: string*
+    - **object_name_prefix**: *string*
   - **prefix**: *string*
+  - **public_access_prevention**: *string*
+    <br>*enum: ['enforced', 'inherited']*
+  - **requester_pays**: *boolean*
+  - **rpo**: *string*
+    <br>*enum: ['ASYNC_TURBO', 'DEFAULT']*
   - **storage_class**: *string*
   - **uniform_bucket_level_access**: *boolean*
   - **versioning**: *boolean*
@@ -425,6 +466,10 @@
   - **tag_bindings**: *reference([tag_bindings](#refs-tag_bindings))*
   - **custom_placement_config**: *array*
     - items: *string*
+  - **website**: *object*
+    <br>*additional properties: false*
+    - **main_page_suffix**: *string*
+    - **not_found_page**: *string*
 - **buckets**<a name="refs-buckets"></a>: *object*
   <br>*additional properties: false*
   - **`^[a-z0-9-]+$`**: *reference([bucket](#refs-bucket))*
@@ -578,12 +623,24 @@
   - **description**: *string*
   - **kms_key_name**: *string*
   - **location**: *string*
+  - **locked**: *boolean*
   - **log_analytics**: *object*
     <br>*additional properties: false*
     - **enable**: *boolean*
     - **dataset_link_id**: *string*
     - **description**: *string*
   - **retention**: *number*
+  - **tag_bindings**: *reference([tag_bindings](#refs-tag_bindings))*
+  - **views**: *object*
+    <br>*additional properties: false*
+    - **`^[a-zA-Z0-9_-]+$`**: *object*
+      <br>*additional properties: false*
+      - ⁺**filter**: *string*
+      - **location**: *string*
+      - **description**: *string*
+      - **iam**: *reference([iam](#refs-iam))*
+      - **iam_bindings**: *reference([iam_bindings](#refs-iam_bindings))*
+      - **iam_bindings_additive**: *reference([iam_bindings_additive](#refs-iam_bindings_additive))*
 - **logging_sink**<a name="refs-logging_sink"></a>: *object*
   <br>*additional properties: false*
   - **bq_partitioned_table**: *boolean*
