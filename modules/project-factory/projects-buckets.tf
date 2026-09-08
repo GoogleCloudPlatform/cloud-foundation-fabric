@@ -21,10 +21,13 @@ locals {
         key          = "${k}/${name}"
         project_key  = k
         project_name = v.name
-        name         = lookup(opts, "name", "${v.name}-${name}")
-        create       = lookup(opts, "create", true)
-        autoclass    = lookup(opts, "autoclass", null)
-        cors         = lookup(opts, "cors", null)
+        # coalesce as typed var entries return null from lookup
+        name = coalesce(
+          lookup(opts, "name", null), "${v.name}-${name}"
+        )
+        create    = lookup(opts, "create", true)
+        autoclass = lookup(opts, "autoclass", null)
+        cors      = lookup(opts, "cors", null)
         default_event_based_hold = lookup(
           opts, "default_event_based_hold", null
         )

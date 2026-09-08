@@ -38,9 +38,12 @@ variable "projects" {
       project = string
       bucket = optional(object({
         location                    = string
-        description                 = optional(string)
+        create                      = optional(bool, true)
+        encryption_key              = optional(string)
         force_destroy               = optional(bool)
+        name                        = optional(string, "tf-state")
         prefix                      = optional(string)
+        public_access_prevention    = optional(string)
         storage_class               = optional(string, "STANDARD")
         uniform_bucket_level_access = optional(bool, true)
         versioning                  = optional(bool)
@@ -201,49 +204,22 @@ variable "projects" {
     billing_account = optional(string)
     billing_budgets = optional(list(string), [])
     buckets = optional(map(object({
-      location                    = string
-      description                 = optional(string)
-      force_destroy               = optional(bool)
-      prefix                      = optional(string)
-      storage_class               = optional(string, "STANDARD")
-      uniform_bucket_level_access = optional(bool, true)
-      versioning                  = optional(bool)
-      autoclass                   = optional(bool)
+      location  = string
+      autoclass = optional(bool)
       cors = optional(object({
         origin          = optional(list(string))
         method          = optional(list(string))
         response_header = optional(list(string))
         max_age_seconds = optional(number)
       }))
+      create                        = optional(bool, true)
+      custom_placement_config       = optional(list(string))
       default_event_based_hold      = optional(bool)
       enable_hierarchical_namespace = optional(bool)
-      ip_filter = optional(object({
-        allow_cross_org_vpcs           = optional(bool)
-        allow_all_service_agent_access = optional(bool)
-        public_network_sources         = optional(list(string))
-        vpc_network_sources            = optional(map(list(string)), {})
-      }))
-      notification_config = optional(object({
-        enabled        = bool
-        payload_format = string
-        sa_email       = string
-        topic_name     = string
-        create_topic = optional(object({
-          create     = optional(bool, true)
-          kms_key_id = optional(string)
-        }), {})
-        event_types        = optional(list(string))
-        custom_attributes  = optional(map(string))
-        object_name_prefix = optional(string)
-      }))
-      public_access_prevention = optional(string)
-      requester_pays           = optional(bool)
-      rpo                      = optional(string)
-      website = optional(object({
-        main_page_suffix = optional(string)
-        not_found_page   = optional(string)
-      }))
-      iam = optional(map(list(string)), {})
+      enable_object_retention       = optional(bool)
+      encryption_key                = optional(string)
+      force_destroy                 = optional(bool)
+      iam                           = optional(map(list(string)), {})
       iam_bindings = optional(map(object({
         members = list(string)
         role    = string
@@ -262,29 +238,14 @@ variable "projects" {
           description = optional(string)
         }))
       })), {})
+      iam_by_principals = optional(map(list(string)), {})
+      ip_filter = optional(object({
+        allow_cross_org_vpcs           = optional(bool)
+        allow_all_service_agent_access = optional(bool)
+        public_network_sources         = optional(list(string))
+        vpc_network_sources            = optional(map(list(string)), {})
+      }))
       labels = optional(map(string), {})
-      managed_folders = optional(map(object({
-        force_destroy = optional(bool)
-        iam           = optional(map(list(string)), {})
-        iam_bindings = optional(map(object({
-          members = list(string)
-          role    = string
-          condition = optional(object({
-            expression  = string
-            title       = string
-            description = optional(string)
-          }))
-        })), {})
-        iam_bindings_additive = optional(map(object({
-          member = string
-          role   = string
-          condition = optional(object({
-            expression  = string
-            title       = string
-            description = optional(string)
-          }))
-        })), {})
-      })), {})
       lifecycle_rules = optional(map(object({
         action = object({
           type          = string
@@ -308,11 +269,59 @@ variable "projects" {
         log_bucket        = string
         log_object_prefix = optional(string)
       }), null)
+      managed_folders = optional(map(object({
+        force_destroy = optional(bool)
+        iam           = optional(map(list(string)), {})
+        iam_bindings = optional(map(object({
+          members = list(string)
+          role    = string
+          condition = optional(object({
+            expression  = string
+            title       = string
+            description = optional(string)
+          }))
+        })), {})
+        iam_bindings_additive = optional(map(object({
+          member = string
+          role   = string
+          condition = optional(object({
+            expression  = string
+            title       = string
+            description = optional(string)
+          }))
+        })), {})
+      })), {})
+      name = optional(string)
+      notification_config = optional(object({
+        enabled        = bool
+        payload_format = string
+        sa_email       = string
+        topic_name     = string
+        create_topic = optional(object({
+          create     = optional(bool, true)
+          kms_key_id = optional(string)
+        }), {})
+        event_types        = optional(list(string))
+        custom_attributes  = optional(map(string))
+        object_name_prefix = optional(string)
+      }))
+      prefix                   = optional(string)
+      public_access_prevention = optional(string)
+      requester_pays           = optional(bool)
       retention_policy = optional(object({
         retention_period = string
         is_locked        = optional(bool)
       }))
-      soft_delete_retention = optional(number)
+      rpo                         = optional(string)
+      soft_delete_retention       = optional(number)
+      storage_class               = optional(string, "STANDARD")
+      tag_bindings                = optional(map(string), {})
+      uniform_bucket_level_access = optional(bool, true)
+      versioning                  = optional(bool)
+      website = optional(object({
+        main_page_suffix = optional(string)
+        not_found_page   = optional(string)
+      }))
     })), {})
     contacts = optional(map(list(string)), {})
     custom_roles = optional(map(object({
@@ -431,7 +440,43 @@ variable "projects" {
         })), {})
       })), {})
     }), {})
-    labels        = optional(map(string), {})
+    labels = optional(map(string), {})
+    log_buckets = optional(map(object({
+      description  = optional(string)
+      kms_key_name = optional(string)
+      location     = optional(string)
+      locked       = optional(bool)
+      log_analytics = optional(object({
+        enable          = optional(bool, false)
+        dataset_link_id = optional(string)
+        description     = optional(string)
+      }))
+      retention    = optional(number)
+      tag_bindings = optional(map(string), {})
+      views = optional(map(object({
+        filter      = string
+        location    = optional(string)
+        description = optional(string)
+        iam         = optional(map(list(string)), {})
+        iam_bindings = optional(map(object({
+          members = list(string)
+          condition = optional(object({
+            expression  = string
+            title       = string
+            description = optional(string)
+          }))
+        })), {})
+        iam_bindings_additive = optional(map(object({
+          member = string
+          role   = string
+          condition = optional(object({
+            expression  = string
+            title       = string
+            description = optional(string)
+          }))
+        })), {})
+      })), {})
+    })), {})
     metric_scopes = optional(list(string), [])
     pam_entitlements = optional(map(object({
       max_request_duration = string
