@@ -208,7 +208,42 @@ variable "projects" {
       storage_class               = optional(string, "STANDARD")
       uniform_bucket_level_access = optional(bool, true)
       versioning                  = optional(bool)
-      iam                         = optional(map(list(string)), {})
+      autoclass                   = optional(bool)
+      cors = optional(object({
+        origin          = optional(list(string))
+        method          = optional(list(string))
+        response_header = optional(list(string))
+        max_age_seconds = optional(number)
+      }))
+      default_event_based_hold      = optional(bool)
+      enable_hierarchical_namespace = optional(bool)
+      ip_filter = optional(object({
+        allow_cross_org_vpcs           = optional(bool)
+        allow_all_service_agent_access = optional(bool)
+        public_network_sources         = optional(list(string))
+        vpc_network_sources            = optional(map(list(string)), {})
+      }))
+      notification_config = optional(object({
+        enabled        = bool
+        payload_format = string
+        sa_email       = string
+        topic_name     = string
+        create_topic = optional(object({
+          create     = optional(bool, true)
+          kms_key_id = optional(string)
+        }), {})
+        event_types        = optional(list(string))
+        custom_attributes  = optional(map(string))
+        object_name_prefix = optional(string)
+      }))
+      public_access_prevention = optional(string)
+      requester_pays           = optional(bool)
+      rpo                      = optional(string)
+      website = optional(object({
+        main_page_suffix = optional(string)
+        not_found_page   = optional(string)
+      }))
+      iam = optional(map(list(string)), {})
       iam_bindings = optional(map(object({
         members = list(string)
         role    = string

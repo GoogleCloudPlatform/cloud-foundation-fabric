@@ -206,7 +206,6 @@ automation:
       description: Read-only automation sa for app example 0.
   bucket:
     # bucket name: foo-prod-app-example-0-tf-state
-    description: Terraform state bucket for app example 0.
     iam:
       roles/storage.objectCreator:
         - $iam_principals:service_accounts/iac-core-0/rw
@@ -263,7 +262,6 @@ automation:
       description: Read/write automation sa for team a app 0.
   buckets:
     state:
-      description: Terraform state bucket for team a app 0.
       iam:
         roles/storage.objectCreator:
           - $iam_principals:service_accounts/my-project/rw
@@ -811,7 +809,6 @@ automation:
     ro:
       description: Team B app 0 read-only automation sa.
   bucket:
-    description: Team B app 0 Terraform state bucket.
     iam:
       roles/storage.objectCreator:
         - $iam_principals:service_accounts/dev-tb-app0-0/automation/rw
@@ -995,7 +992,7 @@ module "project-factory" {
     basepath = "data"
   }
 }
-# tftest modules=10 resources=36 files=test-0,test-1,test-2 inventory=test-1.yaml
+# tftest modules=12 resources=44 files=test-0,test-1,test-2 inventory=test-1.yaml
 ```
 
 ```yaml
@@ -1032,6 +1029,55 @@ automation:
     auto-tag-test:
       tag_bindings:
         project-level: $tag_values:test-0/context/project-factory
+# test forwarding of the full gcs bucket attribute surface
+buckets:
+  attrs-test:
+    autoclass: false
+    default_event_based_hold: true
+    enable_hierarchical_namespace: false
+    public_access_prevention: enforced
+    requester_pays: true
+    # rpo is only accepted on dual-region buckets
+    location: EU
+    custom_placement_config:
+      - europe-west1
+      - europe-west4
+    rpo: DEFAULT
+    cors:
+      origin:
+        - https://example.com
+      method:
+        - GET
+      response_header:
+        - Content-Type
+      max_age_seconds: 3600
+    ip_filter:
+      allow_all_service_agent_access: true
+      public_network_sources:
+        - 192.0.2.0/24
+    notification_config:
+      enabled: true
+      payload_format: JSON_API_V1
+      sa_email: service-1234567890@gs-project-accounts.iam.gserviceaccount.com
+      topic_name: attrs-test-notifications
+    website:
+      main_page_suffix: index.html
+      not_found_page: 404.html
+# test forwarding of the full logging-bucket attribute surface
+log_buckets:
+  audit-logs:
+    description: Test log bucket description.
+    locked: false
+    retention: 365
+    tag_bindings:
+      project-level: $tag_values:test-0/context/project-factory
+    views:
+      audit-view:
+        description: Test log view.
+        filter: 'LOG_ID("cloudaudit.googleapis.com/activity")'
+        iam:
+          roles/logging.viewAccessor:
+            - $iam_principals:tag-test
 # tftest-file id=test-0 path=data/projects/test-0.yaml
 ```
 
