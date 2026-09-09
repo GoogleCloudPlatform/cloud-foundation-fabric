@@ -5,7 +5,7 @@
 
 ## Status
 
-Proposed
+Implemented
 
 ## Context
 
@@ -60,4 +60,6 @@ One variable per target type is preferred over a single variable carrying the ta
 - **`shared_vpc_service_config.service_agent_iam` becomes a special case of the new variable**, with the target fixed to the host project. It will be marked as deprecated and later retired in favour of it, which would remove the near-collision between the two names.
 - **Adds two variables** to the public interface of the `project` module, and two more to `project-factory` and to every FAST stage that carries a copy of the project schema.
 - **One entry is one binding.** Since `service` is a service name resolved through `local.aliased_service_agents`, each entry names exactly one agent and produces exactly one member grant, with no fan-out to dependent services.
+- **Entries naming a service which is not enabled are silently skipped**, since the set of valid `service` values is the set of agent names and aliases available in the project, which is itself derived from its enabled services. This doubles as the validation for `service`, which cannot be expressed in the variable type: a disabled service and a misspelled agent name are indistinguishable here, and both are dropped rather than failing the plan.
+- **The project factory exposes the two attributes without defaults, overrides or merges support**, and passes them in its second project pass, where service agents and the ids of sibling projects are both available. Inside a single factory instance the same grant is better expressed on the target project through `iam_by_principals` and the `$service_agents` context; these attributes are for targets the factory does not own.
 - **No implicit ordering.** The external target must already exist and the caller must hold rights on it; nothing in the variable creates a dependency, which matches how `iam_project_roles` behaves on service accounts today.
