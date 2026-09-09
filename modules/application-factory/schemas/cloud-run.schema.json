@@ -1,0 +1,695 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Cloud Run",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "region"
+  ],
+  "properties": {
+    "binary_authorization": {
+      "description": "Binary Authorization configuration.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "breakglass_justification": {
+          "type": "string"
+        },
+        "policy": {
+          "type": "string"
+        },
+        "use_default": {
+          "type": "boolean"
+        }
+      }
+    },
+    "containers": {
+      "description": "Containers in name => attributes format.",
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "image": {
+            "type": "string"
+          },
+          "depends_on": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "command": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "args": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "env": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "env_from_key": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "secret": {
+                  "type": "string"
+                },
+                "version": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "secret",
+                "version"
+              ]
+            }
+          },
+          "liveness_probe": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "grpc": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "port": {
+                    "type": "number"
+                  },
+                  "service": {
+                    "type": "string"
+                  }
+                }
+              },
+              "http_get": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "http_headers": {
+                    "type": "object",
+                    "additionalProperties": {
+                      "type": "string"
+                    }
+                  },
+                  "path": {
+                    "type": "string"
+                  },
+                  "port": {
+                    "type": "number"
+                  }
+                }
+              },
+              "failure_threshold": {
+                "type": "number"
+              },
+              "initial_delay_seconds": {
+                "type": "number"
+              },
+              "period_seconds": {
+                "type": "number"
+              },
+              "timeout_seconds": {
+                "type": "number"
+              }
+            }
+          },
+          "ports": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "container_port": {
+                  "type": "number"
+                },
+                "name": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "resources": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "limits": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string"
+                }
+              },
+              "cpu_idle": {
+                "type": "boolean"
+              },
+              "startup_cpu_boost": {
+                "type": "boolean"
+              }
+            }
+          },
+          "startup_probe": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "grpc": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "port": {
+                    "type": "number"
+                  },
+                  "service": {
+                    "type": "string"
+                  }
+                }
+              },
+              "http_get": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "http_headers": {
+                    "type": "object",
+                    "additionalProperties": {
+                      "type": "string"
+                    }
+                  },
+                  "path": {
+                    "type": "string"
+                  },
+                  "port": {
+                    "type": "number"
+                  }
+                }
+              },
+              "tcp_socket": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "port": {
+                    "type": "number"
+                  }
+                }
+              },
+              "failure_threshold": {
+                "type": "number"
+              },
+              "initial_delay_seconds": {
+                "type": "number"
+              },
+              "period_seconds": {
+                "type": "number"
+              },
+              "timeout_seconds": {
+                "type": "number"
+              }
+            }
+          },
+          "volume_mounts": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "image"
+        ]
+      }
+    },
+    "deletion_protection": {
+      "description": "Deletion protection setting for this Cloud Run service.",
+      "type": "string"
+    },
+    "encryption_key": {
+      "description": "The full resource name of the Cloud KMS CryptoKey.",
+      "type": "string"
+    },
+    "iam": {
+      "description": "IAM bindings for Cloud Run service in {ROLE => [MEMBERS]} format.",
+      "$ref": "#/$defs/iam"
+    },
+    "job_config": {
+      "description": "Cloud Run Job specific configuration.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "max_retries": {
+          "type": "number"
+        },
+        "task_count": {
+          "type": "number"
+        },
+        "timeout": {
+          "type": "string"
+        }
+      }
+    },
+    "labels": {
+      "description": "Resource labels.",
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "launch_stage": {
+      "description": "The launch stage as defined by Google Cloud Platform Launch Stages.",
+      "type": "string"
+    },
+    "managed_revision": {
+      "description": "Whether the Terraform module should control the deployment of revisions.",
+      "type": "boolean"
+    },
+    "name": {
+      "description": "Override resource name derived from filename.",
+      "type": "string"
+    },
+    "project_id": {
+      "description": "Project id used for all resources.",
+      "type": "string"
+    },
+    "region": {
+      "description": "Region used for all resources.",
+      "type": "string"
+    },
+    "revision": {
+      "description": "Revision template configurations.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "gpu_zonal_redundancy_disabled": {
+          "type": "boolean"
+        },
+        "labels": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "name": {
+          "type": "string"
+        },
+        "node_selector": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "accelerator": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "accelerator"
+          ]
+        },
+        "vpc_access": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "connector": {
+              "type": "string"
+            },
+            "egress": {
+              "type": "string"
+            },
+            "network": {
+              "type": "string"
+            },
+            "subnet": {
+              "type": "string"
+            },
+            "tags": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "timeout": {
+          "type": "string"
+        }
+      }
+    },
+    "service_account_config": {
+      "description": "Service account configurations.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "create": {
+          "type": "boolean"
+        },
+        "display_name": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "roles": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "service_config": {
+      "description": "Cloud Run service specific configuration options.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "custom_audiences": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "default_uri_disabled": {
+          "type": "boolean"
+        },
+        "eventarc_triggers": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "audit_log": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "method": {
+                    "type": "string"
+                  },
+                  "service": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "method",
+                  "service"
+                ]
+              }
+            },
+            "pubsub": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string"
+              }
+            },
+            "storage": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "bucket": {
+                    "type": "string"
+                  },
+                  "path": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "bucket"
+                ]
+              }
+            },
+            "service_account_email": {
+              "type": "string"
+            }
+          }
+        },
+        "gen2_execution_environment": {
+          "type": "boolean"
+        },
+        "iap_config": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "iam": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "iam_additive": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "ingress": {
+          "type": "string"
+        },
+        "invoker_iam_disabled": {
+          "type": "boolean"
+        },
+        "max_concurrency": {
+          "type": "number"
+        },
+        "multi_region_settings": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "regions": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "required": [
+            "regions"
+          ]
+        },
+        "scaling": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "max_instance_count": {
+              "type": "number"
+            },
+            "min_instance_count": {
+              "type": "number"
+            }
+          }
+        },
+        "timeout": {
+          "type": "string"
+        },
+        "traffic": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "percent": {
+                "type": "number"
+              },
+              "revision": {
+                "type": "string"
+              },
+              "tag": {
+                "type": "string"
+              },
+              "type": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "tag_bindings": {
+      "description": "Tag bindings for this service, in key => tag value id format.",
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "type": {
+      "description": "Type of Cloud Run resource to deploy: JOB, SERVICE or WORKERPOOL.",
+      "type": "string"
+    },
+    "volumes": {
+      "description": "Named volumes in containers in name => attributes format.",
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "secret": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "default_mode": {
+                "type": "string"
+              },
+              "path": {
+                "type": "string"
+              },
+              "version": {
+                "type": "string"
+              },
+              "mode": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "name"
+            ]
+          },
+          "cloud_sql_instances": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "empty_dir_size": {
+            "type": "string"
+          },
+          "gcs": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "bucket": {
+                "type": "string"
+              },
+              "is_read_only": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "bucket"
+            ]
+          },
+          "nfs": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "server": {
+                "type": "string"
+              },
+              "path": {
+                "type": "string"
+              },
+              "is_read_only": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "server"
+            ]
+          }
+        }
+      }
+    },
+    "vpc_connector_create": {
+      "description": "VPC connector network configuration. Must be provided if new VPC connector is being created.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "ip_cidr_range": {
+          "type": "string"
+        },
+        "machine_type": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "network": {
+          "type": "string"
+        },
+        "instances": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "max": {
+              "type": "number"
+            },
+            "min": {
+              "type": "number"
+            }
+          }
+        },
+        "throughput": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "max": {
+              "type": "number"
+            },
+            "min": {
+              "type": "number"
+            }
+          }
+        },
+        "subnet": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "project_id": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "workerpool_config": {
+      "description": "Cloud Run Worker Pool specific configuration.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "scaling": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "manual_instance_count": {
+              "type": "number"
+            },
+            "max_instance_count": {
+              "type": "number"
+            },
+            "min_instance_count": {
+              "type": "number"
+            },
+            "mode": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "iam": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

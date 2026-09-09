@@ -30,12 +30,14 @@ Resources created within the factory enrich the context for downstream resources
 
 | Resource Type | Enriches Context Key | Key format |
 |---------------|---------------------|------------|
+| `net-address` | `addresses` | `NAME` (address name) |
 | `iam-service-account` | `iam_principals`, `service_account_ids` | `service_accounts/NAME` (project-factory convention) |
 | `gcs` | `storage_buckets` | `NAME` |
 | `pubsub` | `pubsub_topics` | `NAME` |
 | `bigquery-dataset` | `bigquery_datasets` | `NAME` |
 | `secret-manager` | `secrets` | `NAME` (secret id), `NAME/VERSION` (version id) |
 | `artifact-registry` | `artifact_registries` | `NAME` |
+| `compute-vm` | `instance_groups` | `NAME` (when `group` is set) |
 
 External static references via `var.context` are merged with factory-created enrichments.
 
@@ -54,17 +56,19 @@ This ensures every module sees both the external references and the internally-c
 
 Only `iam-service-account` uses the two-phase split pattern (create + IAM, like the project-factory). All other modules get IAM inline in a single call.
 
-## Resource Types (10)
+## Resource Types (12)
 
 | Phase | Resource Type | Module Source | Enriches Context | IAM Split |
 |-------|--------------|---------------|------------------|-----------|
-| 1 | service-accounts | `iam-service-account` | `iam_principals` | Yes |
+| 1 | net-address | `net-address` | `addresses` | No |
+| 1 | service-accounts | `iam-service-account` | `iam_principals`, `service_account_ids` | Yes |
 | 2 | gcs | `gcs` | `storage_buckets` | No |
 | 2 | pubsub | `pubsub` | `pubsub_topics` | No |
 | 2 | bigquery | `bigquery-dataset` | `datasets` | No |
 | 2 | secret-manager | `secret-manager` | `secrets` | No |
-| 2 | artifact-registry | `artifact-registry` | `artifact_registries` | No |
-| 3 | compute-vm | `compute-vm` | — | No |
+| 2 | artifact-registry | `artifact-registry` | `artifact_registries` | Yes (virtual repositories in second pass) |
+| 3 | cloud-run | `cloud-run-v2` | — | No |
+| 3 | compute-vm | `compute-vm` | `instance_groups` | No |
 | 3 | cloudsql | `cloudsql-instance` | — | No |
 | 4 | net-lb-int | `net-lb-int` | — | No |
 | 4 | net-lb-app-int | `net-lb-app-int` | — | No |
@@ -74,12 +78,14 @@ Only `iam-service-account` uses the two-phase split pattern (create + IAM, like 
 - **Phase 1**: Service accounts are created first, enriching `iam_principals` for all subsequent phases.
 - **Phase 2**: Storage, messaging, data, and security resources. Can reference service accounts. Enrich their respective context keys.
 - **Phase 3**: Compute and database resources. Can reference everything from phases 1-2.
-- **Phase 4**: Load balancers. Ordered after VMs from phase 3 via module-level `depends_on` (instance group references are still static; context enrichment for instance groups is a possible follow-up).
+- **Phase 4**: Load balancers. Can reference instance groups from phase 3 via `$instance_groups:NAME`.
 
 ## YAML Structure
 
 ```
 <basepath>/
+  net-address/
+    addresses.yaml
   service-accounts/
     sa-name.yaml
   gcs/
@@ -92,6 +98,8 @@ Only `iam-service-account` uses the two-phase split pattern (create + IAM, like 
     secret-name.yaml
   artifact-registry/
     repo-name.yaml
+  cloud-run/
+    service-name.yaml
   compute-vm/
     vm-name.yaml
   cloudsql/
@@ -104,31 +112,13 @@ Only `iam-service-account` uses the two-phase split pattern (create + IAM, like 
 
 Each YAML file's schema matches the corresponding low-level module's variable types. Fields are accessed via `try` statements to protect the lower-level interface.
 
-Exception: `secret-manager` files map to one module instance each and can define multiple secrets via the `secrets` map, mirroring the module interface. Secret names must be unique across files.
+Exception: `secret-manager` and `net-address` files map to one module instance each and can define multiple secrets/addresses via maps, mirroring the module interfaces. Names must be unique across files.
 
 ## `factories_config` Variable
 
 Same pattern as project-factory: a `basepath` plus per-resource-type relative paths.
 
-```hcl
-variable "factories_config" {
-  type = object({
-    basepath = string
-    paths = optional(object({
-      service_accounts  = optional(string, "service-accounts")
-      gcs               = optional(string, "gcs")
-      pubsub            = optional(string, "pubsub")
-      bigquery          = optional(string, "bigquery")
-      secret_manager    = optional(string, "secret-manager")
-      artifact_registry = optional(string, "artifact-registry")
-      compute_vm        = optional(string, "compute-vm")
-      cloudsql          = optional(string, "cloudsql")
-      net_lb_int        = optional(string, "net-lb-int")
-      net_lb_app_int    = optional(string, "net-lb-app-int")
-    }), {})
-  })
-}
-```
+See `variables.tf`, the paths object has one key per resource type (`artifact_registry`, `bigquery`, `cloud_run`, `cloudsql`, `compute_vm`, `gcs`, `net_address`, `net_lb_app_int`, `net_lb_int`, `pubsub`, `secret_manager`, `service_accounts`).
 
 ## Outputs
 
@@ -136,13 +126,15 @@ Each resource type exposes its own output, keyed by resource name, surfacing the
 
 | Output | Source | Description |
 | ------ | ------ | ----------- |
-| `service_accounts` | `module.service-accounts` | SA emails, IAM emails, keys |
+| `net_address` | `module.net-address` | Reserved IP addresses |
+| `service_accounts` | `module.service-accounts` | SA emails, IAM emails, ids |
 | `gcs` | `module.gcs` | Bucket names, URLs |
 | `pubsub` | `module.pubsub` | Topic IDs, subscription IDs |
 | `bigquery` | `module.bigquery` | Dataset IDs |
 | `secret_manager` | `module.secret-manager` | Secret IDs, versions |
 | `artifact_registry` | `module.artifact-registry` | Repository IDs |
-| `compute_vm` | `module.compute-vm` | Instance IDs, IPs |
+| `cloud_run` | `module.cloud-run` | Service URIs, ids |
+| `compute_vm` | `module.compute-vm` | Instance IDs, IPs, instance group self links |
 | `cloudsql` | `module.cloudsql` | Instance names, connection names, IPs |
 | `net_lb_int` | `module.net-lb-int` | Forwarding rule IDs, IPs |
 | `net_lb_app_int` | `module.net-lb-app-int` | Forwarding rule IDs, IPs |
@@ -187,7 +179,7 @@ Outputs expose a curated set of non-sensitive attributes for each resource, as s
 | T17 | Ensure YAML schemas for resource types also supported by `project-factory` are reused from there |
 | T18 | Tooling to keep wrappers and schemas aligned with the wrapped modules' variables (schemas are currently derived from `variables.tf` via a throwaway script) |
 | T19 | Add the module to `FACTORIES.md` and a `tests/modules` inventory-based test |
-| T20 | Context enrichment for instance groups (`compute-vm` → load balancer backends) to replace `depends_on` |
+| T20 | ~~Context enrichment for instance groups (`compute-vm` → load balancer backends) to replace `depends_on`~~ |
 
 ## Patterns to Follow
 

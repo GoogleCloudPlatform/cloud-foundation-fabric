@@ -12,23 +12,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# yaml-language-server: $schema=../../schemas/net-lb-int.schema.json
+# yaml-language-server: $schema=../../schemas/net-address.schema.json
 
-# Internal TCP load balancer for application traffic.
+# Reserved addresses for the application load balancers.
+# Address names are used as keys in the addresses context.
 
 project_id: $project_ids:app-project
-region: europe-west1
-vpc_config:
-  network: $networks:app-vpc
-  subnetwork: $subnets:app-subnet
-backends:
-  - group: $instance_groups:app-server
-forwarding_rules_config:
-  "":
-    address: $addresses:app-lb
-    ports:
-      - "8080"
-    protocol: TCP
-health_check_config:
-  tcp:
-    port: 8080
+internal_addresses:
+  app-lb:
+    region: $locations:primary
+    subnetwork: $subnets:app-subnet
+    address: 10.0.0.10
+  app-http-lb:
+    region: $locations:primary
+    subnetwork: $subnets:app-subnet
+    address: 10.0.0.11

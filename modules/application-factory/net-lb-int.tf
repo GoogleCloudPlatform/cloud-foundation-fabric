@@ -44,6 +44,5 @@ module "net-lb-int" {
     tcp = { port_specification = "USE_SERVING_PORT" }
   })
   service_attachments = try(each.value.service_attachments, null)
-  context             = local.ctx_phase_3
-  depends_on          = [module.compute-vm]
+  context             = local.ctx_phase_4
 }

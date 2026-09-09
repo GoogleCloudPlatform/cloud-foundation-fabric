@@ -1,0 +1,266 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Reserved IP Addresses",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "external_addresses": {
+      "description": "Map of external addresses, keyed by name.",
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "region": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "ipv6": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "endpoint_type": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "endpoint_type"
+            ]
+          },
+          "labels": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "name": {
+            "type": "string"
+          },
+          "subnetwork": {
+            "type": "string"
+          },
+          "tier": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "region"
+        ]
+      }
+    },
+    "global_addresses": {
+      "description": "List of global addresses to create.",
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "description": {
+            "type": "string"
+          },
+          "ipv6": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "name": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "internal_addresses": {
+      "description": "Map of internal addresses to create, keyed by name.",
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "region": {
+            "type": "string"
+          },
+          "subnetwork": {
+            "type": "string"
+          },
+          "address": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "ipv6": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "labels": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "name": {
+            "type": "string"
+          },
+          "purpose": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "region",
+          "subnetwork"
+        ]
+      }
+    },
+    "ipsec_interconnect_addresses": {
+      "description": "Map of internal addresses used for HPA VPN over Cloud Interconnect.",
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "address": {
+            "type": "string"
+          },
+          "network": {
+            "type": "string"
+          },
+          "region": {
+            "type": "string"
+          },
+          "prefix_length": {
+            "type": "number"
+          },
+          "description": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "address",
+          "network",
+          "region",
+          "prefix_length"
+        ]
+      }
+    },
+    "network_attachments": {
+      "description": "PSC network attachments, names as keys.",
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "subnet_self_link": {
+            "type": "string"
+          },
+          "automatic_connection": {
+            "type": "boolean"
+          },
+          "description": {
+            "type": "string"
+          },
+          "producer_accept_lists": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "producer_reject_lists": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "subnet_self_link"
+        ]
+      }
+    },
+    "project_id": {
+      "description": "Project where the addresses will be created.",
+      "type": "string"
+    },
+    "psa_addresses": {
+      "description": "Map of internal addresses used for Private Service Access.",
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "address": {
+            "type": "string"
+          },
+          "network": {
+            "type": "string"
+          },
+          "prefix_length": {
+            "type": "number"
+          },
+          "description": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "address",
+          "network",
+          "prefix_length"
+        ]
+      }
+    },
+    "psc_addresses": {
+      "description": "Map of internal addresses used for Private Service Connect.",
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "address": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "network": {
+            "type": "string"
+          },
+          "region": {
+            "type": "string"
+          },
+          "subnet_self_link": {
+            "type": "string"
+          },
+          "service_attachment": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "psc_service_attachment_link": {
+                "type": "string"
+              },
+              "global_access": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "psc_service_attachment_link"
+            ]
+          }
+        }
+      }
+    }
+  },
+  "$defs": {}
+}

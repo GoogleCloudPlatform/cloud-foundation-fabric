@@ -19,7 +19,9 @@
 output "artifact_registry" {
   description = "Artifact Registry repositories."
   value = {
-    for k, v in module.artifact-registry : k => {
+    for k, v in merge(
+      module.artifact-registry, module.artifact-registry-virtual
+      ) : k => {
       id   = v.id
       name = v.name
       url  = v.url
@@ -38,6 +40,20 @@ output "bigquery" {
       self_link             = v.self_link
       table_ids             = v.table_ids
       view_ids              = v.view_ids
+    }
+  }
+}
+
+output "cloud_run" {
+  description = "Cloud Run services, jobs and worker pools."
+  value = {
+    for k, v in module.cloud-run : k => {
+      id                        = v.id
+      service_account_email     = v.service_account_email
+      service_account_iam_email = v.service_account_iam_email
+      service_name              = v.service_name
+      service_uri               = v.service_uri
+      vpc_connector             = v.vpc_connector
     }
   }
 }
@@ -83,7 +99,7 @@ output "compute_vm" {
 
 output "context" {
   description = "Context enriched with factory-managed resources, for use in downstream modules."
-  value       = local.ctx_phase_3
+  value       = local.ctx_phase_4
 }
 
 output "gcs" {
@@ -95,6 +111,11 @@ output "gcs" {
       url  = v.url
     }
   }
+}
+
+output "net_address" {
+  description = "Reserved IP addresses, keyed by address name."
+  value       = local.net_addresses
 }
 
 output "net_lb_app_int" {

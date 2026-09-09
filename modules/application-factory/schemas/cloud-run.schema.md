@@ -1,0 +1,132 @@
+# Cloud Run
+
+<!-- markdownlint-disable MD036 -->
+
+## Properties
+
+*additional properties: false*
+
+- **binary_authorization**: *object*
+  <br>*additional properties: false*
+  - **breakglass_justification**: *string*
+  - **policy**: *string*
+  - **use_default**: *boolean*
+- **containers**: *object*
+  <br>*additional properties: object*
+- **deletion_protection**: *string*
+- **encryption_key**: *string*
+- **iam**: *reference([iam](#refs-iam))*
+- **job_config**: *object*
+  <br>*additional properties: false*
+  - **max_retries**: *number*
+  - **task_count**: *number*
+  - **timeout**: *string*
+- **labels**: *object*
+  <br>*additional properties: string*
+- **launch_stage**: *string*
+- **managed_revision**: *boolean*
+- **name**: *string*
+- **project_id**: *string*
+- ⁺**region**: *string*
+- **revision**: *object*
+  <br>*additional properties: false*
+  - **gpu_zonal_redundancy_disabled**: *boolean*
+  - **labels**: *object*
+    <br>*additional properties: string*
+  - **name**: *string*
+  - **node_selector**: *object*
+    <br>*additional properties: false*
+    - ⁺**accelerator**: *string*
+  - **vpc_access**: *object*
+    <br>*additional properties: false*
+    - **connector**: *string*
+    - **egress**: *string*
+    - **network**: *string*
+    - **subnet**: *string*
+    - **tags**: *array*
+      - items: *string*
+  - **timeout**: *string*
+- **service_account_config**: *object*
+  <br>*additional properties: false*
+  - **create**: *boolean*
+  - **display_name**: *string*
+  - **email**: *string*
+  - **name**: *string*
+  - **roles**: *array*
+    - items: *string*
+- **service_config**: *object*
+  <br>*additional properties: false*
+  - **custom_audiences**: *array*
+    - items: *string*
+  - **default_uri_disabled**: *boolean*
+  - **eventarc_triggers**: *object*
+    <br>*additional properties: false*
+    - **audit_log**: *object*
+      <br>*additional properties: object*
+    - **pubsub**: *object*
+      <br>*additional properties: string*
+    - **storage**: *object*
+      <br>*additional properties: object*
+    - **service_account_email**: *string*
+  - **gen2_execution_environment**: *boolean*
+  - **iap_config**: *object*
+    <br>*additional properties: false*
+    - **iam**: *array*
+      - items: *string*
+    - **iam_additive**: *array*
+      - items: *string*
+  - **ingress**: *string*
+  - **invoker_iam_disabled**: *boolean*
+  - **max_concurrency**: *number*
+  - **multi_region_settings**: *object*
+    <br>*additional properties: false*
+    - ⁺**regions**: *array*
+      - items: *string*
+  - **scaling**: *object*
+    <br>*additional properties: false*
+    - **max_instance_count**: *number*
+    - **min_instance_count**: *number*
+  - **timeout**: *string*
+  - **traffic**: *array*
+    - items: *object*
+      <br>*additional properties: false*
+      - **percent**: *number*
+      - **revision**: *string*
+      - **tag**: *string*
+      - **type**: *string*
+- **tag_bindings**: *object*
+  <br>*additional properties: string*
+- **type**: *string*
+- **volumes**: *object*
+  <br>*additional properties: object*
+- **vpc_connector_create**: *object*
+  <br>*additional properties: false*
+  - **ip_cidr_range**: *string*
+  - **machine_type**: *string*
+  - **name**: *string*
+  - **network**: *string*
+  - **instances**: *object*
+    <br>*additional properties: false*
+    - **max**: *number*
+    - **min**: *number*
+  - **throughput**: *object*
+    <br>*additional properties: false*
+    - **max**: *number*
+    - **min**: *number*
+  - **subnet**: *object*
+    <br>*additional properties: false*
+    - **name**: *string*
+    - **project_id**: *string*
+- **workerpool_config**: *object*
+  <br>*additional properties: false*
+  - **scaling**: *object*
+    <br>*additional properties: false*
+    - **manual_instance_count**: *number*
+    - **max_instance_count**: *number*
+    - **min_instance_count**: *number*
+    - **mode**: *string*
+
+## Definitions
+
+- **iam**<a name="refs-iam"></a>: *object*
+  <br>*additional properties: array*

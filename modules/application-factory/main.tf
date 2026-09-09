@@ -28,7 +28,18 @@ locals {
   }
   # context enrichments from factory-managed resources, each one is
   # only passed to modules in later phases to avoid dependency cycles
-  # phase 1: service accounts
+  # phase 1: service accounts and addresses
+  ctx_addresses = merge(local.ctx.addresses, local.net_addresses)
+  net_addresses = merge([
+    for k, v in module.net-address : merge(
+      { for kk, vv in v.external_addresses : kk => vv.address },
+      { for kk, vv in v.global_addresses : kk => vv.address },
+      { for kk, vv in v.internal_addresses : kk => vv.address },
+      { for kk, vv in v.ipsec_interconnect_addresses : kk => vv.address },
+      { for kk, vv in v.psa_addresses : kk => vv.address },
+      { for kk, vv in v.psc_addresses : kk => vv.address }
+    )
+  ]...)
   ctx_iam_principals = merge(local.ctx.iam_principals, {
     for k, v in module.service-accounts :
     "service_accounts/${k}" => v.iam_email
@@ -38,10 +49,11 @@ locals {
     "service_accounts/${k}" => v.id
   })
   # phase 2: storage, messaging, data, security resources
-  ctx_artifact_registries = merge(local.ctx.artifact_registries, {
-    for k, v in module.artifact-registry :
-    k => v.id
-  })
+  ctx_artifact_registries = merge(
+    local.ctx.artifact_registries,
+    { for k, v in module.artifact-registry : k => v.id },
+    { for k, v in module.artifact-registry-virtual : k => v.id }
+  )
   ctx_bigquery_datasets = merge(local.ctx.bigquery_datasets, {
     for k, v in module.bigquery :
     k => v.id
@@ -60,20 +72,27 @@ locals {
     for k, v in module.gcs :
     k => v.name
   })
+  # phase 3: compute resources
+  ctx_instance_groups = merge(local.ctx.instance_groups, {
+    for k, v in module.compute-vm :
+    k => v.group.self_link if v.group != null
+  })
   # context passed to phase 2 modules
   ctx_phase_2 = merge(local.ctx, {
+    addresses           = local.ctx_addresses
     iam_principals      = local.ctx_iam_principals
     service_account_ids = local.ctx_service_account_ids
   })
-  # context passed to phase 3 and 4 modules
-  ctx_phase_3 = merge(local.ctx, {
+  # context passed to phase 3 modules
+  ctx_phase_3 = merge(local.ctx_phase_2, {
     artifact_registries = local.ctx_artifact_registries
     bigquery_datasets   = local.ctx_bigquery_datasets
-    iam_principals      = local.ctx_iam_principals
     pubsub_topics       = local.ctx_pubsub_topics
     secrets             = local.ctx_secrets
-    service_account_ids = local.ctx_service_account_ids
     storage_buckets     = local.ctx_storage_buckets
   })
+  # context passed to phase 4 modules
+  ctx_phase_4 = merge(local.ctx_phase_3, {
+    instance_groups = local.ctx_instance_groups
+  })
 }
-

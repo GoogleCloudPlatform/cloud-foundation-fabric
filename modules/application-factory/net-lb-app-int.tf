@@ -49,6 +49,5 @@ module "net-lb-app-int" {
   service_directory_registration = try(each.value.service_directory_registration, null)
   ssl_certificates               = try(each.value.ssl_certificates, {})
   urlmap_config                  = try(each.value.urlmap_config, {})
-  context                        = local.ctx_phase_3
-  depends_on                     = [module.compute-vm]
+  context                        = local.ctx_phase_4
 }

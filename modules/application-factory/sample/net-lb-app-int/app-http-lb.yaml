@@ -19,13 +19,14 @@
 project_id: $project_ids:app-project
 region: europe-west1
 protocol: HTTP
+address: $addresses:app-http-lb
 vpc_config:
   network: $networks:app-vpc
   subnetwork: $subnets:proxy-subnet
 backend_service_configs:
   default:
     backends:
-      - group: instance-group-self-link
+      - group: $instance_groups:app-server
     health_checks:
       - default
     port_name: http
