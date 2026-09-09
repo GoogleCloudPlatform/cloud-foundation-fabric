@@ -1064,12 +1064,10 @@ values:
   module.project-factory.terraform_data.defaults_preconditions:
     input: null
     output: null
-    store: null
     triggers_replace: null
   module.project-factory.terraform_data.project_preconditions:
     input: null
     output: null
-    store: null
     triggers_replace: null
 
 counts:
