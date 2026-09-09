@@ -348,6 +348,19 @@ values:
     project: bar-test-2
     service: storage.googleapis.com
     timeouts: null
+  ? module.project-factory.module.service-accounts-iam["test-2/bindings-additive-only"].google_service_account_iam_member.bindings["key-admin"]
+  : condition: []
+    member: user:user1@example.com
+    role: roles/iam.serviceAccountKeyAdmin
+  ? module.project-factory.module.service-accounts-iam["test-2/bindings-additive-only"].google_service_account_iam_member.bindings["token-creator"]
+  : condition: []
+    member: serviceAccount:bindings-only@bar-test-2.iam.gserviceaccount.com
+    role: roles/iam.serviceAccountTokenCreator
+  ? module.project-factory.module.service-accounts-iam["test-2/bindings-only"].google_service_account_iam_binding.bindings["token-creator"]
+  : condition: []
+    members:
+    - user:user1@example.com
+    role: roles/iam.serviceAccountTokenCreator
   module.project-factory.module.service-accounts["test-0/tag-test"].google_service_account.service_account[0]:
     account_id: tag-test
     create_ignore_already_exists: null
@@ -372,6 +385,28 @@ values:
     member: serviceAccount:tag-test@test-1.iam.gserviceaccount.com
     project: test-1
     timeouts: null
+  module.project-factory.module.service-accounts["test-2/bindings-additive-only"].google_service_account.service_account[0]:
+    account_id: bindings-additive-only
+    create_ignore_already_exists: null
+    deletion_policy: DELETE
+    description: null
+    disabled: false
+    display_name: Terraform-managed.
+    email: bindings-additive-only@bar-test-2.iam.gserviceaccount.com
+    member: serviceAccount:bindings-additive-only@bar-test-2.iam.gserviceaccount.com
+    project: bar-test-2
+    timeouts: null
+  module.project-factory.module.service-accounts["test-2/bindings-only"].google_service_account.service_account[0]:
+    account_id: bindings-only
+    create_ignore_already_exists: null
+    deletion_policy: DELETE
+    description: null
+    disabled: false
+    display_name: Terraform-managed.
+    email: bindings-only@bar-test-2.iam.gserviceaccount.com
+    member: serviceAccount:bindings-only@bar-test-2.iam.gserviceaccount.com
+    project: bar-test-2
+    timeouts: null
   module.project-factory.terraform_data.defaults_preconditions:
     input: null
     output: null
@@ -391,7 +426,9 @@ counts:
   google_project_service_identity: 3
   google_pubsub_topic: 1
   google_pubsub_topic_iam_binding: 1
-  google_service_account: 3
+  google_service_account: 5
+  google_service_account_iam_binding: 1
+  google_service_account_iam_member: 2
   google_storage_bucket: 2
   google_storage_notification: 1
   google_storage_project_service_account: 1
@@ -399,8 +436,8 @@ counts:
   google_tags_tag_key: 1
   google_tags_tag_value: 1
   google_tags_tag_value_iam_binding: 1
-  modules: 12
-  resources: 44
+  modules: 16
+  resources: 49
   terraform_data: 2
 
 outputs: {}
