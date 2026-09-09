@@ -138,6 +138,15 @@ values:
       goog-terraform-provisioned: 'true'
     timeouts: null
     zone: europe-west8-a
+  google_compute_instance_group.unmanaged[0]:
+    description: Managed by the compute-vm Terraform module.
+    name: test
+    named_port:
+    - name: http
+      port: 80
+    network: projects/foo-dev-net-spoke-0/global/networks/dev-spoke-0
+    project: foo-test-0
+    zone: europe-west8-a
   google_compute_instance_iam_binding.default["$custom_roles:myrole_one"]:
     condition: []
     instance_name: test
@@ -173,7 +182,8 @@ values:
 counts:
   google_compute_disk: 1
   google_compute_instance: 1
+  google_compute_instance_group: 1
   google_compute_instance_iam_binding: 1
   google_tags_location_tag_binding: 6
   modules: 0
-  resources: 9
+  resources: 10

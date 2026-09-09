@@ -39,6 +39,11 @@ context = {
     }
   }
 }
+group = {
+  named_ports = {
+    http = 80
+  }
+}
 encryption = {
   encrypt_boot      = true
   kms_key_self_link = "$kms_keys:test"

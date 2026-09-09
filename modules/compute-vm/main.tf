@@ -112,7 +112,11 @@ resource "google_compute_instance_group" "unmanaged" {
   project = local.project_id
   network = (
     length(var.network_interfaces) > 0
-    ? var.network_interfaces[0].network
+    ? lookup(
+      local.ctx.networks,
+      var.network_interfaces[0].network,
+      var.network_interfaces[0].network
+    )
     : ""
   )
   zone        = local.zone
