@@ -1,0 +1,228 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Artifact Registry",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["format", "location"],
+  "properties": {
+    "project_id": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string",
+      "description": "Override resource name derived from filename."
+    },
+    "location": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "encryption_key": {
+      "type": "string"
+    },
+    "enable_vulnerability_scanning": {
+      "type": "boolean"
+    },
+    "cleanup_policy_dry_run": {
+      "type": "boolean"
+    },
+    "cleanup_policies": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["action"],
+        "additionalProperties": false,
+        "properties": {
+          "action": { "type": "string" },
+          "condition": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "tag_state": { "type": "string" },
+              "tag_prefixes": { "type": "array", "items": { "type": "string" } },
+              "older_than": { "type": "string" },
+              "newer_than": { "type": "string" },
+              "package_name_prefixes": { "type": "array", "items": { "type": "string" } },
+              "version_name_prefixes": { "type": "array", "items": { "type": "string" } }
+            }
+          },
+          "most_recent_versions": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "package_name_prefixes": { "type": "array", "items": { "type": "string" } },
+              "keep_count": { "type": "number" }
+            }
+          }
+        }
+      }
+    },
+    "format": {
+      "type": "object",
+      "description": "Repository format. Exactly one format key must be set.",
+      "additionalProperties": false,
+      "properties": {
+        "docker": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "standard": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "immutable_tags": { "type": "boolean" }
+              }
+            },
+            "remote": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "public_repository": { "type": "string" },
+                "common_repository": { "type": "string" },
+                "custom_repository": { "type": "string" },
+                "disable_upstream_validation": { "type": "boolean" }
+              }
+            }
+          }
+        },
+        "maven": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "standard": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "allow_snapshot_overwrites": { "type": "boolean" },
+                "version_policy": { "type": "string" }
+              }
+            }
+          }
+        },
+        "npm": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "standard": { "type": "boolean" }
+          }
+        },
+        "python": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "standard": { "type": "boolean" }
+          }
+        },
+        "apt": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "standard": { "type": "boolean" }
+          }
+        },
+        "yum": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "standard": { "type": "boolean" }
+          }
+        },
+        "go": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "standard": { "type": "boolean" }
+          }
+        },
+        "kfp": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "standard": { "type": "boolean" }
+          }
+        },
+        "generic": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "standard": { "type": "boolean" }
+          }
+        },
+        "googet": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "standard": { "type": "boolean" }
+          }
+        }
+      }
+    },
+    "labels": {
+      "type": "object",
+      "additionalProperties": { "type": "string" }
+    },
+    "tag_bindings": {
+      "type": "object",
+      "additionalProperties": { "type": "string" }
+    },
+    "iam": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "array",
+        "items": { "type": "string" }
+      }
+    },
+    "iam_bindings": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["members", "role"],
+        "additionalProperties": false,
+        "properties": {
+          "members": { "type": "array", "items": { "type": "string" } },
+          "role": { "type": "string" },
+          "condition": {
+            "type": "object",
+            "required": ["expression", "title"],
+            "additionalProperties": false,
+            "properties": {
+              "expression": { "type": "string" },
+              "title": { "type": "string" },
+              "description": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "iam_bindings_additive": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["member", "role"],
+        "additionalProperties": false,
+        "properties": {
+          "member": { "type": "string" },
+          "role": { "type": "string" },
+          "condition": {
+            "type": "object",
+            "required": ["expression", "title"],
+            "additionalProperties": false,
+            "properties": {
+              "expression": { "type": "string" },
+              "title": { "type": "string" },
+              "description": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "iam_by_principals": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "array",
+        "items": { "type": "string" }
+      }
+    }
+  }
+}

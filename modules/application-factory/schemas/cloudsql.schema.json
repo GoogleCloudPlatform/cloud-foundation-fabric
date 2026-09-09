@@ -1,0 +1,225 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Cloud SQL Instance",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["database_version", "tier", "region", "network_config"],
+  "properties": {
+    "project_id": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string",
+      "description": "Override resource name derived from filename."
+    },
+    "database_version": {
+      "type": "string"
+    },
+    "tier": {
+      "type": "string"
+    },
+    "region": {
+      "type": "string"
+    },
+    "prefix": {
+      "type": "string"
+    },
+    "activation_policy": {
+      "type": "string",
+      "enum": ["ALWAYS", "NEVER", "ON_DEMAND"]
+    },
+    "availability_type": {
+      "type": "string",
+      "enum": ["ZONAL", "REGIONAL"]
+    },
+    "backup_configuration": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "binary_log_enabled": { "type": "boolean" },
+        "start_time": { "type": "string" },
+        "location": { "type": "string" },
+        "log_retention_days": { "type": "number" },
+        "point_in_time_recovery_enabled": { "type": "boolean" },
+        "retention_count": { "type": "number" },
+        "retain_backups_on_delete": { "type": "boolean" }
+      }
+    },
+    "collation": {
+      "type": "string"
+    },
+    "connector_enforcement": {
+      "type": "string"
+    },
+    "data_cache": {
+      "type": "boolean"
+    },
+    "databases": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "disk_autoresize_limit": {
+      "type": "number"
+    },
+    "disk_size": {
+      "type": "number"
+    },
+    "disk_type": {
+      "type": "string",
+      "enum": ["PD_SSD", "PD_HDD"]
+    },
+    "edition": {
+      "type": "string",
+      "enum": ["ENTERPRISE", "ENTERPRISE_PLUS"]
+    },
+    "encryption_key_name": {
+      "type": "string"
+    },
+    "flags": {
+      "type": "object",
+      "additionalProperties": { "type": "string" }
+    },
+    "gcp_deletion_protection": {
+      "type": "boolean"
+    },
+    "terraform_deletion_protection": {
+      "type": "boolean"
+    },
+    "insights_config": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "query_string_length": { "type": "number" },
+        "record_application_tags": { "type": "boolean" },
+        "record_client_address": { "type": "boolean" },
+        "query_plans_per_minute": { "type": "number" }
+      }
+    },
+    "labels": {
+      "type": "object",
+      "additionalProperties": { "type": "string" }
+    },
+    "maintenance_config": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "maintenance_window": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "day": { "type": "number" },
+            "hour": { "type": "number" },
+            "update_track": { "type": "string" }
+          }
+        },
+        "deny_maintenance_period": {
+          "type": "object",
+          "required": ["start_date", "end_date"],
+          "additionalProperties": false,
+          "properties": {
+            "start_date": { "type": "string" },
+            "end_date": { "type": "string" },
+            "start_time": { "type": "string" }
+          }
+        }
+      }
+    },
+    "network_config": {
+      "type": "object",
+      "required": ["connectivity"],
+      "additionalProperties": false,
+      "properties": {
+        "authorized_networks": {
+          "type": "object",
+          "additionalProperties": { "type": "string" }
+        },
+        "connectivity": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "public_ipv4": { "type": "boolean" },
+            "psa_config": {
+              "type": "object",
+              "required": ["private_network"],
+              "additionalProperties": false,
+              "properties": {
+                "private_network": { "type": "string" },
+                "allocated_ip_ranges": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "primary": { "type": "string" },
+                    "replica": { "type": "string" }
+                  }
+                }
+              }
+            },
+            "psc_allowed_consumer_projects": {
+              "type": "array",
+              "items": { "type": "string" }
+            },
+            "enable_private_path_for_services": { "type": "boolean" }
+          }
+        }
+      }
+    },
+    "replicas": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["region"],
+        "additionalProperties": false,
+        "properties": {
+          "region": { "type": "string" },
+          "encryption_key_name": { "type": "string" },
+          "availability_type": { "type": "string" }
+        }
+      }
+    },
+    "root_password": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "password": { "type": "string" },
+        "random_password": { "type": "boolean" }
+      }
+    },
+    "ssl": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "client_certificates": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "mode": {
+          "type": "string",
+          "enum": [
+            "ALLOW_UNENCRYPTED_AND_ENCRYPTED",
+            "ENCRYPTED_ONLY",
+            "TRUSTED_CLIENT_CERTIFICATE_REQUIRED"
+          ]
+        }
+      }
+    },
+    "time_zone": {
+      "type": "string"
+    },
+    "users": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "password": { "type": "string" },
+          "password_version": { "type": "number" },
+          "type": {
+            "type": "string",
+            "enum": ["BUILT_IN", "CLOUD_IAM_USER", "CLOUD_IAM_SERVICE_ACCOUNT"]
+          }
+        }
+      }
+    }
+  }
+}

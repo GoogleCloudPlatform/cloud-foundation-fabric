@@ -1,0 +1,45 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# yaml-language-server: $schema=../../schemas/cloudsql.schema.json
+
+# PostgreSQL database for the application.
+
+project_id: $project_ids:app-project
+database_version: POSTGRES_15
+tier: db-custom-2-8192
+region: europe-west1
+availability_type: REGIONAL
+disk_size: 20
+disk_type: PD_SSD
+databases:
+  - app
+  - app_test
+backup_configuration:
+  enabled: true
+  point_in_time_recovery_enabled: true
+  retention_count: 14
+network_config:
+  connectivity:
+    psa_config:
+      private_network: projects/net-project/global/networks/app-vpc
+gcp_deletion_protection: false
+terraform_deletion_protection: false
+flags:
+  log_min_duration_statement: "1000"
+users:
+  app-user:
+    type: CLOUD_IAM_SERVICE_ACCOUNT
+ssl:
+  mode: ENCRYPTED_ONLY

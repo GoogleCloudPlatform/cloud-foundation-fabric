@@ -1,0 +1,196 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "BigQuery Dataset",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "project_id": {
+      "type": "string"
+    },
+    "id": {
+      "type": "string",
+      "description": "Override dataset id derived from filename."
+    },
+    "description": {
+      "type": "string"
+    },
+    "friendly_name": {
+      "type": "string"
+    },
+    "location": {
+      "type": "string"
+    },
+    "labels": {
+      "type": "object",
+      "additionalProperties": { "type": "string" }
+    },
+    "encryption_key": {
+      "type": "string"
+    },
+    "options": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "default_collation": { "type": "string" },
+        "default_table_expiration_ms": { "type": "number" },
+        "default_partition_expiration_ms": { "type": "number" },
+        "delete_contents_on_destroy": { "type": "boolean" },
+        "is_case_insensitive": { "type": "boolean" },
+        "max_time_travel_hours": { "type": "number" },
+        "storage_billing_model": { "type": "string" }
+      }
+    },
+    "tables": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "deletion_protection": { "type": "boolean" },
+          "description": { "type": "string" },
+          "friendly_name": { "type": "string" },
+          "labels": { "type": "object", "additionalProperties": { "type": "string" } },
+          "require_partition_filter": { "type": "boolean" },
+          "schema": { "type": "string" },
+          "options": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "clustering": { "type": "array", "items": { "type": "string" } },
+              "encryption_key": { "type": "string" },
+              "expiration_time": { "type": "number" },
+              "max_staleness": { "type": "string" }
+            }
+          },
+          "partitioning": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "field": { "type": "string" },
+              "range": {
+                "type": "object",
+                "required": ["end", "interval", "start"],
+                "additionalProperties": false,
+                "properties": {
+                  "end": { "type": "number" },
+                  "interval": { "type": "number" },
+                  "start": { "type": "number" }
+                }
+              },
+              "time": {
+                "type": "object",
+                "required": ["type"],
+                "additionalProperties": false,
+                "properties": {
+                  "type": { "type": "string" },
+                  "expiration_ms": { "type": "number" },
+                  "field": { "type": "string" }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "views": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["query"],
+        "additionalProperties": false,
+        "properties": {
+          "query": { "type": "string" },
+          "deletion_protection": { "type": "boolean" },
+          "description": { "type": "string" },
+          "friendly_name": { "type": "string" },
+          "labels": { "type": "object", "additionalProperties": { "type": "string" } },
+          "use_legacy_sql": { "type": "boolean" }
+        }
+      }
+    },
+    "access": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["role", "type"],
+        "additionalProperties": false,
+        "properties": {
+          "role": { "type": "string" },
+          "type": {
+            "type": "string",
+            "enum": ["domain", "group", "special_group", "user", "view"]
+          }
+        }
+      }
+    },
+    "access_identities": {
+      "type": "object",
+      "additionalProperties": { "type": "string" }
+    },
+    "dataset_access": {
+      "type": "boolean"
+    },
+    "tag_bindings": {
+      "type": "object",
+      "additionalProperties": { "type": "string" }
+    },
+    "iam": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "array",
+        "items": { "type": "string" }
+      }
+    },
+    "iam_bindings": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["members", "role"],
+        "additionalProperties": false,
+        "properties": {
+          "members": { "type": "array", "items": { "type": "string" } },
+          "role": { "type": "string" },
+          "condition": {
+            "type": "object",
+            "required": ["expression", "title"],
+            "additionalProperties": false,
+            "properties": {
+              "expression": { "type": "string" },
+              "title": { "type": "string" },
+              "description": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "iam_bindings_additive": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["member", "role"],
+        "additionalProperties": false,
+        "properties": {
+          "member": { "type": "string" },
+          "role": { "type": "string" },
+          "condition": {
+            "type": "object",
+            "required": ["expression", "title"],
+            "additionalProperties": false,
+            "properties": {
+              "expression": { "type": "string" },
+              "title": { "type": "string" },
+              "description": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "iam_by_principals": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "array",
+        "items": { "type": "string" }
+      }
+    }
+  }
+}

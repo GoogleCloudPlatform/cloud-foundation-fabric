@@ -1,0 +1,46 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# yaml-language-server: $schema=../../schemas/compute-vm.schema.json
+
+# Main application server VM.
+
+project_id: $project_ids:app-project
+zone: europe-west1-b
+instance_type: e2-medium
+labels:
+  environment: dev
+  role: app-server
+boot_disk:
+  initialize_params:
+    image: projects/debian-cloud/global/images/family/debian-12
+    size: 20
+    type: pd-balanced
+network_interfaces:
+  - network: projects/net-project/global/networks/app-vpc
+    subnetwork: projects/net-project/regions/europe-west1/subnetworks/app-subnet
+service_account:
+  email: $iam_principals:app-sa
+  scopes:
+    - https://www.googleapis.com/auth/cloud-platform
+shielded_config:
+  enable_secure_boot: true
+  enable_vtpm: true
+  enable_integrity_monitoring: true
+tags:
+  - app
+  - http-server
+group:
+  named_ports:
+    http: 8080

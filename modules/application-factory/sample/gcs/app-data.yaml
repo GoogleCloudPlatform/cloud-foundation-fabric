@@ -1,0 +1,36 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# yaml-language-server: $schema=../../schemas/gcs.schema.json
+
+# Bucket for application data storage.
+
+project_id: $project_ids:app-project
+location: $locations:primary
+storage_class: STANDARD
+versioning: true
+labels:
+  environment: dev
+  team: platform
+uniform_bucket_level_access: true
+lifecycle_rules:
+  archive-old:
+    action:
+      type: SetStorageClass
+      storage_class: NEARLINE
+    condition:
+      age: 30
+iam:
+  roles/storage.objectViewer:
+    - $iam_principals:app-sa
