@@ -42,6 +42,12 @@ locals {
           }
         }
       }
+      bigquery_datasets = {
+        for sk, sv in lookup(v, "datasets", {}) :
+        "${k}/${sk}" => (
+          module.bigquery-datasets["${k}/${sk}"].id
+        )
+      }
       custom_roles = {
         for sk, sv in module.projects[k].custom_roles :
         "${k}/${sk}" => (
@@ -108,6 +114,13 @@ locals {
       }
     }
   )
+}
+
+output "bigquery_datasets" {
+  description = "BigQuery dataset ids."
+  value = merge([
+    for k, v in local.outputs_projects : v.bigquery_datasets
+  ]...)
 }
 
 output "custom_roles" {

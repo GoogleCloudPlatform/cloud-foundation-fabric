@@ -111,6 +111,9 @@ module "automation-bucket" {
     lookup(each.value, "location", null),
     local.data_defaults.defaults.locations.storage
   )
+  public_access_prevention = lookup(
+    each.value, "public_access_prevention", null
+  )
   storage_class = lookup(
     each.value, "storage_class", "STANDARD"
   )

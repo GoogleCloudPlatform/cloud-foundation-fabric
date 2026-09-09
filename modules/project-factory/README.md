@@ -207,7 +207,6 @@ automation:
       description: Read-only automation sa for app example 0.
   bucket:
     # bucket name: foo-prod-app-example-0-tf-state
-    description: Terraform state bucket for app example 0.
     iam:
       roles/storage.objectCreator:
         - $iam_principals:service_accounts/iac-core-0/rw
@@ -264,7 +263,6 @@ automation:
       description: Read/write automation sa for team a app 0.
   buckets:
     state:
-      description: Terraform state bucket for team a app 0.
       iam:
         roles/storage.objectCreator:
           - $iam_principals:service_accounts/my-project/rw
@@ -825,7 +823,6 @@ automation:
     ro:
       description: Team B app 0 read-only automation sa.
   bucket:
-    description: Team B app 0 Terraform state bucket.
     iam:
       roles/storage.objectCreator:
         - $iam_principals:service_accounts/dev-tb-app0-0/automation/rw
@@ -951,21 +948,22 @@ compute.disableSerialPortAccess:
 
 | name | description | sensitive |
 |---|---|:---:|
-| [custom_roles](outputs.tf#L113) | Custom role ids. |  |
-| [folder_ids](outputs.tf#L120) | Folder ids. |  |
-| [iam_principals](outputs.tf#L125) | IAM principals mappings. |  |
-| [kms_keys](outputs.tf#L130) | KMS key ids. |  |
-| [log_buckets](outputs.tf#L135) | Log bucket ids. |  |
-| [project_ids](outputs.tf#L142) | Project ids. |  |
-| [project_numbers](outputs.tf#L147) | Project numbers. |  |
-| [projects](outputs.tf#L154) | Project attributes. |  |
-| [pubsub_topics](outputs.tf#L159) | PubSub topic ids. |  |
-| [service_account_emails](outputs.tf#L166) | Service account emails. |  |
-| [service_account_iam_emails](outputs.tf#L173) | Service account IAM-format emails. |  |
-| [service_account_ids](outputs.tf#L180) | Service account IDs. |  |
-| [service_accounts](outputs.tf#L187) | Service account emails. |  |
-| [service_agents](outputs.tf#L192) | Service agent emails. |  |
-| [storage_buckets](outputs.tf#L203) | Bucket names. |  |
+| [bigquery_datasets](outputs.tf#L119) | BigQuery dataset ids. |  |
+| [custom_roles](outputs.tf#L126) | Custom role ids. |  |
+| [folder_ids](outputs.tf#L133) | Folder ids. |  |
+| [iam_principals](outputs.tf#L138) | IAM principals mappings. |  |
+| [kms_keys](outputs.tf#L143) | KMS key ids. |  |
+| [log_buckets](outputs.tf#L148) | Log bucket ids. |  |
+| [project_ids](outputs.tf#L155) | Project ids. |  |
+| [project_numbers](outputs.tf#L160) | Project numbers. |  |
+| [projects](outputs.tf#L167) | Project attributes. |  |
+| [pubsub_topics](outputs.tf#L172) | PubSub topic ids. |  |
+| [service_account_emails](outputs.tf#L179) | Service account emails. |  |
+| [service_account_iam_emails](outputs.tf#L186) | Service account IAM-format emails. |  |
+| [service_account_ids](outputs.tf#L193) | Service account IDs. |  |
+| [service_accounts](outputs.tf#L200) | Service account emails. |  |
+| [service_agents](outputs.tf#L205) | Service agent emails. |  |
+| [storage_buckets](outputs.tf#L216) | Bucket names. |  |
 <!-- END TFDOC -->
 ## Tests
 
@@ -1009,7 +1007,7 @@ module "project-factory" {
     basepath = "data"
   }
 }
-# tftest modules=10 resources=36 files=test-0,test-1,test-2 inventory=test-1.yaml
+# tftest modules=16 resources=49 files=test-0,test-1,test-2 inventory=test-1.yaml
 ```
 
 ```yaml
@@ -1046,6 +1044,55 @@ automation:
     auto-tag-test:
       tag_bindings:
         project-level: $tag_values:test-0/context/project-factory
+# test forwarding of the full gcs bucket attribute surface
+buckets:
+  attrs-test:
+    autoclass: false
+    default_event_based_hold: true
+    enable_hierarchical_namespace: false
+    public_access_prevention: enforced
+    requester_pays: true
+    # rpo is only accepted on dual-region buckets
+    location: EU
+    custom_placement_config:
+      - europe-west1
+      - europe-west4
+    rpo: DEFAULT
+    cors:
+      origin:
+        - https://example.com
+      method:
+        - GET
+      response_header:
+        - Content-Type
+      max_age_seconds: 3600
+    ip_filter:
+      allow_all_service_agent_access: true
+      public_network_sources:
+        - 192.0.2.0/24
+    notification_config:
+      enabled: true
+      payload_format: JSON_API_V1
+      sa_email: service-1234567890@gs-project-accounts.iam.gserviceaccount.com
+      topic_name: attrs-test-notifications
+    website:
+      main_page_suffix: index.html
+      not_found_page: 404.html
+# test forwarding of the full logging-bucket attribute surface
+log_buckets:
+  audit-logs:
+    description: Test log bucket description.
+    locked: false
+    retention: 365
+    tag_bindings:
+      project-level: $tag_values:test-0/context/project-factory
+    views:
+      audit-view:
+        description: Test log view.
+        filter: 'LOG_ID("cloudaudit.googleapis.com/activity")'
+        iam:
+          roles/logging.viewAccessor:
+            - $iam_principals:tag-test
 # tftest-file id=test-0 path=data/projects/test-0.yaml
 ```
 
@@ -1072,5 +1119,23 @@ prefix: bar
 services:
   - iam.googleapis.com
   - storage.googleapis.com
+service_accounts:
+  # service account IAM is applied in a second pass, so bindings declared via
+  # iam_bindings/iam_bindings_additive alone also need to trigger it
+  bindings-only:
+    iam_bindings:
+      token-creator:
+        role: roles/iam.serviceAccountTokenCreator
+        members:
+          - user:user1@example.com
+  bindings-additive-only:
+    iam_bindings_additive:
+      key-admin:
+        role: roles/iam.serviceAccountKeyAdmin
+        member: user:user1@example.com
+      # cross-service account reference, only resolvable in the second pass
+      token-creator:
+        role: roles/iam.serviceAccountTokenCreator
+        member: $iam_principals:service_accounts/_self_/bindings-only
 # tftest-file id=test-2 path=data/projects/test-2.yaml
 ```
