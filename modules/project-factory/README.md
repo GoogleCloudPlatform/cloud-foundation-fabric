@@ -409,7 +409,9 @@ vpc_sc:
 
 The `service_agents_project_bindings` and `service_agents_folder_bindings` project attributes grant a project's own service agents roles on projects and folders the project does not own. Their `service` attribute takes a service agent name or alias, while target and role are resolved through context.
 
-Where both the granting project and the target are managed by the same factory, the existing mechanism is preferred: express the grant on the target project through `iam_by_principals` with a `$iam_principals:service_agents/my_project/my_api` reference, which keeps the binding next to the resource it applies to. Reach for these two attributes when the target lives outside the factory, for example a folder or a project owned by a preceding stage, since only the module that creates a project can name an agent whose member string embeds the project number.
+Where both the granting project and the target are managed by the same factory, using `iam_by_principals` in combination with the `$service_agents` context is the preferred way of accomplishing the same, as it defines IAM grants in the context of the resource they apply to instead of the other way round.
+
+Reach for the service agent grants attributes when the target lives outside the factory, for example a folder or a project owned by a preceding stage. Service agents are defined here and are not known on the resource side, so granting from this end avoids shuffling static values around between stages, in the form of fully qualified service agent emails.
 
 ## Example
 
