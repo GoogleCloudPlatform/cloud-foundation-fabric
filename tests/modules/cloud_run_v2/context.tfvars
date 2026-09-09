@@ -8,6 +8,7 @@ context = {
   }
   iam_principals = {
     mygroup = "group:test-group@example.com"
+    mysa    = "serviceAccount:test-sa@foo-test-0.iam.gserviceaccount.com"
   }
   kms_keys = {
     test = "projects/foo-prod-sec-core/locations/global/keyRings/prod-global-default/cryptoKeys/compute"
@@ -44,9 +45,8 @@ iam = {
 project_id = "$project_ids:test"
 region     = "$locations:ew8"
 service_account_config = {
-  roles = [
-    "$custom_roles:myrole_one"
-  ]
+  create = false
+  email  = "$iam_principals:mysa"
 }
 revision = {
   vpc_access = {
