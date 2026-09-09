@@ -42,6 +42,7 @@ The code is meant to be executed by a high level service account with powerful p
   - [Service account context ids](#service-account-context-ids)
   - [Log bucket context ids](#log-bucket-context-ids)
   - [Other context ids](#other-context-ids)
+- [Service agent grants outside the project](#service-agent-grants-outside-the-project)
 - [Example](#example)
 - [Files](#files)
 - [Variables](#variables)
@@ -401,6 +402,14 @@ tag_bindings:
 vpc_sc:
   perimeter_name: $vpc_sc_perimeters:default
 ```
+
+## Service agent grants outside the project
+
+The `service_agents_project_bindings` and `service_agents_folder_bindings` project attributes grant a project's own service agents roles on projects and folders the project does not own. Their `service` attribute takes a service agent name or alias, while target and role are resolved through context.
+
+Where both the granting project and the target are managed by the same factory, using `iam_by_principals` in combination with the `$service_agents` context is the preferred way of accomplishing the same, as it defines IAM grants in the context of the resource they apply to instead of the other way round.
+
+Reach for the service agent grants attributes when the target lives outside the factory, for example a folder or a project owned by a preceding stage. Service agents are defined here and are not known on the resource side, so granting from this end avoids shuffling static values around between stages, in the form of fully qualified service agent emails.
 
 ## Example
 
@@ -796,6 +805,11 @@ data_access_logs:
     DATA_READ:
       exempted_members:
         - $iam_principals:gcp-devops
+service_agents_project_bindings:
+  run-object-viewer:
+    service: run
+    project: $project_ids:dev-ta-app0-be
+    role: roles/storage.objectViewer
 automation:
   project: test-pf-teams-iac-0
   # prefix used for automation resources can be explicitly set if needed
