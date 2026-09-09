@@ -47,9 +47,15 @@ locals {
   service_account = var.service_account == null ? null : {
     email = (var.service_account.auto_create
       ? google_service_account.service_account[0].email
-      : try(
-        local.ctx.iam_principals[var.service_account.email],
-        var.service_account.email
+      : var.service_account.email == null
+      ? null
+      : trimprefix(
+        lookup(
+          local.ctx.iam_principals,
+          var.service_account.email,
+          var.service_account.email
+        ),
+        "serviceAccount:"
       )
     )
     scopes = (

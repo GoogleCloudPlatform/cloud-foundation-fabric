@@ -128,10 +128,10 @@ values:
       termination_time: null
     scratch_disk: []
     service_account:
-    - scopes:
-      - https://www.googleapis.com/auth/devstorage.read_only
-      - https://www.googleapis.com/auth/logging.write
-      - https://www.googleapis.com/auth/monitoring.write
+    - email: test-sa@test-prj.iam.gserviceaccount.com
+      scopes:
+      - https://www.googleapis.com/auth/cloud-platform
+      - https://www.googleapis.com/auth/userinfo.email
     shielded_instance_config: []
     tags: null
     terraform_labels:

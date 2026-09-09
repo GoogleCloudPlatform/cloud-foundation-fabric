@@ -11,6 +11,7 @@ context = {
   }
   iam_principals = {
     mygroup = "group:test-group@example.com"
+    mysa    = "serviceAccount:test-sa@test-prj.iam.gserviceaccount.com"
   }
   kms_keys = {
     test = "projects/foo-prod-sec-core/locations/global/keyRings/prod-global-default/cryptoKeys/compute"
@@ -58,6 +59,9 @@ network_interfaces = [{
   }
 }]
 project_id = "$project_ids:test"
+service_account = {
+  email = "$iam_principals:mysa"
+}
 tag_bindings = {
   bar = "tagValues/1234567891"
   baz = "$tag_values:test/one"
