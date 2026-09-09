@@ -66,7 +66,9 @@ output "id" {
     google_project_iam_member.shared_vpc_host_robots,
     google_kms_crypto_key_iam_member.service_agent_cmek,
     google_project_service_identity.default,
-    google_project_iam_member.service_agents
+    google_project_iam_member.service_agents,
+    google_folder_iam_member.service_agents_folder_bindings,
+    google_project_iam_member.service_agents_project_bindings
   ]
 }
 
@@ -131,7 +133,9 @@ output "number" {
     google_project_iam_member.shared_vpc_host_robots,
     google_kms_crypto_key_iam_member.service_agent_cmek,
     google_project_service_identity.default,
-    google_project_iam_member.service_agents
+    google_project_iam_member.service_agents,
+    google_folder_iam_member.service_agents_folder_bindings,
+    google_project_iam_member.service_agents_project_bindings
   ]
 }
 output "organization_policies_ids" {
@@ -155,7 +159,9 @@ output "project_id" {
     google_project_iam_member.shared_vpc_host_robots,
     google_kms_crypto_key_iam_member.service_agent_cmek,
     google_project_service_identity.default,
-    google_project_iam_member.service_agents
+    google_project_iam_member.service_agents,
+    google_folder_iam_member.service_agents_folder_bindings,
+    google_project_iam_member.service_agents_project_bindings
   ]
 }
 
@@ -185,7 +191,9 @@ output "service_agents" {
   value       = local.aliased_service_agents
   depends_on = [
     google_project_service_identity.default,
-    google_project_iam_member.service_agents
+    google_project_iam_member.service_agents,
+    google_folder_iam_member.service_agents_folder_bindings,
+    google_project_iam_member.service_agents_project_bindings
   ]
 }
 

@@ -1,0 +1,13 @@
+values:
+  module.project.google_folder_iam_member.service_agents_folder_bindings["container-browser"]:
+    condition: []
+    folder: folders/1234567890
+    role: roles/browser
+  module.project.google_project_iam_member.service_agents_project_bindings["ar-reader"]:
+    condition: []
+    project: target-project
+    role: roles/artifactregistry.reader
+
+counts:
+  google_folder_iam_member: 1
+  google_project_iam_member: 4
