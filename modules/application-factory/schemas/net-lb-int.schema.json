@@ -3,186 +3,472 @@
   "title": "Internal TCP/UDP Load Balancer",
   "type": "object",
   "additionalProperties": false,
-  "required": ["region", "vpc_config"],
+  "required": [
+    "region",
+    "vpc_config"
+  ],
   "properties": {
-    "project_id": {
-      "type": "string"
-    },
-    "name": {
-      "type": "string",
-      "description": "Override resource name derived from filename."
-    },
-    "region": {
-      "type": "string"
-    },
-    "description": {
-      "type": "string"
-    },
-    "labels": {
-      "type": "object",
-      "additionalProperties": { "type": "string" }
-    },
-    "service_label": {
-      "type": "string"
-    },
-    "vpc_config": {
-      "type": "object",
-      "required": ["network", "subnetwork"],
-      "additionalProperties": false,
-      "properties": {
-        "network": { "type": "string" },
-        "subnetwork": { "type": "string" }
-      }
-    },
     "backend_service_config": {
+      "description": "Backend service level configuration.",
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "connection_draining_timeout_sec": { "type": "number" },
+        "connection_draining_timeout_sec": {
+          "type": "number"
+        },
         "connection_tracking": {
           "type": "object",
           "additionalProperties": false,
           "properties": {
-            "idle_timeout_sec": { "type": "number" },
-            "persist_conn_on_unhealthy": { "type": "string" },
-            "track_per_session": { "type": "boolean" }
+            "idle_timeout_sec": {
+              "type": "number"
+            },
+            "persist_conn_on_unhealthy": {
+              "type": "string"
+            },
+            "track_per_session": {
+              "type": "boolean"
+            }
           }
         },
-        "enable_subsetting": { "type": "boolean" },
+        "enable_subsetting": {
+          "type": "boolean"
+        },
         "failover_config": {
           "type": "object",
           "additionalProperties": false,
           "properties": {
-            "disable_conn_drain": { "type": "boolean" },
-            "drop_traffic_if_unhealthy": { "type": "boolean" },
-            "ratio": { "type": "number" }
+            "disable_conn_drain": {
+              "type": "boolean"
+            },
+            "drop_traffic_if_unhealthy": {
+              "type": "boolean"
+            },
+            "ratio": {
+              "type": "number"
+            }
           }
         },
-        "log_sample_rate": { "type": "number" },
-        "name": { "type": "string" },
-        "description": { "type": "string" },
-        "protocol": { "type": "string" },
-        "session_affinity": { "type": "string" },
-        "timeout_sec": { "type": "number" }
-      }
-    },
-    "backends": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "required": ["group"],
-        "additionalProperties": false,
-        "properties": {
-          "group": { "type": "string" },
-          "description": { "type": "string" },
-          "failover": { "type": "boolean" }
+        "log_config": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "enable": {
+              "type": "boolean"
+            },
+            "sample_rate": {
+              "type": "number"
+            },
+            "optional_mode": {
+              "type": "string"
+            },
+            "optional_fields": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "network_pass_through_lb_traffic_policy": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "zonal_affinity": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "spillover": {
+                  "type": "string"
+                },
+                "spillover_ratio": {
+                  "type": "number"
+                }
+              }
+            }
+          },
+          "required": [
+            "zonal_affinity"
+          ]
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "protocol": {
+          "type": "string"
+        },
+        "session_affinity": {
+          "type": "string"
+        },
+        "timeout_sec": {
+          "type": "number"
         }
       }
     },
+    "backends": {
+      "description": "Load balancer backends.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "group": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "failover": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "group"
+        ]
+      }
+    },
+    "description": {
+      "description": "Optional description used for resources.",
+      "type": "string"
+    },
     "forwarding_rules_config": {
+      "description": "The optional forwarding rules configuration.",
       "type": "object",
       "additionalProperties": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
-          "address": { "type": "string" },
-          "description": { "type": "string" },
-          "global_access": { "type": "boolean" },
-          "ipv6": { "type": "boolean" },
-          "name": { "type": "string" },
+          "address": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "global_access": {
+            "type": "boolean"
+          },
+          "ipv6": {
+            "type": "boolean"
+          },
+          "name": {
+            "type": "string"
+          },
           "ports": {
             "type": "array",
-            "items": { "type": "string" }
+            "items": {
+              "type": "string"
+            }
           },
-          "protocol": { "type": "string" }
+          "protocol": {
+            "type": "string"
+          }
         }
       }
     },
     "group_configs": {
+      "description": "Optional unmanaged groups to create. Can be referenced in backends via outputs.",
       "type": "object",
       "additionalProperties": {
         "type": "object",
-        "required": ["zone"],
         "additionalProperties": false,
         "properties": {
-          "zone": { "type": "string" },
-          "name": { "type": "string" },
-          "description": { "type": "string" },
+          "zone": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
           "instances": {
             "type": "array",
-            "items": { "type": "string" }
+            "items": {
+              "type": "string"
+            }
           },
           "named_ports": {
             "type": "object",
-            "additionalProperties": { "type": "number" }
+            "additionalProperties": {
+              "type": "number"
+            }
           }
-        }
+        },
+        "required": [
+          "zone"
+        ]
       }
     },
     "health_check": {
+      "description": "Name of existing health check to use, disables auto-created health check. Also set `health_check_config = null` when cross-referencing an health check from another load balancer module to avoid a Terraform error.",
       "type": "string"
     },
     "health_check_config": {
+      "description": "Optional auto-created health check configuration, use the output self-link to set it in the auto healing policy. Refer to examples for usage.",
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "check_interval_sec": { "type": "number" },
-        "description": { "type": "string" },
-        "enable_logging": { "type": "boolean" },
-        "healthy_threshold": { "type": "number" },
-        "is_regional": { "type": "boolean" },
-        "name": { "type": "string" },
-        "timeout_sec": { "type": "number" },
-        "unhealthy_threshold": { "type": "number" },
+        "check_interval_sec": {
+          "type": "number"
+        },
+        "description": {
+          "type": "string"
+        },
+        "enable_logging": {
+          "type": "boolean"
+        },
+        "healthy_threshold": {
+          "type": "number"
+        },
+        "is_regional": {
+          "type": "boolean"
+        },
+        "name": {
+          "type": "string"
+        },
+        "timeout_sec": {
+          "type": "number"
+        },
+        "unhealthy_threshold": {
+          "type": "number"
+        },
+        "grpc": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "port": {
+              "type": "number"
+            },
+            "port_name": {
+              "type": "string"
+            },
+            "port_specification": {
+              "type": "string"
+            },
+            "service_name": {
+              "type": "string"
+            }
+          }
+        },
         "http": {
           "type": "object",
           "additionalProperties": false,
           "properties": {
-            "host": { "type": "string" },
-            "port": { "type": "number" },
-            "port_name": { "type": "string" },
-            "port_specification": { "type": "string" },
-            "proxy_header": { "type": "string" },
-            "request_path": { "type": "string" },
-            "response": { "type": "string" }
+            "host": {
+              "type": "string"
+            },
+            "port": {
+              "type": "number"
+            },
+            "port_name": {
+              "type": "string"
+            },
+            "port_specification": {
+              "type": "string"
+            },
+            "proxy_header": {
+              "type": "string"
+            },
+            "request_path": {
+              "type": "string"
+            },
+            "response": {
+              "type": "string"
+            }
+          }
+        },
+        "http2": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "host": {
+              "type": "string"
+            },
+            "port": {
+              "type": "number"
+            },
+            "port_name": {
+              "type": "string"
+            },
+            "port_specification": {
+              "type": "string"
+            },
+            "proxy_header": {
+              "type": "string"
+            },
+            "request_path": {
+              "type": "string"
+            },
+            "response": {
+              "type": "string"
+            }
           }
         },
         "https": {
           "type": "object",
           "additionalProperties": false,
           "properties": {
-            "host": { "type": "string" },
-            "port": { "type": "number" },
-            "port_name": { "type": "string" },
-            "port_specification": { "type": "string" },
-            "proxy_header": { "type": "string" },
-            "request_path": { "type": "string" },
-            "response": { "type": "string" }
+            "host": {
+              "type": "string"
+            },
+            "port": {
+              "type": "number"
+            },
+            "port_name": {
+              "type": "string"
+            },
+            "port_specification": {
+              "type": "string"
+            },
+            "proxy_header": {
+              "type": "string"
+            },
+            "request_path": {
+              "type": "string"
+            },
+            "response": {
+              "type": "string"
+            }
           }
         },
         "tcp": {
           "type": "object",
           "additionalProperties": false,
           "properties": {
-            "port": { "type": "number" },
-            "port_name": { "type": "string" },
-            "port_specification": { "type": "string" },
-            "proxy_header": { "type": "string" },
-            "request": { "type": "string" },
-            "response": { "type": "string" }
+            "port": {
+              "type": "number"
+            },
+            "port_name": {
+              "type": "string"
+            },
+            "port_specification": {
+              "type": "string"
+            },
+            "proxy_header": {
+              "type": "string"
+            },
+            "request": {
+              "type": "string"
+            },
+            "response": {
+              "type": "string"
+            }
           }
         },
-        "grpc": {
+        "ssl": {
           "type": "object",
           "additionalProperties": false,
           "properties": {
-            "port": { "type": "number" },
-            "port_name": { "type": "string" },
-            "port_specification": { "type": "string" },
-            "service_name": { "type": "string" }
+            "port": {
+              "type": "number"
+            },
+            "port_name": {
+              "type": "string"
+            },
+            "port_specification": {
+              "type": "string"
+            },
+            "proxy_header": {
+              "type": "string"
+            },
+            "request": {
+              "type": "string"
+            },
+            "response": {
+              "type": "string"
+            }
           }
         }
       }
+    },
+    "labels": {
+      "description": "Labels set on resources.",
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "name": {
+      "description": "Override resource name derived from filename.",
+      "type": "string"
+    },
+    "project_id": {
+      "description": "Project id where resources will be created.",
+      "type": "string"
+    },
+    "region": {
+      "description": "GCP region.",
+      "type": "string"
+    },
+    "service_attachments": {
+      "description": "PSC service attachments, keyed by forwarding rule.",
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "nat_subnets": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "automatic_connection": {
+            "type": "boolean"
+          },
+          "consumer_accept_lists": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "consumer_reject_lists": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "description": {
+            "type": "string"
+          },
+          "domain_name": {
+            "type": "string"
+          },
+          "enable_proxy_protocol": {
+            "type": "boolean"
+          },
+          "reconcile_connections": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "nat_subnets"
+        ]
+      }
+    },
+    "service_label": {
+      "description": "Optional prefix of the fully qualified forwarding rule name.",
+      "type": "string"
+    },
+    "vpc_config": {
+      "description": "VPC-level configuration.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "network": {
+          "type": "string"
+        },
+        "subnetwork": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "network",
+        "subnetwork"
+      ]
     }
   }
 }

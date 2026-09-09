@@ -3,242 +3,1227 @@
   "title": "Internal Application Load Balancer",
   "type": "object",
   "additionalProperties": false,
-  "required": ["region", "vpc_config"],
+  "required": [
+    "region",
+    "vpc_config"
+  ],
   "properties": {
-    "project_id": {
-      "type": "string"
-    },
-    "name": {
-      "type": "string",
-      "description": "Override resource name derived from filename."
-    },
-    "region": {
-      "type": "string"
-    },
-    "description": {
-      "type": "string"
-    },
-    "labels": {
-      "type": "object",
-      "additionalProperties": { "type": "string" }
-    },
-    "protocol": {
-      "type": "string",
-      "enum": ["HTTP", "HTTPS"]
-    },
-    "ports": {
-      "type": "array",
-      "items": { "type": "string" },
-      "maxItems": 1
-    },
     "address": {
+      "description": "Optional IP address used for the forwarding rule.",
       "type": "string"
-    },
-    "global_access": {
-      "type": "boolean"
-    },
-    "vpc_config": {
-      "type": "object",
-      "required": ["network", "subnetwork"],
-      "additionalProperties": false,
-      "properties": {
-        "network": { "type": "string" },
-        "subnetwork": { "type": "string" }
-      }
     },
     "backend_service_configs": {
+      "description": "Backend service level configuration.",
       "type": "object",
       "additionalProperties": {
         "type": "object",
-        "required": ["backends"],
         "additionalProperties": false,
         "properties": {
-          "name": { "type": "string" },
-          "description": { "type": "string" },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "affinity_cookie_ttl_sec": {
+            "type": "number"
+          },
+          "connection_draining_timeout_sec": {
+            "type": "number"
+          },
           "health_checks": {
             "type": "array",
-            "items": { "type": "string" }
+            "items": {
+              "type": "string"
+            }
           },
-          "port_name": { "type": "string" },
-          "protocol": { "type": "string" },
-          "session_affinity": { "type": "string" },
-          "timeout_sec": { "type": "number" },
-          "log_sample_rate": { "type": "number" },
+          "locality_lb_policy": {
+            "type": "string"
+          },
+          "log_config": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "enable": {
+                "type": "boolean"
+              },
+              "sample_rate": {
+                "type": "number"
+              },
+              "optional_mode": {
+                "type": "string"
+              },
+              "optional_fields": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "port_name": {
+            "type": "string"
+          },
+          "project_id": {
+            "type": "string"
+          },
+          "protocol": {
+            "type": "string"
+          },
+          "session_affinity": {
+            "type": "string"
+          },
+          "timeout_sec": {
+            "type": "number"
+          },
+          "security_policy": {
+            "type": "string"
+          },
           "backends": {
             "type": "array",
             "items": {
               "type": "object",
-              "required": ["group"],
               "additionalProperties": false,
               "properties": {
-                "group": { "type": "string" },
-                "balancing_mode": { "type": "string" },
-                "capacity_scaler": { "type": "number" },
-                "description": { "type": "string" },
-                "failover": { "type": "boolean" },
-                "max_utilization": { "type": "number" }
-              }
-            }
-          }
-        }
-      }
-    },
-    "group_configs": {
-      "type": "object",
-      "additionalProperties": {
-        "type": "object",
-        "required": ["zone"],
-        "additionalProperties": false,
-        "properties": {
-          "name": { "type": "string" },
-          "description": { "type": "string" },
-          "zone": { "type": "string" },
-          "instances": {
-            "type": "array",
-            "items": { "type": "string" }
-          },
-          "named_ports": {
-            "type": "object",
-            "additionalProperties": { "type": "number" }
-          },
-          "project_id": { "type": "string" }
-        }
-      }
-    },
-    "neg_configs": {
-      "type": "object",
-      "additionalProperties": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "project_id": { "type": "string" },
-          "description": { "type": "string" },
-          "cloudrun": {
-            "type": "object",
-            "required": ["region"],
-            "additionalProperties": false,
-            "properties": {
-              "region": { "type": "string" },
-              "tag": { "type": "string" },
-              "target_urlmask": { "type": "string" },
-              "target_service": {
-                "type": "object",
-                "required": ["name"],
-                "additionalProperties": false,
-                "properties": {
-                  "name": { "type": "string" },
-                  "tag": { "type": "string" }
-                }
-              }
-            }
-          },
-          "gce": {
-            "type": "object",
-            "required": ["zone"],
-            "additionalProperties": false,
-            "properties": {
-              "zone": { "type": "string" },
-              "network": { "type": "string" },
-              "subnetwork": { "type": "string" },
-              "endpoints": {
-                "type": "object",
-                "additionalProperties": {
+                "group": {
+                  "type": "string"
+                },
+                "balancing_mode": {
+                  "type": "string"
+                },
+                "capacity_scaler": {
+                  "type": "number"
+                },
+                "description": {
+                  "type": "string"
+                },
+                "max_rate": {
                   "type": "object",
-                  "required": ["instance", "ip_address", "port"],
                   "additionalProperties": false,
                   "properties": {
-                    "instance": { "type": "string" },
-                    "ip_address": { "type": "string" },
-                    "port": { "type": "number" }
+                    "per_endpoint": {
+                      "type": "number"
+                    },
+                    "per_group": {
+                      "type": "number"
+                    },
+                    "per_instance": {
+                      "type": "number"
+                    }
+                  }
+                },
+                "max_utilization": {
+                  "type": "number"
+                }
+              },
+              "required": [
+                "group"
+              ]
+            }
+          },
+          "circuit_breakers": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "max_connections": {
+                "type": "number"
+              },
+              "max_pending_requests": {
+                "type": "number"
+              },
+              "max_requests": {
+                "type": "number"
+              },
+              "max_requests_per_connection": {
+                "type": "number"
+              },
+              "max_retries": {
+                "type": "number"
+              },
+              "connect_timeout": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "seconds": {
+                    "type": "number"
+                  },
+                  "nanos": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "seconds"
+                ]
+              }
+            }
+          },
+          "consistent_hash": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "http_header_name": {
+                "type": "string"
+              },
+              "minimum_ring_size": {
+                "type": "number"
+              },
+              "http_cookie": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "path": {
+                    "type": "string"
+                  },
+                  "ttl": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "seconds": {
+                        "type": "number"
+                      },
+                      "nanos": {
+                        "type": "number"
+                      }
+                    },
+                    "required": [
+                      "seconds"
+                    ]
                   }
                 }
               }
             }
+          },
+          "enable_subsetting": {
+            "type": "boolean"
+          },
+          "iap_config": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "oauth2_client_id": {
+                "type": "string"
+              },
+              "oauth2_client_secret": {
+                "type": "string"
+              },
+              "oauth2_client_secret_sha256": {
+                "type": "string"
+              }
+            }
+          },
+          "outlier_detection": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "consecutive_errors": {
+                "type": "number"
+              },
+              "consecutive_gateway_failure": {
+                "type": "number"
+              },
+              "enforcing_consecutive_errors": {
+                "type": "number"
+              },
+              "enforcing_consecutive_gateway_failure": {
+                "type": "number"
+              },
+              "enforcing_success_rate": {
+                "type": "number"
+              },
+              "max_ejection_percent": {
+                "type": "number"
+              },
+              "success_rate_minimum_hosts": {
+                "type": "number"
+              },
+              "success_rate_request_volume": {
+                "type": "number"
+              },
+              "success_rate_stdev_factor": {
+                "type": "number"
+              },
+              "base_ejection_time": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "seconds": {
+                    "type": "number"
+                  },
+                  "nanos": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "seconds"
+                ]
+              },
+              "interval": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "seconds": {
+                    "type": "number"
+                  },
+                  "nanos": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "seconds"
+                ]
+              }
+            }
+          },
+          "tls_settings": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "authentication_config": {
+                "type": "string"
+              },
+              "sni": {
+                "type": "string"
+              },
+              "subject_alt_names": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
           }
-        }
+        },
+        "required": [
+          "backends"
+        ]
       }
     },
-    "health_check_configs": {
+    "description": {
+      "description": "Optional description used for resources.",
+      "type": "string"
+    },
+    "global_access": {
+      "description": "Allow client access from all regions.",
+      "type": "boolean"
+    },
+    "group_configs": {
+      "description": "Optional unmanaged groups to create. Can be referenced in backends via key or outputs.",
       "type": "object",
       "additionalProperties": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
-          "name": { "type": "string" },
-          "check_interval_sec": { "type": "number" },
-          "description": { "type": "string" },
-          "enable_logging": { "type": "boolean" },
-          "healthy_threshold": { "type": "number" },
-          "timeout_sec": { "type": "number" },
-          "unhealthy_threshold": { "type": "number" },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "zone": {
+            "type": "string"
+          },
+          "instances": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "named_ports": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "number"
+            }
+          },
+          "project_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "zone"
+        ]
+      }
+    },
+    "health_check_configs": {
+      "description": "Optional auto-created health check configurations, use the output self-link to set it in the auto healing policy. Refer to examples for usage.",
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "check_interval_sec": {
+            "type": "number"
+          },
+          "description": {
+            "type": "string"
+          },
+          "enable_logging": {
+            "type": "boolean"
+          },
+          "healthy_threshold": {
+            "type": "number"
+          },
+          "is_regional": {
+            "type": "boolean"
+          },
+          "project_id": {
+            "type": "string"
+          },
+          "timeout_sec": {
+            "type": "number"
+          },
+          "unhealthy_threshold": {
+            "type": "number"
+          },
+          "grpc": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "port": {
+                "type": "number"
+              },
+              "port_name": {
+                "type": "string"
+              },
+              "port_specification": {
+                "type": "string"
+              },
+              "service_name": {
+                "type": "string"
+              }
+            }
+          },
           "http": {
             "type": "object",
             "additionalProperties": false,
             "properties": {
-              "host": { "type": "string" },
-              "port": { "type": "number" },
-              "port_name": { "type": "string" },
-              "port_specification": { "type": "string" },
-              "proxy_header": { "type": "string" },
-              "request_path": { "type": "string" },
-              "response": { "type": "string" }
+              "host": {
+                "type": "string"
+              },
+              "port": {
+                "type": "number"
+              },
+              "port_name": {
+                "type": "string"
+              },
+              "port_specification": {
+                "type": "string"
+              },
+              "proxy_header": {
+                "type": "string"
+              },
+              "request_path": {
+                "type": "string"
+              },
+              "response": {
+                "type": "string"
+              }
+            }
+          },
+          "http2": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "host": {
+                "type": "string"
+              },
+              "port": {
+                "type": "number"
+              },
+              "port_name": {
+                "type": "string"
+              },
+              "port_specification": {
+                "type": "string"
+              },
+              "proxy_header": {
+                "type": "string"
+              },
+              "request_path": {
+                "type": "string"
+              },
+              "response": {
+                "type": "string"
+              }
             }
           },
           "https": {
             "type": "object",
             "additionalProperties": false,
             "properties": {
-              "host": { "type": "string" },
-              "port": { "type": "number" },
-              "port_name": { "type": "string" },
-              "port_specification": { "type": "string" },
-              "proxy_header": { "type": "string" },
-              "request_path": { "type": "string" },
-              "response": { "type": "string" }
+              "host": {
+                "type": "string"
+              },
+              "port": {
+                "type": "number"
+              },
+              "port_name": {
+                "type": "string"
+              },
+              "port_specification": {
+                "type": "string"
+              },
+              "proxy_header": {
+                "type": "string"
+              },
+              "request_path": {
+                "type": "string"
+              },
+              "response": {
+                "type": "string"
+              }
             }
           },
-          "grpc": {
+          "tcp": {
             "type": "object",
             "additionalProperties": false,
             "properties": {
-              "port": { "type": "number" },
-              "port_name": { "type": "string" },
-              "port_specification": { "type": "string" },
-              "service_name": { "type": "string" }
+              "port": {
+                "type": "number"
+              },
+              "port_name": {
+                "type": "string"
+              },
+              "port_specification": {
+                "type": "string"
+              },
+              "proxy_header": {
+                "type": "string"
+              },
+              "request": {
+                "type": "string"
+              },
+              "response": {
+                "type": "string"
+              }
+            }
+          },
+          "ssl": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "port": {
+                "type": "number"
+              },
+              "port_name": {
+                "type": "string"
+              },
+              "port_specification": {
+                "type": "string"
+              },
+              "proxy_header": {
+                "type": "string"
+              },
+              "request": {
+                "type": "string"
+              },
+              "response": {
+                "type": "string"
+              }
             }
           }
         }
       }
     },
-    "urlmap_config": {
+    "http_proxy_config": {
+      "description": "HTTP proxy configuration. Only used for non-classic load balancers.",
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "description": { "type": "string" },
-        "default_service": { "type": "string" },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        }
+      }
+    },
+    "https_proxy_config": {
+      "description": "HTTPS proxy configuration.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "certificate_manager_certificates": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "ssl_policy": {
+          "type": "string"
+        }
+      }
+    },
+    "labels": {
+      "description": "Labels set on resources.",
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "name": {
+      "description": "Override resource name derived from filename.",
+      "type": "string"
+    },
+    "neg_configs": {
+      "description": "Optional network endpoint groups to create. Can be referenced in backends via key or outputs.",
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "project_id": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "cloudrun": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "region": {
+                "type": "string"
+              },
+              "tag": {
+                "type": "string"
+              },
+              "target_urlmask": {
+                "type": "string"
+              },
+              "target_service": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "tag": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "name"
+                ]
+              }
+            },
+            "required": [
+              "region"
+            ]
+          },
+          "gce": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "zone": {
+                "type": "string"
+              },
+              "network": {
+                "type": "string"
+              },
+              "subnetwork": {
+                "type": "string"
+              },
+              "endpoints": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "instance": {
+                      "type": "string"
+                    },
+                    "ip_address": {
+                      "type": "string"
+                    },
+                    "port": {
+                      "type": "number"
+                    }
+                  },
+                  "required": [
+                    "instance",
+                    "ip_address",
+                    "port"
+                  ]
+                }
+              }
+            },
+            "required": [
+              "zone"
+            ]
+          },
+          "hybrid": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "zone": {
+                "type": "string"
+              },
+              "network": {
+                "type": "string"
+              },
+              "endpoints": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "ip_address": {
+                      "type": "string"
+                    },
+                    "port": {
+                      "type": "number"
+                    }
+                  },
+                  "required": [
+                    "ip_address",
+                    "port"
+                  ]
+                }
+              }
+            },
+            "required": [
+              "zone"
+            ]
+          },
+          "internet": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "region": {
+                "type": "string"
+              },
+              "use_fqdn": {
+                "type": "boolean"
+              },
+              "endpoints": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "destination": {
+                      "type": "string"
+                    },
+                    "port": {
+                      "type": "number"
+                    }
+                  },
+                  "required": [
+                    "destination",
+                    "port"
+                  ]
+                }
+              }
+            },
+            "required": [
+              "region"
+            ]
+          },
+          "psc": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "region": {
+                "type": "string"
+              },
+              "target_service": {
+                "type": "string"
+              },
+              "network": {
+                "type": "string"
+              },
+              "subnetwork": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "region",
+              "target_service"
+            ]
+          }
+        }
+      }
+    },
+    "network_tier_premium": {
+      "description": "Use premium network tier. Defaults to true.",
+      "type": "boolean"
+    },
+    "ports": {
+      "description": "Optional ports for HTTP load balancer.",
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "project_id": {
+      "description": "Project id.",
+      "type": "string"
+    },
+    "protocol": {
+      "description": "Protocol supported by this load balancer.",
+      "type": "string",
+      "enum": [
+        "HTTP",
+        "HTTPS"
+      ]
+    },
+    "region": {
+      "description": "The region where to allocate the ILB resources.",
+      "type": "string"
+    },
+    "service_attachment": {
+      "description": "PSC service attachment.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "nat_subnets": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "automatic_connection": {
+          "type": "boolean"
+        },
+        "consumer_accept_lists": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "consumer_reject_lists": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "description": {
+          "type": "string"
+        },
+        "domain_name": {
+          "type": "string"
+        },
+        "enable_proxy_protocol": {
+          "type": "boolean"
+        },
+        "reconcile_connections": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "nat_subnets"
+      ]
+    },
+    "service_directory_registration": {
+      "description": "Service directory namespace and service used to register this load balancer.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "namespace": {
+          "type": "string"
+        },
+        "service": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "namespace",
+        "service"
+      ]
+    },
+    "ssl_certificates": {
+      "description": "SSL target proxy certificates (only if protocol is HTTPS).",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "certificate_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "create_configs": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "certificate": {
+                "type": "string"
+              },
+              "private_key": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "certificate",
+              "private_key"
+            ]
+          }
+        }
+      }
+    },
+    "urlmap_config": {
+      "description": "The URL map configuration.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "default_service": {
+          "type": "string"
+        },
         "default_url_redirect": {
           "type": "object",
           "additionalProperties": false,
           "properties": {
-            "host": { "type": "string" },
-            "https": { "type": "boolean" },
-            "path": { "type": "string" },
-            "prefix": { "type": "string" },
-            "response_code": { "type": "string" },
-            "strip_query": { "type": "boolean" }
+            "host": {
+              "type": "string"
+            },
+            "https": {
+              "type": "boolean"
+            },
+            "path": {
+              "type": "string"
+            },
+            "prefix": {
+              "type": "string"
+            },
+            "response_code": {
+              "type": "string"
+            },
+            "strip_query": {
+              "type": "boolean"
+            }
+          }
+        },
+        "default_route_action": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "request_mirror_backend": {
+              "type": "string"
+            },
+            "cors_policy": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "allow_credentials": {
+                  "type": "boolean"
+                },
+                "allow_headers": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "allow_methods": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "allow_origin_regexes": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "allow_origins": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "disabled": {
+                  "type": "boolean"
+                },
+                "expose_headers": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "max_age": {
+                  "type": "string"
+                }
+              }
+            },
+            "fault_injection_policy": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "abort": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "percentage": {
+                      "type": "number"
+                    },
+                    "status": {
+                      "type": "number"
+                    }
+                  },
+                  "required": [
+                    "percentage",
+                    "status"
+                  ]
+                },
+                "delay": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "fixed": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "seconds": {
+                          "type": "number"
+                        },
+                        "nanos": {
+                          "type": "number"
+                        }
+                      },
+                      "required": [
+                        "seconds",
+                        "nanos"
+                      ]
+                    },
+                    "percentage": {
+                      "type": "number"
+                    }
+                  },
+                  "required": [
+                    "fixed",
+                    "percentage"
+                  ]
+                }
+              }
+            },
+            "retry_policy": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "num_retries": {
+                  "type": "number"
+                },
+                "retry_conditions": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "per_try_timeout": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "seconds": {
+                      "type": "number"
+                    },
+                    "nanos": {
+                      "type": "number"
+                    }
+                  },
+                  "required": [
+                    "seconds"
+                  ]
+                }
+              },
+              "required": [
+                "num_retries"
+              ]
+            },
+            "timeout": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "seconds": {
+                  "type": "number"
+                },
+                "nanos": {
+                  "type": "number"
+                }
+              },
+              "required": [
+                "seconds"
+              ]
+            },
+            "url_rewrite": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "host": {
+                  "type": "string"
+                },
+                "path_prefix": {
+                  "type": "string"
+                }
+              }
+            },
+            "weighted_backend_services": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "weight": {
+                    "type": "number"
+                  },
+                  "header_action": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "request_add": {
+                        "type": "object",
+                        "additionalProperties": {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "properties": {
+                            "value": {
+                              "type": "string"
+                            },
+                            "replace": {
+                              "type": "boolean"
+                            }
+                          },
+                          "required": [
+                            "value"
+                          ]
+                        }
+                      },
+                      "request_remove": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "response_add": {
+                        "type": "object",
+                        "additionalProperties": {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "properties": {
+                            "value": {
+                              "type": "string"
+                            },
+                            "replace": {
+                              "type": "boolean"
+                            }
+                          },
+                          "required": [
+                            "value"
+                          ]
+                        }
+                      },
+                      "response_remove": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                },
+                "required": [
+                  "weight"
+                ]
+              }
+            }
+          }
+        },
+        "header_action": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "request_add": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "value": {
+                    "type": "string"
+                  },
+                  "replace": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "value"
+                ]
+              }
+            },
+            "request_remove": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "response_add": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "value": {
+                    "type": "string"
+                  },
+                  "replace": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "value"
+                ]
+              }
+            },
+            "response_remove": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
           }
         },
         "host_rules": {
           "type": "array",
           "items": {
             "type": "object",
-            "required": ["hosts", "path_matcher"],
             "additionalProperties": false,
             "properties": {
-              "hosts": { "type": "array", "items": { "type": "string" } },
-              "path_matcher": { "type": "string" },
-              "description": { "type": "string" }
-            }
+              "hosts": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "path_matcher": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "hosts",
+              "path_matcher"
+            ]
           }
         },
         "path_matchers": {
@@ -247,24 +1232,1043 @@
             "type": "object",
             "additionalProperties": false,
             "properties": {
-              "description": { "type": "string" },
-              "default_service": { "type": "string" },
+              "description": {
+                "type": "string"
+              },
+              "default_service": {
+                "type": "string"
+              },
+              "default_url_redirect": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "host": {
+                    "type": "string"
+                  },
+                  "https": {
+                    "type": "boolean"
+                  },
+                  "path": {
+                    "type": "string"
+                  },
+                  "prefix": {
+                    "type": "string"
+                  },
+                  "response_code": {
+                    "type": "string"
+                  },
+                  "strip_query": {
+                    "type": "boolean"
+                  }
+                }
+              },
               "path_rules": {
                 "type": "array",
                 "items": {
                   "type": "object",
-                  "required": ["paths", "service"],
                   "additionalProperties": false,
                   "properties": {
-                    "paths": { "type": "array", "items": { "type": "string" } },
-                    "service": { "type": "string" }
+                    "paths": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "service": {
+                      "type": "string"
+                    },
+                    "route_action": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "request_mirror_backend": {
+                          "type": "string"
+                        },
+                        "cors_policy": {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "properties": {
+                            "allow_credentials": {
+                              "type": "boolean"
+                            },
+                            "allow_headers": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            },
+                            "allow_methods": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            },
+                            "allow_origin_regexes": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            },
+                            "allow_origins": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            },
+                            "disabled": {
+                              "type": "boolean"
+                            },
+                            "expose_headers": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            },
+                            "max_age": {
+                              "type": "string"
+                            }
+                          }
+                        },
+                        "fault_injection_policy": {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "properties": {
+                            "abort": {
+                              "type": "object",
+                              "additionalProperties": false,
+                              "properties": {
+                                "percentage": {
+                                  "type": "number"
+                                },
+                                "status": {
+                                  "type": "number"
+                                }
+                              },
+                              "required": [
+                                "percentage",
+                                "status"
+                              ]
+                            },
+                            "delay": {
+                              "type": "object",
+                              "additionalProperties": false,
+                              "properties": {
+                                "fixed": {
+                                  "type": "object",
+                                  "additionalProperties": false,
+                                  "properties": {
+                                    "seconds": {
+                                      "type": "number"
+                                    },
+                                    "nanos": {
+                                      "type": "number"
+                                    }
+                                  },
+                                  "required": [
+                                    "seconds",
+                                    "nanos"
+                                  ]
+                                },
+                                "percentage": {
+                                  "type": "number"
+                                }
+                              },
+                              "required": [
+                                "fixed",
+                                "percentage"
+                              ]
+                            }
+                          }
+                        },
+                        "retry_policy": {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "properties": {
+                            "num_retries": {
+                              "type": "number"
+                            },
+                            "retry_conditions": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            },
+                            "per_try_timeout": {
+                              "type": "object",
+                              "additionalProperties": false,
+                              "properties": {
+                                "seconds": {
+                                  "type": "number"
+                                },
+                                "nanos": {
+                                  "type": "number"
+                                }
+                              },
+                              "required": [
+                                "seconds"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "num_retries"
+                          ]
+                        },
+                        "timeout": {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "properties": {
+                            "seconds": {
+                              "type": "number"
+                            },
+                            "nanos": {
+                              "type": "number"
+                            }
+                          },
+                          "required": [
+                            "seconds"
+                          ]
+                        },
+                        "url_rewrite": {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "properties": {
+                            "host": {
+                              "type": "string"
+                            },
+                            "path_prefix": {
+                              "type": "string"
+                            }
+                          }
+                        },
+                        "weighted_backend_services": {
+                          "type": "object",
+                          "additionalProperties": {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "properties": {
+                              "weight": {
+                                "type": "number"
+                              },
+                              "header_action": {
+                                "type": "object",
+                                "additionalProperties": false,
+                                "properties": {
+                                  "request_add": {
+                                    "type": "object",
+                                    "additionalProperties": {
+                                      "type": "object",
+                                      "additionalProperties": false,
+                                      "properties": {
+                                        "value": {
+                                          "type": "string"
+                                        },
+                                        "replace": {
+                                          "type": "boolean"
+                                        }
+                                      },
+                                      "required": [
+                                        "value"
+                                      ]
+                                    }
+                                  },
+                                  "request_remove": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string"
+                                    }
+                                  },
+                                  "response_add": {
+                                    "type": "object",
+                                    "additionalProperties": {
+                                      "type": "object",
+                                      "additionalProperties": false,
+                                      "properties": {
+                                        "value": {
+                                          "type": "string"
+                                        },
+                                        "replace": {
+                                          "type": "boolean"
+                                        }
+                                      },
+                                      "required": [
+                                        "value"
+                                      ]
+                                    }
+                                  },
+                                  "response_remove": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string"
+                                    }
+                                  }
+                                }
+                              }
+                            },
+                            "required": [
+                              "weight"
+                            ]
+                          }
+                        }
+                      }
+                    },
+                    "url_redirect": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "host": {
+                          "type": "string"
+                        },
+                        "https": {
+                          "type": "boolean"
+                        },
+                        "path": {
+                          "type": "string"
+                        },
+                        "prefix": {
+                          "type": "string"
+                        },
+                        "response_code": {
+                          "type": "string"
+                        },
+                        "strip_query": {
+                          "type": "boolean"
+                        }
+                      }
+                    }
+                  },
+                  "required": [
+                    "paths"
+                  ]
+                }
+              },
+              "route_rules": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "priority": {
+                      "type": "number"
+                    },
+                    "service": {
+                      "type": "string"
+                    },
+                    "header_action": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "request_add": {
+                          "type": "object",
+                          "additionalProperties": {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "properties": {
+                              "value": {
+                                "type": "string"
+                              },
+                              "replace": {
+                                "type": "boolean"
+                              }
+                            },
+                            "required": [
+                              "value"
+                            ]
+                          }
+                        },
+                        "request_remove": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        },
+                        "response_add": {
+                          "type": "object",
+                          "additionalProperties": {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "properties": {
+                              "value": {
+                                "type": "string"
+                              },
+                              "replace": {
+                                "type": "boolean"
+                              }
+                            },
+                            "required": [
+                              "value"
+                            ]
+                          }
+                        },
+                        "response_remove": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    },
+                    "match_rules": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": {
+                          "ignore_case": {
+                            "type": "boolean"
+                          },
+                          "headers": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "additionalProperties": false,
+                              "properties": {
+                                "name": {
+                                  "type": "string"
+                                },
+                                "invert_match": {
+                                  "type": "boolean"
+                                },
+                                "type": {
+                                  "type": "string"
+                                },
+                                "value": {
+                                  "type": "string"
+                                },
+                                "range_value": {
+                                  "type": "object",
+                                  "additionalProperties": false,
+                                  "properties": {
+                                    "end": {
+                                      "type": "string"
+                                    },
+                                    "start": {
+                                      "type": "string"
+                                    }
+                                  },
+                                  "required": [
+                                    "end",
+                                    "start"
+                                  ]
+                                }
+                              },
+                              "required": [
+                                "name"
+                              ]
+                            }
+                          },
+                          "metadata_filters": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "additionalProperties": false,
+                              "properties": {
+                                "labels": {
+                                  "type": "object",
+                                  "additionalProperties": {
+                                    "type": "string"
+                                  }
+                                },
+                                "match_all": {
+                                  "type": "boolean"
+                                }
+                              },
+                              "required": [
+                                "labels",
+                                "match_all"
+                              ]
+                            }
+                          },
+                          "path": {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "properties": {
+                              "value": {
+                                "type": "string"
+                              },
+                              "type": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "value"
+                            ]
+                          },
+                          "query_params": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "additionalProperties": false,
+                              "properties": {
+                                "name": {
+                                  "type": "string"
+                                },
+                                "value": {
+                                  "type": "string"
+                                },
+                                "type": {
+                                  "type": "string"
+                                }
+                              },
+                              "required": [
+                                "name",
+                                "value"
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "route_action": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "request_mirror_backend": {
+                          "type": "string"
+                        },
+                        "cors_policy": {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "properties": {
+                            "allow_credentials": {
+                              "type": "boolean"
+                            },
+                            "allow_headers": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            },
+                            "allow_methods": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            },
+                            "allow_origin_regexes": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            },
+                            "allow_origins": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            },
+                            "disabled": {
+                              "type": "boolean"
+                            },
+                            "expose_headers": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            },
+                            "max_age": {
+                              "type": "string"
+                            }
+                          }
+                        },
+                        "fault_injection_policy": {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "properties": {
+                            "abort": {
+                              "type": "object",
+                              "additionalProperties": false,
+                              "properties": {
+                                "percentage": {
+                                  "type": "number"
+                                },
+                                "status": {
+                                  "type": "number"
+                                }
+                              },
+                              "required": [
+                                "percentage",
+                                "status"
+                              ]
+                            },
+                            "delay": {
+                              "type": "object",
+                              "additionalProperties": false,
+                              "properties": {
+                                "fixed": {
+                                  "type": "object",
+                                  "additionalProperties": false,
+                                  "properties": {
+                                    "seconds": {
+                                      "type": "number"
+                                    },
+                                    "nanos": {
+                                      "type": "number"
+                                    }
+                                  },
+                                  "required": [
+                                    "seconds",
+                                    "nanos"
+                                  ]
+                                },
+                                "percentage": {
+                                  "type": "number"
+                                }
+                              },
+                              "required": [
+                                "fixed",
+                                "percentage"
+                              ]
+                            }
+                          }
+                        },
+                        "retry_policy": {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "properties": {
+                            "num_retries": {
+                              "type": "number"
+                            },
+                            "retry_conditions": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            },
+                            "per_try_timeout": {
+                              "type": "object",
+                              "additionalProperties": false,
+                              "properties": {
+                                "seconds": {
+                                  "type": "number"
+                                },
+                                "nanos": {
+                                  "type": "number"
+                                }
+                              },
+                              "required": [
+                                "seconds"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "num_retries"
+                          ]
+                        },
+                        "timeout": {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "properties": {
+                            "seconds": {
+                              "type": "number"
+                            },
+                            "nanos": {
+                              "type": "number"
+                            }
+                          },
+                          "required": [
+                            "seconds"
+                          ]
+                        },
+                        "url_rewrite": {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "properties": {
+                            "host": {
+                              "type": "string"
+                            },
+                            "path_prefix": {
+                              "type": "string"
+                            },
+                            "path_template": {
+                              "type": "string"
+                            }
+                          }
+                        },
+                        "weighted_backend_services": {
+                          "type": "object",
+                          "additionalProperties": {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "properties": {
+                              "weight": {
+                                "type": "number"
+                              },
+                              "header_action": {
+                                "type": "object",
+                                "additionalProperties": false,
+                                "properties": {
+                                  "request_add": {
+                                    "type": "object",
+                                    "additionalProperties": {
+                                      "type": "object",
+                                      "additionalProperties": false,
+                                      "properties": {
+                                        "value": {
+                                          "type": "string"
+                                        },
+                                        "replace": {
+                                          "type": "boolean"
+                                        }
+                                      },
+                                      "required": [
+                                        "value"
+                                      ]
+                                    }
+                                  },
+                                  "request_remove": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string"
+                                    }
+                                  },
+                                  "response_add": {
+                                    "type": "object",
+                                    "additionalProperties": {
+                                      "type": "object",
+                                      "additionalProperties": false,
+                                      "properties": {
+                                        "value": {
+                                          "type": "string"
+                                        },
+                                        "replace": {
+                                          "type": "boolean"
+                                        }
+                                      },
+                                      "required": [
+                                        "value"
+                                      ]
+                                    }
+                                  },
+                                  "response_remove": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string"
+                                    }
+                                  }
+                                }
+                              }
+                            },
+                            "required": [
+                              "weight"
+                            ]
+                          }
+                        }
+                      }
+                    },
+                    "url_redirect": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "host": {
+                          "type": "string"
+                        },
+                        "https": {
+                          "type": "boolean"
+                        },
+                        "path": {
+                          "type": "string"
+                        },
+                        "prefix": {
+                          "type": "string"
+                        },
+                        "response_code": {
+                          "type": "string"
+                        },
+                        "strip_query": {
+                          "type": "boolean"
+                        }
+                      }
+                    }
+                  },
+                  "required": [
+                    "priority"
+                  ]
+                }
+              },
+              "default_route_action": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "weighted_backend_services": {
+                    "type": "object",
+                    "additionalProperties": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "weight": {
+                          "type": "number"
+                        },
+                        "header_action": {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "properties": {
+                            "request_add": {
+                              "type": "object",
+                              "additionalProperties": {
+                                "type": "object",
+                                "additionalProperties": false,
+                                "properties": {
+                                  "value": {
+                                    "type": "string"
+                                  },
+                                  "replace": {
+                                    "type": "boolean"
+                                  }
+                                },
+                                "required": [
+                                  "value"
+                                ]
+                              }
+                            },
+                            "request_remove": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            },
+                            "response_add": {
+                              "type": "object",
+                              "additionalProperties": {
+                                "type": "object",
+                                "additionalProperties": false,
+                                "properties": {
+                                  "value": {
+                                    "type": "string"
+                                  },
+                                  "replace": {
+                                    "type": "boolean"
+                                  }
+                                },
+                                "required": [
+                                  "value"
+                                ]
+                              }
+                            },
+                            "response_remove": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "required": [
+                        "weight"
+                      ]
+                    }
+                  },
+                  "url_rewrite": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "host": {
+                        "type": "string"
+                      },
+                      "path_prefix": {
+                        "type": "string"
+                      },
+                      "path_template": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "timeout": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "seconds": {
+                        "type": "number"
+                      },
+                      "nanos": {
+                        "type": "number"
+                      }
+                    },
+                    "required": [
+                      "seconds"
+                    ]
+                  },
+                  "retry_policy": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "num_retries": {
+                        "type": "number"
+                      },
+                      "retry_conditions": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "per_try_timeout": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": {
+                          "seconds": {
+                            "type": "number"
+                          },
+                          "nanos": {
+                            "type": "number"
+                          }
+                        },
+                        "required": [
+                          "seconds"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "num_retries"
+                    ]
+                  },
+                  "request_mirror_backend": {
+                    "type": "string"
+                  },
+                  "cors_policy": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "allow_credentials": {
+                        "type": "boolean"
+                      },
+                      "allow_headers": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "allow_methods": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "allow_origin_regexes": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "allow_origins": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "disabled": {
+                        "type": "boolean"
+                      },
+                      "expose_headers": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "max_age": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "fault_injection_policy": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "abort": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": {
+                          "percentage": {
+                            "type": "number"
+                          },
+                          "status": {
+                            "type": "number"
+                          }
+                        },
+                        "required": [
+                          "percentage",
+                          "status"
+                        ]
+                      },
+                      "delay": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": {
+                          "fixed": {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "properties": {
+                              "seconds": {
+                                "type": "number"
+                              },
+                              "nanos": {
+                                "type": "number"
+                              }
+                            },
+                            "required": [
+                              "seconds",
+                              "nanos"
+                            ]
+                          },
+                          "percentage": {
+                            "type": "number"
+                          }
+                        },
+                        "required": [
+                          "fixed",
+                          "percentage"
+                        ]
+                      }
+                    }
                   }
                 }
               }
             }
           }
+        },
+        "test": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "host": {
+                "type": "string"
+              },
+              "path": {
+                "type": "string"
+              },
+              "service": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "host",
+              "path",
+              "service"
+            ]
+          }
         }
       }
+    },
+    "vpc_config": {
+      "description": "VPC-level configuration.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "network": {
+          "type": "string"
+        },
+        "subnetwork": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "network",
+        "subnetwork"
+      ]
     }
   }
 }

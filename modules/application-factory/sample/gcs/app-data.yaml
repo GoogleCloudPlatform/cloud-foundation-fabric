@@ -33,4 +33,4 @@ lifecycle_rules:
       age: 30
 iam:
   roles/storage.objectViewer:
-    - $iam_principals:app-sa
+    - $iam_principals:service_accounts/app-sa

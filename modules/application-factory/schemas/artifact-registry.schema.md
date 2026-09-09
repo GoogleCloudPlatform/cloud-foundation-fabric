@@ -1,0 +1,140 @@
+# Artifact Registry
+
+<!-- markdownlint-disable MD036 -->
+
+## Properties
+
+*additional properties: false*
+
+- **cleanup_policies**: *object*
+  <br>*additional properties: object*
+- **cleanup_policy_dry_run**: *boolean*
+- **description**: *string*
+- **enable_vulnerability_scanning**: *boolean*
+- **encryption_key**: *string*
+- ⁺**format**: *object*
+  <br>*additional properties: false*
+  - **apt**: *object*
+    <br>*additional properties: false*
+    - **remote**: *object*
+      <br>*additional properties: false*
+      - ⁺**public_repository**: *string*
+      - **disable_upstream_validation**: *boolean*
+      - **upstream_credentials**: *object*
+        <br>*additional properties: false*
+        - ⁺**username**: *string*
+        - ⁺**password_secret_version**: *string*
+    - **standard**: *boolean*
+  - **docker**: *object*
+    <br>*additional properties: false*
+    - **remote**: *object*
+      <br>*additional properties: false*
+      - **public_repository**: *string*
+      - **common_repository**: *string*
+      - **custom_repository**: *string*
+      - **disable_upstream_validation**: *boolean*
+      - **upstream_credentials**: *object*
+        <br>*additional properties: false*
+        - ⁺**username**: *string*
+        - ⁺**password_secret_version**: *string*
+    - **standard**: *object*
+      <br>*additional properties: false*
+      - **immutable_tags**: *boolean*
+    - **virtual**: *object*
+      <br>*additional properties: object*
+  - **kfp**: *object*
+    <br>*additional properties: false*
+    - **standard**: *boolean*
+  - **generic**: *object*
+    <br>*additional properties: false*
+    - **standard**: *boolean*
+  - **go**: *object*
+    <br>*additional properties: false*
+    - **remote**: *object*
+      <br>*additional properties: false*
+      - **common_repository**: *string*
+      - **disable_upstream_validation**: *boolean*
+      - **upstream_credentials**: *object*
+        <br>*additional properties: false*
+        - ⁺**username**: *string*
+        - ⁺**password_secret_version**: *string*
+    - **standard**: *boolean*
+  - **googet**: *object*
+    <br>*additional properties: false*
+    - **standard**: *boolean*
+  - **maven**: *object*
+    <br>*additional properties: false*
+    - **remote**: *object*
+      <br>*additional properties: false*
+      - **public_repository**: *string*
+      - **common_repository**: *string*
+      - **custom_repository**: *string*
+      - **disable_upstream_validation**: *boolean*
+      - **upstream_credentials**: *object*
+        <br>*additional properties: false*
+        - ⁺**username**: *string*
+        - ⁺**password_secret_version**: *string*
+    - **standard**: *object*
+      <br>*additional properties: false*
+      - **allow_snapshot_overwrites**: *boolean*
+      - **version_policy**: *string*
+    - **virtual**: *object*
+      <br>*additional properties: object*
+  - **npm**: *object*
+    <br>*additional properties: false*
+    - **remote**: *object*
+      <br>*additional properties: false*
+      - **public_repository**: *string*
+      - **common_repository**: *string*
+      - **custom_repository**: *string*
+      - **disable_upstream_validation**: *boolean*
+      - **upstream_credentials**: *object*
+        <br>*additional properties: false*
+        - ⁺**username**: *string*
+        - ⁺**password_secret_version**: *string*
+    - **standard**: *boolean*
+    - **virtual**: *object*
+      <br>*additional properties: object*
+  - **python**: *object*
+    <br>*additional properties: false*
+    - **remote**: *object*
+      <br>*additional properties: false*
+      - **public_repository**: *string*
+      - **common_repository**: *string*
+      - **custom_repository**: *string*
+      - **disable_upstream_validation**: *boolean*
+      - **upstream_credentials**: *object*
+        <br>*additional properties: false*
+        - ⁺**username**: *string*
+        - ⁺**password_secret_version**: *string*
+    - **standard**: *boolean*
+    - **virtual**: *object*
+      <br>*additional properties: object*
+  - **yum**: *object*
+    <br>*additional properties: false*
+    - **remote**: *object*
+      <br>*additional properties: false*
+      - ⁺**public_repository**: *string*
+      - **disable_upstream_validation**: *boolean*
+      - **upstream_credentials**: *object*
+        <br>*additional properties: false*
+        - ⁺**username**: *string*
+        - ⁺**password_secret_version**: *string*
+    - **standard**: *boolean*
+- **iam**: *object*
+  <br>*additional properties: array*
+- **iam_bindings**: *object*
+  <br>*additional properties: object*
+- **iam_bindings_additive**: *object*
+  <br>*additional properties: object*
+- **iam_by_principals**: *object*
+  <br>*additional properties: array*
+- **labels**: *object*
+  <br>*additional properties: string*
+- ⁺**location**: *string*
+- **name**: *string*
+- **project_id**: *string*
+- **tag_bindings**: *object*
+  <br>*additional properties: string*
+
+## Definitions

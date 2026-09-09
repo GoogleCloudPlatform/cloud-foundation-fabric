@@ -21,30 +21,32 @@ The module supports multiple projects. Project IDs come from:
 
 The `context` variable uses the standard keys from other modules, extended with new keys:
 
-- Standard: `condition_vars`, `custom_roles`, `email_addresses`, `folder_ids`, `iam_principals`, `kms_keys`, `locations`, `log_buckets`, `notification_channels`, `project_ids`, `project_numbers`, `pubsub_topics`, `storage_buckets`, `tag_keys`, `tag_values`, `vpc_host_projects`, `vpc_sc_perimeters`
-- New: `secrets`, `datasets`, `artifact_registries`
+- Keys are the union of the `context` keys supported by the wrapped modules: `addresses`, `artifact_registries`, `bigquery_datasets`, `condition_vars`, `custom_roles`, `folder_ids`, `iam_principals`, `kms_keys`, `locations`, `networks`, `project_ids`, `pubsub_topics`, `secrets`, `service_account_ids`, `storage_buckets`, `subnets`, `tag_keys`, `tag_values`, `tag_vars`
+- The factory never resolves references itself, it only passes (enriched) context down to the wrapped modules
 
 ### Context enrichment
 
 Resources created within the factory enrich the context for downstream resources:
 
-| Resource Type | Enriches Context Key |
-|---------------|---------------------|
-| `iam-service-account` | `iam_principals` |
-| `gcs` | `storage_buckets` |
-| `pubsub` | `pubsub_topics` |
-| `bigquery-dataset` | `datasets` |
-| `secret-manager` | `secrets` |
-| `artifact-registry` | `artifact_registries` |
+| Resource Type | Enriches Context Key | Key format |
+|---------------|---------------------|------------|
+| `iam-service-account` | `iam_principals`, `service_account_ids` | `service_accounts/NAME` (project-factory convention) |
+| `gcs` | `storage_buckets` | `NAME` |
+| `pubsub` | `pubsub_topics` | `NAME` |
+| `bigquery-dataset` | `bigquery_datasets` | `NAME` |
+| `secret-manager` | `secrets` | `NAME` (secret id), `NAME/VERSION` (version id) |
+| `artifact-registry` | `artifact_registries` | `NAME` |
 
 External static references via `var.context` are merged with factory-created enrichments.
+
+Enrichments are only passed to modules in *later* phases: passing a module its own enrichment (e.g. `storage_buckets` to `gcs`) creates a dependency cycle.
 
 ### Context seen by each module
 
 The context passed to each low-level module is always a merge of:
 
 1. **Variable-level static context** (`var.context`) — provided externally by the caller
-2. **Factory-created enrichments** — from other resources created within this factory, limited to the keys relevant for that module's phase
+2. **Factory-created enrichments** — from resources created in previous phases (`local.ctx_phase_2`, `local.ctx_phase_3`)
 
 This ensures every module sees both the external references and the internally-created resources it may need to reference.
 
@@ -72,7 +74,7 @@ Only `iam-service-account` uses the two-phase split pattern (create + IAM, like 
 - **Phase 1**: Service accounts are created first, enriching `iam_principals` for all subsequent phases.
 - **Phase 2**: Storage, messaging, data, and security resources. Can reference service accounts. Enrich their respective context keys.
 - **Phase 3**: Compute and database resources. Can reference everything from phases 1-2.
-- **Phase 4**: Load balancers. Can depend on VMs from phase 3.
+- **Phase 4**: Load balancers. Ordered after VMs from phase 3 via module-level `depends_on` (instance group references are still static; context enrichment for instance groups is a possible follow-up).
 
 ## YAML Structure
 
@@ -101,6 +103,8 @@ Only `iam-service-account` uses the two-phase split pattern (create + IAM, like 
 ```
 
 Each YAML file's schema matches the corresponding low-level module's variable types. Fields are accessed via `try` statements to protect the lower-level interface.
+
+Exception: `secret-manager` files map to one module instance each and can define multiple secrets via the `secrets` map, mirroring the module interface. Secret names must be unique across files.
 
 ## `factories_config` Variable
 
@@ -143,7 +147,7 @@ Each resource type exposes its own output, keyed by resource name, surfacing the
 | `net_lb_int` | `module.net-lb-int` | Forwarding rule IDs, IPs |
 | `net_lb_app_int` | `module.net-lb-app-int` | Forwarding rule IDs, IPs |
 
-Each output is the full module object for that resource, allowing consumers to access any attribute the low-level module exposes.
+Outputs expose a curated set of non-sensitive attributes for each resource, as several modules expose sensitive outputs (e.g. Cloud SQL passwords and certificates, compute instance metadata) which would otherwise force the whole factory output to be marked sensitive. An additional `context` output exposes the enriched context for downstream use.
 
 ## Implementation Tasks
 
@@ -177,10 +181,13 @@ Each output is the full module object for that resource, allowing consumers to a
 
 | Task | Details |
 | ---- | ------- |
-| T14 | Add native `context` variable support to `artifact-registry`, `cloudsql-instance`, `net-lb-app-int` modules (project_id, locations, IAM, custom_roles, kms_keys, tag_values) |
-| T15 | Tests |
-| T16 | README |
+| T14 | ~~Add native `context` variable support to `artifact-registry`, `cloudsql-instance`, `net-lb-app-int` modules~~ (done upstream) |
+| T15 | ~~Tests~~ (README example with schema-validated YAML blocks) |
+| T16 | ~~README~~ |
 | T17 | Ensure YAML schemas for resource types also supported by `project-factory` are reused from there |
+| T18 | Tooling to keep wrappers and schemas aligned with the wrapped modules' variables (schemas are currently derived from `variables.tf` via a throwaway script) |
+| T19 | Add the module to `FACTORIES.md` and a `tests/modules` inventory-based test |
+| T20 | Context enrichment for instance groups (`compute-vm` → load balancer backends) to replace `depends_on` |
 
 ## Patterns to Follow
 

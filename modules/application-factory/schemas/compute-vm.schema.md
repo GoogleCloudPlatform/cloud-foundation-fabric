@@ -1,0 +1,169 @@
+# Compute VM
+
+<!-- markdownlint-disable MD036 -->
+
+## Properties
+
+*additional properties: false*
+
+- **attached_disks**: *object*
+  <br>*additional properties: object*
+- **boot_disk**: *object*
+  <br>*additional properties: false*
+  - **architecture**: *string*
+  - **auto_delete**: *boolean*
+  - **force_attach**: *boolean*
+  - **snapshot_schedule**: *array*
+    - items: *string*
+  - **initialize_params**: *object*
+    <br>*additional properties: false*
+    - **size**: *number*
+    - **type**: *string*
+    - **hyperdisk**: *object*
+      <br>*additional properties: false*
+      - **provisioned_iops**: *number*
+      - **provisioned_throughput**: *number*
+      - **storage_pool**: *string*
+  - **source**: *object*
+    <br>*additional properties: false*
+    - **attach**: *string*
+    - **disk**: *string*
+    - **image**: *string*
+    - **snapshot**: *string*
+  - **use_independent_disk**: *object*
+    <br>*additional properties: false*
+    - **name**: *string*
+- **can_ip_forward**: *boolean*
+- **confidential_compute**: *string*
+- **create_template**: *object*
+  <br>*additional properties: false*
+  - **regional**: *boolean*
+- **description**: *string*
+- **enable_display**: *boolean*
+- **encryption**: *object*
+  <br>*additional properties: false*
+  - **encrypt_boot**: *boolean*
+  - **disk_encryption_key_raw**: *string*
+  - **kms_key_self_link**: *string*
+- **gpu**: *object*
+  <br>*additional properties: false*
+  - ⁺**count**: *number*
+  - ⁺**type**: *string*
+- **group**: *object*
+  <br>*additional properties: false*
+  - **membership**: *string*
+  - **named_ports**: *object*
+    <br>*additional properties: number*
+- **hostname**: *string*
+- **iam**: *object*
+  <br>*additional properties: array*
+- **instance_schedule**: *object*
+  <br>*additional properties: false*
+  - **active**: *boolean*
+  - **description**: *string*
+  - **expiration_time**: *string*
+  - **start_time**: *string*
+  - **timezone**: *string*
+  - **vm_start**: *string*
+  - **vm_stop**: *string*
+- **kms_autokeys**: *object*
+  <br>*additional properties: object*
+- **labels**: *object*
+  <br>*additional properties: string*
+- **lifecycle_config**: *object*
+  <br>*additional properties: false*
+  - **allow_stopping_for_update**: *boolean*
+  - **deletion_protection**: *boolean*
+  - **key_revocation_action_type**: *string*
+  - **graceful_shutdown**: *object*
+    <br>*additional properties: false*
+    - **enabled**: *boolean*
+    - **max_duration_secs**: *number*
+- **machine_features_config**: *object*
+  <br>*additional properties: false*
+  - **enable_nested_virtualization**: *boolean*
+  - **enable_turbo_mode**: *boolean*
+  - **enable_uefi_networking**: *boolean*
+  - **performance_monitoring_unit**: *string*
+  - **threads_per_core**: *number*
+  - **visible_core_count**: *number*
+- **machine_type**: *string*
+- **metadata**: *object*
+  <br>*additional properties: string*
+- **metadata_startup_script**: *string*
+- **min_cpu_platform**: *string*
+- **name**: *string*
+- **network_attached_interfaces**: *array*
+  - items: *string*
+- ⁺**network_interfaces**: *array*
+  - items: *object*
+    <br>*additional properties: false*
+    - ⁺**network**: *string*
+    - ⁺**subnetwork**: *string*
+    - **alias_ips**: *object*
+      <br>*additional properties: string*
+    - **nat**: *boolean*
+    - **network_tier**: *string*
+    - **nic_type**: *string*
+    - **stack_type**: *string*
+    - **queue_count**: *number*
+    - **internal_ipv6_prefix_length**: *number*
+    - **external_ipv6**: *boolean*
+    - **addresses**: *object*
+      <br>*additional properties: false*
+      - **internal**: *string*
+      - **external**: *string*
+- **network_performance_tier**: *string*
+- **network_tag_bindings**: *object*
+  <br>*additional properties: string*
+- **project_id**: *string*
+- **resource_policies**: *array*
+  - items: *string*
+- **scheduling_config**: *object*
+  <br>*additional properties: false*
+  - **automatic_restart**: *boolean*
+  - **maintenance_interval**: *string*
+  - **min_node_cpus**: *number*
+  - **on_host_maintenance**: *string*
+  - **provisioning_model**: *string*
+  - **termination_action**: *string*
+  - **local_ssd_recovery_timeout**: *object*
+    <br>*additional properties: false*
+    - **nanos**: *number*
+    - ⁺**seconds**: *number*
+  - **max_run_duration**: *object*
+    <br>*additional properties: false*
+    - **nanos**: *number*
+    - ⁺**seconds**: *number*
+  - **node_affinities**: *object*
+    <br>*additional properties: object*
+- **scratch_disks**: *object*
+  <br>*additional properties: false*
+  - ⁺**count**: *number*
+  - ⁺**interface**: *string*
+- **service_account**: *object*
+  <br>*additional properties: false*
+  - **auto_create**: *boolean*
+  - **email**: *string*
+  - **scopes**: *array*
+    - items: *string*
+- **shielded_config**: *object*
+  <br>*additional properties: false*
+  - **enable_secure_boot**: *boolean*
+  - **enable_vtpm**: *boolean*
+  - **enable_integrity_monitoring**: *boolean*
+- **snapshot_schedules**: *object*
+  <br>*additional properties: object*
+- **tag_bindings**: *object*
+  <br>*additional properties: string*
+- **tag_bindings_immutable**: *object*
+  <br>*additional properties: string*
+- **tags**: *array*
+  - items: *string*
+- **tpu_config**: *object*
+  <br>*additional properties: false*
+  - **runtime_version**: *string*
+  - **queued**: *boolean*
+- ⁺**zone**: *string*
+
+## Definitions

@@ -31,8 +31,10 @@ module "compute-vm" {
   project_id                  = try(each.value.project_id, null)
   name                        = try(each.value.name, each.key)
   zone                        = each.value.zone
-  machine_type                = try(each.value.instance_type, "f1-micro")
+  machine_type                = try(each.value.machine_type, "e2-micro")
   description                 = try(each.value.description, "Managed by the compute-vm Terraform module.")
+  attached_disks              = try(each.value.attached_disks, {})
+  boot_disk                   = try(each.value.boot_disk, {})
   can_ip_forward              = try(each.value.can_ip_forward, false)
   confidential_compute        = try(each.value.confidential_compute, null)
   create_template             = try(each.value.create_template, null)
@@ -43,20 +45,26 @@ module "compute-vm" {
   hostname                    = try(each.value.hostname, null)
   iam                         = try(each.value.iam, {})
   instance_schedule           = try(each.value.instance_schedule, null)
+  kms_autokeys                = try(each.value.kms_autokeys, {})
   labels                      = try(each.value.labels, {})
+  lifecycle_config            = try(each.value.lifecycle_config, {})
+  machine_features_config     = try(each.value.machine_features_config, {})
   metadata                    = try(each.value.metadata, {})
   metadata_startup_script     = try(each.value.metadata_startup_script, null)
   min_cpu_platform            = try(each.value.min_cpu_platform, null)
   network_attached_interfaces = try(each.value.network_attached_interfaces, [])
   network_interfaces          = each.value.network_interfaces
+  network_performance_tier    = try(each.value.network_performance_tier, null)
+  network_tag_bindings        = try(each.value.network_tag_bindings, {})
+  resource_policies           = try(each.value.resource_policies, null)
+  scheduling_config           = try(each.value.scheduling_config, {})
   scratch_disks               = try(each.value.scratch_disks, { count = 0, interface = "NVME" })
   service_account             = try(each.value.service_account, {})
   shielded_config             = try(each.value.shielded_config, null)
+  snapshot_schedules          = try(each.value.snapshot_schedules, {})
   tag_bindings                = try(each.value.tag_bindings, {})
+  tag_bindings_immutable      = try(each.value.tag_bindings_immutable, null)
   tags                        = try(each.value.tags, [])
-  boot_disk                   = try(each.value.boot_disk, { initialize_params = {} })
-  attached_disks              = try(each.value.attached_disks, {})
-  context = merge(local.ctx, {
-    iam_principals = local.ctx_iam_principals
-  })
+  tpu_config                  = try(each.value.tpu_config, null)
+  context                     = local.ctx_phase_3
 }

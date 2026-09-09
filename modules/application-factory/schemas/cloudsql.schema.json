@@ -3,104 +3,170 @@
   "title": "Cloud SQL Instance",
   "type": "object",
   "additionalProperties": false,
-  "required": ["database_version", "tier", "region", "network_config"],
+  "required": [
+    "database_version",
+    "network_config",
+    "region",
+    "tier"
+  ],
   "properties": {
-    "project_id": {
-      "type": "string"
-    },
-    "name": {
-      "type": "string",
-      "description": "Override resource name derived from filename."
-    },
-    "database_version": {
-      "type": "string"
-    },
-    "tier": {
-      "type": "string"
-    },
-    "region": {
-      "type": "string"
-    },
-    "prefix": {
-      "type": "string"
-    },
     "activation_policy": {
+      "description": "This variable specifies when the instance should be active. Can be either ALWAYS, NEVER or ON_DEMAND. Default is ALWAYS.",
       "type": "string",
-      "enum": ["ALWAYS", "NEVER", "ON_DEMAND"]
+      "enum": [
+        "ALWAYS",
+        "NEVER",
+        "ON_DEMAND"
+      ]
     },
     "availability_type": {
+      "description": "Availability type for the primary replica. Either `ZONAL` or `REGIONAL`.",
       "type": "string",
-      "enum": ["ZONAL", "REGIONAL"]
+      "enum": [
+        "ZONAL",
+        "REGIONAL"
+      ]
     },
     "backup_configuration": {
+      "description": "Backup settings for primary instance. Set to null to leave existing GCP backup settings unmanaged. When set, all fields are managed by Terraform including disabling backups when enabled=false.",
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "enabled": { "type": "boolean" },
-        "binary_log_enabled": { "type": "boolean" },
-        "start_time": { "type": "string" },
-        "location": { "type": "string" },
-        "log_retention_days": { "type": "number" },
-        "point_in_time_recovery_enabled": { "type": "boolean" },
-        "retention_count": { "type": "number" },
-        "retain_backups_on_delete": { "type": "boolean" }
+        "enabled": {
+          "type": "boolean"
+        },
+        "binary_log_enabled": {
+          "type": "boolean"
+        },
+        "start_time": {
+          "type": "string"
+        },
+        "location": {
+          "type": "string"
+        },
+        "log_retention_days": {
+          "type": "number"
+        },
+        "point_in_time_recovery_enabled": {
+          "type": "boolean"
+        },
+        "retention_count": {
+          "type": "number"
+        },
+        "retain_backups_on_delete": {
+          "type": "boolean"
+        },
+        "final_backup": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "enabled": {
+              "type": "boolean"
+            },
+            "retention_days": {
+              "type": "number"
+            }
+          }
+        }
       }
     },
     "collation": {
+      "description": "The name of server instance collation.",
       "type": "string"
     },
     "connector_enforcement": {
+      "description": "Specifies if connections must use Cloud SQL connectors.",
+      "type": "string"
+    },
+    "data_api_access": {
+      "description": "Access to the Cloud SQL Data API. Either `ALLOW_DATA_API` or `DISALLOW_DATA_API`.",
       "type": "string"
     },
     "data_cache": {
+      "description": "Enable data cache. Only used for Enterprise MYSQL and PostgreSQL.",
       "type": "boolean"
     },
+    "database_version": {
+      "description": "Database type and version to create.",
+      "type": "string"
+    },
     "databases": {
+      "description": "Databases to create once the primary instance is created.",
       "type": "array",
-      "items": { "type": "string" }
+      "items": {
+        "type": "string"
+      }
     },
     "disk_autoresize_limit": {
+      "description": "The maximum size to which storage capacity can be automatically increased. The default value is 0, which specifies that there is no limit.",
       "type": "number"
     },
     "disk_size": {
+      "description": "Disk size in GB. Set to null to enable autoresize.",
       "type": "number"
     },
     "disk_type": {
+      "description": "The type of data disk: `PD_SSD` or `PD_HDD`.",
       "type": "string",
-      "enum": ["PD_SSD", "PD_HDD"]
+      "enum": [
+        "PD_SSD",
+        "PD_HDD"
+      ]
     },
     "edition": {
+      "description": "The edition of the instance, can be ENTERPRISE or ENTERPRISE_PLUS.",
       "type": "string",
-      "enum": ["ENTERPRISE", "ENTERPRISE_PLUS"]
+      "enum": [
+        "ENTERPRISE",
+        "ENTERPRISE_PLUS"
+      ]
     },
     "encryption_key_name": {
+      "description": "The full path to the encryption key used for the CMEK disk encryption of the primary instance.",
       "type": "string"
     },
     "flags": {
+      "description": "Map FLAG_NAME=>VALUE for database-specific tuning.",
       "type": "object",
-      "additionalProperties": { "type": "string" }
+      "additionalProperties": {
+        "type": "string"
+      }
     },
     "gcp_deletion_protection": {
-      "type": "boolean"
-    },
-    "terraform_deletion_protection": {
+      "description": "Set Google's deletion protection attribute which applies across all surfaces (UI, API, & Terraform).",
       "type": "boolean"
     },
     "insights_config": {
+      "description": "Query Insights configuration. Defaults to null which disables Query Insights.",
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "query_string_length": { "type": "number" },
-        "record_application_tags": { "type": "boolean" },
-        "record_client_address": { "type": "boolean" },
-        "query_plans_per_minute": { "type": "number" }
+        "query_string_length": {
+          "type": "number"
+        },
+        "record_application_tags": {
+          "type": "boolean"
+        },
+        "record_client_address": {
+          "type": "boolean"
+        },
+        "query_plans_per_minute": {
+          "type": "number"
+        },
+        "enhanced_query_insights_enabled": {
+          "type": "boolean"
+        }
       }
     },
     "labels": {
+      "description": "Labels to be attached to all instances.",
       "type": "object",
-      "additionalProperties": { "type": "string" }
+      "additionalProperties": {
+        "type": "string"
+      }
     },
     "maintenance_config": {
+      "description": "Set maintenance window configuration and maintenance deny period (up to 90 days). Date format: 'yyyy-mm-dd'.",
       "type": "object",
       "additionalProperties": false,
       "properties": {
@@ -108,90 +174,246 @@
           "type": "object",
           "additionalProperties": false,
           "properties": {
-            "day": { "type": "number" },
-            "hour": { "type": "number" },
-            "update_track": { "type": "string" }
-          }
+            "day": {
+              "type": "number"
+            },
+            "hour": {
+              "type": "number"
+            },
+            "update_track": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "hour"
+          ]
         },
         "deny_maintenance_period": {
           "type": "object",
-          "required": ["start_date", "end_date"],
           "additionalProperties": false,
           "properties": {
-            "start_date": { "type": "string" },
-            "end_date": { "type": "string" },
-            "start_time": { "type": "string" }
+            "start_date": {
+              "type": "string"
+            },
+            "end_date": {
+              "type": "string"
+            },
+            "start_time": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "start_date",
+            "end_date"
+          ]
+        }
+      }
+    },
+    "managed_connection_pooling_config": {
+      "description": "Configuration for Managed Connection Pooling. NOTE: This feature is only available for PostgreSQL on Enterprise Plus edition instances.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "flags": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
           }
         }
       }
     },
+    "name": {
+      "description": "Override resource name derived from filename.",
+      "type": "string"
+    },
     "network_config": {
+      "description": "Network configuration for the instance. Only one between private_network and psc_config can be used.",
       "type": "object",
-      "required": ["connectivity"],
       "additionalProperties": false,
       "properties": {
         "authorized_networks": {
           "type": "object",
-          "additionalProperties": { "type": "string" }
+          "additionalProperties": {
+            "type": "string"
+          }
         },
         "connectivity": {
           "type": "object",
           "additionalProperties": false,
           "properties": {
-            "public_ipv4": { "type": "boolean" },
+            "public_ipv4": {
+              "type": "boolean"
+            },
             "psa_config": {
               "type": "object",
-              "required": ["private_network"],
               "additionalProperties": false,
               "properties": {
-                "private_network": { "type": "string" },
+                "private_network": {
+                  "type": "string"
+                },
                 "allocated_ip_ranges": {
                   "type": "object",
                   "additionalProperties": false,
                   "properties": {
-                    "primary": { "type": "string" },
-                    "replica": { "type": "string" }
+                    "primary": {
+                      "type": "string"
+                    },
+                    "replica": {
+                      "type": "string"
+                    }
                   }
                 }
-              }
+              },
+              "required": [
+                "private_network"
+              ]
             },
             "psc_allowed_consumer_projects": {
               "type": "array",
-              "items": { "type": "string" }
+              "items": {
+                "type": "string"
+              }
             },
-            "enable_private_path_for_services": { "type": "boolean" }
+            "psc_config": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "allowed_consumer_projects": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "network_attachment_uri": {
+                  "type": "string"
+                },
+                "psc_auto_connection_policy_enabled": {
+                  "type": "boolean"
+                },
+                "psc_auto_connections": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "consumer_network": {
+                        "type": "string"
+                      },
+                      "consumer_service_project_id": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "consumer_network"
+                    ]
+                  }
+                },
+                "psc_auto_dns_enabled": {
+                  "type": "boolean"
+                },
+                "psc_write_endpoint_dns_enabled": {
+                  "type": "boolean"
+                }
+              }
+            },
+            "enable_private_path_for_services": {
+              "type": "boolean"
+            }
           }
         }
-      }
+      },
+      "required": [
+        "connectivity"
+      ]
     },
-    "replicas": {
-      "type": "object",
-      "additionalProperties": {
-        "type": "object",
-        "required": ["region"],
-        "additionalProperties": false,
-        "properties": {
-          "region": { "type": "string" },
-          "encryption_key_name": { "type": "string" },
-          "availability_type": { "type": "string" }
-        }
-      }
-    },
-    "root_password": {
+    "password_validation_policy": {
+      "description": "Password validation policy configuration for instances.",
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "password": { "type": "string" },
-        "random_password": { "type": "boolean" }
+        "enabled": {
+          "type": "boolean"
+        },
+        "change_interval": {
+          "type": "number"
+        },
+        "default_complexity": {
+          "type": "boolean"
+        },
+        "disallow_username_substring": {
+          "type": "boolean"
+        },
+        "min_length": {
+          "type": "number"
+        },
+        "reuse_interval": {
+          "type": "number"
+        }
+      }
+    },
+    "prefix": {
+      "description": "Optional prefix used to generate instance names.",
+      "type": "string"
+    },
+    "project_id": {
+      "description": "The ID of the project where this instances will be created.",
+      "type": "string"
+    },
+    "region": {
+      "description": "Region of the primary instance.",
+      "type": "string"
+    },
+    "replicas": {
+      "description": "Map of NAME=> {REGION, KMS_KEY, AVAILABILITY_TYPE, TIER} for additional read replicas. Set TIER to override the primary's machine type per replica. Set to null to disable replica creation.",
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "region": {
+            "type": "string"
+          },
+          "encryption_key_name": {
+            "type": "string"
+          },
+          "availability_type": {
+            "type": "string"
+          },
+          "tier": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "region"
+        ]
+      }
+    },
+    "root_password": {
+      "description": "Root password of the Cloud SQL instance, or flag to create a random password. Required for MS SQL Server.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "password": {
+          "type": "string"
+        },
+        "random_password": {
+          "type": "boolean"
+        }
       }
     },
     "ssl": {
+      "description": "Setting to enable SSL, set config and certificates.",
       "type": "object",
       "additionalProperties": false,
       "properties": {
         "client_certificates": {
           "type": "array",
-          "items": { "type": "string" }
+          "items": {
+            "type": "string"
+          }
         },
         "mode": {
           "type": "string",
@@ -203,20 +425,44 @@
         }
       }
     },
+    "terraform_deletion_protection": {
+      "description": "Prevent terraform from deleting instances.",
+      "type": "boolean"
+    },
+    "tier": {
+      "description": "The machine type to use for the instances.",
+      "type": "string"
+    },
     "time_zone": {
+      "description": "The time_zone to be used by the database engine (supported only for SQL Server), in SQL Server timezone format.",
       "type": "string"
     },
     "users": {
+      "description": "Map of users to create in the primary instance (and replicated to other replicas). For MySQL, anything after the first `@` (if present) will be used as the user's host. Set PASSWORD to null if you want to get an autogenerated password. The user types available are: 'BUILT_IN', 'CLOUD_IAM_USER' or 'CLOUD_IAM_SERVICE_ACCOUNT'.",
       "type": "object",
       "additionalProperties": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
-          "password": { "type": "string" },
-          "password_version": { "type": "number" },
+          "password": {
+            "type": "string"
+          },
+          "password_version": {
+            "type": "number"
+          },
           "type": {
             "type": "string",
-            "enum": ["BUILT_IN", "CLOUD_IAM_USER", "CLOUD_IAM_SERVICE_ACCOUNT"]
+            "enum": [
+              "BUILT_IN",
+              "CLOUD_IAM_USER",
+              "CLOUD_IAM_SERVICE_ACCOUNT"
+            ]
+          },
+          "database_roles": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
           }
         }
       }

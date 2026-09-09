@@ -15,51 +15,50 @@
  */
 
 variable "context" {
-  description = "Context-specific interpolations."
+  description = "Context-specific interpolations. Keys are the union of those supported by the wrapped modules, and are enriched with factory-managed resources."
   type = object({
-    condition_vars        = optional(map(map(string)), {})
-    custom_roles          = optional(map(string), {})
-    email_addresses       = optional(map(string), {})
-    folder_ids            = optional(map(string), {})
-    iam_principals        = optional(map(string), {})
-    kms_keys              = optional(map(string), {})
-    locations             = optional(map(string), {})
-    log_buckets           = optional(map(string), {})
-    notification_channels = optional(map(string), {})
-    project_ids           = optional(map(string), {})
-    project_numbers       = optional(map(string), {})
-    networks              = optional(map(string), {})
-    subnets               = optional(map(string), {})
-    pubsub_topics         = optional(map(string), {})
-    storage_buckets       = optional(map(string), {})
-    tag_keys              = optional(map(string), {})
-    tag_values            = optional(map(string), {})
-    vpc_host_projects     = optional(map(string), {})
-    vpc_sc_perimeters     = optional(map(string), {})
-    # new keys for application-factory
-    secrets             = optional(map(string), {})
-    datasets            = optional(map(string), {})
+    addresses           = optional(map(string), {})
     artifact_registries = optional(map(string), {})
+    bigquery_datasets   = optional(map(string), {})
+    condition_vars      = optional(map(map(string)), {})
+    custom_roles        = optional(map(string), {})
+    folder_ids          = optional(map(string), {})
+    iam_principals      = optional(map(string), {})
+    kms_keys            = optional(map(string), {})
+    locations           = optional(map(string), {})
+    networks            = optional(map(string), {})
+    project_ids         = optional(map(string), {})
+    pubsub_topics       = optional(map(string), {})
+    secrets             = optional(map(string), {})
+    service_account_ids = optional(map(string), {})
+    storage_buckets     = optional(map(string), {})
+    subnets             = optional(map(string), {})
+    tag_keys            = optional(map(string), {})
+    tag_values          = optional(map(string), {})
+    tag_vars = optional(object({
+      projects     = optional(map(map(string)), {})
+      organization = optional(map(string), {})
+    }), {})
   })
   default  = {}
   nullable = false
 }
 
 variable "factories_config" {
-  description = "Path configuration for YAML resource description data files."
+  description = "Path configuration for YAML resource description data files. Paths are relative to basepath unless absolute or starting with a dot."
   type = object({
     basepath = string
     paths = optional(object({
-      service_accounts  = optional(string, "service-accounts")
-      gcs               = optional(string, "gcs")
-      pubsub            = optional(string, "pubsub")
-      bigquery          = optional(string, "bigquery")
-      secret_manager    = optional(string, "secret-manager")
       artifact_registry = optional(string, "artifact-registry")
-      compute_vm        = optional(string, "compute-vm")
+      bigquery          = optional(string, "bigquery")
       cloudsql          = optional(string, "cloudsql")
-      net_lb_int        = optional(string, "net-lb-int")
+      compute_vm        = optional(string, "compute-vm")
+      gcs               = optional(string, "gcs")
       net_lb_app_int    = optional(string, "net-lb-app-int")
+      net_lb_int        = optional(string, "net-lb-int")
+      pubsub            = optional(string, "pubsub")
+      secret_manager    = optional(string, "secret-manager")
+      service_accounts  = optional(string, "service-accounts")
     }), {})
   })
   nullable = false

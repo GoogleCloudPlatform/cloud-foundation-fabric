@@ -15,7 +15,9 @@
 # yaml-language-server: $schema=../../schemas/bigquery.schema.json
 
 # Dataset for application analytics.
+# Resource id is overridden as dataset ids cannot contain hyphens.
 
+id: app_dataset
 project_id: $project_ids:app-project
 location: $locations:primary
 description: Application analytics dataset
@@ -46,4 +48,4 @@ views:
     description: Events from the last 7 days
 iam:
   roles/bigquery.dataViewer:
-    - $iam_principals:app-sa
+    - $iam_principals:service_accounts/app-sa

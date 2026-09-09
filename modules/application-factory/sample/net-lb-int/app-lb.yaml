@@ -19,8 +19,8 @@
 project_id: $project_ids:app-project
 region: europe-west1
 vpc_config:
-  network: projects/net-project/global/networks/app-vpc
-  subnetwork: projects/net-project/regions/europe-west1/subnetworks/app-subnet
+  network: $networks:app-vpc
+  subnetwork: $subnets:app-subnet
 backends:
   - group: instance-group-self-link
 forwarding_rules_config:

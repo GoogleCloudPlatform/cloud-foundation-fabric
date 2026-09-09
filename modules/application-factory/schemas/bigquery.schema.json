@@ -4,192 +4,863 @@
   "type": "object",
   "additionalProperties": false,
   "properties": {
-    "project_id": {
-      "type": "string"
-    },
-    "id": {
-      "type": "string",
-      "description": "Override dataset id derived from filename."
-    },
-    "description": {
-      "type": "string"
-    },
-    "friendly_name": {
-      "type": "string"
-    },
-    "location": {
-      "type": "string"
-    },
-    "labels": {
-      "type": "object",
-      "additionalProperties": { "type": "string" }
-    },
-    "encryption_key": {
-      "type": "string"
-    },
-    "options": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "default_collation": { "type": "string" },
-        "default_table_expiration_ms": { "type": "number" },
-        "default_partition_expiration_ms": { "type": "number" },
-        "delete_contents_on_destroy": { "type": "boolean" },
-        "is_case_insensitive": { "type": "boolean" },
-        "max_time_travel_hours": { "type": "number" },
-        "storage_billing_model": { "type": "string" }
-      }
-    },
-    "tables": {
+    "access": {
+      "description": "Map of access rules with role and identity type. Keys are arbitrary and must match those in the `access_identities` variable, types are `domain`, `group`, `special_group`, `user`, `view`.",
       "type": "object",
       "additionalProperties": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
-          "deletion_protection": { "type": "boolean" },
-          "description": { "type": "string" },
-          "friendly_name": { "type": "string" },
-          "labels": { "type": "object", "additionalProperties": { "type": "string" } },
-          "require_partition_filter": { "type": "boolean" },
-          "schema": { "type": "string" },
+          "role": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "domain",
+              "group",
+              "special_group",
+              "user",
+              "view"
+            ]
+          }
+        },
+        "required": [
+          "role",
+          "type"
+        ]
+      }
+    },
+    "access_identities": {
+      "description": "Map of access identities used for basic access roles. View identities have the format 'project_id|dataset_id|table_id'.",
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "authorized_datasets": {
+      "description": "An array of datasets to be authorized on the dataset.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "dataset_id": {
+            "type": "string"
+          },
+          "project_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "dataset_id",
+          "project_id"
+        ]
+      }
+    },
+    "authorized_routines": {
+      "description": "An array of routines to be authorized on the dataset.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "project_id": {
+            "type": "string"
+          },
+          "dataset_id": {
+            "type": "string"
+          },
+          "routine_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "project_id",
+          "dataset_id",
+          "routine_id"
+        ]
+      }
+    },
+    "authorized_views": {
+      "description": "An array of views to be authorized on the dataset.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "dataset_id": {
+            "type": "string"
+          },
+          "project_id": {
+            "type": "string"
+          },
+          "table_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "dataset_id",
+          "project_id",
+          "table_id"
+        ]
+      }
+    },
+    "dataset_access": {
+      "description": "Set access in the dataset resource instead of using separate resources.",
+      "type": "boolean"
+    },
+    "description": {
+      "description": "Optional description.",
+      "type": "string"
+    },
+    "encryption_key": {
+      "description": "Self link of the KMS key that will be used to protect destination table.",
+      "type": "string"
+    },
+    "friendly_name": {
+      "description": "Dataset friendly name.",
+      "type": "string"
+    },
+    "iam": {
+      "description": "IAM bindings in {ROLE => [MEMBERS]} format. Mutually exclusive with the access_* variables used for basic roles.",
+      "type": "object",
+      "additionalProperties": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      }
+    },
+    "iam_bindings": {
+      "description": "Authoritative IAM bindings in {KEY => {role = ROLE, members = [], condition = {}}}. Keys are arbitrary.",
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "members": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "role": {
+            "type": "string"
+          },
+          "condition": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "expression": {
+                "type": "string"
+              },
+              "title": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "expression",
+              "title"
+            ]
+          }
+        },
+        "required": [
+          "members",
+          "role"
+        ]
+      }
+    },
+    "iam_bindings_additive": {
+      "description": "Individual additive IAM bindings. Keys are arbitrary.",
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "member": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string"
+          },
+          "condition": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "expression": {
+                "type": "string"
+              },
+              "title": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "expression",
+              "title"
+            ]
+          }
+        },
+        "required": [
+          "member",
+          "role"
+        ]
+      }
+    },
+    "iam_by_principals": {
+      "description": "Authoritative IAM binding in {PRINCIPAL => [ROLES]} format. Principals need to be statically defined to avoid errors. Merged internally with the `iam` variable.",
+      "type": "object",
+      "additionalProperties": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      }
+    },
+    "id": {
+      "description": "Override resource name derived from filename.",
+      "type": "string"
+    },
+    "labels": {
+      "description": "Dataset labels.",
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "location": {
+      "description": "Dataset location.",
+      "type": "string"
+    },
+    "materialized_views": {
+      "description": "Materialized views definitions.",
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "query": {
+            "type": "string"
+          },
+          "allow_non_incremental_definition": {
+            "type": "boolean"
+          },
+          "deletion_protection": {
+            "type": "boolean"
+          },
+          "description": {
+            "type": "string"
+          },
+          "enable_refresh": {
+            "type": "boolean"
+          },
+          "friendly_name": {
+            "type": "string"
+          },
+          "labels": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "refresh_interval_ms": {
+            "type": "number"
+          },
+          "require_partition_filter": {
+            "type": "boolean"
+          },
           "options": {
             "type": "object",
             "additionalProperties": false,
             "properties": {
-              "clustering": { "type": "array", "items": { "type": "string" } },
-              "encryption_key": { "type": "string" },
-              "expiration_time": { "type": "number" },
-              "max_staleness": { "type": "string" }
+              "clustering": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "expiration_time": {
+                "type": "number"
+              }
             }
           },
           "partitioning": {
             "type": "object",
             "additionalProperties": false,
             "properties": {
-              "field": { "type": "string" },
+              "field": {
+                "type": "string"
+              },
               "range": {
                 "type": "object",
-                "required": ["end", "interval", "start"],
                 "additionalProperties": false,
                 "properties": {
-                  "end": { "type": "number" },
-                  "interval": { "type": "number" },
-                  "start": { "type": "number" }
-                }
+                  "end": {
+                    "type": "number"
+                  },
+                  "interval": {
+                    "type": "number"
+                  },
+                  "start": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "end",
+                  "interval",
+                  "start"
+                ]
               },
               "time": {
                 "type": "object",
-                "required": ["type"],
                 "additionalProperties": false,
                 "properties": {
-                  "type": { "type": "string" },
-                  "expiration_ms": { "type": "number" },
-                  "field": { "type": "string" }
+                  "type": {
+                    "type": "string"
+                  },
+                  "expiration_ms": {
+                    "type": "number"
+                  },
+                  "field": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type"
+                ]
+              }
+            }
+          }
+        },
+        "required": [
+          "query"
+        ]
+      }
+    },
+    "options": {
+      "description": "Dataset options.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "default_collation": {
+          "type": "string"
+        },
+        "default_table_expiration_ms": {
+          "type": "number"
+        },
+        "default_partition_expiration_ms": {
+          "type": "number"
+        },
+        "delete_contents_on_destroy": {
+          "type": "boolean"
+        },
+        "is_case_insensitive": {
+          "type": "boolean"
+        },
+        "max_time_travel_hours": {
+          "type": "number"
+        },
+        "storage_billing_model": {
+          "type": "string"
+        }
+      }
+    },
+    "project_id": {
+      "description": "Id of the project where datasets will be created.",
+      "type": "string"
+    },
+    "routines": {
+      "description": "Routine definitions.",
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "description": {
+            "type": "string"
+          },
+          "routine_type": {
+            "type": "string"
+          },
+          "language": {
+            "type": "string"
+          },
+          "definition_body": {
+            "type": "string"
+          },
+          "imported_libraries": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "determinism_level": {
+            "type": "string"
+          },
+          "data_governance_type": {
+            "type": "string"
+          },
+          "return_type": {
+            "type": "string"
+          },
+          "return_table_type": {
+            "type": "string"
+          },
+          "arguments": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "argument_kind": {
+                  "type": "string"
+                },
+                "mode": {
+                  "type": "string"
+                },
+                "data_type": {
+                  "type": "string"
                 }
+              }
+            }
+          },
+          "spark_options": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "archive_uris": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "connection": {
+                "type": "string"
+              },
+              "container_image": {
+                "type": "string"
+              },
+              "file_uris": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "jar_uris": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "main_file_uri": {
+                "type": "string"
+              },
+              "main_class": {
+                "type": "string"
+              },
+              "properties": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string"
+                }
+              },
+              "py_file_uris": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "runtime_version": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "connection"
+            ]
+          },
+          "remote_function_options": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "connection": {
+                "type": "string"
+              },
+              "endpoint": {
+                "type": "string"
+              },
+              "max_batching_rows": {
+                "type": "string"
+              },
+              "user_defined_context": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string"
+                }
+              }
+            },
+            "required": [
+              "connection"
+            ]
+          }
+        },
+        "required": [
+          "routine_type",
+          "definition_body"
+        ]
+      }
+    },
+    "tables": {
+      "description": "Table definitions. Options and partitioning default to null. Partitioning can only use `range` or `time`, set the unused one to null.",
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "deletion_protection": {
+            "type": "boolean"
+          },
+          "description": {
+            "type": "string"
+          },
+          "friendly_name": {
+            "type": "string"
+          },
+          "labels": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "require_partition_filter": {
+            "type": "boolean"
+          },
+          "schema": {
+            "type": "string"
+          },
+          "external_data_configuration": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "autodetect": {
+                "type": "boolean"
+              },
+              "source_uris": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "avro_logical_types": {
+                "type": "boolean"
+              },
+              "compression": {
+                "type": "string"
+              },
+              "connection_id": {
+                "type": "string"
+              },
+              "file_set_spec_type": {
+                "type": "string"
+              },
+              "ignore_unknown_values": {
+                "type": "boolean"
+              },
+              "metadata_cache_mode": {
+                "type": "string"
+              },
+              "object_metadata": {
+                "type": "string"
+              },
+              "json_options_encoding": {
+                "type": "string"
+              },
+              "reference_file_schema_uri": {
+                "type": "string"
+              },
+              "schema": {
+                "type": "string"
+              },
+              "source_format": {
+                "type": "string"
+              },
+              "max_bad_records": {
+                "type": "number"
+              },
+              "csv_options": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "quote": {
+                    "type": "string"
+                  },
+                  "allow_jagged_rows": {
+                    "type": "boolean"
+                  },
+                  "allow_quoted_newlines": {
+                    "type": "boolean"
+                  },
+                  "encoding": {
+                    "type": "string"
+                  },
+                  "field_delimiter": {
+                    "type": "string"
+                  },
+                  "skip_leading_rows": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "quote"
+                ]
+              },
+              "google_sheets_options": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "range": {
+                    "type": "string"
+                  },
+                  "skip_leading_rows": {
+                    "type": "number"
+                  }
+                }
+              },
+              "hive_partitioning_options": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "mode": {
+                    "type": "string"
+                  },
+                  "require_partition_filter": {
+                    "type": "boolean"
+                  },
+                  "source_uri_prefix": {
+                    "type": "string"
+                  }
+                }
+              },
+              "parquet_options": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "enum_as_string": {
+                    "type": "boolean"
+                  },
+                  "enable_list_inference": {
+                    "type": "boolean"
+                  }
+                }
+              }
+            },
+            "required": [
+              "autodetect",
+              "source_uris"
+            ]
+          },
+          "options": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "clustering": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "encryption_key": {
+                "type": "string"
+              },
+              "expiration_time": {
+                "type": "number"
+              },
+              "max_staleness": {
+                "type": "string"
+              }
+            }
+          },
+          "partitioning": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "field": {
+                "type": "string"
+              },
+              "range": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "end": {
+                    "type": "number"
+                  },
+                  "interval": {
+                    "type": "number"
+                  },
+                  "start": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "end",
+                  "interval",
+                  "start"
+                ]
+              },
+              "time": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "expiration_ms": {
+                    "type": "number"
+                  },
+                  "field": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type"
+                ]
+              }
+            }
+          },
+          "table_constraints": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "primary_key_columns": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "foreign_keys": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "referenced_table": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "project_id": {
+                        "type": "string"
+                      },
+                      "dataset_id": {
+                        "type": "string"
+                      },
+                      "table_id": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "project_id",
+                      "dataset_id",
+                      "table_id"
+                    ]
+                  },
+                  "column_references": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "referencing_column": {
+                        "type": "string"
+                      },
+                      "referenced_column": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "referencing_column",
+                      "referenced_column"
+                    ]
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "referenced_table",
+                  "column_references"
+                ]
               }
             }
           }
         }
       }
     },
-    "views": {
-      "type": "object",
-      "additionalProperties": {
-        "type": "object",
-        "required": ["query"],
-        "additionalProperties": false,
-        "properties": {
-          "query": { "type": "string" },
-          "deletion_protection": { "type": "boolean" },
-          "description": { "type": "string" },
-          "friendly_name": { "type": "string" },
-          "labels": { "type": "object", "additionalProperties": { "type": "string" } },
-          "use_legacy_sql": { "type": "boolean" }
-        }
-      }
-    },
-    "access": {
-      "type": "object",
-      "additionalProperties": {
-        "type": "object",
-        "required": ["role", "type"],
-        "additionalProperties": false,
-        "properties": {
-          "role": { "type": "string" },
-          "type": {
-            "type": "string",
-            "enum": ["domain", "group", "special_group", "user", "view"]
-          }
-        }
-      }
-    },
-    "access_identities": {
-      "type": "object",
-      "additionalProperties": { "type": "string" }
-    },
-    "dataset_access": {
-      "type": "boolean"
-    },
     "tag_bindings": {
-      "type": "object",
-      "additionalProperties": { "type": "string" }
-    },
-    "iam": {
+      "description": "Tag bindings for this dataset, in key => tag value id format.",
       "type": "object",
       "additionalProperties": {
-        "type": "array",
-        "items": { "type": "string" }
+        "type": "string"
       }
     },
-    "iam_bindings": {
+    "views": {
+      "description": "View definitions.",
       "type": "object",
       "additionalProperties": {
         "type": "object",
-        "required": ["members", "role"],
         "additionalProperties": false,
         "properties": {
-          "members": { "type": "array", "items": { "type": "string" } },
-          "role": { "type": "string" },
-          "condition": {
+          "query": {
+            "type": "string"
+          },
+          "deletion_protection": {
+            "type": "boolean"
+          },
+          "description": {
+            "type": "string"
+          },
+          "friendly_name": {
+            "type": "string"
+          },
+          "labels": {
             "type": "object",
-            "required": ["expression", "title"],
-            "additionalProperties": false,
-            "properties": {
-              "expression": { "type": "string" },
-              "title": { "type": "string" },
-              "description": { "type": "string" }
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "use_legacy_sql": {
+            "type": "boolean"
+          },
+          "schema": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "type": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                },
+                "mode": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "name",
+                "type",
+                "description"
+              ]
             }
           }
-        }
-      }
-    },
-    "iam_bindings_additive": {
-      "type": "object",
-      "additionalProperties": {
-        "type": "object",
-        "required": ["member", "role"],
-        "additionalProperties": false,
-        "properties": {
-          "member": { "type": "string" },
-          "role": { "type": "string" },
-          "condition": {
-            "type": "object",
-            "required": ["expression", "title"],
-            "additionalProperties": false,
-            "properties": {
-              "expression": { "type": "string" },
-              "title": { "type": "string" },
-              "description": { "type": "string" }
-            }
-          }
-        }
-      }
-    },
-    "iam_by_principals": {
-      "type": "object",
-      "additionalProperties": {
-        "type": "array",
-        "items": { "type": "string" }
+        },
+        "required": [
+          "query"
+        ]
       }
     }
   }

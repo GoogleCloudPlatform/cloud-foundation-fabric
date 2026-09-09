@@ -1,0 +1,130 @@
+# Cloud SQL Instance
+
+<!-- markdownlint-disable MD036 -->
+
+## Properties
+
+*additional properties: false*
+
+- **activation_policy**: *string*
+  <br>*enum: ['ALWAYS', 'NEVER', 'ON_DEMAND']*
+- **availability_type**: *string*
+  <br>*enum: ['ZONAL', 'REGIONAL']*
+- **backup_configuration**: *object*
+  <br>*additional properties: false*
+  - **enabled**: *boolean*
+  - **binary_log_enabled**: *boolean*
+  - **start_time**: *string*
+  - **location**: *string*
+  - **log_retention_days**: *number*
+  - **point_in_time_recovery_enabled**: *boolean*
+  - **retention_count**: *number*
+  - **retain_backups_on_delete**: *boolean*
+  - **final_backup**: *object*
+    <br>*additional properties: false*
+    - **enabled**: *boolean*
+    - **retention_days**: *number*
+- **collation**: *string*
+- **connector_enforcement**: *string*
+- **data_api_access**: *string*
+- **data_cache**: *boolean*
+- ⁺**database_version**: *string*
+- **databases**: *array*
+  - items: *string*
+- **disk_autoresize_limit**: *number*
+- **disk_size**: *number*
+- **disk_type**: *string*
+  <br>*enum: ['PD_SSD', 'PD_HDD']*
+- **edition**: *string*
+  <br>*enum: ['ENTERPRISE', 'ENTERPRISE_PLUS']*
+- **encryption_key_name**: *string*
+- **flags**: *object*
+  <br>*additional properties: string*
+- **gcp_deletion_protection**: *boolean*
+- **insights_config**: *object*
+  <br>*additional properties: false*
+  - **query_string_length**: *number*
+  - **record_application_tags**: *boolean*
+  - **record_client_address**: *boolean*
+  - **query_plans_per_minute**: *number*
+  - **enhanced_query_insights_enabled**: *boolean*
+- **labels**: *object*
+  <br>*additional properties: string*
+- **maintenance_config**: *object*
+  <br>*additional properties: false*
+  - **maintenance_window**: *object*
+    <br>*additional properties: false*
+    - **day**: *number*
+    - ⁺**hour**: *number*
+    - **update_track**: *string*
+  - **deny_maintenance_period**: *object*
+    <br>*additional properties: false*
+    - ⁺**start_date**: *string*
+    - ⁺**end_date**: *string*
+    - **start_time**: *string*
+- **managed_connection_pooling_config**: *object*
+  <br>*additional properties: false*
+  - **enabled**: *boolean*
+  - **flags**: *object*
+    <br>*additional properties: string*
+- **name**: *string*
+- ⁺**network_config**: *object*
+  <br>*additional properties: false*
+  - **authorized_networks**: *object*
+    <br>*additional properties: string*
+  - ⁺**connectivity**: *object*
+    <br>*additional properties: false*
+    - **public_ipv4**: *boolean*
+    - **psa_config**: *object*
+      <br>*additional properties: false*
+      - ⁺**private_network**: *string*
+      - **allocated_ip_ranges**: *object*
+        <br>*additional properties: false*
+        - **primary**: *string*
+        - **replica**: *string*
+    - **psc_allowed_consumer_projects**: *array*
+      - items: *string*
+    - **psc_config**: *object*
+      <br>*additional properties: false*
+      - **allowed_consumer_projects**: *array*
+        - items: *string*
+      - **network_attachment_uri**: *string*
+      - **psc_auto_connection_policy_enabled**: *boolean*
+      - **psc_auto_connections**: *array*
+        - items: *object*
+          <br>*additional properties: false*
+          - ⁺**consumer_network**: *string*
+          - **consumer_service_project_id**: *string*
+      - **psc_auto_dns_enabled**: *boolean*
+      - **psc_write_endpoint_dns_enabled**: *boolean*
+    - **enable_private_path_for_services**: *boolean*
+- **password_validation_policy**: *object*
+  <br>*additional properties: false*
+  - **enabled**: *boolean*
+  - **change_interval**: *number*
+  - **default_complexity**: *boolean*
+  - **disallow_username_substring**: *boolean*
+  - **min_length**: *number*
+  - **reuse_interval**: *number*
+- **prefix**: *string*
+- **project_id**: *string*
+- ⁺**region**: *string*
+- **replicas**: *object*
+  <br>*additional properties: object*
+- **root_password**: *object*
+  <br>*additional properties: false*
+  - **password**: *string*
+  - **random_password**: *boolean*
+- **ssl**: *object*
+  <br>*additional properties: false*
+  - **client_certificates**: *array*
+    - items: *string*
+  - **mode**: *string*
+    <br>*enum: ['ALLOW_UNENCRYPTED_AND_ENCRYPTED', 'ENCRYPTED_ONLY', 'TRUSTED_CLIENT_CERTIFICATE_REQUIRED']*
+- **terraform_deletion_protection**: *boolean*
+- ⁺**tier**: *string*
+- **time_zone**: *string*
+- **users**: *object*
+  <br>*additional properties: object*
+
+## Definitions

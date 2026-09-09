@@ -1,0 +1,125 @@
+# Internal TCP/UDP Load Balancer
+
+<!-- markdownlint-disable MD036 -->
+
+## Properties
+
+*additional properties: false*
+
+- **backend_service_config**: *object*
+  <br>*additional properties: false*
+  - **connection_draining_timeout_sec**: *number*
+  - **connection_tracking**: *object*
+    <br>*additional properties: false*
+    - **idle_timeout_sec**: *number*
+    - **persist_conn_on_unhealthy**: *string*
+    - **track_per_session**: *boolean*
+  - **enable_subsetting**: *boolean*
+  - **failover_config**: *object*
+    <br>*additional properties: false*
+    - **disable_conn_drain**: *boolean*
+    - **drop_traffic_if_unhealthy**: *boolean*
+    - **ratio**: *number*
+  - **log_config**: *object*
+    <br>*additional properties: false*
+    - **enable**: *boolean*
+    - **sample_rate**: *number*
+    - **optional_mode**: *string*
+    - **optional_fields**: *array*
+      - items: *string*
+  - **network_pass_through_lb_traffic_policy**: *object*
+    <br>*additional properties: false*
+    - ⁺**zonal_affinity**: *object*
+      <br>*additional properties: false*
+      - **spillover**: *string*
+      - **spillover_ratio**: *number*
+  - **name**: *string*
+  - **description**: *string*
+  - **protocol**: *string*
+  - **session_affinity**: *string*
+  - **timeout_sec**: *number*
+- **backends**: *array*
+  - items: *object*
+    <br>*additional properties: false*
+    - ⁺**group**: *string*
+    - **description**: *string*
+    - **failover**: *boolean*
+- **description**: *string*
+- **forwarding_rules_config**: *object*
+  <br>*additional properties: object*
+- **group_configs**: *object*
+  <br>*additional properties: object*
+- **health_check**: *string*
+- **health_check_config**: *object*
+  <br>*additional properties: false*
+  - **check_interval_sec**: *number*
+  - **description**: *string*
+  - **enable_logging**: *boolean*
+  - **healthy_threshold**: *number*
+  - **is_regional**: *boolean*
+  - **name**: *string*
+  - **timeout_sec**: *number*
+  - **unhealthy_threshold**: *number*
+  - **grpc**: *object*
+    <br>*additional properties: false*
+    - **port**: *number*
+    - **port_name**: *string*
+    - **port_specification**: *string*
+    - **service_name**: *string*
+  - **http**: *object*
+    <br>*additional properties: false*
+    - **host**: *string*
+    - **port**: *number*
+    - **port_name**: *string*
+    - **port_specification**: *string*
+    - **proxy_header**: *string*
+    - **request_path**: *string*
+    - **response**: *string*
+  - **http2**: *object*
+    <br>*additional properties: false*
+    - **host**: *string*
+    - **port**: *number*
+    - **port_name**: *string*
+    - **port_specification**: *string*
+    - **proxy_header**: *string*
+    - **request_path**: *string*
+    - **response**: *string*
+  - **https**: *object*
+    <br>*additional properties: false*
+    - **host**: *string*
+    - **port**: *number*
+    - **port_name**: *string*
+    - **port_specification**: *string*
+    - **proxy_header**: *string*
+    - **request_path**: *string*
+    - **response**: *string*
+  - **tcp**: *object*
+    <br>*additional properties: false*
+    - **port**: *number*
+    - **port_name**: *string*
+    - **port_specification**: *string*
+    - **proxy_header**: *string*
+    - **request**: *string*
+    - **response**: *string*
+  - **ssl**: *object*
+    <br>*additional properties: false*
+    - **port**: *number*
+    - **port_name**: *string*
+    - **port_specification**: *string*
+    - **proxy_header**: *string*
+    - **request**: *string*
+    - **response**: *string*
+- **labels**: *object*
+  <br>*additional properties: string*
+- **name**: *string*
+- **project_id**: *string*
+- ⁺**region**: *string*
+- **service_attachments**: *object*
+  <br>*additional properties: object*
+- **service_label**: *string*
+- ⁺**vpc_config**: *object*
+  <br>*additional properties: false*
+  - ⁺**network**: *string*
+  - ⁺**subnetwork**: *string*
+
+## Definitions

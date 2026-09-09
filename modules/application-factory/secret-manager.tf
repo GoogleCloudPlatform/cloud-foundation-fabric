@@ -16,6 +16,10 @@
 
 # tfdoc:file:description Phase 2: Secret Manager.
 
+# Each YAML file maps to one secret-manager module instance which can
+# manage several secrets, as the module interface is a map of secrets.
+# Secret names must be unique across files as they are merged in context.
+
 locals {
   _secret_manager_raw = {
     for f in try(fileset(local.paths.secret_manager, "*.yaml"), []) :
@@ -30,7 +34,5 @@ module "secret-manager" {
   for_each   = local._secret_manager_raw
   project_id = try(each.value.project_id, null)
   secrets    = try(each.value.secrets, {})
-  context = merge(local.ctx, {
-    iam_principals = local.ctx_iam_principals
-  })
+  context    = local.ctx_phase_2
 }

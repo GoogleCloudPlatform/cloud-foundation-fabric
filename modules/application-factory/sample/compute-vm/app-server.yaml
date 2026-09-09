@@ -18,20 +18,21 @@
 
 project_id: $project_ids:app-project
 zone: europe-west1-b
-instance_type: e2-medium
+machine_type: e2-medium
 labels:
   environment: dev
   role: app-server
 boot_disk:
-  initialize_params:
+  source:
     image: projects/debian-cloud/global/images/family/debian-12
+  initialize_params:
     size: 20
     type: pd-balanced
 network_interfaces:
-  - network: projects/net-project/global/networks/app-vpc
-    subnetwork: projects/net-project/regions/europe-west1/subnetworks/app-subnet
+  - network: $networks:app-vpc
+    subnetwork: $subnets:app-subnet
 service_account:
-  email: $iam_principals:app-sa
+  email: $iam_principals:service_accounts/app-sa
   scopes:
     - https://www.googleapis.com/auth/cloud-platform
 shielded_config:

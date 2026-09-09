@@ -26,30 +26,54 @@ locals {
       : "${var.factories_config.basepath}/${v}"
     ), null)
   }
-  # context enrichments from factory-created resources
-  # phase 1: service accounts enrich iam_principals
+  # context enrichments from factory-managed resources, each one is
+  # only passed to modules in later phases to avoid dependency cycles
+  # phase 1: service accounts
   ctx_iam_principals = merge(local.ctx.iam_principals, {
     for k, v in module.service-accounts :
-    k => v.iam_email
+    "service_accounts/${k}" => v.iam_email
   })
-  # phase 2: storage/messaging/data resources enrich their respective keys
-  ctx_storage_buckets = merge(local.ctx.storage_buckets, {
-    for k, v in module.gcs :
-    k => v.name
+  ctx_service_account_ids = merge(local.ctx.service_account_ids, {
+    for k, v in module.service-accounts :
+    "service_accounts/${k}" => v.id
+  })
+  # phase 2: storage, messaging, data, security resources
+  ctx_artifact_registries = merge(local.ctx.artifact_registries, {
+    for k, v in module.artifact-registry :
+    k => v.id
+  })
+  ctx_bigquery_datasets = merge(local.ctx.bigquery_datasets, {
+    for k, v in module.bigquery :
+    k => v.id
   })
   ctx_pubsub_topics = merge(local.ctx.pubsub_topics, {
     for k, v in module.pubsub :
     k => v.id
   })
-  ctx_datasets = merge(try(local.ctx.datasets, {}), {
-    for k, v in module.bigquery :
-    k => v.dataset_id
+  # secret ids are keyed by secret name, version ids by secret/version
+  ctx_secrets = merge(
+    local.ctx.secrets,
+    merge([for k, v in module.secret-manager : v.ids]...),
+    merge([for k, v in module.secret-manager : v.version_ids]...)
+  )
+  ctx_storage_buckets = merge(local.ctx.storage_buckets, {
+    for k, v in module.gcs :
+    k => v.name
   })
-  ctx_secrets = merge(try(local.ctx.secrets, {}), merge([
-    for k, v in module.secret-manager : v.ids
-  ]...))
-  ctx_artifact_registries = merge(try(local.ctx.artifact_registries, {}), {
-    for k, v in module.artifact-registry :
-    k => v.id
+  # context passed to phase 2 modules
+  ctx_phase_2 = merge(local.ctx, {
+    iam_principals      = local.ctx_iam_principals
+    service_account_ids = local.ctx_service_account_ids
+  })
+  # context passed to phase 3 and 4 modules
+  ctx_phase_3 = merge(local.ctx, {
+    artifact_registries = local.ctx_artifact_registries
+    bigquery_datasets   = local.ctx_bigquery_datasets
+    iam_principals      = local.ctx_iam_principals
+    pubsub_topics       = local.ctx_pubsub_topics
+    secrets             = local.ctx_secrets
+    service_account_ids = local.ctx_service_account_ids
+    storage_buckets     = local.ctx_storage_buckets
   })
 }
+

@@ -27,6 +27,6 @@ labels:
   environment: dev
 iam:
   roles/artifactregistry.reader:
-    - $iam_principals:app-sa
+    - $iam_principals:service_accounts/app-sa
   roles/artifactregistry.writer:
-    - $iam_principals:ci-sa
+    - $iam_principals:service_accounts/ci-sa

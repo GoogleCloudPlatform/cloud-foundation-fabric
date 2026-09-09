@@ -3,86 +3,265 @@
   "title": "Artifact Registry",
   "type": "object",
   "additionalProperties": false,
-  "required": ["format", "location"],
+  "required": [
+    "format",
+    "location"
+  ],
   "properties": {
-    "project_id": {
-      "type": "string"
-    },
-    "name": {
-      "type": "string",
-      "description": "Override resource name derived from filename."
-    },
-    "location": {
-      "type": "string"
-    },
-    "description": {
-      "type": "string"
-    },
-    "encryption_key": {
-      "type": "string"
-    },
-    "enable_vulnerability_scanning": {
-      "type": "boolean"
-    },
-    "cleanup_policy_dry_run": {
-      "type": "boolean"
-    },
     "cleanup_policies": {
+      "description": "Object containing details about the cleanup policies for an Artifact Registry repository.",
       "type": "object",
       "additionalProperties": {
         "type": "object",
-        "required": ["action"],
         "additionalProperties": false,
         "properties": {
-          "action": { "type": "string" },
+          "action": {
+            "type": "string"
+          },
           "condition": {
             "type": "object",
             "additionalProperties": false,
             "properties": {
-              "tag_state": { "type": "string" },
-              "tag_prefixes": { "type": "array", "items": { "type": "string" } },
-              "older_than": { "type": "string" },
-              "newer_than": { "type": "string" },
-              "package_name_prefixes": { "type": "array", "items": { "type": "string" } },
-              "version_name_prefixes": { "type": "array", "items": { "type": "string" } }
+              "tag_state": {
+                "type": "string"
+              },
+              "tag_prefixes": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "older_than": {
+                "type": "string"
+              },
+              "newer_than": {
+                "type": "string"
+              },
+              "package_name_prefixes": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "version_name_prefixes": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
             }
           },
           "most_recent_versions": {
             "type": "object",
             "additionalProperties": false,
             "properties": {
-              "package_name_prefixes": { "type": "array", "items": { "type": "string" } },
-              "keep_count": { "type": "number" }
+              "package_name_prefixes": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "keep_count": {
+                "type": "number"
+              }
             }
           }
-        }
+        },
+        "required": [
+          "action"
+        ]
       }
     },
+    "cleanup_policy_dry_run": {
+      "description": "If true, the cleanup pipeline is prevented from deleting versions in this repository.",
+      "type": "boolean"
+    },
+    "description": {
+      "description": "An optional description for the repository.",
+      "type": "string"
+    },
+    "enable_vulnerability_scanning": {
+      "description": "Whether vulnerability scanning should be enabled in the repository.",
+      "type": "boolean"
+    },
+    "encryption_key": {
+      "description": "The KMS key name to use for encryption at rest.",
+      "type": "string"
+    },
     "format": {
+      "description": "Repository format.",
       "type": "object",
-      "description": "Repository format. Exactly one format key must be set.",
       "additionalProperties": false,
       "properties": {
-        "docker": {
+        "apt": {
           "type": "object",
           "additionalProperties": false,
           "properties": {
-            "standard": {
-              "type": "object",
-              "additionalProperties": false,
-              "properties": {
-                "immutable_tags": { "type": "boolean" }
-              }
-            },
             "remote": {
               "type": "object",
               "additionalProperties": false,
               "properties": {
-                "public_repository": { "type": "string" },
-                "common_repository": { "type": "string" },
-                "custom_repository": { "type": "string" },
-                "disable_upstream_validation": { "type": "boolean" }
+                "public_repository": {
+                  "type": "string"
+                },
+                "disable_upstream_validation": {
+                  "type": "boolean"
+                },
+                "upstream_credentials": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "username": {
+                      "type": "string"
+                    },
+                    "password_secret_version": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "username",
+                    "password_secret_version"
+                  ]
+                }
+              },
+              "required": [
+                "public_repository"
+              ]
+            },
+            "standard": {
+              "type": "boolean"
+            }
+          }
+        },
+        "docker": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "remote": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "public_repository": {
+                  "type": "string"
+                },
+                "common_repository": {
+                  "type": "string"
+                },
+                "custom_repository": {
+                  "type": "string"
+                },
+                "disable_upstream_validation": {
+                  "type": "boolean"
+                },
+                "upstream_credentials": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "username": {
+                      "type": "string"
+                    },
+                    "password_secret_version": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "username",
+                    "password_secret_version"
+                  ]
+                }
               }
+            },
+            "standard": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "immutable_tags": {
+                  "type": "boolean"
+                }
+              }
+            },
+            "virtual": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "repository": {
+                    "type": "string"
+                  },
+                  "priority": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "repository",
+                  "priority"
+                ]
+              }
+            }
+          }
+        },
+        "kfp": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "standard": {
+              "type": "boolean"
+            }
+          }
+        },
+        "generic": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "standard": {
+              "type": "boolean"
+            }
+          }
+        },
+        "go": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "remote": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "common_repository": {
+                  "type": "string"
+                },
+                "disable_upstream_validation": {
+                  "type": "boolean"
+                },
+                "upstream_credentials": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "username": {
+                      "type": "string"
+                    },
+                    "password_secret_version": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "username",
+                    "password_secret_version"
+                  ]
+                }
+              }
+            },
+            "standard": {
+              "type": "boolean"
+            }
+          }
+        },
+        "googet": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "standard": {
+              "type": "boolean"
             }
           }
         },
@@ -90,12 +269,69 @@
           "type": "object",
           "additionalProperties": false,
           "properties": {
+            "remote": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "public_repository": {
+                  "type": "string"
+                },
+                "common_repository": {
+                  "type": "string"
+                },
+                "custom_repository": {
+                  "type": "string"
+                },
+                "disable_upstream_validation": {
+                  "type": "boolean"
+                },
+                "upstream_credentials": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "username": {
+                      "type": "string"
+                    },
+                    "password_secret_version": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "username",
+                    "password_secret_version"
+                  ]
+                }
+              }
+            },
             "standard": {
               "type": "object",
               "additionalProperties": false,
               "properties": {
-                "allow_snapshot_overwrites": { "type": "boolean" },
-                "version_policy": { "type": "string" }
+                "allow_snapshot_overwrites": {
+                  "type": "boolean"
+                },
+                "version_policy": {
+                  "type": "string"
+                }
+              }
+            },
+            "virtual": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "repository": {
+                    "type": "string"
+                  },
+                  "priority": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "repository",
+                  "priority"
+                ]
               }
             }
           }
@@ -104,124 +340,293 @@
           "type": "object",
           "additionalProperties": false,
           "properties": {
-            "standard": { "type": "boolean" }
+            "remote": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "public_repository": {
+                  "type": "string"
+                },
+                "common_repository": {
+                  "type": "string"
+                },
+                "custom_repository": {
+                  "type": "string"
+                },
+                "disable_upstream_validation": {
+                  "type": "boolean"
+                },
+                "upstream_credentials": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "username": {
+                      "type": "string"
+                    },
+                    "password_secret_version": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "username",
+                    "password_secret_version"
+                  ]
+                }
+              }
+            },
+            "standard": {
+              "type": "boolean"
+            },
+            "virtual": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "repository": {
+                    "type": "string"
+                  },
+                  "priority": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "repository",
+                  "priority"
+                ]
+              }
+            }
           }
         },
         "python": {
           "type": "object",
           "additionalProperties": false,
           "properties": {
-            "standard": { "type": "boolean" }
-          }
-        },
-        "apt": {
-          "type": "object",
-          "additionalProperties": false,
-          "properties": {
-            "standard": { "type": "boolean" }
+            "remote": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "public_repository": {
+                  "type": "string"
+                },
+                "common_repository": {
+                  "type": "string"
+                },
+                "custom_repository": {
+                  "type": "string"
+                },
+                "disable_upstream_validation": {
+                  "type": "boolean"
+                },
+                "upstream_credentials": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "username": {
+                      "type": "string"
+                    },
+                    "password_secret_version": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "username",
+                    "password_secret_version"
+                  ]
+                }
+              }
+            },
+            "standard": {
+              "type": "boolean"
+            },
+            "virtual": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "repository": {
+                    "type": "string"
+                  },
+                  "priority": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "repository",
+                  "priority"
+                ]
+              }
+            }
           }
         },
         "yum": {
           "type": "object",
           "additionalProperties": false,
           "properties": {
-            "standard": { "type": "boolean" }
+            "remote": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "public_repository": {
+                  "type": "string"
+                },
+                "disable_upstream_validation": {
+                  "type": "boolean"
+                },
+                "upstream_credentials": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "username": {
+                      "type": "string"
+                    },
+                    "password_secret_version": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "username",
+                    "password_secret_version"
+                  ]
+                }
+              },
+              "required": [
+                "public_repository"
+              ]
+            },
+            "standard": {
+              "type": "boolean"
+            }
+          }
+        }
+      }
+    },
+    "iam": {
+      "description": "IAM bindings in {ROLE => [MEMBERS]} format.",
+      "type": "object",
+      "additionalProperties": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      }
+    },
+    "iam_bindings": {
+      "description": "Authoritative IAM bindings in {KEY => {role = ROLE, members = [], condition = {}}}. Keys are arbitrary.",
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "members": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "role": {
+            "type": "string"
+          },
+          "condition": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "expression": {
+                "type": "string"
+              },
+              "title": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "expression",
+              "title"
+            ]
           }
         },
-        "go": {
-          "type": "object",
-          "additionalProperties": false,
-          "properties": {
-            "standard": { "type": "boolean" }
+        "required": [
+          "members",
+          "role"
+        ]
+      }
+    },
+    "iam_bindings_additive": {
+      "description": "Individual additive IAM bindings. Keys are arbitrary.",
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "member": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string"
+          },
+          "condition": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "expression": {
+                "type": "string"
+              },
+              "title": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "expression",
+              "title"
+            ]
           }
         },
-        "kfp": {
-          "type": "object",
-          "additionalProperties": false,
-          "properties": {
-            "standard": { "type": "boolean" }
-          }
-        },
-        "generic": {
-          "type": "object",
-          "additionalProperties": false,
-          "properties": {
-            "standard": { "type": "boolean" }
-          }
-        },
-        "googet": {
-          "type": "object",
-          "additionalProperties": false,
-          "properties": {
-            "standard": { "type": "boolean" }
-          }
+        "required": [
+          "member",
+          "role"
+        ]
+      }
+    },
+    "iam_by_principals": {
+      "description": "Authoritative IAM binding in {PRINCIPAL => [ROLES]} format. Principals need to be statically defined to avoid cycle errors. Merged internally with the `iam` variable.",
+      "type": "object",
+      "additionalProperties": {
+        "type": "array",
+        "items": {
+          "type": "string"
         }
       }
     },
     "labels": {
+      "description": "Labels to be attached to the registry.",
       "type": "object",
-      "additionalProperties": { "type": "string" }
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "location": {
+      "description": "Registry location. Use `gcloud beta artifacts locations list' to get valid values.",
+      "type": "string"
+    },
+    "name": {
+      "description": "Override resource name derived from filename.",
+      "type": "string"
+    },
+    "project_id": {
+      "description": "Registry project id.",
+      "type": "string"
     },
     "tag_bindings": {
-      "type": "object",
-      "additionalProperties": { "type": "string" }
-    },
-    "iam": {
+      "description": "Tag bindings for this repository, in key => tag value id format.",
       "type": "object",
       "additionalProperties": {
-        "type": "array",
-        "items": { "type": "string" }
-      }
-    },
-    "iam_bindings": {
-      "type": "object",
-      "additionalProperties": {
-        "type": "object",
-        "required": ["members", "role"],
-        "additionalProperties": false,
-        "properties": {
-          "members": { "type": "array", "items": { "type": "string" } },
-          "role": { "type": "string" },
-          "condition": {
-            "type": "object",
-            "required": ["expression", "title"],
-            "additionalProperties": false,
-            "properties": {
-              "expression": { "type": "string" },
-              "title": { "type": "string" },
-              "description": { "type": "string" }
-            }
-          }
-        }
-      }
-    },
-    "iam_bindings_additive": {
-      "type": "object",
-      "additionalProperties": {
-        "type": "object",
-        "required": ["member", "role"],
-        "additionalProperties": false,
-        "properties": {
-          "member": { "type": "string" },
-          "role": { "type": "string" },
-          "condition": {
-            "type": "object",
-            "required": ["expression", "title"],
-            "additionalProperties": false,
-            "properties": {
-              "expression": { "type": "string" },
-              "title": { "type": "string" },
-              "description": { "type": "string" }
-            }
-          }
-        }
-      }
-    },
-    "iam_by_principals": {
-      "type": "object",
-      "additionalProperties": {
-        "type": "array",
-        "items": { "type": "string" }
+        "type": "string"
       }
     }
   }

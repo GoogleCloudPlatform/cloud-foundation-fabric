@@ -37,7 +37,9 @@ module "pubsub" {
   regions                            = try(each.value.regions, [])
   schema                             = try(each.value.schema, null)
   subscriptions                      = try(each.value.subscriptions, {})
-  context = merge(local.ctx, {
-    iam_principals = local.ctx_iam_principals
-  })
+  context                            = local.ctx_phase_2
+  iam                                = try(each.value.iam, {})
+  iam_bindings                       = try(each.value.iam_bindings, {})
+  iam_bindings_additive              = try(each.value.iam_bindings_additive, {})
+  iam_by_principals                  = try(each.value.iam_by_principals, {})
 }

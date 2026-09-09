@@ -29,5 +29,5 @@ subscriptions:
       maximum_backoff: 600
   app-events-bq:
     bigquery:
-      table: $project_ids:app-project.app_dataset.events
+      table: my-app-prj.app_dataset.events
       write_metadata: true

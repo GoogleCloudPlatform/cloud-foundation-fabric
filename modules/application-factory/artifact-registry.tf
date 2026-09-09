@@ -26,15 +26,11 @@ locals {
 }
 
 module "artifact-registry" {
-  source   = "../artifact-registry"
-  for_each = local._artifact_registry_raw
-  project_id = lookup(
-    local.ctx.project_ids, try(each.value.project_id, ""), try(each.value.project_id, null)
-  )
-  name = try(each.value.name, each.key)
-  location = lookup(
-    local.ctx.locations, try(each.value.location, ""), try(each.value.location, null)
-  )
+  source                        = "../artifact-registry"
+  for_each                      = local._artifact_registry_raw
+  project_id                    = try(each.value.project_id, null)
+  name                          = try(each.value.name, each.key)
+  location                      = try(each.value.location, null)
   description                   = try(each.value.description, "Terraform-managed registry")
   format                        = each.value.format
   labels                        = try(each.value.labels, {})
@@ -43,6 +39,7 @@ module "artifact-registry" {
   cleanup_policy_dry_run        = try(each.value.cleanup_policy_dry_run, null)
   enable_vulnerability_scanning = try(each.value.enable_vulnerability_scanning, null)
   tag_bindings                  = try(each.value.tag_bindings, {})
+  context                       = local.ctx_phase_2
   iam                           = try(each.value.iam, {})
   iam_bindings                  = try(each.value.iam_bindings, {})
   iam_bindings_additive         = try(each.value.iam_bindings_additive, {})

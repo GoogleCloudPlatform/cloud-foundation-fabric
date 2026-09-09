@@ -4,162 +4,552 @@
   "type": "object",
   "additionalProperties": false,
   "properties": {
-    "project_id": {
-      "type": "string"
-    },
-    "name": {
-      "type": "string",
-      "description": "Override resource name derived from filename."
-    },
-    "location": {
-      "type": "string"
-    },
-    "storage_class": {
-      "type": "string",
-      "enum": ["STANDARD", "MULTI_REGIONAL", "REGIONAL", "NEARLINE", "COLDLINE", "ARCHIVE"]
-    },
-    "prefix": {
-      "type": "string"
-    },
     "autoclass": {
+      "description": "Enable autoclass to automatically transition objects to appropriate storage classes based on their access pattern. If set to true, storage_class must be set to STANDARD. Defaults to false.",
       "type": "boolean"
     },
     "cors": {
+      "description": "CORS configuration for the bucket. Defaults to null.",
       "type": "object",
       "additionalProperties": false,
       "properties": {
         "origin": {
           "type": "array",
-          "items": { "type": "string" }
+          "items": {
+            "type": "string"
+          }
         },
         "method": {
           "type": "array",
-          "items": { "type": "string" }
+          "items": {
+            "type": "string"
+          }
         },
         "response_header": {
           "type": "array",
-          "items": { "type": "string" }
+          "items": {
+            "type": "string"
+          }
         },
         "max_age_seconds": {
           "type": "number"
         }
       }
     },
+    "custom_placement_config": {
+      "description": "The bucket's custom location configuration, which specifies the individual regions that comprise a dual-region bucket. If the bucket is designated as REGIONAL or MULTI_REGIONAL, the parameters are empty.",
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
     "default_event_based_hold": {
+      "description": "Enable event based hold to new objects added to specific bucket, defaults to false.",
       "type": "boolean"
     },
     "enable_hierarchical_namespace": {
+      "description": "Enables hierarchical namespace.",
       "type": "boolean"
     },
     "enable_object_retention": {
+      "description": "Enables object retention on a storage bucket.",
       "type": "boolean"
     },
     "encryption_key": {
+      "description": "KMS key that will be used for encryption.",
       "type": "string"
     },
     "force_destroy": {
+      "description": "Optional map to set force destroy keyed by name, defaults to false.",
       "type": "boolean"
     },
-    "labels": {
-      "type": "object",
-      "additionalProperties": { "type": "string" }
+    "iam": {
+      "description": "IAM bindings in {ROLE => [MEMBERS]} format.",
+      "$ref": "#/$defs/iam"
     },
-    "lifecycle_rules": {
+    "iam_bindings": {
+      "description": "Authoritative IAM bindings in {KEY => {role = ROLE, members = [], condition = {}}}. Keys are arbitrary.",
+      "$ref": "#/$defs/iam_bindings"
+    },
+    "iam_bindings_additive": {
+      "description": "Individual additive IAM bindings. Keys are arbitrary.",
+      "$ref": "#/$defs/iam_bindings_additive"
+    },
+    "iam_by_principals": {
+      "description": "Authoritative IAM binding in {PRINCIPAL => [ROLES]} format. Principals need to be statically defined to avoid cycle errors. Merged internally with the `iam` variable.",
+      "$ref": "#/$defs/iam_by_principals"
+    },
+    "ip_filter": {
+      "description": "The bucket's IP filter configuration.",
       "type": "object",
-      "additionalProperties": {
-        "type": "object",
-        "required": ["action", "condition"],
-        "additionalProperties": false,
-        "properties": {
-          "action": {
-            "type": "object",
-            "required": ["type"],
-            "additionalProperties": false,
-            "properties": {
-              "type": {
-                "type": "string",
-                "enum": ["Delete", "SetStorageClass", "AbortIncompleteMultipartUpload"]
-              },
-              "storage_class": { "type": "string" }
-            }
-          },
-          "condition": {
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-              "age": { "type": "number" },
-              "created_before": { "type": "string" },
-              "custom_time_before": { "type": "string" },
-              "days_since_custom_time": { "type": "number" },
-              "days_since_noncurrent_time": { "type": "number" },
-              "matches_prefix": { "type": "array", "items": { "type": "string" } },
-              "matches_storage_class": { "type": "array", "items": { "type": "string" } },
-              "matches_suffix": { "type": "array", "items": { "type": "string" } },
-              "noncurrent_time_before": { "type": "string" },
-              "num_newer_versions": { "type": "number" },
-              "with_state": { "type": "string", "enum": ["LIVE", "ARCHIVED", "ANY"] }
+      "additionalProperties": false,
+      "properties": {
+        "allow_cross_org_vpcs": {
+          "type": "boolean"
+        },
+        "allow_all_service_agent_access": {
+          "type": "boolean"
+        },
+        "public_network_sources": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "vpc_network_sources": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "array",
+            "items": {
+              "type": "string"
             }
           }
         }
       }
     },
-    "logging_config": {
+    "kms_autokeys": {
+      "description": "KMS Autokey key handles. If location is not specified the bucket location will be used. Key handle names will be added to the kms_keys context with an `autokeys/` prefix.",
       "type": "object",
-      "required": ["log_bucket"],
-      "additionalProperties": false,
-      "properties": {
-        "log_bucket": { "type": "string" },
-        "log_object_prefix": { "type": "string" }
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "location": {
+            "type": "string"
+          },
+          "resource_type_selector": {
+            "type": "string"
+          }
+        }
       }
     },
+    "labels": {
+      "description": "Labels to be attached to all buckets.",
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "lifecycle_rules": {
+      "description": "Bucket lifecycle rule.",
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "action": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "Delete",
+                  "SetStorageClass",
+                  "AbortIncompleteMultipartUpload"
+                ]
+              },
+              "storage_class": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "condition": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "age": {
+                "type": "number"
+              },
+              "created_before": {
+                "type": "string"
+              },
+              "custom_time_before": {
+                "type": "string"
+              },
+              "days_since_custom_time": {
+                "type": "number"
+              },
+              "days_since_noncurrent_time": {
+                "type": "number"
+              },
+              "matches_prefix": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "matches_storage_class": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "matches_suffix": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "noncurrent_time_before": {
+                "type": "string"
+              },
+              "num_newer_versions": {
+                "type": "number"
+              },
+              "with_state": {
+                "type": "string",
+                "enum": [
+                  "LIVE",
+                  "ARCHIVED",
+                  "ANY"
+                ]
+              }
+            }
+          }
+        },
+        "required": [
+          "action",
+          "condition"
+        ]
+      }
+    },
+    "location": {
+      "description": "Bucket location.",
+      "type": "string"
+    },
+    "logging_config": {
+      "description": "Bucket logging configuration.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "log_bucket": {
+          "type": "string"
+        },
+        "log_object_prefix": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "log_bucket"
+      ]
+    },
+    "managed_folders": {
+      "description": "Managed folders to create within the bucket in {PATH => CONFIG} format.",
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "force_destroy": {
+            "type": "boolean"
+          },
+          "iam": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "iam_bindings": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "members": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "role": {
+                  "type": "string"
+                },
+                "condition": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "expression": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "description": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "expression",
+                    "title"
+                  ]
+                }
+              },
+              "required": [
+                "members",
+                "role"
+              ]
+            }
+          },
+          "iam_bindings_additive": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "member": {
+                  "type": "string"
+                },
+                "role": {
+                  "type": "string"
+                },
+                "condition": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "expression": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "description": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "expression",
+                    "title"
+                  ]
+                }
+              },
+              "required": [
+                "member",
+                "role"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "name": {
+      "description": "Override resource name derived from filename.",
+      "type": "string"
+    },
+    "notification_config": {
+      "description": "GCS Notification configuration.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "payload_format": {
+          "type": "string"
+        },
+        "sa_email": {
+          "type": "string"
+        },
+        "topic_name": {
+          "type": "string"
+        },
+        "create_topic": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "create": {
+              "type": "boolean"
+            },
+            "kms_key_id": {
+              "type": "string"
+            }
+          }
+        },
+        "event_types": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "custom_attributes": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "object_name_prefix": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "enabled",
+        "payload_format",
+        "sa_email",
+        "topic_name"
+      ]
+    },
+    "objects_to_upload": {
+      "description": "Objects to be uploaded to bucket.",
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "metadata": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "content": {
+            "type": "string"
+          },
+          "source": {
+            "type": "string"
+          },
+          "cache_control": {
+            "type": "string"
+          },
+          "content_disposition": {
+            "type": "string"
+          },
+          "content_encoding": {
+            "type": "string"
+          },
+          "content_language": {
+            "type": "string"
+          },
+          "content_type": {
+            "type": "string"
+          },
+          "event_based_hold": {
+            "type": "boolean"
+          },
+          "temporary_hold": {
+            "type": "boolean"
+          },
+          "detect_md5hash": {
+            "type": "string"
+          },
+          "storage_class": {
+            "type": "string"
+          },
+          "kms_key_name": {
+            "type": "string"
+          },
+          "customer_encryption": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "encryption_algorithm": {
+                "type": "string"
+              },
+              "encryption_key": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "encryption_key"
+            ]
+          }
+        },
+        "required": [
+          "name"
+        ]
+      }
+    },
+    "prefix": {
+      "description": "Optional prefix used to generate the bucket name.",
+      "type": "string"
+    },
+    "project_id": {
+      "description": "Bucket project id. Only required when creating buckets, or notification config topics.",
+      "type": "string"
+    },
     "public_access_prevention": {
+      "description": "Prevents public access to the bucket.",
       "type": "string",
-      "enum": ["enforced", "inherited"]
+      "enum": [
+        "enforced",
+        "inherited"
+      ]
     },
     "requester_pays": {
+      "description": "Enables Requester Pays on a storage bucket.",
       "type": "boolean"
     },
     "retention_policy": {
+      "description": "Bucket retention policy.",
       "type": "object",
-      "required": ["retention_period"],
       "additionalProperties": false,
       "properties": {
-        "retention_period": { "type": "string" },
-        "is_locked": { "type": "boolean" }
-      }
+        "retention_period": {
+          "type": "string"
+        },
+        "is_locked": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "retention_period"
+      ]
+    },
+    "rpo": {
+      "description": "Bucket recovery point objective.",
+      "type": "string"
     },
     "soft_delete_retention": {
+      "description": "The duration in seconds that soft-deleted objects in the bucket will be retained and cannot be permanently deleted. Set to 0 to override the default and disable.",
       "type": "number"
     },
+    "storage_class": {
+      "description": "Bucket storage class.",
+      "type": "string",
+      "enum": [
+        "STANDARD",
+        "MULTI_REGIONAL",
+        "REGIONAL",
+        "NEARLINE",
+        "COLDLINE",
+        "ARCHIVE"
+      ]
+    },
+    "tag_bindings": {
+      "description": "Tag bindings for this folder, in key => tag value id format.",
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
     "uniform_bucket_level_access": {
+      "description": "Allow using object ACLs (false) or not (true, this is the recommended behavior) , defaults to true (which is the recommended practice, but not the behavior of storage API).",
       "type": "boolean"
     },
     "versioning": {
+      "description": "Enable versioning, defaults to false.",
       "type": "boolean"
     },
     "website": {
+      "description": "Bucket website.",
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "main_page_suffix": { "type": "string" },
-        "not_found_page": { "type": "string" }
+        "main_page_suffix": {
+          "type": "string"
+        },
+        "not_found_page": {
+          "type": "string"
+        }
       }
-    },
-    "tag_bindings": {
-      "type": "object",
-      "additionalProperties": { "type": "string" }
-    },
-    "iam": {
-      "$ref": "#/$defs/iam"
-    },
-    "iam_bindings": {
-      "$ref": "#/$defs/iam_bindings"
-    },
-    "iam_bindings_additive": {
-      "$ref": "#/$defs/iam_bindings_additive"
-    },
-    "iam_by_principals": {
-      "$ref": "#/$defs/iam_by_principals"
     }
   },
   "$defs": {
@@ -167,26 +557,47 @@
       "type": "object",
       "additionalProperties": {
         "type": "array",
-        "items": { "type": "string" }
+        "items": {
+          "type": "string"
+        }
       }
     },
     "iam_bindings": {
       "type": "object",
       "additionalProperties": {
         "type": "object",
-        "required": ["members", "role"],
+        "required": [
+          "members",
+          "role"
+        ],
         "additionalProperties": false,
         "properties": {
-          "members": { "type": "array", "items": { "type": "string" } },
-          "role": { "type": "string" },
+          "members": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "role": {
+            "type": "string"
+          },
           "condition": {
             "type": "object",
-            "required": ["expression", "title"],
+            "required": [
+              "expression",
+              "title"
+            ],
             "additionalProperties": false,
             "properties": {
-              "expression": { "type": "string" },
-              "title": { "type": "string" },
-              "description": { "type": "string" }
+              "expression": {
+                "type": "string"
+              },
+              "title": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              }
             }
           }
         }
@@ -196,19 +607,35 @@
       "type": "object",
       "additionalProperties": {
         "type": "object",
-        "required": ["member", "role"],
+        "required": [
+          "member",
+          "role"
+        ],
         "additionalProperties": false,
         "properties": {
-          "member": { "type": "string" },
-          "role": { "type": "string" },
+          "member": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string"
+          },
           "condition": {
             "type": "object",
-            "required": ["expression", "title"],
+            "required": [
+              "expression",
+              "title"
+            ],
             "additionalProperties": false,
             "properties": {
-              "expression": { "type": "string" },
-              "title": { "type": "string" },
-              "description": { "type": "string" }
+              "expression": {
+                "type": "string"
+              },
+              "title": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              }
             }
           }
         }
@@ -218,7 +645,9 @@
       "type": "object",
       "additionalProperties": {
         "type": "array",
-        "items": { "type": "string" }
+        "items": {
+          "type": "string"
+        }
       }
     }
   }

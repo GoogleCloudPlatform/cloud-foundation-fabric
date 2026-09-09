@@ -23,7 +23,7 @@ description: Main SA for the application workload
 
 iam:
   roles/iam.serviceAccountTokenCreator:
-    - $iam_principals:ci-sa
+    - $iam_principals:service_accounts/ci-sa
 
 iam_project_roles:
   $project_ids:app-project:

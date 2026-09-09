@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-# tfdoc:file:description Phase 4: Internal TCP/UDP load balancers.
+# tfdoc:file:description Phase 4: Internal passthrough network load balancers.
 
 locals {
   _net_lb_int_raw = {
@@ -43,8 +43,7 @@ module "net-lb-int" {
   health_check_config = try(each.value.health_check_config, {
     tcp = { port_specification = "USE_SERVING_PORT" }
   })
-  context = merge(local.ctx, {
-    iam_principals = local.ctx_iam_principals
-  })
-  depends_on = [module.compute-vm]
+  service_attachments = try(each.value.service_attachments, null)
+  context             = local.ctx_phase_3
+  depends_on          = [module.compute-vm]
 }

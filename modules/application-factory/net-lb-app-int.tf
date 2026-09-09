@@ -26,27 +26,29 @@ locals {
 }
 
 module "net-lb-app-int" {
-  source   = "../net-lb-app-int"
-  for_each = local._net_lb_app_int_raw
-  project_id = lookup(
-    local.ctx.project_ids, try(each.value.project_id, ""), try(each.value.project_id, null)
-  )
-  name = try(each.value.name, each.key)
-  region = lookup(
-    local.ctx.locations, each.value.region, each.value.region
-  )
-  description             = try(each.value.description, "Terraform managed.")
-  labels                  = try(each.value.labels, {})
-  protocol                = try(each.value.protocol, "HTTP")
-  ports                   = try(each.value.ports, null)
-  address                 = try(each.value.address, null)
-  global_access           = try(each.value.global_access, null)
-  vpc_config              = each.value.vpc_config
-  backend_service_configs = try(each.value.backend_service_configs, {})
-  group_configs           = try(each.value.group_configs, {})
-  health_check_configs    = try(each.value.health_check_configs, {})
-  neg_configs             = try(each.value.neg_configs, {})
-  urlmap_config           = try(each.value.urlmap_config, {})
-  context                 = local.ctx
-  depends_on              = [module.compute-vm]
+  source                         = "../net-lb-app-int"
+  for_each                       = local._net_lb_app_int_raw
+  project_id                     = try(each.value.project_id, null)
+  name                           = try(each.value.name, each.key)
+  region                         = each.value.region
+  description                    = try(each.value.description, "Terraform managed.")
+  labels                         = try(each.value.labels, {})
+  address                        = try(each.value.address, null)
+  global_access                  = try(each.value.global_access, null)
+  network_tier_premium           = try(each.value.network_tier_premium, true)
+  ports                          = try(each.value.ports, null)
+  protocol                       = try(each.value.protocol, "HTTP")
+  vpc_config                     = each.value.vpc_config
+  backend_service_configs        = try(each.value.backend_service_configs, {})
+  group_configs                  = try(each.value.group_configs, {})
+  health_check_configs           = try(each.value.health_check_configs, {})
+  http_proxy_config              = try(each.value.http_proxy_config, {})
+  https_proxy_config             = try(each.value.https_proxy_config, {})
+  neg_configs                    = try(each.value.neg_configs, {})
+  service_attachment             = try(each.value.service_attachment, null)
+  service_directory_registration = try(each.value.service_directory_registration, null)
+  ssl_certificates               = try(each.value.ssl_certificates, {})
+  urlmap_config                  = try(each.value.urlmap_config, {})
+  context                        = local.ctx_phase_3
+  depends_on                     = [module.compute-vm]
 }

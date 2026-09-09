@@ -15,10 +15,17 @@
 # yaml-language-server: $schema=../../schemas/service-account.schema.json
 
 # CI/CD service account used by automation pipelines.
+# Resource name is overridden as service account ids need at least 6 chars.
 
 project_id: $project_ids:app-project
+name: app-ci-sa
 display_name: CI/CD service account
 
 iam_project_roles:
   $project_ids:app-project:
     - roles/cloudbuild.builds.builder
+
+# grant roles on other service accounts managed by the factory
+iam_sa_roles:
+  $service_account_ids:service_accounts/app-sa:
+    - roles/iam.serviceAccountUser

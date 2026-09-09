@@ -1,0 +1,157 @@
+# Internal Application Load Balancer
+
+<!-- markdownlint-disable MD036 -->
+
+## Properties
+
+*additional properties: false*
+
+- **address**: *string*
+- **backend_service_configs**: *object*
+  <br>*additional properties: object*
+- **description**: *string*
+- **global_access**: *boolean*
+- **group_configs**: *object*
+  <br>*additional properties: object*
+- **health_check_configs**: *object*
+  <br>*additional properties: object*
+- **http_proxy_config**: *object*
+  <br>*additional properties: false*
+  - **name**: *string*
+  - **description**: *string*
+- **https_proxy_config**: *object*
+  <br>*additional properties: false*
+  - **name**: *string*
+  - **description**: *string*
+  - **certificate_manager_certificates**: *array*
+    - items: *string*
+  - **ssl_policy**: *string*
+- **labels**: *object*
+  <br>*additional properties: string*
+- **name**: *string*
+- **neg_configs**: *object*
+  <br>*additional properties: object*
+- **network_tier_premium**: *boolean*
+- **ports**: *array*
+  - items: *string*
+- **project_id**: *string*
+- **protocol**: *string*
+  <br>*enum: ['HTTP', 'HTTPS']*
+- ⁺**region**: *string*
+- **service_attachment**: *object*
+  <br>*additional properties: false*
+  - ⁺**nat_subnets**: *array*
+    - items: *string*
+  - **automatic_connection**: *boolean*
+  - **consumer_accept_lists**: *object*
+    <br>*additional properties: string*
+  - **consumer_reject_lists**: *array*
+    - items: *string*
+  - **description**: *string*
+  - **domain_name**: *string*
+  - **enable_proxy_protocol**: *boolean*
+  - **reconcile_connections**: *boolean*
+- **service_directory_registration**: *object*
+  <br>*additional properties: false*
+  - ⁺**namespace**: *string*
+  - ⁺**service**: *string*
+- **ssl_certificates**: *object*
+  <br>*additional properties: false*
+  - **certificate_ids**: *array*
+    - items: *string*
+  - **create_configs**: *object*
+    <br>*additional properties: object*
+- **urlmap_config**: *object*
+  <br>*additional properties: false*
+  - **description**: *string*
+  - **default_service**: *string*
+  - **default_url_redirect**: *object*
+    <br>*additional properties: false*
+    - **host**: *string*
+    - **https**: *boolean*
+    - **path**: *string*
+    - **prefix**: *string*
+    - **response_code**: *string*
+    - **strip_query**: *boolean*
+  - **default_route_action**: *object*
+    <br>*additional properties: false*
+    - **request_mirror_backend**: *string*
+    - **cors_policy**: *object*
+      <br>*additional properties: false*
+      - **allow_credentials**: *boolean*
+      - **allow_headers**: *array*
+        - items: *string*
+      - **allow_methods**: *array*
+        - items: *string*
+      - **allow_origin_regexes**: *array*
+        - items: *string*
+      - **allow_origins**: *array*
+        - items: *string*
+      - **disabled**: *boolean*
+      - **expose_headers**: *array*
+        - items: *string*
+      - **max_age**: *string*
+    - **fault_injection_policy**: *object*
+      <br>*additional properties: false*
+      - **abort**: *object*
+        <br>*additional properties: false*
+        - ⁺**percentage**: *number*
+        - ⁺**status**: *number*
+      - **delay**: *object*
+        <br>*additional properties: false*
+        - ⁺**fixed**: *object*
+          <br>*additional properties: false*
+          - ⁺**seconds**: *number*
+          - ⁺**nanos**: *number*
+        - ⁺**percentage**: *number*
+    - **retry_policy**: *object*
+      <br>*additional properties: false*
+      - ⁺**num_retries**: *number*
+      - **retry_conditions**: *array*
+        - items: *string*
+      - **per_try_timeout**: *object*
+        <br>*additional properties: false*
+        - ⁺**seconds**: *number*
+        - **nanos**: *number*
+    - **timeout**: *object*
+      <br>*additional properties: false*
+      - ⁺**seconds**: *number*
+      - **nanos**: *number*
+    - **url_rewrite**: *object*
+      <br>*additional properties: false*
+      - **host**: *string*
+      - **path_prefix**: *string*
+    - **weighted_backend_services**: *object*
+      <br>*additional properties: object*
+  - **header_action**: *object*
+    <br>*additional properties: false*
+    - **request_add**: *object*
+      <br>*additional properties: object*
+    - **request_remove**: *array*
+      - items: *string*
+    - **response_add**: *object*
+      <br>*additional properties: object*
+    - **response_remove**: *array*
+      - items: *string*
+  - **host_rules**: *array*
+    - items: *object*
+      <br>*additional properties: false*
+      - ⁺**hosts**: *array*
+        - items: *string*
+      - ⁺**path_matcher**: *string*
+      - **description**: *string*
+  - **path_matchers**: *object*
+    <br>*additional properties: object*
+  - **test**: *array*
+    - items: *object*
+      <br>*additional properties: false*
+      - ⁺**host**: *string*
+      - ⁺**path**: *string*
+      - ⁺**service**: *string*
+      - **description**: *string*
+- ⁺**vpc_config**: *object*
+  <br>*additional properties: false*
+  - ⁺**network**: *string*
+  - ⁺**subnetwork**: *string*
+
+## Definitions
