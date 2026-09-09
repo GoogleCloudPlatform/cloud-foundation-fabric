@@ -59,5 +59,5 @@ One variable per target type is preferred over a single variable carrying the ta
 - **Closes the interface gap** that currently forces service agent grants on external resources to be made out of band, outside Terraform.
 - **`shared_vpc_service_config.service_agent_iam` becomes a special case of the new variable**, with the target fixed to the host project. It will be marked as deprecated and later retired in favour of it, which would remove the near-collision between the two names.
 - **Adds two variables** to the public interface of the `project` module, and two more to `project-factory` and to every FAST stage that carries a copy of the project schema.
-- **A single entry can produce several bindings**, which is visible in plan output and in state keys. Callers who want one binding should name one API that maps to one agent.
+- **One entry is one binding.** Since `service` is a service name resolved through `local.aliased_service_agents`, each entry names exactly one agent and produces exactly one member grant, with no fan-out to dependent services.
 - **No implicit ordering.** The external target must already exist and the caller must hold rights on it; nothing in the variable creates a dependency, which matches how `iam_project_roles` behaves on service accounts today.
