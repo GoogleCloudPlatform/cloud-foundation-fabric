@@ -936,6 +936,98 @@
         }
       }
     },
+    "service_agents_folder_bindings": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[a-z0-9_-]+$": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "service",
+            "folder",
+            "role"
+          ],
+          "properties": {
+            "service": {
+              "type": "string"
+            },
+            "folder": {
+              "type": "string"
+            },
+            "role": {
+              "type": "string",
+              "pattern": "^(?:roles/|\\$custom_roles:|organizations/[0-9]+/roles/|([a-z0-9.]+:)?projects/[a-z0-9-]+/roles/)"
+            },
+            "condition": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "expression",
+                "title"
+              ],
+              "properties": {
+                "expression": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "service_agents_project_bindings": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[a-z0-9_-]+$": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "service",
+            "project",
+            "role"
+          ],
+          "properties": {
+            "service": {
+              "type": "string"
+            },
+            "project": {
+              "type": "string"
+            },
+            "role": {
+              "type": "string",
+              "pattern": "^(?:roles/|\\$custom_roles:|organizations/[0-9]+/roles/|([a-z0-9.]+:)?projects/[a-z0-9-]+/roles/)"
+            },
+            "condition": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "expression",
+                "title"
+              ],
+              "properties": {
+                "expression": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "service_encryption_key_ids": {
       "type": "object",
       "additionalProperties": false,

@@ -200,19 +200,11 @@ values:
   ? module.project-factory.module.buckets["dev-ta-app0-be/app-0-bucket-a"].google_storage_bucket_iam_binding.authoritative["roles/storage.legacyObjectReader"]
   : bucket: test-pf-dev-ta-app0-be-app-0-bucket-a
     condition: []
-    # members must be unknown at plan time: the cross-project service agent
-    # reference resolves to an email embedding the project number, while an
-    # unresolved reference would be passed through as a known literal
-    members: __missing__
     role: roles/storage.legacyObjectReader
     timeouts: null
   ? module.project-factory.module.buckets["dev-ta-app0-be/app-0-bucket-a"].google_storage_bucket_iam_binding.authoritative["roles/storage.objectViewer"]
   : bucket: test-pf-dev-ta-app0-be-app-0-bucket-a
     condition: []
-    # members must be unknown at plan time: the _self_ service agent
-    # reference resolves to an email embedding the project number, while an
-    # unresolved reference would be passed through as a known literal
-    members: __missing__
     role: roles/storage.objectViewer
     timeouts: null
   module.project-factory.module.buckets["dev-ta-app0-be/app-0-bucket-a"].google_tags_location_tag_binding.binding["context"]:
@@ -492,8 +484,12 @@ values:
     - serviceAccount:dev-tb-app0-0-ro@test-pf-teams-iac-0.iam.gserviceaccount.com
     project: test-pf-dev-tb-app0-0
     role: roles/viewer
-  module.project-factory.module.projects-iam["dev-tb-app0-1"].google_project_iam_binding.authoritative["$custom_roles:custom_role_0"]:
-    condition: []
+  ? module.project-factory.module.projects-iam["dev-tb-app0-0"].google_project_iam_member.service_agents_project_bindings["run-object-viewer"]
+  : condition: []
+    project: test-pf-dev-ta-app0-be
+    role: roles/storage.objectViewer
+  ? module.project-factory.module.projects-iam["dev-tb-app0-1"].google_project_iam_binding.authoritative["$custom_roles:custom_role_0"]
+  : condition: []
     members:
     - group:team-b-admins@example.org
     project: test-pf-dev-tb-app0-1
@@ -906,10 +902,6 @@ values:
     role: roles/pubsub.subscriber
   ? module.project-factory.module.pubsub["dev-ta-app0-be/app-0-topic-a"].google_pubsub_topic_iam_binding.authoritative["roles/pubsub.viewer"]
   : condition: []
-    # members must be unknown at plan time: the _self_ service agent
-    # reference resolves to an email embedding the project number, while an
-    # unresolved reference would be passed through as a known literal
-    members: __missing__
     project: test-pf-dev-ta-app0-be
     role: roles/pubsub.viewer
   ? module.project-factory.module.pubsub["dev-ta-app0-be/app-0-topic-b"].google_pubsub_subscription.default["app-0-topic-b-sub"]
@@ -1072,10 +1064,12 @@ values:
   module.project-factory.terraform_data.defaults_preconditions:
     input: null
     output: null
+    store: null
     triggers_replace: null
   module.project-factory.terraform_data.project_preconditions:
     input: null
     output: null
+    store: null
     triggers_replace: null
 
 counts:
@@ -1103,7 +1097,7 @@ counts:
   google_project_iam_audit_config: 1
   google_project_iam_binding: 7
   google_project_iam_custom_role: 1
-  google_project_iam_member: 23
+  google_project_iam_member: 24
   google_project_service: 14
   google_project_service_identity: 5
   google_pubsub_subscription: 1
@@ -1121,7 +1115,7 @@ counts:
   google_tags_tag_value: 2
   google_tags_tag_value_iam_binding: 1
   modules: 39
-  resources: 127
+  resources: 128
   terraform_data: 2
 
 outputs: {}

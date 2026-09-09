@@ -636,6 +636,26 @@ variable "projects" {
       grant_service_agent_editor = optional(bool, true)
       skip_iam                   = optional(set(string), [])
     }), {})
+    service_agents_folder_bindings = optional(map(object({
+      service = string
+      folder  = string
+      role    = string
+      condition = optional(object({
+        expression  = string
+        title       = string
+        description = optional(string)
+      }))
+    })), {})
+    service_agents_project_bindings = optional(map(object({
+      service = string
+      project = string
+      role    = string
+      condition = optional(object({
+        expression  = string
+        title       = string
+        description = optional(string)
+      }))
+    })), {})
     service_encryption_key_ids = optional(map(list(string)), {})
     services                   = optional(list(string), [])
     shared_vpc_host_config = optional(object({
