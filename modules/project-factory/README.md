@@ -993,7 +993,7 @@ module "project-factory" {
     basepath = "data"
   }
 }
-# tftest modules=12 resources=44 files=test-0,test-1,test-2 inventory=test-1.yaml
+# tftest modules=16 resources=49 files=test-0,test-1,test-2 inventory=test-1.yaml
 ```
 
 ```yaml
@@ -1105,5 +1105,23 @@ prefix: bar
 services:
   - iam.googleapis.com
   - storage.googleapis.com
+service_accounts:
+  # service account IAM is applied in a second pass, so bindings declared via
+  # iam_bindings/iam_bindings_additive alone also need to trigger it
+  bindings-only:
+    iam_bindings:
+      token-creator:
+        role: roles/iam.serviceAccountTokenCreator
+        members:
+          - user:user1@example.com
+  bindings-additive-only:
+    iam_bindings_additive:
+      key-admin:
+        role: roles/iam.serviceAccountKeyAdmin
+        member: user:user1@example.com
+      # cross-service account reference, only resolvable in the second pass
+      token-creator:
+        role: roles/iam.serviceAccountTokenCreator
+        member: $iam_principals:service_accounts/_self_/bindings-only
 # tftest-file id=test-2 path=data/projects/test-2.yaml
 ```
