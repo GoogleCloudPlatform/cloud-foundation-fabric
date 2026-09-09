@@ -16,6 +16,9 @@ context = {
   addresses = {
     test = "10.0.0.10"
   }
+  instance_groups = {
+    test = "projects/foo-test-0/zones/europe-west8-a/instanceGroups/my-ig"
+  }
   locations = {
     ew8 = "europe-west8"
   }
@@ -41,7 +44,7 @@ vpc_config = {
   subnetwork = "$subnets:test"
 }
 backends = [{
-  group    = "foo"
+  group    = "$instance_groups:test"
   failover = false
 }]
 forwarding_rules_config = {

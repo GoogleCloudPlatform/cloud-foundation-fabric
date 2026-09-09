@@ -96,11 +96,12 @@ variable "backends" {
 variable "context" {
   description = "Context-specific interpolations."
   type = object({
-    addresses   = optional(map(string), {})
-    locations   = optional(map(string), {})
-    networks    = optional(map(string), {})
-    project_ids = optional(map(string), {})
-    subnets     = optional(map(string), {})
+    addresses       = optional(map(string), {})
+    instance_groups = optional(map(string), {})
+    locations       = optional(map(string), {})
+    networks        = optional(map(string), {})
+    project_ids     = optional(map(string), {})
+    subnets         = optional(map(string), {})
   })
   default  = {}
   nullable = false

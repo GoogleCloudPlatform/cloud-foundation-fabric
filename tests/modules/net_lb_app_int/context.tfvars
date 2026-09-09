@@ -5,6 +5,9 @@ context = {
   locations = {
     ew8 = "europe-west8"
   }
+  instance_groups = {
+    test = "projects/foo-test-0/zones/europe-west8-a/instanceGroups/my-ig"
+  }
   networks = {
     test = "projects/foo-dev-net-spoke-0/global/networks/dev-spoke-0"
   }
@@ -26,7 +29,7 @@ address = "$addresses:test"
 backend_service_configs = {
   default = {
     backends = [{
-      group = "projects/foo-test-0/zones/europe-west8-a/instanceGroups/my-ig"
+      group = "$instance_groups:test"
     }]
   }
 }

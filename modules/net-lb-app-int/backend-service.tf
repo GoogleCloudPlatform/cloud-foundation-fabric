@@ -76,7 +76,11 @@ resource "google_compute_region_backend_service" "default" {
   dynamic "backend" {
     for_each = { for b in coalesce(each.value.backends, []) : b.group => b }
     content {
-      group           = lookup(local.group_ids, backend.key, backend.key)
+      group = lookup(
+        local.group_ids,
+        backend.key,
+        lookup(local.ctx.instance_groups, backend.key, backend.key)
+      )
       balancing_mode  = backend.value.balancing_mode
       capacity_scaler = backend.value.capacity_scaler
       description     = backend.value.description

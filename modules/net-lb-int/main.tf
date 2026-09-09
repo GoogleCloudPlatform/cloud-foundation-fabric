@@ -107,7 +107,7 @@ resource "google_compute_region_backend_service" "default" {
       failover       = backend.value.failover
       group = try(
         google_compute_instance_group.default[backend.key].id,
-        backend.key
+        lookup(local.ctx.instance_groups, backend.key, backend.key)
       )
     }
   }
