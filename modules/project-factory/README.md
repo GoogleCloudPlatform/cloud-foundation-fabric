@@ -934,21 +934,22 @@ compute.disableSerialPortAccess:
 
 | name | description | sensitive |
 |---|---|:---:|
-| [custom_roles](outputs.tf#L113) | Custom role ids. |  |
-| [folder_ids](outputs.tf#L120) | Folder ids. |  |
-| [iam_principals](outputs.tf#L125) | IAM principals mappings. |  |
-| [kms_keys](outputs.tf#L130) | KMS key ids. |  |
-| [log_buckets](outputs.tf#L135) | Log bucket ids. |  |
-| [project_ids](outputs.tf#L142) | Project ids. |  |
-| [project_numbers](outputs.tf#L147) | Project numbers. |  |
-| [projects](outputs.tf#L154) | Project attributes. |  |
-| [pubsub_topics](outputs.tf#L159) | PubSub topic ids. |  |
-| [service_account_emails](outputs.tf#L166) | Service account emails. |  |
-| [service_account_iam_emails](outputs.tf#L173) | Service account IAM-format emails. |  |
-| [service_account_ids](outputs.tf#L180) | Service account IDs. |  |
-| [service_accounts](outputs.tf#L187) | Service account emails. |  |
-| [service_agents](outputs.tf#L192) | Service agent emails. |  |
-| [storage_buckets](outputs.tf#L203) | Bucket names. |  |
+| [bigquery_datasets](outputs.tf#L119) | BigQuery dataset ids. |  |
+| [custom_roles](outputs.tf#L126) | Custom role ids. |  |
+| [folder_ids](outputs.tf#L133) | Folder ids. |  |
+| [iam_principals](outputs.tf#L138) | IAM principals mappings. |  |
+| [kms_keys](outputs.tf#L143) | KMS key ids. |  |
+| [log_buckets](outputs.tf#L148) | Log bucket ids. |  |
+| [project_ids](outputs.tf#L155) | Project ids. |  |
+| [project_numbers](outputs.tf#L160) | Project numbers. |  |
+| [projects](outputs.tf#L167) | Project attributes. |  |
+| [pubsub_topics](outputs.tf#L172) | PubSub topic ids. |  |
+| [service_account_emails](outputs.tf#L179) | Service account emails. |  |
+| [service_account_iam_emails](outputs.tf#L186) | Service account IAM-format emails. |  |
+| [service_account_ids](outputs.tf#L193) | Service account IDs. |  |
+| [service_accounts](outputs.tf#L200) | Service account emails. |  |
+| [service_agents](outputs.tf#L205) | Service agent emails. |  |
+| [storage_buckets](outputs.tf#L216) | Bucket names. |  |
 <!-- END TFDOC -->
 ## Tests
 
