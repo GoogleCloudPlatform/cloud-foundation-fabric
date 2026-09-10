@@ -150,4 +150,12 @@ variable "subscriptions" {
   }))
   default  = {}
   nullable = false
+  validation {
+    condition = alltrue([
+      for k, v in var.subscriptions : contains(
+        ["ABANDON", "DELETE", "PREVENT"], coalesce(v.deletion_policy, "DELETE")
+      )
+    ])
+    error_message = "Subscription deletion policy must be one of 'ABANDON', 'DELETE' or 'PREVENT'."
+  }
 }
