@@ -492,7 +492,7 @@ To disable IP access to the GKE control plane and prevent PSC endpoint creation,
 
 ```hcl
 module "cluster-1" {
-  source     = "./fabric/modules/gke-cluster-autopilot"
+  source     = "./fabric/modules/gke-cluster-standard"
   project_id = "myproject"
   name       = "cluster-1"
   location   = "europe-west1"
