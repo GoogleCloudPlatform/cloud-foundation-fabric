@@ -28,7 +28,7 @@ Four properties which any replacement needs to keep:
 
 ### Two problems
 
-FAST variables and a stage's own variables share one namespace. Names such as `organization`, `prefix`, `locations` and `groups` are names a stage author might reasonably want, and FAST has taken them. At some point in the past we grouped them into `fast-variables.tf` files to visually separate them, but this is just a cosmetic fix.
+FAST variables and a stage's own variables share one namespace. Names such as `organization`, `prefix`, `locations` and `groups` are names a stage author might reasonably want, and FAST has taken them. At some point in the past we grouped them into `variables-fast.tf` files to visually separate them, but this is just a cosmetic fix.
 
 The second problem is sharper. Terraform replaces a variable when two tfvars files set it, and never merges the two values. A namespace therefore belongs to whichever stage claims it first. Stage 0 claims `project_ids`.
 
