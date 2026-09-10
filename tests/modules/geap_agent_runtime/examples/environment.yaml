@@ -13,22 +13,21 @@
 # limitations under the License.
 
 values:
-  module.agent_engine.google_project_iam_member.iam_member_identity["roles/aiplatform.user"]:
+  module.agent_runtime.google_project_iam_member.iam_member_identity["roles/aiplatform.user"]:
     condition: []
     project: project-id
     role: roles/aiplatform.user
-  module.agent_engine.google_project_iam_member.iam_member_identity["roles/storage.objectViewer"]:
+  module.agent_runtime.google_project_iam_member.iam_member_identity["roles/storage.objectViewer"]:
     condition: []
     project: project-id
     role: roles/storage.objectViewer
-  module.agent_engine.google_vertex_ai_reasoning_engine.managed[0]:
+  module.agent_runtime.google_vertex_ai_reasoning_engine.managed[0]:
     deletion_policy: DELETE
     description: Terraform managed.
     display_name: my-agent
     effective_labels:
       goog-terraform-provisioned: 'true'
-    encryption_spec:
-    - kms_key_name: projects/project-id/locations/europe-west8/keyRings/my-keyring/cryptoKeys/my-key
+    encryption_spec: []
     labels: null
     project: project-id
     region: europe-west8
@@ -38,6 +37,20 @@ values:
       build_spec: []
       class_methods: null
       container_spec: []
+      deployment_spec:
+      - agent_gateway_config: []
+        agent_server_mode: null
+        dedicated_ingress_endpoint_enabled: null
+        env:
+        - name: FOO
+          value: bar
+        keep_alive_probe: []
+        psc_interface_config: []
+        secret_env:
+        - name: MY_SECRET
+          secret_ref:
+          - secret: projects/project-id/secrets/my-secret
+            version: latest
       example_store: null
       identity_type: AGENT_IDENTITY
       package_spec: []

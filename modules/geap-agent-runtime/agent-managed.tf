@@ -36,36 +36,57 @@ resource "google_vertex_ai_reasoning_engine" "managed" {
   }
 
   spec {
-    agent_framework = var.agent_engine_config.agent_framework
+    agent_framework = var.agent_runtime_config.agent_framework
     class_methods = (
-      var.agent_engine_config.class_methods == null
+      var.agent_runtime_config.class_methods == null
       ? null
-      : var.agent_engine_config.class_methods
+      : var.agent_runtime_config.class_methods
     )
-    identity_type   = var.agent_engine_config.identity_type
+    identity_type   = var.agent_runtime_config.identity_type
     service_account = local.service_account_email
 
     dynamic "deployment_spec" {
-      for_each = (
-        var.agent_engine_config.container_concurrency != null ||
-        var.agent_engine_config.max_instances != null ||
-        var.agent_engine_config.min_instances != null ||
-        var.agent_engine_config.resource_limits != null ||
-        var.networking_config != null ||
-        length(var.agent_engine_config.environment_variables) > 0 ||
-        length(var.agent_engine_config.secret_environment_variables) > 0
-        ? { 1 = 1 }
-        : {}
-      )
+      for_each = local.has_deployment_spec ? { 1 = 1 } : {}
 
       content {
-        container_concurrency = var.agent_engine_config.container_concurrency
-        max_instances         = var.agent_engine_config.max_instances
-        min_instances         = var.agent_engine_config.min_instances
-        resource_limits       = var.agent_engine_config.resource_limits
+        container_concurrency = var.agent_runtime_config.container_concurrency
+        max_instances         = var.agent_runtime_config.max_instances
+        min_instances         = var.agent_runtime_config.min_instances
+        resource_limits       = var.agent_runtime_config.resource_limits
+
+        dynamic "agent_gateway_config" {
+          for_each = (
+            local.agent_gateways.egress == null
+            && local.agent_gateways.ingress == null
+            ? {}
+            : { 1 = 1 }
+          )
+
+          content {
+            dynamic "agent_to_anywhere_config" {
+              for_each = (
+                local.agent_gateways.egress == null ? {} : { 1 = 1 }
+              )
+
+              content {
+                agent_gateway = local.agent_gateways.egress
+              }
+            }
+
+            dynamic "client_to_agent_config" {
+              for_each = (
+                local.agent_gateways.ingress == null ? {} : { 1 = 1 }
+              )
+
+              content {
+                agent_gateway = local.agent_gateways.ingress
+              }
+            }
+          }
+        }
 
         dynamic "env" {
-          for_each = var.agent_engine_config.environment_variables
+          for_each = var.agent_runtime_config.environment_variables
 
           content {
             name  = env.key
@@ -74,14 +95,10 @@ resource "google_vertex_ai_reasoning_engine" "managed" {
         }
 
         dynamic "psc_interface_config" {
-          for_each = var.networking_config == null ? {} : { 1 = 1 }
+          for_each = local.network_attachment_id == null ? {} : { 1 = 1 }
 
           content {
-            network_attachment = lookup(
-              local.ctx.psc_network_attachments,
-              var.networking_config.network_attachment_id,
-              var.networking_config.network_attachment_id
-            )
+            network_attachment = local.network_attachment_id
 
             dynamic "dns_peering_configs" {
               for_each = var.networking_config.dns_peering_configs
@@ -108,7 +125,7 @@ resource "google_vertex_ai_reasoning_engine" "managed" {
         }
 
         dynamic "secret_env" {
-          for_each = var.agent_engine_config.secret_environment_variables
+          for_each = var.agent_runtime_config.secret_environment_variables
 
           content {
             name = secret_env.key
@@ -134,7 +151,7 @@ resource "google_vertex_ai_reasoning_engine" "managed" {
       for_each = var.deployment_config.package_config == null ? {} : { 1 = 1 }
 
       content {
-        python_version = var.agent_engine_config.python_version
+        python_version = var.agent_runtime_config.python_version
         dependency_files_gcs_uri = (
           var.deployment_config.package_config.are_paths_local
           ? "gs://${local.bucket_name}/${google_storage_bucket_object.dependencies[0].name}"
@@ -198,7 +215,7 @@ resource "google_vertex_ai_reasoning_engine" "managed" {
             entrypoint_module = var.deployment_config.source_files_config.python_spec.entrypoint_module
             entrypoint_object = var.deployment_config.source_files_config.python_spec.entrypoint_object
             requirements_file = var.deployment_config.source_files_config.python_spec.requirements_file
-            version           = var.agent_engine_config.python_version
+            version           = var.agent_runtime_config.python_version
           }
         }
 

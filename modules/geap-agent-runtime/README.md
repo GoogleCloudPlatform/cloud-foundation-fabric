@@ -1,6 +1,6 @@
-# Agent Engine Module
+# GEAP Agent Runtime Module
 
-The module creates Agent Engine and related dependencies.
+The module deploys Gemini Enterprise Agent Platform (GEAP) - Agent Runtime and related dependencies.
 
 - It supports both source based deployments (aka in-line deployment) and serialized object deployment (aka pickle deployment).
 - For serialized object deployment, the module creates a GCS bucket to store the pickled object and related dependencies.
@@ -20,6 +20,7 @@ The module creates Agent Engine and related dependencies.
 - [Unmanaged deployments](#unmanaged-deployments)
 - [Identities](#identities)
 - [Private networking: setup PSC-I](#private-networking-setup-psc-i)
+- [Attach to Agent Gateways](#attach-to-agent-gateways)
 - [Specify an encryption key](#specify-an-encryption-key)
 - [Define environment variables and use secrets](#define-environment-variables-and-use-secrets)
 - [Container-based deployment](#container-based-deployment)
@@ -32,16 +33,16 @@ The module creates Agent Engine and related dependencies.
 
 ## Minimal deployment
 
-This example shows how to deploy an agent engine with minimal configuration, using source code from a local path.
+This example shows how to deploy a GEAP Agent Runtime with minimal configuration, using source code from a local path.
 
 ```hcl
-module "agent_engine" {
-  source     = "./fabric/modules/agent-engine"
+module "agent_runtime" {
+  source     = "./fabric/modules/geap-agent-runtime"
   name       = "my-agent"
   project_id = var.project_id
   region     = var.region
 
-  agent_engine_config = {
+  agent_runtime_config = {
     agent_framework = "google-adk"
   }
 
@@ -59,13 +60,13 @@ You can change the name of the tar.gz package, of the requirement file, the name
 You can also provide custom build arguments for the container image by using the `deployment_config.source_files_config.image_spec` variable.
 
 ```hcl
-module "agent_engine" {
-  source     = "./fabric/modules/agent-engine"
+module "agent_runtime" {
+  source     = "./fabric/modules/geap-agent-runtime"
   name       = "my-agent"
   project_id = var.project_id
   region     = var.region
 
-  agent_engine_config = {
+  agent_runtime_config = {
     agent_framework = "google-adk"
   }
 
@@ -89,13 +90,13 @@ module "agent_engine" {
 You can also manually serialize your agent by using the [cloudpickle library](https://github.com/cloudpipe/cloudpickle) and pass the `pickle.pkl`, `dependencies.tar.gz` and `requirements.txt` files to the module.
 
 ```hcl
-module "agent_engine" {
-  source     = "./fabric/modules/agent-engine"
+module "agent_runtime" {
+  source     = "./fabric/modules/geap-agent-runtime"
   name       = "my-agent"
   project_id = var.project_id
   region     = var.region
 
-  agent_engine_config = {
+  agent_runtime_config = {
     agent_framework = "google-adk"
   }
 
@@ -113,13 +114,13 @@ module "agent_engine" {
 If the files are already in a GCS bucket, you can pass the GCS URIs to the module.
 
 ```hcl
-module "agent_engine" {
-  source     = "./fabric/modules/agent-engine"
+module "agent_runtime" {
+  source     = "./fabric/modules/geap-agent-runtime"
   name       = "my-agent"
   project_id = var.project_id
   region     = var.region
 
-  agent_engine_config = {
+  agent_runtime_config = {
     agent_framework = "google-adk"
   }
 
@@ -140,14 +141,14 @@ module "agent_engine" {
 If you want to use the module just to bootstrap the infrastructure and then manage the code updates yourself, you can set the `managed` variable to `false`.
 
 ```hcl
-module "agent_engine" {
-  source     = "./fabric/modules/agent-engine"
+module "agent_runtime" {
+  source     = "./fabric/modules/geap-agent-runtime"
   name       = "my-agent"
   project_id = var.project_id
   region     = var.region
   managed    = false
 
-  agent_engine_config = {
+  agent_runtime_config = {
     agent_framework = "google-adk"
   }
 
@@ -167,13 +168,13 @@ By default, the module creates agents with unique **agent identities**.
 If you want, you can choose instead to use a custom service account, by changing the `identity_type` to `SERVICE_ACCOUNT`.
 
 ```hcl
-module "agent_engine" {
-  source     = "./fabric/modules/agent-engine"
+module "agent_runtime" {
+  source     = "./fabric/modules/geap-agent-runtime"
   name       = "my-agent"
   project_id = var.project_id
   region     = var.region
 
-  agent_engine_config = {
+  agent_runtime_config = {
     agent_framework = "google-adk"
     identity_type   = "SERVICE_ACCOUNT"
   }
@@ -190,13 +191,13 @@ module "agent_engine" {
 Using a custom service account.
 
 ```hcl
-module "agent_engine" {
-  source     = "./fabric/modules/agent-engine"
+module "agent_runtime" {
+  source     = "./fabric/modules/geap-agent-runtime"
   name       = "my-agent"
   project_id = var.project_id
   region     = var.region
 
-  agent_engine_config = {
+  agent_runtime_config = {
     agent_framework = "google-adk"
     identity_type   = "SERVICE_ACCOUNT"
   }
@@ -218,13 +219,13 @@ module "agent_engine" {
 ## Private networking: setup PSC-I
 
 ```hcl
-module "agent_engine" {
-  source     = "./fabric/modules/agent-engine"
+module "agent_runtime" {
+  source     = "./fabric/modules/geap-agent-runtime"
   name       = "my-agent"
   project_id = var.project_id
   region     = var.region
 
-  agent_engine_config = {
+  agent_runtime_config = {
     agent_framework = "google-adk"
   }
 
@@ -246,16 +247,47 @@ module "agent_engine" {
 # tftest inventory=psc-i.yaml
 ```
 
-## Specify an encryption key
+## Attach to Agent Gateways
+
+The runtime can be governed by an [Agent Gateway](../agent-gateway/README.md) for inbound traffic (ingress), for outbound traffic (egress), or both. Each value is the resource name of an existing gateway, which in real usage comes from the `id` output of the `agent-gateway` module.
 
 ```hcl
-module "agent_engine" {
-  source     = "./fabric/modules/agent-engine"
+module "agent_runtime" {
+  source     = "./fabric/modules/geap-agent-runtime"
   name       = "my-agent"
   project_id = var.project_id
   region     = var.region
 
-  agent_engine_config = {
+  agent_runtime_config = {
+    agent_framework = "google-adk"
+  }
+
+  deployment_config = {
+    source_files_config = {
+      source_path = "assets/src/source.tar.gz"
+    }
+  }
+
+  networking_config = {
+    agent_gateways = {
+      egress  = "projects/project-id/locations/europe-west8/agentGateways/my-egress-gw"
+      ingress = "projects/project-id/locations/europe-west8/agentGateways/my-ingress-gw"
+    }
+  }
+}
+# tftest inventory=agent-gateways.yaml
+```
+
+## Specify an encryption key
+
+```hcl
+module "agent_runtime" {
+  source     = "./fabric/modules/geap-agent-runtime"
+  name       = "my-agent"
+  project_id = var.project_id
+  region     = var.region
+
+  agent_runtime_config = {
     agent_framework = "google-adk"
   }
 
@@ -273,13 +305,13 @@ module "agent_engine" {
 ## Define environment variables and use secrets
 
 ```hcl
-module "agent_engine" {
-  source     = "./fabric/modules/agent-engine"
+module "agent_runtime" {
+  source     = "./fabric/modules/geap-agent-runtime"
   name       = "my-agent"
   project_id = var.project_id
   region     = var.region
 
-  agent_engine_config = {
+  agent_runtime_config = {
     agent_framework = "google-adk"
     environment_variables = {
       FOO = "bar"
@@ -305,13 +337,13 @@ module "agent_engine" {
 You can deploy your agent as a custom Docker image.
 
 ```hcl
-module "agent_engine" {
-  source     = "./fabric/modules/agent-engine"
+module "agent_runtime" {
+  source     = "./fabric/modules/geap-agent-runtime"
   name       = "my-agent"
   project_id = var.project_id
   region     = var.region
 
-  agent_engine_config = {
+  agent_runtime_config = {
     environment_variables = {
       FOO = "bar"
     }
@@ -331,13 +363,13 @@ module "agent_engine" {
 You can optionally configure a Memory Bank to provide long-term persistent memory for your agent.
 
 ```hcl
-module "agent_engine" {
-  source     = "./fabric/modules/agent-engine"
+module "agent_runtime" {
+  source     = "./fabric/modules/geap-agent-runtime"
   name       = "my-agent"
   project_id = var.project_id
   region     = var.region
 
-  agent_engine_config = {
+  agent_runtime_config = {
     agent_framework = "google-adk"
   }
 
@@ -365,15 +397,15 @@ module "agent_engine" {
 
 ## Getting values from context
 
-The module allows you to dynamically reference context values for resources created outside this module, through the `context` variable. This includes the definition of custom roles, iam_principals, locations, networks, psc_network_attachments, kms_keys, models and project ids.
+The module allows you to dynamically reference context values for resources created outside this module, through the `context` variable. This includes the definition of agent_gateways, custom roles, iam_principals, locations, networks, psc_network_attachments, kms_keys, models and project ids.
 
 ```hcl
-module "agent_engine" {
-  source     = "./fabric/modules/agent-engine"
+module "agent_runtime" {
+  source     = "./fabric/modules/geap-agent-runtime"
   name       = "my-agent"
   project_id = "$project_ids:main-project"
   region     = "$locations:primary"
-  agent_engine_config = {
+  agent_runtime_config = {
     agent_framework = "google-adk"
   }
   deployment_config = {
@@ -382,6 +414,10 @@ module "agent_engine" {
     }
   }
   networking_config = {
+    agent_gateways = {
+      egress  = "$agent_gateways:shared-egress"
+      ingress = "$agent_gateways:shared-ingress"
+    }
     network_attachment_id = "$psc_network_attachments:primary"
     dns_peering_configs = {
       "example.com" = {
@@ -398,6 +434,10 @@ module "agent_engine" {
     email  = "$iam_principals:my-custom-sa"
   }
   context = {
+    agent_gateways = {
+      shared-egress  = "projects/test-project-1/locations/europe-west1/agentGateways/egress-gw"
+      shared-ingress = "projects/test-project-1/locations/europe-west1/agentGateways/ingress-gw"
+    }
     iam_principals = {
       my-custom-sa = "my-sa@$test-project-1.iam.gserviceaccount.com"
     }
@@ -425,14 +465,14 @@ module "agent_engine" {
 By default you can't neither delete your agent if it has session or your GCS bucket if it has files inside. For testing, you can anyway force the deletion of these resources:
 
 ```hcl
-module "agent_engine" {
-  source                     = "./fabric/modules/agent-engine"
+module "agent_runtime" {
+  source                     = "./fabric/modules/geap-agent-runtime"
   name                       = "my-agent"
   project_id                 = var.project_id
   region                     = var.region
   enable_deletion_protection = false
 
-  agent_engine_config = {
+  agent_runtime_config = {
     agent_framework = "google-adk"
   }
 
@@ -451,26 +491,26 @@ module "agent_engine" {
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [name](variables.tf#L178) | The name of the agent. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L197) | The id of the project where to deploy the agent. | <code>string</code> | ✓ |  |
-| [region](variables.tf#L203) | The region where to deploy the agent. | <code>string</code> | ✓ |  |
-| [agent_engine_config](variables.tf#L17) | The agent configuration. Supported values for agent_framework: 'google-adk', 'langchain', 'langgraph', 'ag2', 'llama-index', 'custom'. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [name](variables.tf#L179) | The name of the agent. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L204) | The id of the project where to deploy the agent. | <code>string</code> | ✓ |  |
+| [region](variables.tf#L210) | The region where to deploy the agent. | <code>string</code> | ✓ |  |
+| [agent_runtime_config](variables.tf#L17) | The agent configuration. Supported values for agent_framework: 'google-adk', 'langchain', 'langgraph', 'ag2', 'llama-index', 'custom'. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [bucket_config](variables.tf#L50) | The GCS bucket configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [context](variables.tf#L61) | Context-specific interpolations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [deployment_config](variables.tf#L77) | The deployment configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [description](variables.tf#L128) | The Agent Engine description. | <code>string</code> |  | <code>&#34;Terraform managed.&#34;</code> |
-| [enable_deletion_protection](variables.tf#L135) | Whether deletion protection should be enabled. | <code>bool</code> |  | <code>true</code> |
-| [encryption_key](variables.tf#L142) | The full resource name of the Cloud KMS CryptoKey. | <code>string</code> |  | <code>null</code> |
-| [managed](variables.tf#L148) | Whether the Terraform module should control the code updates. | <code>bool</code> |  | <code>true</code> |
-| [memory_bank_config](variables.tf#L155) | Configuration for the memory bank. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [networking_config](variables.tf#L184) | Networking configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [deployment_config](variables.tf#L78) | The deployment configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [description](variables.tf#L129) | The GEAP Agent Runtime description. | <code>string</code> |  | <code>&#34;Terraform managed.&#34;</code> |
+| [enable_deletion_protection](variables.tf#L136) | Whether deletion protection should be enabled. | <code>bool</code> |  | <code>true</code> |
+| [encryption_key](variables.tf#L143) | The full resource name of the Cloud KMS CryptoKey. | <code>string</code> |  | <code>null</code> |
+| [managed](variables.tf#L149) | Whether the Terraform module should control the code updates. | <code>bool</code> |  | <code>true</code> |
+| [memory_bank_config](variables.tf#L156) | Configuration for the memory bank. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [networking_config](variables.tf#L185) | Networking configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [service_account_config](variables-serviceaccount.tf#L18) | Service account configurations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
 
 | name | description | sensitive |
 |---|---|:---:|
-| [agent](outputs.tf#L17) | The Agent Engine object. |  |
-| [id](outputs.tf#L22) | Fully qualified Agent Engine id. |  |
+| [agent](outputs.tf#L17) | The GEAP Agent Runtime object. |  |
+| [id](outputs.tf#L22) | Fully qualified GEAP Agent Runtime id. |  |
 | [identity](outputs.tf#L27) | The agent identity. |  |
 <!-- END TFDOC -->

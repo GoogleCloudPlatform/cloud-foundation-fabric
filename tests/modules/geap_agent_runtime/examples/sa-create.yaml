@@ -13,15 +13,28 @@
 # limitations under the License.
 
 values:
-  module.agent_engine.google_project_iam_member.iam_member_identity["roles/aiplatform.user"]:
+  module.agent_runtime.google_project_iam_member.iam_member_sa["roles/aiplatform.user"]:
     condition: []
+    member: serviceAccount:my-agent@project-id.iam.gserviceaccount.com
     project: project-id
     role: roles/aiplatform.user
-  module.agent_engine.google_project_iam_member.iam_member_identity["roles/storage.objectViewer"]:
+  module.agent_runtime.google_project_iam_member.iam_member_sa["roles/storage.objectViewer"]:
     condition: []
+    member: serviceAccount:my-agent@project-id.iam.gserviceaccount.com
     project: project-id
     role: roles/storage.objectViewer
-  module.agent_engine.google_vertex_ai_reasoning_engine.unmanaged[0]:
+  module.agent_runtime.google_service_account.service_account[0]:
+    account_id: my-agent
+    create_ignore_already_exists: null
+    deletion_policy: DELETE
+    description: null
+    disabled: false
+    display_name: my-agent
+    email: my-agent@project-id.iam.gserviceaccount.com
+    member: serviceAccount:my-agent@project-id.iam.gserviceaccount.com
+    project: project-id
+    timeouts: null
+  module.agent_runtime.google_vertex_ai_reasoning_engine.managed[0]:
     deletion_policy: DELETE
     description: Terraform managed.
     display_name: my-agent
@@ -38,9 +51,9 @@ values:
       class_methods: null
       container_spec: []
       example_store: null
-      identity_type: AGENT_IDENTITY
+      identity_type: SERVICE_ACCOUNT
       package_spec: []
-      service_account: null
+      service_account: my-agent@project-id.iam.gserviceaccount.com
       source_code_spec:
       - agent_config_source: []
         developer_connect_source: []
@@ -58,8 +71,9 @@ values:
 
 counts:
   google_project_iam_member: 2
+  google_service_account: 1
   google_vertex_ai_reasoning_engine: 1
   modules: 1
-  resources: 3
+  resources: 4
 
 outputs: {}

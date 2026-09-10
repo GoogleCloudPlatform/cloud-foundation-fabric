@@ -21,6 +21,10 @@ locals {
     ? try(google_vertex_ai_reasoning_engine.managed[0], null)
     : try(google_vertex_ai_reasoning_engine.unmanaged[0], null)
   )
+  agent_gateways = {
+    for k, v in var.networking_config.agent_gateways :
+    k => v == null ? null : lookup(local.ctx.agent_gateways, v, v)
+  }
   bucket_name = (
     var.deployment_config.package_config != null && var.bucket_config.create
     ? google_storage_bucket.default[0].name
@@ -31,8 +35,28 @@ locals {
       for kk, vv in v : "${local._ctx_p}${k}:${kk}" => vv
     } if !endswith(k, "_vars")
   }
+  has_deployment_spec = (
+    var.agent_runtime_config.container_concurrency != null ||
+    var.agent_runtime_config.max_instances != null ||
+    var.agent_runtime_config.min_instances != null ||
+    var.agent_runtime_config.resource_limits != null ||
+    local.agent_gateways.egress != null ||
+    local.agent_gateways.ingress != null ||
+    local.network_attachment_id != null ||
+    length(var.agent_runtime_config.environment_variables) > 0 ||
+    length(var.agent_runtime_config.secret_environment_variables) > 0
+  )
   location = lookup(
     local.ctx.locations, var.region, var.region
+  )
+  network_attachment_id = (
+    var.networking_config.network_attachment_id == null
+    ? null
+    : lookup(
+      local.ctx.psc_network_attachments,
+      var.networking_config.network_attachment_id,
+      var.networking_config.network_attachment_id
+    )
   )
   project_id = lookup(
     local.ctx.project_ids, var.project_id, var.project_id
