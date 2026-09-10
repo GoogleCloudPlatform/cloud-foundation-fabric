@@ -7,6 +7,7 @@ This module allows managing a GCE Network Load Balancer and integrates the forwa
 - [Referencing existing MIGs](#referencing-existing-migs)
 - [Externally manages instances](#externally-managed-instances)
 - [End to end example](#end-to-end-example)
+- [Context](#context)
 
 ### Referencing existing MIGs
 
@@ -203,6 +204,60 @@ module "nlb" {
   }
 }
 # tftest modules=3 resources=7 inventory=e2e.yaml e2e
+```
+
+### Context
+
+The module supports the contexts interpolation. The `security_policies` key resolves the Cloud Armor network edge policy attached to the backend service, which can be managed via the [`net-cloud-armor`](../net-cloud-armor/) module.
+
+```hcl
+module "nlb" {
+  source     = "./fabric/modules/net-lb-ext"
+  project_id = "$project_ids:my-prj"
+  region     = "$locations:primary-region"
+  name       = "nlb-test"
+  forwarding_rules_config = {
+    default = {
+      address = "$addresses:lb-ip-addr"
+    }
+  }
+  group_configs = {
+    my-group = {
+      zone = "$locations:primary-zone"
+      instances = [
+        "instance-1-self-link",
+        "instance-2-self-link"
+      ]
+    }
+  }
+  backends = [{
+    group = module.nlb.groups.my-group.self_link
+  }]
+  backend_service_config = {
+    security_policy = "$security_policies:network-edge"
+  }
+  health_check_config = {
+    http = {
+      port = 80
+    }
+  }
+  context = {
+    addresses = {
+      lb-ip-addr = "1.2.3.4"
+    }
+    locations = {
+      primary-region = "us-central1"
+      primary-zone   = "us-central1-b"
+    }
+    project_ids = {
+      my-prj = "my-project-1"
+    }
+    security_policies = {
+      network-edge = "projects/my-project-1/regions/us-central1/securityPolicies/network-edge"
+    }
+  }
+}
+# tftest modules=1 resources=4 inventory=context.yaml
 ```
 
 ## Deploying changes to load balancer configurations
