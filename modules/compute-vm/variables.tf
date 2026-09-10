@@ -130,6 +130,7 @@ variable "context" {
   description = "Context-specific interpolations."
   type = object({
     addresses      = optional(map(string), {})
+    condition_vars = optional(map(map(string)), {})
     custom_roles   = optional(map(string), {})
     kms_keys       = optional(map(string), {})
     iam_principals = optional(map(string), {})
@@ -239,6 +240,37 @@ variable "iap_tunnel_iam" {
   description = "IAP tunnel IAM bindings in {ROLE => [MEMBERS]} format."
   type        = map(list(string))
   default     = {}
+  nullable    = false
+}
+
+variable "iap_tunnel_iam_bindings" {
+  description = "Authoritative IAP tunnel IAM bindings in {KEY => {role = ROLE, members = [], condition = {}}}. Keys are arbitrary."
+  type = map(object({
+    members = list(string)
+    role    = string
+    condition = optional(object({
+      expression  = string
+      title       = string
+      description = optional(string)
+    }))
+  }))
+  default  = {}
+  nullable = false
+}
+
+variable "iap_tunnel_iam_bindings_additive" {
+  description = "Individual additive IAP tunnel IAM bindings. Keys are arbitrary."
+  type = map(object({
+    member = string
+    role   = string
+    condition = optional(object({
+      expression  = string
+      title       = string
+      description = optional(string)
+    }))
+  }))
+  default  = {}
+  nullable = false
 }
 
 variable "instance_schedule" {
