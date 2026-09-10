@@ -128,8 +128,10 @@ resource "google_organization_iam_custom_role" "roles" {
   title = coalesce(
     each.value.title, "Custom role ${each.value.name}"
   )
-  description = coalesce(
-    each.value.description, "Terraform-managed."
+  description = (
+    each.value.description == null
+    ? "Terraform-managed."
+    : each.value.description
   )
   stage       = each.value.stage
   permissions = each.value.permissions
