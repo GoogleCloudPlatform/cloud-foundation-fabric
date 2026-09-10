@@ -24,7 +24,8 @@ locals {
   )
   iam_principals = merge(
     local.projects_sas_iam_emails,
-    local.automation_sas_iam_emails
+    local.automation_sas_iam_emails,
+    local.projects_service_agents
   )
   paths = {
     for k, v in var.factories_config.paths : k => try(pathexpand(

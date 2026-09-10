@@ -130,3 +130,35 @@ variable "iam_deny_policies" {
     error_message = "Each rule in iam_deny_policies must have at least one denied principal and one denied permission."
   }
 }
+
+variable "service_agents_folder_bindings" {
+  description = "Additive IAM bindings for this project's service agents on external folders, in key => binding format."
+  type = map(object({
+    service = string
+    folder  = string
+    role    = string
+    condition = optional(object({
+      expression  = string
+      title       = string
+      description = optional(string)
+    }))
+  }))
+  nullable = false
+  default  = {}
+}
+
+variable "service_agents_project_bindings" {
+  description = "Additive IAM bindings for this project's service agents on external projects, in key => binding format."
+  type = map(object({
+    service = string
+    project = string
+    role    = string
+    condition = optional(object({
+      expression  = string
+      title       = string
+      description = optional(string)
+    }))
+  }))
+  nullable = false
+  default  = {}
+}

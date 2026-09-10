@@ -562,6 +562,7 @@ module "ilb-l7" {
     subnetwork = var.subnet.self_link
   }
 }
+# tftest modules=1 resources=5
 ```
 
 #### Internet NEG creation

@@ -24,6 +24,15 @@ resource "google_cloud_run_v2_worker_pool" "default_unmanaged" {
   launch_stage        = var.launch_stage
   deletion_protection = var.deletion_protection
 
+  dynamic "binary_authorization" {
+    for_each = var.binary_authorization == null ? [] : [""]
+    content {
+      breakglass_justification = var.binary_authorization.breakglass_justification
+      policy                   = var.binary_authorization.policy
+      use_default              = var.binary_authorization.use_default
+    }
+  }
+
   dynamic "scaling" {
     for_each = var.workerpool_config.scaling == null ? [] : [""]
     content {

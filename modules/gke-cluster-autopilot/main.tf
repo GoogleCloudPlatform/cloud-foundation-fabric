@@ -415,12 +415,6 @@ resource "google_container_cluster" "cluster" {
       enabled = var.enable_features.vertical_pod_autoscaling
     }
   }
-  dynamic "enterprise_config" {
-    for_each = var.enable_features.enterprise_cluster != null ? [""] : []
-    content {
-      desired_tier = var.enable_features.enterprise_cluster ? "ENTERPRISE" : "STANDARD"
-    }
-  }
 }
 
 resource "google_gke_backup_backup_plan" "backup_plan" {
@@ -435,8 +429,11 @@ resource "google_gke_backup_backup_plan" "backup_plan" {
     backup_retain_days      = try(each.value.retention_policy_days)
     locked                  = try(each.value.retention_policy_lock)
   }
-  backup_schedule {
-    cron_schedule = each.value.schedule
+  dynamic "backup_schedule" {
+    for_each = each.value.schedule != null ? [""] : []
+    content {
+      cron_schedule = each.value.schedule
+    }
   }
 
   backup_config {

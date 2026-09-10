@@ -40,7 +40,6 @@ automation:
     rw:
       description: Read/write automation service account for Managed Kafka.
   bucket:
-    description: Terraform state bucket for Managed Kafka.
     # this reuses the existing stage state bucket and creates a folder in it
     name: iac-stage-state
     create: false

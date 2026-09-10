@@ -143,7 +143,7 @@ values:
     org_id: '1234567890'
   google_logging_organization_sink.sink["test-pubsub"]:
     deletion_policy: DELETE
-    description: test-pubsub (Terraform-managed).
+    description: ''
     destination: pubsub.googleapis.com/projects/test-prod-audit-logs-0/topics/audit-logs
     disabled: false
     exclusions: []
