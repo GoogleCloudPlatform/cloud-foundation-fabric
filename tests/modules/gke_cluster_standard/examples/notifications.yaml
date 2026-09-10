@@ -4,7 +4,7 @@
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#      http://www.apache.org/licenses/LICENSE-2.0
+#     https://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -55,9 +55,12 @@ values:
     cost_management_config:
     - enabled: true
     datapath_provider: ADVANCED_DATAPATH
+    dataplane_optimization_mode: null
     default_max_pods_per_node: 110
+    deletion_policy: DELETE
     deletion_protection: true
     description: null
+    desired_emulated_version: null
     disable_l4_lb_firewall_reconciliation: false
     dns_config: []
     effective_labels:
@@ -74,6 +77,7 @@ values:
     enable_shielded_nodes: false
     enable_tpu: false
     fleet: []
+    ignore_node_count_changes: null
     in_transit_encryption_config: null
     initial_node_count: 1
     ip_allocation_policy:
@@ -87,7 +91,9 @@ values:
     maintenance_policy:
     - daily_maintenance_window:
       - start_time: 03:00
+      disruption_budget: []
       maintenance_exclusion: []
+      recurring_maintenance_window: []
       recurring_window: []
     master_auth:
     - client_certificate_config:
@@ -127,6 +133,7 @@ values:
       storage_pools: null
       tags: null
       taint: []
+      taint_config: []
     node_pool_defaults:
     - node_config_defaults:
       - gcfs_config:
@@ -140,14 +147,17 @@ values:
           - UPGRADE_EVENT
     pod_security_policy_config: []
     private_cluster_config:
-    - enable_private_endpoint: true
+    - enable_private_endpoint: null
       enable_private_nodes: true
       private_endpoint_subnetwork: null
     project: myproject
     remove_default_node_pool: true
     resource_labels: null
     resource_usage_export_config: []
+    rollback_safe_upgrade: []
     secret_manager_config: []
+    secret_sync_config: []
+    skip_node_pool_refresh: null
     subnetwork: subnet_self_link
     terraform_labels:
       goog-terraform-provisioned: 'true'
@@ -156,6 +166,7 @@ values:
     workload_identity_config:
     - workload_pool: myproject.svc.id.goog
   module.cluster-1.google_pubsub_topic.notifications[0]:
+    deletion_policy: DELETE
     effective_labels:
       content: gke-notifications
       goog-terraform-provisioned: 'true'
@@ -168,6 +179,7 @@ values:
     name: gke-pubsub-notifications
     project: myproject
     schema_settings: []
+    tags: null
     terraform_labels:
       content: gke-notifications
       goog-terraform-provisioned: 'true'
@@ -178,3 +190,5 @@ counts:
   google_pubsub_topic: 1
   modules: 1
   resources: 2
+
+outputs: {}

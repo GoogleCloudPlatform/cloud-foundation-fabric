@@ -1,10 +1,10 @@
-# Copyright 2025 Google LLC
+# Copyright 2026 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#      http://www.apache.org/licenses/LICENSE-2.0
+#     https://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,7 @@ values:
     binary_authorization: []
     client: null
     client_version: null
-    custom_audiences: null
+    deletion_policy: DELETE
     deletion_protection: false
     description: null
     effective_labels:
@@ -29,15 +29,23 @@ values:
     project: project-id
     template:
     - annotations: null
+      client: null
+      client_version: null
       containers:
       - args: null
         command: null
+        depends_on: null
         env: []
         image: us-docker.pkg.dev/cloudrun/container/hello
+        liveness_probe: []
         name: hello
         resources:
         - limits:
+            cpu: 4000m
+            memory: 16Gi
             nvidia.com/gpu: '1'
+        sandbox_launcher: null
+        startup_probe: []
         volume_mounts: []
         working_dir: null
       encryption_key: null
@@ -48,11 +56,39 @@ values:
       node_selector:
       - accelerator: nvidia-l4
       revision: null
+      service_account: worker@project-id.iam.gserviceaccount.com
       volumes: []
       vpc_access: []
     terraform_labels:
       goog-terraform-provisioned: 'true'
     timeouts: null
+  module.worker.google_project_iam_member.default["roles/logging.logWriter"]:
+    condition: []
+    member: serviceAccount:worker@project-id.iam.gserviceaccount.com
+    project: project-id
+    role: roles/logging.logWriter
+  module.worker.google_project_iam_member.default["roles/monitoring.metricWriter"]:
+    condition: []
+    member: serviceAccount:worker@project-id.iam.gserviceaccount.com
+    project: project-id
+    role: roles/monitoring.metricWriter
+  module.worker.google_service_account.service_account[0]:
+    account_id: worker
+    create_ignore_already_exists: null
+    deletion_policy: DELETE
+    description: null
+    disabled: false
+    display_name: worker
+    email: worker@project-id.iam.gserviceaccount.com
+    member: serviceAccount:worker@project-id.iam.gserviceaccount.com
+    project: project-id
+    timeouts: null
 
 counts:
   google_cloud_run_v2_worker_pool: 1
+  google_project_iam_member: 2
+  google_service_account: 1
+  modules: 1
+  resources: 4
+
+outputs: {}

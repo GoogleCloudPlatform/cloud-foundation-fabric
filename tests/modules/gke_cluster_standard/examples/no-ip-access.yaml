@@ -51,9 +51,11 @@ values:
       - enabled: false
     cost_management_config:
     - enabled: true
+    dataplane_optimization_mode: null
     deletion_policy: DELETE
     deletion_protection: true
     description: null
+    desired_emulated_version: null
     disable_l4_lb_firewall_reconciliation: false
     dns_config: []
     effective_labels:
@@ -71,6 +73,7 @@ values:
     enable_shielded_nodes: true
     enable_tpu: false
     fleet: []
+    ignore_node_count_changes: null
     in_transit_encryption_config: null
     initial_node_count: 1
     ip_allocation_policy:
@@ -89,6 +92,7 @@ values:
       - start_time: 03:00
       disruption_budget: []
       maintenance_exclusion: []
+      recurring_maintenance_window: []
       recurring_window: []
     master_auth:
     - client_certificate_config:
@@ -112,7 +116,7 @@ values:
       resource_manager_tags: null
     pod_security_policy_config: []
     private_cluster_config:
-    - enable_private_endpoint: true
+    - enable_private_endpoint: null
       enable_private_nodes: true
       private_endpoint_subnetwork: null
     project: myproject
@@ -122,8 +126,10 @@ values:
     resource_labels:
       environment: dev
     resource_usage_export_config: []
+    rollback_safe_upgrade: []
     secret_manager_config: []
     secret_sync_config: []
+    skip_node_pool_refresh: null
     subnetwork: subnet_self_link
     terraform_labels:
       environment: dev
