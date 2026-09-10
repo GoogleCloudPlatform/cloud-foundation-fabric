@@ -258,6 +258,7 @@ locals {
           display_name = lookup(wv, "display_name", null)
           description  = lookup(wv, "description", null)
           disabled     = lookup(wv, "disabled", null)
+          pool_id      = lookup(wv, "pool_id", null)
           providers = {
             for pk, pv in try(wv.providers, {}) : pk => {
               display_name        = lookup(pv, "display_name", null)

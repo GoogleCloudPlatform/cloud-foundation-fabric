@@ -2251,6 +2251,8 @@ Workload Identity federation pools and providers can be created via the `workloa
 
 Auto-population of provider attributes and issuer are supported for OIDC providers via the `provider_template` attribute. Currently `github`, `gitlab`, `okta` and `terraform` provider types are supported.
 
+Pool ids default to their map keys, and can be set explicitly via the optional `pool_id` attribute. This is useful when the same configuration is deployed more than once and pool ids need to differ, or to preserve an existing pool id when renaming its key.
+
 ```hcl
 module "project" {
   source          = "./fabric/modules/project"
@@ -2261,6 +2263,7 @@ module "project" {
   workload_identity_pools = {
     test-oidc = {
       display_name = "Test pool (OIDC)."
+      pool_id      = "test-oidc-explicit-id"
       providers = {
         github-test = {
           attribute_condition = "attribute.repository_owner=='my_org'"

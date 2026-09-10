@@ -390,6 +390,9 @@
     "pam_entitlements": {
       "$ref": "#/$defs/pam_entitlements"
     },
+    "prefix": {
+      "type": "string"
+    },
     "service_agents_config": {
       "type": "object",
       "additionalProperties": false,
@@ -469,6 +472,9 @@
             },
             "disabled": {
               "type": "boolean"
+            },
+            "pool_id": {
+              "type": "string"
             },
             "session_duration": {
               "type": "string"

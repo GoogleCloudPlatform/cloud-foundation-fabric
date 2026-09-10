@@ -55,14 +55,16 @@ locals {
 }
 
 resource "google_iam_workforce_pool" "default" {
-  for_each          = var.workforce_identity_pools
-  parent            = var.organization_id
-  location          = "global"
-  workforce_pool_id = each.key
-  description       = each.value.description
-  disabled          = each.value.disabled
-  display_name      = each.value.display_name
-  session_duration  = each.value.session_duration
+  for_each = var.workforce_identity_pools
+  parent   = var.organization_id
+  location = "global"
+  workforce_pool_id = coalesce(
+    each.value.pool_id, "${local.prefix}${each.key}"
+  )
+  description      = each.value.description
+  disabled         = each.value.disabled
+  display_name     = each.value.display_name
+  session_duration = each.value.session_duration
   dynamic "access_restrictions" {
     for_each = each.value.access_restrictions != null ? [""] : []
     content {

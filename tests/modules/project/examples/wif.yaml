@@ -26,7 +26,7 @@ values:
     display_name: Test pool (OIDC).
     project: test-project
     timeouts: null
-    workload_identity_pool_id: test-oidc
+    workload_identity_pool_id: test-oidc-explicit-id
   module.project.google_iam_workload_identity_pool_provider.default["test-non-oidc/aws-test"]:
     attribute_condition: attribute.aws_role=="arn:aws:sts::999999999999:assumed-role/stack-eu-central-1-lambdaRole"
     attribute_mapping:
@@ -86,7 +86,7 @@ values:
     project: test-project
     saml: []
     timeouts: null
-    workload_identity_pool_id: test-oidc
+    workload_identity_pool_id: test-oidc-explicit-id
     workload_identity_pool_provider_id: github-test
     x509: []
   module.project.google_iam_workload_identity_pool_provider.default["test-oidc/gitlab-test"]:
@@ -113,7 +113,7 @@ values:
     project: test-project
     saml: []
     timeouts: null
-    workload_identity_pool_id: test-oidc
+    workload_identity_pool_id: test-oidc-explicit-id
     workload_identity_pool_provider_id: gitlab-test
     x509: []
   module.project.google_project.project[0]:

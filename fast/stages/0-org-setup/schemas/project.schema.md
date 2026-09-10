@@ -343,6 +343,7 @@
     - **description**: *string*
     - **display_name**: *string*
     - **disabled**: *boolean*
+    - **pool_id**: *string*
     - **providers**: *object*
       <br>*additional properties: false*
       - **`^[a-z][a-z0-9-]+[a-z0-9]$`**: *object*

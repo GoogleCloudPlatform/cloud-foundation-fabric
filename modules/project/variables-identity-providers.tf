@@ -20,6 +20,7 @@ variable "workload_identity_pools" {
     display_name = optional(string)
     description  = optional(string)
     disabled     = optional(bool)
+    pool_id      = optional(string)
     providers = optional(map(object({
       description         = optional(string)
       display_name        = optional(string)

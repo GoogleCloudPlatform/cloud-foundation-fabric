@@ -34,7 +34,7 @@ locals {
 resource "google_iam_workload_identity_pool" "default" {
   for_each                  = var.workload_identity_pools
   project                   = local.project.project_id
-  workload_identity_pool_id = each.key
+  workload_identity_pool_id = coalesce(each.value.pool_id, each.key)
   display_name              = each.value.display_name
   description               = each.value.description
   disabled                  = each.value.disabled

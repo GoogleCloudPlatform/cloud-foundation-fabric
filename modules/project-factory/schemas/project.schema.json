@@ -1171,6 +1171,9 @@
             "disabled": {
               "type": "boolean"
             },
+            "pool_id": {
+              "type": "string"
+            },
             "providers": {
               "type": "object",
               "additionalProperties": false,

@@ -801,7 +801,7 @@ values:
     inline_trust_config: []
     project: test-pf-teams-iac-0
     timeouts: null
-    workload_identity_pool_id: test-0
+    workload_identity_pool_id: test-0-explicit-id
   ? module.project-factory.module.projects["teams-iac-0"].google_iam_workload_identity_pool_provider.default["test-0/github-test"]
   : attribute_condition: attribute.repository_owner=="my_org"
     attribute_mapping:
@@ -828,7 +828,7 @@ values:
     project: test-pf-teams-iac-0
     saml: []
     timeouts: null
-    workload_identity_pool_id: test-0
+    workload_identity_pool_id: test-0-explicit-id
     workload_identity_pool_provider_id: github-test
     x509: []
   module.project-factory.module.projects["teams-iac-0"].google_project.project[0]:

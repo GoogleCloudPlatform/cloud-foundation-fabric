@@ -601,6 +601,7 @@ org_policies:
 workload_identity_pools:
   test-0:
     display_name: Test pool.
+    pool_id: test-0-explicit-id
     providers:
       github-test:
         display_name: GitHub test provider.

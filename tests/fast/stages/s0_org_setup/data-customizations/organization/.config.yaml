@@ -17,9 +17,16 @@
 # yaml-language-server: $schema=../../../schemas/organization.schema.json
 
 id: $defaults:organization/id
+prefix: test
 service_agents_config:
   services:
     - privilegedaccessmanager.googleapis.com
+workforce_identity_pools:
+  wf-0:
+    display_name: Test workforce pool.
+  wf-1:
+    display_name: Test workforce pool with explicit id.
+    pool_id: wf-1-explicit-id
 
 iam_by_principals:
   $iam_principals:gcp-organization-admins:

@@ -323,6 +323,16 @@ variable "organization_id" {
   }
 }
 
+variable "prefix" {
+  description = "Optional prefix used to generate workforce identity pool ids."
+  type        = string
+  default     = null
+  validation {
+    condition     = var.prefix != ""
+    error_message = "Prefix cannot be empty, please use null instead."
+  }
+}
+
 variable "service_agents_config" {
   description = "Service agents configuration."
   type = object({

@@ -1010,6 +1010,14 @@ values:
     condition:
     - title: audit-logs bucket writer
     role: roles/logging.bucketWriter
+  module.organization[0].google_iam_workforce_pool.default["wf-0"]:
+    display_name: Test workforce pool.
+    parent: organizations/1234567890
+    workforce_pool_id: test-wf-0
+  module.organization[0].google_iam_workforce_pool.default["wf-1"]:
+    display_name: Test workforce pool with explicit id.
+    parent: organizations/1234567890
+    workforce_pool_id: wf-1-explicit-id
   module.organization[0].google_logging_organization_settings.default[0]:
     organization: '1234567890'
     timeouts: null
@@ -1346,6 +1354,7 @@ counts:
   google_compute_shared_vpc_service_project: 2
   google_compute_subnetwork: 2
   google_folder: 2
+  google_iam_workforce_pool: 2
   google_logging_organization_settings: 1
   google_logging_organization_sink: 1
   google_logging_project_bucket_config: 1
@@ -1367,7 +1376,7 @@ counts:
   google_tags_tag_value: 2
   local_file: 3
   modules: 27
-  resources: 169
+  resources: 171
   terraform_data: 4
 
 outputs:

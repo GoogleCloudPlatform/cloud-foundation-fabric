@@ -22,7 +22,7 @@ values:
     parent: organizations/1122334455
     session_duration: 3600s
     timeouts: null
-    workforce_pool_id: test-pool
+    workforce_pool_id: test-test-pool
   module.org.google_iam_workforce_pool_provider.default["test-pool/oidc-full"]:
     attribute_condition: null
     attribute_mapping:
@@ -56,7 +56,7 @@ values:
     saml: []
     scim_usage: ENABLED_FOR_GROUPS
     timeouts: null
-    workforce_pool_id: test-pool
+    workforce_pool_id: test-test-pool
   module.org.google_iam_workforce_pool_provider.default["test-pool/saml-basic"]:
     attribute_condition: null
     attribute_mapping:
@@ -79,7 +79,7 @@ values:
     - idp_metadata_xml: <?xml version="1.0" encoding="utf-8"?>...
     scim_usage: null
     timeouts: null
-    workforce_pool_id: test-pool
+    workforce_pool_id: test-test-pool
   module.org.google_iam_workforce_pool_provider.default["test-pool/saml-full"]:
     attribute_condition: null
     attribute_mapping:
@@ -105,7 +105,7 @@ values:
     - idp_metadata_xml: <?xml version="1.0" encoding="utf-8"?>...
     scim_usage: null
     timeouts: null
-    workforce_pool_id: test-pool
+    workforce_pool_id: test-test-pool
   module.org.google_iam_workforce_pool_provider_scim_tenant.default["test-pool/oidc-full"]:
     claim_mapping:
       google.group: group.externalId
@@ -117,7 +117,7 @@ values:
     provider_id: oidc-full
     scim_tenant_id: my-scim-tenant
     timeouts: null
-    workforce_pool_id: test-pool
+    workforce_pool_id: test-test-pool
 
 counts:
   google_iam_workforce_pool: 1

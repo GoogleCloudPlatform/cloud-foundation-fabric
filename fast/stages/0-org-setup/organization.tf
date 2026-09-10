@@ -93,6 +93,7 @@ module "organization" {
     locations       = local.ctx.locations
   }
   contacts              = lookup(local.organization, "contacts", {})
+  prefix                = lookup(local.organization, "prefix", null)
   service_agents_config = lookup(local.organization, "service_agents_config", {})
   factories_config = {
     access_levels          = "${local.paths.organization}/access-levels"

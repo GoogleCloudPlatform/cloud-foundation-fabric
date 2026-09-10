@@ -20,6 +20,7 @@ variable "workforce_identity_pools" {
     description      = optional(string)
     disabled         = optional(bool)
     display_name     = optional(string)
+    pool_id          = optional(string)
     session_duration = optional(string)
     access_restrictions = optional(object({
       disable_programmatic_signin = optional(bool)

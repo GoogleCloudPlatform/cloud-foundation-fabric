@@ -962,10 +962,13 @@ A Workforce Identity pool and providers can be created via the `workforce_identi
 
 Auto-population of provider attributes is supported via the `attribute_mapping_template` provider attribute. Currently only `azuread` and `okta` are supported.
 
+Workforce pool ids need to be globally unique. Pool ids default to their map keys optionally prepended with the module `prefix` variable, so that the same configuration can be deployed more than once. A pool id can also be set explicitly via the pool-level `pool_id` attribute, which ignores the module prefix.
+
 ```hcl
 module "org" {
   source          = "./fabric/modules/organization"
   organization_id = var.organization_id
+  prefix          = var.prefix
   workforce_identity_pools = {
     "test-pool" = {
       display_name = "Test Pool"
@@ -1174,9 +1177,10 @@ module "org" {
 | [org_policies](variables.tf#L275) | Organization policies applied to this organization keyed by policy name. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [org_policy_custom_constraints](variables.tf#L303) | Organization policy custom constraints keyed by constraint name. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [pam_entitlements](variables-pam.tf#L17) | Privileged Access Manager entitlements for this resource, keyed by entitlement ID. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [prefix](variables.tf#L326) | Optional prefix used to generate workforce identity pool ids. | <code>string</code> |  | <code>null</code> |
 | [scc_mute_configs](variables-scc.tf#L17) | SCC mute configurations keyed by name. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [scc_sha_custom_modules](variables-scc.tf#L28) | SCC custom modules keyed by module name. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [service_agents_config](variables.tf#L326) | Service agents configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [service_agents_config](variables.tf#L336) | Service agents configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [tag_bindings](variables-tags.tf#L89) | Tag bindings for this organization, in key => tag value id format. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 | [tags](variables-tags.tf#L96) | Tags by key name. If `id` is provided, key or value creation is skipped. The `iam` attribute behaves like the similarly named one at module level. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [tags_config](variables-tags.tf#L171) | Fine-grained control on tag resource and IAM creation. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |

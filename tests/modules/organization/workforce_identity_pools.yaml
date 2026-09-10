@@ -1,0 +1,32 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  google_iam_workforce_pool.default["explicit-pool"]:
+    display_name: Pool with explicit id.
+    parent: organizations/1234567890
+    workforce_pool_id: explicit-pool-id
+  google_iam_workforce_pool.default["prefixed-pool"]:
+    display_name: Prefixed pool.
+    parent: organizations/1234567890
+    workforce_pool_id: test-prefixed-pool
+  google_iam_workforce_pool_provider.default["prefixed-pool/saml-test"]:
+    provider_id: saml-test
+    workforce_pool_id: test-prefixed-pool
+
+counts:
+  google_iam_workforce_pool: 2
+  google_iam_workforce_pool_provider: 1
+  modules: 0
+  resources: 3

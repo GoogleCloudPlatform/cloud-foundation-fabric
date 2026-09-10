@@ -35,6 +35,7 @@ locals {
   })
   ctx_p                   = "$"
   organization_id_numeric = split("/", var.organization_id)[1]
+  prefix                  = var.prefix == null ? "" : "${var.prefix}-"
 }
 
 resource "google_essential_contacts_contact" "contact" {

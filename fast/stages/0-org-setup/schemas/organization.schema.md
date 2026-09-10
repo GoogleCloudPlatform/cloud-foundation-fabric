@@ -121,6 +121,7 @@
           - **location**: *string*
           - **title**: *string*
 - **pam_entitlements**: *reference([pam_entitlements](#refs-pam_entitlements))*
+- **prefix**: *string*
 - **service_agents_config**: *object*
   <br>*additional properties: false*
   - **create_agents**: *boolean*
@@ -135,6 +136,7 @@
     - **display_name**: *string*
     - **description**: *string*
     - **disabled**: *boolean*
+    - **pool_id**: *string*
     - **session_duration**: *string*
     - **access_restrictions**: *object*
       <br>*additional properties: false*

@@ -744,6 +744,7 @@ variable "projects" {
       display_name = optional(string)
       description  = optional(string)
       disabled     = optional(bool)
+      pool_id      = optional(string)
       providers = optional(map(object({
         display_name        = optional(string)
         description         = optional(string)
