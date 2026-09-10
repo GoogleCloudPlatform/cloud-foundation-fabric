@@ -2531,6 +2531,14 @@
                 "ack_deadline_seconds": {
                   "type": "number"
                 },
+                "deletion_policy": {
+                  "type": "string",
+                  "enum": [
+                    "ABANDON",
+                    "DELETE",
+                    "PREVENT"
+                  ]
+                },
                 "enable_exactly_once_delivery": {
                   "type": "boolean"
                 },
