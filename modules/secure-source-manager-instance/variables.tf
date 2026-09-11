@@ -14,6 +14,22 @@
  * limitations under the License.
  */
 
+variable "context" {
+  description = "Context-specific interpolations."
+  type = object({
+    ca_pools         = optional(map(string), {})
+    custom_roles     = optional(map(string), {})
+    iam_principals   = optional(map(string), {})
+    kms_keys         = optional(map(string), {})
+    locations        = optional(map(string), {})
+    project_ids      = optional(map(string), {})
+    project_numbers  = optional(map(string), {})
+    service_accounts = optional(map(string), {})
+  })
+  default  = {}
+  nullable = false
+}
+
 variable "deletion_policy" {
   description = "Instance deletion policy, one of PREVENT, ABANDON, DELETE."
   type        = string

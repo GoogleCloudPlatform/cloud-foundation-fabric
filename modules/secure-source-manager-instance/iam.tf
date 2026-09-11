@@ -31,8 +31,8 @@ locals {
   }) }]...)
 
   iam_instance_values = {
-    project     = var.instance_create ? google_secure_source_manager_instance.instance[0].project : var.project_id
-    location    = var.instance_create ? google_secure_source_manager_instance.instance[0].location : var.location
+    project     = var.instance_create ? google_secure_source_manager_instance.instance[0].project : local.project_id
+    location    = var.instance_create ? google_secure_source_manager_instance.instance[0].location : local.location
     instance_id = var.instance_create ? google_secure_source_manager_instance.instance[0].instance_id : var.instance_id
   }
 }
@@ -42,8 +42,10 @@ resource "google_secure_source_manager_instance_iam_binding" "authoritative" {
   project     = local.iam_instance_values["project"]
   location    = local.iam_instance_values["location"]
   instance_id = local.iam_instance_values["instance_id"]
-  role        = each.key
-  members     = each.value
+  role        = lookup(local.ctx.custom_roles, each.key, each.key)
+  members = [
+    for v in each.value : lookup(local.ctx.iam_principals, v, v)
+  ]
 }
 
 resource "google_secure_source_manager_instance_iam_binding" "bindings" {
@@ -51,8 +53,10 @@ resource "google_secure_source_manager_instance_iam_binding" "bindings" {
   project     = local.iam_instance_values["project"]
   location    = local.iam_instance_values["location"]
   instance_id = local.iam_instance_values["instance_id"]
-  role        = each.value.role
-  members     = each.value.members
+  role        = lookup(local.ctx.custom_roles, each.value.role, each.value.role)
+  members = [
+    for v in each.value.members : lookup(local.ctx.iam_principals, v, v)
+  ]
 }
 
 resource "google_secure_source_manager_instance_iam_member" "bindings" {
@@ -60,8 +64,10 @@ resource "google_secure_source_manager_instance_iam_member" "bindings" {
   project     = local.iam_instance_values["project"]
   location    = local.iam_instance_values["location"]
   instance_id = local.iam_instance_values["instance_id"]
-  role        = each.value.role
-  member      = each.value.member
+  role        = lookup(local.ctx.custom_roles, each.value.role, each.value.role)
+  member = lookup(
+    local.ctx.iam_principals, each.value.member, each.value.member
+  )
 }
 
 resource "google_secure_source_manager_repository_iam_binding" "authoritative" {
@@ -69,8 +75,10 @@ resource "google_secure_source_manager_repository_iam_binding" "authoritative" {
   project       = google_secure_source_manager_repository.repositories[each.value.repository].project
   location      = google_secure_source_manager_repository.repositories[each.value.repository].location
   repository_id = google_secure_source_manager_repository.repositories[each.value.repository].repository_id
-  role          = each.value.role
-  members       = each.value.members
+  role          = lookup(local.ctx.custom_roles, each.value.role, each.value.role)
+  members = [
+    for v in each.value.members : lookup(local.ctx.iam_principals, v, v)
+  ]
 }
 
 resource "google_secure_source_manager_repository_iam_binding" "bindings" {
@@ -78,8 +86,10 @@ resource "google_secure_source_manager_repository_iam_binding" "bindings" {
   project       = google_secure_source_manager_repository.repositories[each.value.repository].project
   location      = google_secure_source_manager_repository.repositories[each.value.repository].location
   repository_id = google_secure_source_manager_repository.repositories[each.value.repository].repository_id
-  role          = each.value.role
-  members       = each.value.members
+  role          = lookup(local.ctx.custom_roles, each.value.role, each.value.role)
+  members = [
+    for v in each.value.members : lookup(local.ctx.iam_principals, v, v)
+  ]
 }
 
 resource "google_secure_source_manager_repository_iam_member" "bindings" {
@@ -87,6 +97,8 @@ resource "google_secure_source_manager_repository_iam_member" "bindings" {
   project       = google_secure_source_manager_repository.repositories[each.value.repository].project
   location      = google_secure_source_manager_repository.repositories[each.value.repository].location
   repository_id = google_secure_source_manager_repository.repositories[each.value.repository].repository_id
-  role          = each.value.role
-  member        = each.value.member
+  role          = lookup(local.ctx.custom_roles, each.value.role, each.value.role)
+  member = lookup(
+    local.ctx.iam_principals, each.value.member, each.value.member
+  )
 }

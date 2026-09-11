@@ -1,0 +1,90 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  google_secure_source_manager_instance.instance[0]:
+    deletion_policy: PREVENT
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    instance_id: test-0
+    kms_key: projects/dev-sec-core-0/locations/europe-west4/keyRings/ssm/cryptoKeys/ssm
+    labels: null
+    location: europe-west4
+    private_config:
+    - ca_pool: projects/dev-sec-core-0/locations/europe-west8/caPools/dev-ca-0
+      custom_host_config:
+      - api: api.ssm.example.com
+        git_http: git.ssm.example.com
+        git_ssh: ssh.ssm.example.com
+        html: ssm.example.com
+      is_private: true
+      psc_allowed_projects:
+      - dev-build-pool-0
+      - '1234567890'
+    project: dev-build-ssm-0
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+    workforce_identity_federation_config: []
+  google_secure_source_manager_instance_iam_binding.authoritative["roles/securesourcemanager.instanceAccessor"]:
+    condition: []
+    instance_id: test-0
+    location: europe-west4
+    members:
+    - serviceAccount:ssm-repo-0@dev-build-ssm-0.iam.gserviceaccount.com
+    project: dev-build-ssm-0
+    role: roles/securesourcemanager.instanceAccessor
+  google_secure_source_manager_instance_iam_member.bindings["custom"]:
+    condition: []
+    instance_id: test-0
+    location: europe-west4
+    member: user:test-user@example.com
+    project: dev-build-ssm-0
+    role: organizations/366118655033/roles/myRoleOne
+  google_secure_source_manager_repository.repositories["repo-0"]:
+    deletion_policy: PREVENT
+    description: null
+    initial_config: []
+    location: europe-west4
+    project: dev-build-ssm-0
+    repository_id: repo-0
+    scan_config: []
+    service_account: ssm-repo-0@dev-build-ssm-0.iam.gserviceaccount.com
+    timeouts: null
+  google_secure_source_manager_repository_iam_binding.authoritative["repo-0.roles/securesourcemanager.repoReader"]:
+    condition: []
+    location: europe-west4
+    members:
+    - serviceAccount:ssm-repo-0@dev-build-ssm-0.iam.gserviceaccount.com
+    project: dev-build-ssm-0
+    repository_id: repo-0
+    role: roles/securesourcemanager.repoReader
+
+counts:
+  google_secure_source_manager_instance: 1
+  google_secure_source_manager_instance_iam_binding: 1
+  google_secure_source_manager_instance_iam_member: 1
+  google_secure_source_manager_repository: 1
+  google_secure_source_manager_repository_iam_binding: 1
+  modules: 0
+  resources: 5
+
+outputs:
+  host_config: __missing__
+  http_service_attachment: __missing__
+  instance: __missing__
+  instance_id: __missing__
+  repositories: __missing__
+  repository_ids: __missing__
+  ssh_service_attachment: __missing__

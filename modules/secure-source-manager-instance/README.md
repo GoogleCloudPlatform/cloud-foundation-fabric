@@ -73,15 +73,17 @@ Custom hostnames replace the Google-assigned ones under `REGION.p.sourcemanager.
 
 Repositories can be assigned their own service account, which Secure Source Manager uses as the triggering identity when it starts a build for that repository. Without it a repository falls back to the shared Secure Source Manager service agent, so set it whenever repositories need to be isolated from one another.
 
+This example also shows the `context` variable, which resolves symbolic references at plan time so callers can pass logical names instead of concrete ids. Besides the standard `locations` and `project_ids`, this module interpolates `ca_pools` for the CAS pool, `service_accounts` for repository service accounts, `kms_keys` for the instance key, and `custom_roles` and `iam_principals` in IAM bindings. Private Service Connect allowed projects accept either form, so they are looked up in `project_ids` first and then in `project_numbers`.
+
 ```hcl
 module "ssm_instance" {
   source      = "./fabric/modules/secure-source-manager-instance"
-  project_id  = var.project_id
+  project_id  = "$project_ids:ssm"
   instance_id = "my-instance"
-  location    = var.region
+  location    = "$locations:primary"
   private_configs = {
     is_private           = true
-    ca_pool_id           = "projects/another-project/locations/${var.region}/caPools/my-ca-pool"
+    ca_pool_id           = "$ca_pools:my-ca-pool"
     psc_allowed_projects = ["another-project"]
     custom_host_config = {
       api      = "api.ssm.example.com"
@@ -92,7 +94,17 @@ module "ssm_instance" {
   }
   repositories = {
     my-repository = {
-      service_account = "my-repository-sa@${var.project_id}.iam.gserviceaccount.com"
+      service_account = "$service_accounts:my-repository"
+    }
+  }
+  context = {
+    ca_pools = {
+      my-ca-pool = "projects/another-project/locations/${var.region}/caPools/my-ca-pool"
+    }
+    locations   = { primary = var.region }
+    project_ids = { ssm = var.project_id }
+    service_accounts = {
+      my-repository = "my-repository-sa@${var.project_id}.iam.gserviceaccount.com"
     }
   }
 }
@@ -234,18 +246,19 @@ module "ssm_instance" {
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [instance_id](variables.tf#L36) | Instance ID. | <code>string</code> | ✓ |  |
-| [location](variables.tf#L53) | Location. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L82) | Project ID. | <code>string</code> | ✓ |  |
-| [repositories](variables.tf#L87) | Repositories. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> | ✓ |  |
-| [deletion_policy](variables.tf#L17) | Instance deletion policy, one of PREVENT, ABANDON, DELETE. | <code>string</code> |  | <code>null</code> |
+| [instance_id](variables.tf#L52) | Instance ID. | <code>string</code> | ✓ |  |
+| [location](variables.tf#L69) | Location. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L98) | Project ID. | <code>string</code> | ✓ |  |
+| [repositories](variables.tf#L103) | Repositories. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> | ✓ |  |
+| [context](variables.tf#L17) | Context-specific interpolations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [deletion_policy](variables.tf#L33) | Instance deletion policy, one of PREVENT, ABANDON, DELETE. | <code>string</code> |  | <code>null</code> |
 | [iam](variables-iam.tf#L17) | IAM bindings. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam_bindings](variables-iam.tf#L23) | IAM bindings. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam_bindings_additive](variables-iam.tf#L32) | IAM bindings. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [instance_create](variables.tf#L30) | Create SSM Instance. When set to false, uses instance_id to reference existing SSM instance. | <code>bool</code> |  | <code>true</code> |
-| [kms_key](variables.tf#L41) | KMS key. | <code>string</code> |  | <code>null</code> |
-| [labels](variables.tf#L47) | Instance labels. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
-| [private_configs](variables.tf#L58) | The configurations for SSM private instances. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [instance_create](variables.tf#L46) | Create SSM Instance. When set to false, uses instance_id to reference existing SSM instance. | <code>bool</code> |  | <code>true</code> |
+| [kms_key](variables.tf#L57) | KMS key. | <code>string</code> |  | <code>null</code> |
+| [labels](variables.tf#L63) | Instance labels. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
+| [private_configs](variables.tf#L74) | The configurations for SSM private instances. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
 

@@ -15,6 +15,16 @@
  */
 
 locals {
+  ctx = {
+    for k, v in var.context : k => {
+      for kk, vv in v : "${local.ctx_p}${k}:${kk}" => vv
+    }
+  }
+  ctx_p    = "$"
+  location = lookup(local.ctx.locations, var.location, var.location)
+  project_id = lookup(
+    local.ctx.project_ids, var.project_id, var.project_id
+  )
   branch_rules = merge([
     for k1, v1 in var.repositories : {
       for k2, v2 in v1.branch_rules : "${k1}.${k2}" => {
@@ -34,19 +44,42 @@ locals {
 }
 
 resource "google_secure_source_manager_instance" "instance" {
-  count           = var.instance_create ? 1 : 0
-  instance_id     = var.instance_id
-  project         = var.project_id
-  location        = var.location
-  labels          = var.labels
-  kms_key         = var.kms_key
+  count       = var.instance_create ? 1 : 0
+  instance_id = var.instance_id
+  project     = local.project_id
+  location    = local.location
+  labels      = var.labels
+  kms_key = (
+    var.kms_key == null
+    ? null
+    : lookup(local.ctx.kms_keys, var.kms_key, var.kms_key)
+  )
   deletion_policy = var.deletion_policy
   dynamic "private_config" {
     for_each = var.private_configs.is_private ? [""] : []
     content {
-      is_private           = true
-      ca_pool              = var.private_configs.ca_pool_id
-      psc_allowed_projects = var.private_configs.psc_allowed_projects
+      is_private = true
+      ca_pool = (
+        var.private_configs.ca_pool_id == null
+        ? null
+        : lookup(
+          local.ctx.ca_pools,
+          var.private_configs.ca_pool_id,
+          var.private_configs.ca_pool_id
+        )
+      )
+      psc_allowed_projects = (
+        var.private_configs.psc_allowed_projects == null
+        ? null
+        : [
+          # PSC allows either ids or numbers, so both maps are consulted
+          for p in var.private_configs.psc_allowed_projects :
+          lookup(
+            local.ctx.project_ids, p,
+            lookup(local.ctx.project_numbers, p, p)
+          )
+        ]
+      )
       dynamic "custom_host_config" {
         for_each = var.private_configs.custom_host_config == null ? [] : [""]
         content {
@@ -63,12 +96,20 @@ resource "google_secure_source_manager_instance" "instance" {
 resource "google_secure_source_manager_repository" "repositories" {
   for_each        = var.repositories
   repository_id   = each.key
-  instance        = try(google_secure_source_manager_instance.instance[0].name, "projects/${var.project_id}/locations/${var.location}/instances/${var.instance_id}")
-  project         = var.project_id
-  location        = var.location
+  instance        = try(google_secure_source_manager_instance.instance[0].name, "projects/${local.project_id}/locations/${local.location}/instances/${var.instance_id}")
+  project         = local.project_id
+  location        = local.location
   description     = each.value.description
   deletion_policy = each.value.deletion_policy
-  service_account = each.value.service_account
+  service_account = (
+    each.value.service_account == null
+    ? null
+    : lookup(
+      local.ctx.service_accounts,
+      each.value.service_account,
+      each.value.service_account
+    )
+  )
   dynamic "scan_config" {
     for_each = each.value.secret_scan_config == null ? [] : [""]
     content {
