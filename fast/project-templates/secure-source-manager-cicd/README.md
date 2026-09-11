@@ -51,9 +51,15 @@ Include `roles/privateca.auditor` in the same condition. The build identities ne
 
 ### The private DNS zone for the instance hostnames
 
-A private Secure Source Manager instance publishes its hostnames under `REGION.p.sourcemanager.dev`, and those names resolve nowhere useful by default. They are not served by either Private Google Access VIP: they appear in neither the `private.googleapis.com` nor the `restricted.googleapis.com` domain list, so no private access configuration reaches a repository. A private zone for `REGION.p.sourcemanager.dev.` attached to the VPC is the only way clients resolve them.
+A private Secure Source Manager instance publishes its hostnames under `REGION.p.sourcemanager.dev`, and those names resolve nowhere useful by default. They are not served by either Private Google Access VIP: they appear in neither the `private.googleapis.com` nor the `restricted.googleapis.com` domain list, so no private access configuration reaches a repository. A private zone attached to the VPC is the only way clients resolve them.
 
-The zone holds four A records. `INSTANCE_ID-PROJECT_NUMBER-api`, `INSTANCE_ID-PROJECT_NUMBER-git` and the bare `INSTANCE_ID-PROJECT_NUMBER` all point at the address of the load balancer fronting the HTTP service attachment; `INSTANCE_ID-PROJECT_NUMBER-ssh` points at the SSH one.
+With the generated names the zone holds four A records under `REGION.p.sourcemanager.dev.`: `INSTANCE_ID-PROJECT_NUMBER-api`, `INSTANCE_ID-PROJECT_NUMBER-git` and the bare `INSTANCE_ID-PROJECT_NUMBER` all point at the address of the load balancer fronting the HTTP service attachment, and `INSTANCE_ID-PROJECT_NUMBER-ssh` points at the SSH one.
+
+This configuration sets custom hostnames instead, through `custom_host_config` on the instance, which replaces the generated names with four of your own. The API requires all four and the CA pool signs their certificate, which is a second reason the pool is mandatory here rather than merely available. The zone then covers your own domain, with `api`, `git` and the apex on the HTTP load balancer and `ssh` on the SSH one.
+
+Two things make it worth the extra field. The generated names embed the instance id and the project number, and since nothing about an instance can be changed after creation, a rebuild produces a new instance id and therefore new hostnames in every DNS record, clone URL, credential helper and CI configuration that referenced them. Names you own survive a rebuild: the records repoint and nothing downstream changes.
+
+The second reason applies to anyone running more than one region, and it is the larger one. An instance is regional and immutable, so a second region means a second instance, and with generated names it also means a second DNS suffix — `REGION.p.sourcemanager.dev.` is per-region, so each region needs its own private zone and its own entry in the peered domain list below, both of which have to be added to the landing zone every time a region is added. Custom hostnames let every instance live under one parent domain, `ew4.ssm.example.com` and `ew2.ssm.example.com` beneath `ssm.example.com`, so one zone and one peered domain entry for the parent cover all of them and adding a region touches no landing zone configuration at all. The rest of the design is unchanged: each instance still needs its own CA pool grant, its own pair of load balancers and its own service attachments.
 
 Where the zone lives in a landing zone's DNS design it needs no peering of its own and no cross-project binding, and the records are best created once the load balancers exist and their addresses are reserved. That ordering is the reason to keep them out of this configuration: the addresses are outputs of this setup, and the records that consume them are owned elsewhere.
 
@@ -75,10 +81,12 @@ A peered DNS domain fixes it. It tells service networking to forward queries for
 psa_configs = [{
   ranges         = { psa-build = "10.0.200.0/24" }
   export_routes  = true
-  peered_domains = ["europe-west4.p.sourcemanager.dev."]
+  peered_domains = ["ssm.example.com."]
 }]
 # tftest skip
 ```
+
+The suffix is the parent of the instance hostnames, so with custom hostnames one entry covers every instance beneath it and the list does not grow with regions. Using the generated names instead, the entry is `REGION.p.sourcemanager.dev.` and there is one per region.
 
 `export_routes` carries the VPC's subnet routes to the producer network so the pool can reach the load balancers. Google's guide also asks for `--no-export-subnet-routes-with-public-ip` on the peering, which `net-vpc` does not currently express, so check the peering after the first apply.
 
@@ -86,7 +94,7 @@ psa_configs = [{
 
 ## Open points
 
-- **Cross-region access to the load balancers.** Secure Source Manager runs in eleven regions, only two of which are in Europe, so the instance frequently cannot sit in the same region as everything else. If the Cloud Build private pool ends up in a different region from the instance, the regional internal load balancers in front of the service attachments need global access enabled on their forwarding rules, or the pool cannot reach them. Colocating the pool with the instance avoids this and drops a cross-region hop from every clone.
+- **Cross-region access to the load balancers**, settled. Secure Source Manager runs in eleven regions, only two of which are in Europe, so the instance frequently cannot sit in the same region as everything else, and a Cloud Build private pool in another region reaches the regional internal load balancers only if their forwarding rules have global access. `net-lb-proxy-int` defaults `forwarding_rules_config.global_access` to `true`, so the split works without doing anything. Colocating the pool with the instance still drops a cross-region hop from every clone, and remains the better option where the pool's region is free to move.
 - **Who places `roles/privateca.auditor` for the build identities.** Covered under the CA pool above. The grant itself is not in question; what is undecided is whether it comes from the project factory or from here through `iam_project_roles`, and therefore which identity the delegation on the CA pool's project has to name.
 - **What the load balancer path needs in a Shared VPC service project.** A Private Service Connect NEG plus a regional internal proxy load balancer in a service project may need more than `roles/compute.networkUser` for the compute service agent, in particular on the proxy-only subnet. To be established by building it.
 - **Provider gaps.** Pin `hashicorp/google` at 7.44.0 or later: `google_secure_source_manager_repository` gained `service_account` there, and that field is what makes a repository-level service account something the configuration enforces rather than something an operator remembers. `google_developer_connect_connection` still has no Secure Source Manager block, which rules out the Developer Connect alternative to the network path above.
