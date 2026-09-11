@@ -1,0 +1,156 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  google_cloud_scheduler_job.default["daily-batch"]:
+    app_engine_http_target: []
+    attempt_deadline: 300s
+    deletion_policy: DELETE
+    description: Scheduled execution for workflow foo-test-workflow.
+    http_target:
+    - body: eyJhcmd1bWVudCI6IntcImJhdGNoX3NpemVcIjogMTAwfSJ9
+      headers:
+        Content-Type: application/json
+      http_method: POST
+      oauth_token:
+      - scope: https://www.googleapis.com/auth/cloud-platform
+        service_account_email: foo-test-workflow@test-project.iam.gserviceaccount.com
+      oidc_token: []
+    name: foo-daily-batch
+    paused: false
+    project: test-project
+    pubsub_target: []
+    region: europe-west1
+    retry_config:
+    - max_backoff_duration: 60s
+      max_doublings: 2
+      min_backoff_duration: 5s
+      retry_count: 3
+    schedule: 0 2 * * *
+    time_zone: Etc/UTC
+    timeouts: null
+  google_cloud_tasks_queue.default["batch-tasks"]:
+    app_engine_routing_override: []
+    deletion_policy: DELETE
+    desired_state: RUNNING
+    http_target: []
+    location: europe-west1
+    name: foo-batch-tasks
+    project: test-project
+    rate_limits:
+    - max_concurrent_dispatches: 5
+      max_dispatches_per_second: 10
+    retry_config:
+    - max_attempts: 5
+      max_backoff: 30s
+      max_doublings: 3
+      max_retry_duration: 3600s
+      min_backoff: 1s
+    stackdriver_logging_config:
+    - sampling_ratio: 1
+    timeouts: null
+  google_eventarc_trigger.default["pubsub-events"]:
+    channel: null
+    deletion_policy: DELETE
+    destination:
+    - cloud_run_service: []
+      gke: []
+      http_endpoint: []
+      network_config: []
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    labels: null
+    location: europe-west1
+    matching_criteria:
+    - attribute: type
+      operator: ''
+      value: google.cloud.pubsub.topic.v1.messagePublished
+    name: foo-pubsub-events
+    project: test-project
+    retry_policy:
+    - max_attempts: 5
+    service_account: foo-test-workflow@test-project.iam.gserviceaccount.com
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+    transport:
+    - pubsub:
+      - topic: projects/test-project/topics/workflow-events
+  google_project_iam_member.default["roles/workflows.invoker:group:devops@example.com"]:
+    condition: []
+    member: group:devops@example.com
+    project: test-project
+    role: roles/workflows.invoker
+  google_project_iam_member.service_account["roles/logging.logWriter"]:
+    condition: []
+    member: serviceAccount:foo-test-workflow@test-project.iam.gserviceaccount.com
+    project: test-project
+    role: roles/logging.logWriter
+  google_service_account.service_account[0]:
+    account_id: foo-test-workflow
+    create_ignore_already_exists: null
+    deletion_policy: DELETE
+    description: null
+    disabled: false
+    display_name: Workflows execution service account for foo-test-workflow.
+    email: foo-test-workflow@test-project.iam.gserviceaccount.com
+    member: serviceAccount:foo-test-workflow@test-project.iam.gserviceaccount.com
+    project: test-project
+    timeouts: null
+  google_workflows_workflow.default:
+    call_log_level: LOG_ALL_CALLS
+    crypto_key_name: null
+    deletion_policy: DELETE
+    deletion_protection: false
+    description: Test workflow
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    execution_history_level: null
+    labels: null
+    name: foo-test-workflow
+    project: test-project
+    region: europe-west1
+    service_account: foo-test-workflow@test-project.iam.gserviceaccount.com
+    source_contents: "main:\n  params: [args]\n  steps:\n    - step1:\n        return:\
+      \ \"OK\"\n"
+    tags: null
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+    user_env_vars:
+      TEST_KEY: test_value
+
+counts:
+  google_cloud_scheduler_job: 1
+  google_cloud_tasks_queue: 1
+  google_eventarc_trigger: 1
+  google_project_iam_member: 2
+  google_service_account: 1
+  google_workflows_workflow: 1
+  modules: 0
+  resources: 7
+
+outputs:
+  eventarc_trigger_ids: __missing__
+  eventarc_triggers: __missing__
+  id: __missing__
+  name: foo-test-workflow
+  revision_id: __missing__
+  scheduler_job_ids: __missing__
+  scheduler_jobs: __missing__
+  service_account: foo-test-workflow@test-project.iam.gserviceaccount.com
+  service_account_email: foo-test-workflow@test-project.iam.gserviceaccount.com
+  task_queue_ids: __missing__
+  task_queues: __missing__
+  workflow: __missing__
