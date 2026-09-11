@@ -34,13 +34,17 @@ jobs:
           persist-credentials: false
 
       - name: "Check changes and tag"
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          SHA: ${{ github.sha }}
         run: |
           CHANGES=$(git log --since="1 day ago" --name-only --pretty=format: )
 
           if [ "x$CHANGES" != "x" ] ; then
             TAG="daily-$(date +%Y.%m.%d)"
-            git tag $TAG
-            git push origin $TAG
+            # the checkout has no credentials, so create the tag via the API
+            gh api "repos/$REPO/git/refs" -f ref="refs/tags/$TAG" -f sha="$SHA"
 
             echo "Created new tag: $TAG"
           else
