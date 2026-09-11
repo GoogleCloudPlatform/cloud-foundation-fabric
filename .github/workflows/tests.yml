@@ -143,9 +143,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        include:
-          - flavour: terraform
-          - flavour: tofu
+        flavour: [terraform, tofu]
+        shard: [0, 1, 2, 3]
 
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
@@ -173,14 +172,15 @@ jobs:
         env:
           TERRAFORM: ${{ matrix.flavour }}
         run: |
-          pytest -vv ${{ matrix.flavour == 'terraform' && '-n4' || '-n4' }} --tb=line \
+          pytest -vv -n4 --tb=line \
+            --shard-id ${{ matrix.shard }} --shard-count 4 \
             --junit-xml=test-results-raw.xml -k "terraform and modules/" tests/examples
 
       - name: Create report
         uses: ./.github/actions/post-fabric-tests
         if: always()
         with:
-          MODULE: Module Examples
+          MODULE: Module Examples (${{ matrix.flavour }} shard ${{ matrix.shard }})
 
   modules:
     runs-on: ubuntu-latest
