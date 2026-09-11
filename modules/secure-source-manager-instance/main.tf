@@ -34,28 +34,41 @@ locals {
 }
 
 resource "google_secure_source_manager_instance" "instance" {
-  count       = var.instance_create ? 1 : 0
-  instance_id = var.instance_id
-  project     = var.project_id
-  location    = var.location
-  labels      = var.labels
-  kms_key     = var.kms_key
+  count           = var.instance_create ? 1 : 0
+  instance_id     = var.instance_id
+  project         = var.project_id
+  location        = var.location
+  labels          = var.labels
+  kms_key         = var.kms_key
+  deletion_policy = var.deletion_policy
   dynamic "private_config" {
     for_each = var.private_configs.is_private ? [""] : []
     content {
-      is_private = true
-      ca_pool    = var.private_configs.ca_pool_id
+      is_private           = true
+      ca_pool              = var.private_configs.ca_pool_id
+      psc_allowed_projects = var.private_configs.psc_allowed_projects
     }
   }
 }
 
 resource "google_secure_source_manager_repository" "repositories" {
-  for_each      = var.repositories
-  repository_id = each.key
-  instance      = try(google_secure_source_manager_instance.instance[0].name, "projects/${var.project_id}/locations/${var.location}/instances/${var.instance_id}")
-  project       = var.project_id
-  location      = var.location
-  description   = each.value.description
+  for_each        = var.repositories
+  repository_id   = each.key
+  instance        = try(google_secure_source_manager_instance.instance[0].name, "projects/${var.project_id}/locations/${var.location}/instances/${var.instance_id}")
+  project         = var.project_id
+  location        = var.location
+  description     = each.value.description
+  deletion_policy = each.value.deletion_policy
+  service_account = each.value.service_account
+  dynamic "scan_config" {
+    for_each = each.value.secret_scan_config == null ? [] : [""]
+    content {
+      secret_scan_config {
+        enabled          = each.value.secret_scan_config.enabled
+        inspect_template = each.value.secret_scan_config.inspect_template
+      }
+    }
+  }
   dynamic "initial_config" {
     for_each = each.value.initial_config == null ? [] : [""]
     content {

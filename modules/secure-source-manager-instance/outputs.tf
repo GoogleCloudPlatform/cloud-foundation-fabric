@@ -14,6 +14,14 @@
  * limitations under the License.
  */
 
+output "http_service_attachment" {
+  description = "PSC service attachment for the instance HTTP endpoint."
+  value = try(
+    google_secure_source_manager_instance.instance[0].private_config[0].http_service_attachment,
+    null
+  )
+}
+
 output "instance" {
   description = "Instance."
   value       = try(google_secure_source_manager_instance.instance[0], null)
@@ -32,4 +40,12 @@ output "repositories" {
 output "repository_ids" {
   description = "Repository ids."
   value       = { for k, v in google_secure_source_manager_repository.repositories : k => v.id }
+}
+
+output "ssh_service_attachment" {
+  description = "PSC service attachment for the instance SSH endpoint."
+  value = try(
+    google_secure_source_manager_instance.instance[0].private_config[0].ssh_service_attachment,
+    null
+  )
 }

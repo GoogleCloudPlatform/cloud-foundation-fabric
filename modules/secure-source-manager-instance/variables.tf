@@ -14,6 +14,19 @@
  * limitations under the License.
  */
 
+variable "deletion_policy" {
+  description = "Instance deletion policy, one of PREVENT, ABANDON, DELETE."
+  type        = string
+  default     = null
+  validation {
+    condition = (
+      var.deletion_policy == null ||
+      contains(["PREVENT", "ABANDON", "DELETE"], coalesce(var.deletion_policy, "-"))
+    )
+    error_message = "Deletion policy must be one of PREVENT, ABANDON, DELETE."
+  }
+}
+
 variable "instance_create" {
   description = "Create SSM Instance. When set to false, uses instance_id to reference existing SSM instance."
   type        = bool
@@ -45,8 +58,9 @@ variable "location" {
 variable "private_configs" {
   description = "The configurations for SSM private instances."
   type = object({
-    is_private = optional(bool, true)
-    ca_pool_id = optional(string)
+    is_private           = optional(bool, true)
+    ca_pool_id           = optional(string)
+    psc_allowed_projects = optional(list(string))
   })
   nullable = false
   default  = {}
@@ -60,8 +74,9 @@ variable "project_id" {
 variable "repositories" {
   description = "Repositories."
   type = map(object({
-    description = optional(string)
-    iam         = optional(map(list(string)), {})
+    description     = optional(string)
+    deletion_policy = optional(string)
+    iam             = optional(map(list(string)), {})
     iam_bindings = optional(map(object({
       role    = string
       members = list(string)
@@ -76,6 +91,11 @@ variable "repositories" {
       license        = optional(string)
       readme         = optional(string)
     }))
+    secret_scan_config = optional(object({
+      enabled          = optional(bool)
+      inspect_template = optional(string)
+    }))
+    service_account = optional(string)
     branch_rules = optional(map(object({
       disabled                  = optional(bool, false)
       include_pattern           = string
