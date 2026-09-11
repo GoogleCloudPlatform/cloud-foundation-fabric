@@ -70,7 +70,15 @@ resource "google_compute_backend_service" "default" {
   protocol = (
     each.value.protocol == null ? var.protocol : each.value.protocol
   )
-  security_policy  = each.value.security_policy
+  security_policy = (
+    each.value.security_policy == null
+    ? null
+    : lookup(
+      local.ctx.security_policies,
+      each.value.security_policy,
+      each.value.security_policy
+    )
+  )
   session_affinity = each.value.session_affinity
   timeout_sec      = each.value.timeout_sec
 
