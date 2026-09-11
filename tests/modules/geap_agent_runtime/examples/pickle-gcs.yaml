@@ -13,15 +13,41 @@
 # limitations under the License.
 
 values:
-  module.agent_engine.google_project_iam_member.iam_member_identity["roles/aiplatform.user"]:
+  module.agent_runtime.google_project_iam_member.iam_member_identity["roles/aiplatform.user"]:
     condition: []
     project: project-id
     role: roles/aiplatform.user
-  module.agent_engine.google_project_iam_member.iam_member_identity["roles/storage.objectViewer"]:
+  module.agent_runtime.google_project_iam_member.iam_member_identity["roles/storage.objectViewer"]:
     condition: []
     project: project-id
     role: roles/storage.objectViewer
-  module.agent_engine.google_vertex_ai_reasoning_engine.managed[0]:
+  module.agent_runtime.google_storage_bucket.default[0]:
+    autoclass: []
+    cors: []
+    custom_placement_config: []
+    default_event_based_hold: null
+    deletion_policy: DELETE
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    enable_object_retention: null
+    encryption: []
+    force_destroy: false
+    hierarchical_namespace: []
+    ip_filter: []
+    labels: null
+    lifecycle_rule: []
+    location: EUROPE-WEST8
+    logging: []
+    name: my-agent
+    project: project-id
+    requester_pays: null
+    retention_policy: []
+    storage_class: STANDARD
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+    uniform_bucket_level_access: true
+  module.agent_runtime.google_vertex_ai_reasoning_engine.managed[0]:
     deletion_policy: DELETE
     description: Terraform managed.
     display_name: my-agent
@@ -33,24 +59,17 @@ values:
     region: europe-west8
     spec:
     - agent_card: null
-      agent_framework: null
+      agent_framework: google-adk
       build_spec: []
       class_methods: null
-      container_spec:
-      - image_uri: us-central1-docker.pkg.dev/my-project/my-repo/my-image:latest
-      deployment_spec:
-      - agent_gateway_config: []
-        agent_server_mode: null
-        dedicated_ingress_endpoint_enabled: null
-        env:
-        - name: FOO
-          value: bar
-        keep_alive_probe: []
-        psc_interface_config: []
-        secret_env: []
+      container_spec: []
       example_store: null
       identity_type: AGENT_IDENTITY
-      package_spec: []
+      package_spec:
+      - dependency_files_gcs_uri: gs://my-bucket/dependencies.tar.gz
+        pickle_object_gcs_uri: gs://my-bucket/pickle.pkl
+        python_version: '3.13'
+        requirements_gcs_uri: gs://my-bucket/requirements.txt
       service_account: null
       source_code_spec: []
     terraform_labels:
@@ -59,8 +78,9 @@ values:
 
 counts:
   google_project_iam_member: 2
+  google_storage_bucket: 1
   google_vertex_ai_reasoning_engine: 1
   modules: 1
-  resources: 3
+  resources: 4
 
 outputs: {}

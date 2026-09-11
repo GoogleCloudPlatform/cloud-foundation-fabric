@@ -49,7 +49,7 @@ locals {
 resource "google_service_account" "service_account" {
   count = (
     var.service_account_config.create
-    && var.agent_engine_config.identity_type == "SERVICE_ACCOUNT"
+    && var.agent_runtime_config.identity_type == "SERVICE_ACCOUNT"
     ? 1 : 0
   )
   project    = local.project_id
@@ -64,7 +64,7 @@ resource "google_service_account" "service_account" {
 resource "google_project_iam_member" "iam_member_sa" {
   for_each = (
     var.service_account_config.create
-    && var.agent_engine_config.identity_type == "SERVICE_ACCOUNT"
+    && var.agent_runtime_config.identity_type == "SERVICE_ACCOUNT"
     ? toset(local.roles)
     : toset([])
   )
@@ -75,7 +75,7 @@ resource "google_project_iam_member" "iam_member_sa" {
 
 resource "google_project_iam_member" "iam_member_identity" {
   for_each = (
-    var.agent_engine_config.identity_type == "AGENT_IDENTITY"
+    var.agent_runtime_config.identity_type == "AGENT_IDENTITY"
     ? toset(local.roles)
     : toset([])
   )
