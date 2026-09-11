@@ -89,6 +89,7 @@ resource "google_compute_region_target_https_proxy" "default" {
   http_keep_alive_timeout_sec      = var.https_proxy_config.http_keepalive_timeout
   ssl_certificates                 = length(local.proxy_ssl_certificates) == 0 ? null : local.proxy_ssl_certificates
   ssl_policy                       = var.https_proxy_config.ssl_policy
+  server_tls_policy                = var.https_proxy_config.server_tls_policy
   url_map                          = google_compute_region_url_map.default.id
 }
 
