@@ -53,50 +53,67 @@ Include `roles/privateca.auditor` in the same condition. The build identities ne
 
 A private Secure Source Manager instance publishes its hostnames under `REGION.p.sourcemanager.dev`, and those names resolve nowhere useful by default. They are not served by either Private Google Access VIP: they appear in neither the `private.googleapis.com` nor the `restricted.googleapis.com` domain list, so no private access configuration reaches a repository. A private zone attached to the VPC is the only way clients resolve them.
 
-With the generated names the zone holds four A records under `REGION.p.sourcemanager.dev.`: `INSTANCE_ID-PROJECT_NUMBER-api`, `INSTANCE_ID-PROJECT_NUMBER-git` and the bare `INSTANCE_ID-PROJECT_NUMBER` all point at the address of the load balancer fronting the HTTP service attachment, and `INSTANCE_ID-PROJECT_NUMBER-ssh` points at the SSH one.
+With the generated names the zone holds four A records under `REGION.p.sourcemanager.dev.`: `INSTANCE_ID-PROJECT_NUMBER-api`, `INSTANCE_ID-PROJECT_NUMBER-git` and the bare `INSTANCE_ID-PROJECT_NUMBER` all point at whatever fronts the HTTP service attachment, and `INSTANCE_ID-PROJECT_NUMBER-ssh` at whatever fronts the SSH one. What that is — a Private Service Connect endpoint or a load balancer — is the subject of the access path section below, and the zone is the same either way.
 
-This configuration sets custom hostnames instead, through `custom_host_config` on the instance, which replaces the generated names with four of your own. The API requires all four and the CA pool signs their certificate, which is a second reason the pool is mandatory here rather than merely available. The zone then covers your own domain, with `api`, `git` and the apex on the HTTP load balancer and `ssh` on the SSH one.
+This configuration sets custom hostnames instead, through `custom_host_config` on the instance, which replaces the generated names with four of your own. The API requires all four and the CA pool signs their certificate, which is a second reason the pool is mandatory here rather than merely available. The zone then covers your own domain, with `api`, `git` and the apex on the HTTP address and `ssh` on the SSH one.
 
 Two things make it worth the extra field. The generated names embed the instance id and the project number, and since nothing about an instance can be changed after creation, a rebuild produces a new instance id and therefore new hostnames in every DNS record, clone URL, credential helper and CI configuration that referenced them. Names you own survive a rebuild: the records repoint and nothing downstream changes.
 
-The second reason applies to anyone running more than one region, and it is the larger one. An instance is regional and immutable, so a second region means a second instance, and with generated names it also means a second DNS suffix — `REGION.p.sourcemanager.dev.` is per-region, so each region needs its own private zone and its own entry in the peered domain list below, both of which have to be added to the landing zone every time a region is added. Custom hostnames let every instance live under one parent domain, `ew4.ssm.example.com` and `ew2.ssm.example.com` beneath `ssm.example.com`, so one zone and one peered domain entry for the parent cover all of them and adding a region touches no landing zone configuration at all. The rest of the design is unchanged: each instance still needs its own CA pool grant, its own pair of load balancers and its own service attachments.
+The second reason applies to anyone running more than one region, and it is the larger one. An instance is regional and immutable, so a second region means a second instance, and with generated names it also means a second DNS suffix — `REGION.p.sourcemanager.dev.` is per-region, so each region needs its own private zone, added to the landing zone every time a region is added. Custom hostnames let every instance live under one parent domain, `ew4.ssm.example.com` and `ew2.ssm.example.com` beneath `ssm.example.com`, so one zone covers all of them and adding a region touches no landing zone configuration at all. The rest of the design is unchanged: each instance still needs its own CA pool grant, its own service attachments and its own endpoints.
 
-Where the zone lives in a landing zone's DNS design it needs no peering of its own and no cross-project binding, and the records are best created once the load balancers exist and their addresses are reserved. That ordering is the reason to keep them out of this configuration: the addresses are outputs of this setup, and the records that consume them are owned elsewhere.
+Where the zone lives in a landing zone's DNS design it needs no peering of its own and no cross-project binding, and the records are best created once the endpoints exist and their addresses are known. That ordering is the reason to keep them out of this configuration: the addresses are outputs of this setup, and the records that consume them are owned elsewhere.
 
 Creating the zone in this configuration's own project instead is possible but costs more than it looks. Attaching a private zone to a VPC in another project is a cross-project bind, so the identity running Terraform needs `dns.networks.bindPrivateDNSZone` on the host project on top of `compute.networks.get`, and neither comes with any role you would otherwise be granting it. There is no predefined role carrying only the bind permission, so this means a custom role on the host project. Prefer the landing zone's DNS design where one exists.
 
 **To document here:** a snippet of the landing zone side, showing the zone in networking stage data and the records against reserved addresses, alongside the outputs this configuration exposes to feed them.
 
-### The peered DNS domain for the Cloud Build private pool
+### The network attachment for the Cloud Build private pool
 
-This one is easy to miss, because everything about it looks like it should already work.
+A Cloud Build private pool never runs in your VPC; the question is only how its workers reach it. There are two mechanisms and they produce quite different designs.
 
-A Cloud Build private pool does not run in your VPC. Its workers run in a Google-managed producer VPC connected to yours by a service networking peering, over a private service access range you allocate. Peering carries routes, not DNS. A worker resolves names against the producer network's resolver, so the private zone above is invisible to it — the zone is attached to your network and the worker is not on your network.
+With **private service access**, which is what Google's guide uses, the workers run in a Google-managed producer VPC joined to yours by a service networking peering over a range you allocate. With **Private Service Connect**, which is what this configuration uses, each worker instead gets an interface in a subnet of your own VPC through a network attachment you create. In Terraform the two are mutually exclusive blocks on the same resource, `network_config.peered_network` against `private_service_connect.network_attachment`.
 
-The failure this produces is confusing: the route to the load balancer exists and works, but `git clone` fails at name resolution, because the hostname resolved through public DNS instead.
+Choosing the attachment removes an entire class of problem, and the problem is worth stating because it is easy to miss and its failure mode is confusing. Peering carries routes, not DNS. A worker on the producer side of a private service access peering resolves names against the producer network's resolver, so the private zone above is invisible to it, and the result is that the route to the instance exists and works while `git clone` fails at name resolution, having resolved the hostname through public DNS. Fixing that needs a peered DNS domain — a property of the peering rather than of the zone, which is why in `net-vpc` it appears as `peered_domains` inside `psa_configs`, nowhere near the zone it makes visible.
 
-A peered DNS domain fixes it. It tells service networking to forward queries for a given suffix from the producer network back to the consumer network's resolver, so the worker's lookup lands in your private zone and returns the load balancer address. It is a property of the peering rather than of the zone, which is why in `net-vpc` it is expressed as `peered_domains` inside `psa_configs` and not anywhere near the zone:
+A worker on a network attachment has an interface in your VPC, so it resolves against your VPC's resolver and sees the zone directly. There is nothing to forward, no range to allocate, and no peering whose exported routes have to be checked. What it needs instead is a subnet to draw worker addresses from, one address per concurrent worker, and an attachment on it:
 
-```hcl
-psa_configs = [{
-  ranges         = { psa-build = "10.0.200.0/24" }
-  export_routes  = true
-  peered_domains = ["ssm.example.com."]
-}]
-# tftest skip
+```yaml
+network_attachments:
+  cloudbuild-ew8:
+    subnet: europe-west8/na
+    automatic_connection: true
 ```
 
-The suffix is the parent of the instance hostnames, so with custom hostnames one entry covers every instance beneath it and the list does not grow with regions. Using the generated names instead, the entry is `REGION.p.sourcemanager.dev.` and there is one per region.
+`automatic_connection` accepts any producer that names the attachment. The manual alternative wants the producer's project number in `producer_accept_lists`, and for Cloud Build that number is Google's and not something you can look up.
 
-`export_routes` carries the VPC's subnet routes to the producer network so the pool can reach the load balancers. Google's guide also asks for `--no-export-subnet-routes-with-public-ip` on the peering, which `net-vpc` does not currently express, so check the peering after the first apply.
+The attachment is regional and must be in the pool's region, which need not be the instance's. Two further consequences follow:
 
-**To document here:** the same snippet with the surrounding landing zone context, and a note that the private service access range has to not collide with anything else in the VPC's address plan.
+- `route_all_traffic` on the pool decides whether the workers' public egress leaves through your VPC as well as their private traffic. With it on, builds reach the internet through your Cloud NAT and under your egress controls, which is usually the point of running a private pool at all. With it off, only RFC 1918 and RFC 6598 destinations take the attachment.
+- The workers become clients of your VPC for firewall purposes, so ingress rules that admit them are ordinary subnet-scoped rules rather than rules against a peered range.
+
+**To document here:** the landing zone snippet with its surrounding context, and a note on sizing the attachment subnet against expected build concurrency.
+
+## The access path to the instance
+
+A private instance publishes two Private Service Connect service attachments, one for HTTP and one for SSH, and both are computed rather than configured — the instance has no notion of an endpoint and no way to create one. The only consumer-side control it carries is `private_config.psc_allowed_projects`, a list of projects permitted to connect, with the instance's own project allowed implicitly. Everything else is ordinary Private Service Connect: any number of endpoints, in any number of networks, in any allowed project, may attach to the same service attachment.
+
+This configuration creates one endpoint per attachment and no load balancers, both endpoints in a single `net-address` block. `global_access` on them is what lets a client in another region of the same VPC connect, which matters here: Secure Source Manager runs in eleven regions and only two of them are in Europe, so the instance usually cannot sit in the region everything else uses.
+
+The constraint that shapes the rest is that **a Private Service Connect endpoint is reachable only from inside its own VPC**. Its address is not propagated over VPC peering, and not over VPN or Interconnect either. Two consequences follow:
+
+- Each additional client *network* needs its own endpoint, in the attachment's region, and its project added to `psc_allowed_projects` — which is granted per project, so it admits every network in that project, present and future. Because the same hostname then resolves to a different address in each network, each also needs its own private zone for the same domain, attached to disjoint `client_networks`. A second endpoint is cheap; a second zone carrying the same four names with different records is a thing that drifts.
+- No endpoint can serve a client that is not on a Google Cloud VPC at all. On-premises access over HA VPN or Interconnect cannot be solved this way.
+
+The fallback for both cases is the design in Google's guide: a regional internal proxy load balancer per attachment, with a Private Service Connect NEG as its backend. Its forwarding rule is an ordinary internal address, which peering, VPN and Interconnect all carry, so one address serves every connected network and the DNS zone stays single. `net-lb-proxy-int` builds the whole chain — NEG, backend service, target TCP proxy, forwarding rule — from one module block per attachment, and defaults `forwarding_rules_config.global_access` to `true`.
+
+Note what the proxy is *not* doing. It is a target TCP proxy and carries no certificate, because the instance's certificate covers the instance's hostnames and TLS runs end to end from the client to the instance. Custom hostnames therefore do not require a load balancer; they require the CA pool, whose chain the client has to trust. The proxy exists solely to give the service attachment an address that networks other than its own can route to.
 
 ## Open points
 
-- **Cross-region access to the load balancers**, settled. Secure Source Manager runs in eleven regions, only two of which are in Europe, so the instance frequently cannot sit in the same region as everything else, and a Cloud Build private pool in another region reaches the regional internal load balancers only if their forwarding rules have global access. `net-lb-proxy-int` defaults `forwarding_rules_config.global_access` to `true`, so the split works without doing anything. Colocating the pool with the instance still drops a cross-region hop from every clone, and remains the better option where the pool's region is free to move.
+- **Whether the endpoint-only path holds.** The clients that matter today are the Cloud Build workers, which sit on the dev spoke through their network attachment and so share a VPC with the endpoint. Human clients on the hub, and anything on-premises, do not, and moving either onto this instance means adding an endpoint plus a zone, or switching to the load balancer fallback above. The switch is cheap and local — two module blocks and a changed DNS record — which is the reason to start without it.
+- **Whether `psc_allowed_projects` is mutable.** Almost every field of an instance is immutable and a wrong call means a rebuild, but this one reads like a policy list rather than a construction parameter. The provider schema does not say. Confirm before depending on being able to admit another project later, because if it turns out to be immutable the list has to be right on the first apply.
 - **Who places `roles/privateca.auditor` for the build identities.** Covered under the CA pool above. The grant itself is not in question; what is undecided is whether it comes from the project factory or from here through `iam_project_roles`, and therefore which identity the delegation on the CA pool's project has to name.
-- **What the load balancer path needs in a Shared VPC service project.** A Private Service Connect NEG plus a regional internal proxy load balancer in a service project may need more than `roles/compute.networkUser` for the compute service agent, in particular on the proxy-only subnet. To be established by building it.
+- **What the endpoint needs in a Shared VPC service project.** An endpoint is a forwarding rule and an address on a subnet the service project does not own, so it needs `roles/compute.networkUser` scoped somewhere. Which subnets, and whether the compute service agent needs it too, is to be established by building it.
 - **Provider gaps.** Pin `hashicorp/google` at 7.44.0 or later: `google_secure_source_manager_repository` gained `service_account` there, and that field is what makes a repository-level service account something the configuration enforces rather than something an operator remembers. `google_developer_connect_connection` still has no Secure Source Manager block, which rules out the Developer Connect alternative to the network path above.
 
 ## Security note

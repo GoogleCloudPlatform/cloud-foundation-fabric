@@ -22,16 +22,15 @@
 # service account (dev-build-ssm-0-rw) holds IAM in both:
 #
 #   var.project_id       the instance, its repositories, their BYOSAs, and the
-#                        load balancer path fronting the service attachments.
+#                        PSC endpoints fronting the service attachments.
 #                        europe-west4, because Secure Source Manager runs in
 #                        eleven regions and only two are in Europe.
 #   var.pool_project_id  the Cloud Build private worker pool and the build
 #                        identities the triggers file names. europe-west8, the
 #                        primary location for everything else here.
 #
-# The regions differ on purpose. Regional internal proxy load balancers need
-# global access on their forwarding rules for a pool in another region to
-# reach them, which net-lb-proxy-int enables by default.
+# The regions differ on purpose, and global_access on the endpoints is what
+# lets a pool in europe-west8 reach endpoints in europe-west4 of the same VPC.
 
 # ------------------------------------------------------------------------
 # source: instance and repositories
@@ -149,63 +148,39 @@ module "build-sa" {
 # network: PSC access path to the instance
 # ------------------------------------------------------------------------
 
-# net-lb-proxy-int creates the PSC NEG, the backend service, the target TCP
-# proxy and the forwarding rule, so one block per attachment covers the whole
-# chain. The proxy-only subnet is not an input: it only has to exist in the
-# region, and europe-west4/ilb-l7-ew4 (172.16.130.0/24) already does.
-module "lb-http" {
-  source     = "../../../modules/net-lb-proxy-int"
+# One endpoint per service attachment and no load balancers. The instance
+# publishes the two attachments and nothing else; who may connect to them is
+# psc_allowed_projects on the instance, granted per project.
+#
+# global_access is what makes the region split work: the endpoints are in
+# europe-west4 with the instance, while the worker pool and everything else
+# are in europe-west8 of this same VPC.
+#
+# The limit to know: an endpoint address is reachable only from inside its own
+# VPC, never across a peering, VPN or Interconnect. Clients on the hub or
+# on-premises therefore need either their own endpoint and their own private
+# zone, or the fallback in the README — a net-lb-proxy-int per attachment,
+# whose forwarding rule is an ordinary internal address that peering carries.
+module "psc-endpoints" {
+  source     = "../../../modules/net-address"
   project_id = var.project_id
-  region     = var.region
-  name       = "${var.instance_id}-http"
-  vpc_config = {
-    network    = var.network_config.network
-    subnetwork = var.network_config.subnetwork
-  }
-  neg_configs = {
-    ssm-http = {
-      psc = {
-        region         = var.region
-        target_service = module.ssm.http_service_attachment
-        network        = var.network_config.network
-        subnetwork     = var.network_config.subnetwork
+  psc_addresses = {
+    "${var.instance_id}-http" = {
+      region           = var.region
+      subnet_self_link = var.network_config.subnetwork
+      service_attachment = {
+        psc_service_attachment_link = module.ssm.http_service_attachment
+        global_access               = true
       }
     }
-  }
-  backend_service_config = {
-    backends = [{ group = "ssm-http" }]
-  }
-  # global_access defaults to true, which is what lets the europe-west8 pool
-  # reach these europe-west4 forwarding rules
-  forwarding_rules_config = {
-    "" = { port = 443 }
-  }
-}
-
-module "lb-ssh" {
-  source     = "../../../modules/net-lb-proxy-int"
-  project_id = var.project_id
-  region     = var.region
-  name       = "${var.instance_id}-ssh"
-  vpc_config = {
-    network    = var.network_config.network
-    subnetwork = var.network_config.subnetwork
-  }
-  neg_configs = {
-    ssm-ssh = {
-      psc = {
-        region         = var.region
-        target_service = module.ssm.ssh_service_attachment
-        network        = var.network_config.network
-        subnetwork     = var.network_config.subnetwork
+    "${var.instance_id}-ssh" = {
+      region           = var.region
+      subnet_self_link = var.network_config.subnetwork
+      service_attachment = {
+        psc_service_attachment_link = module.ssm.ssh_service_attachment
+        global_access               = true
       }
     }
-  }
-  backend_service_config = {
-    backends = [{ group = "ssm-ssh" }]
-  }
-  forwarding_rules_config = {
-    "" = { port = 22 }
   }
 }
 
@@ -214,8 +189,17 @@ module "lb-ssh" {
 # ------------------------------------------------------------------------
 
 # Raw resource by decision: Fabric does not write modules for single
-# resources. The PSA range this peers over is psa-build, 10.8.200.0/24 in the
-# dev VPC, created by the networking stage rather than here.
+# resources.
+#
+# private_service_connect and network_config are mutually exclusive, and this
+# is the whole reason the design has no peered DNS domain: on an attachment
+# the workers hold an interface in the VPC, so they resolve against its
+# resolver and see its private zones. The attachment is regional and lives in
+# the pool's region, europe-west8/na in the dev VPC, created by the networking
+# stage rather than here.
+#
+# route_all_traffic sends public egress through the VPC as well as private, so
+# builds reach the internet through nat-ew8 and under this VPC's controls.
 resource "google_cloudbuild_worker_pool" "default" {
   project  = var.pool_project_id
   name     = var.worker_pool_config.name
@@ -225,10 +209,9 @@ resource "google_cloudbuild_worker_pool" "default" {
     machine_type   = var.worker_pool_config.machine_type
     no_external_ip = true
   }
-  network_config {
-    peered_network = var.network_config.network
-    # TODO peered_network_ip_range, and confirm this is how the provider
-    # expresses --no-public-egress
+  private_service_connect {
+    network_attachment = var.network_config.network_attachment
+    route_all_traffic  = true
   }
 }
 
@@ -242,14 +225,14 @@ resource "google_cloudbuild_worker_pool" "default" {
 #   service_agents_project_bindings because the member string embeds this
 #   project's number. Already in dev-build-ssm-0.yaml.
 #
-# 2-networking  the europe-west4 workload and proxy-only subnets, and the
-#   psa-build range with export_routes. All applied. Still to do there:
-#   peered_domains for ssm.gcp.qix.it., currently commented out, without which
-#   the pool resolves the instance hostnames through public DNS and clone
-#   fails even though the route works. Custom hostnames take the region out of
-#   the suffix, so this line no longer has to change if the instance moves.
+# 2-networking  the europe-west4 workload subnet the endpoints sit in, the
+#   europe-west8/na subnet at 10.8.208.0/24, and the cloudbuild-ew8 network
+#   attachment on it. The proxy-only subnet and the psa-build range are no
+#   longer part of this design; the range is free.
 #
 # 2-networking DNS  the private zone for ssm.gcp.qix.it. attached to the VPC,
-#   with api, git and the apex pointing at the HTTP load balancer address and
-#   ssh at the SSH one. Kept out because the addresses are outputs here and
-#   the records are owned there.
+#   with api, git and the apex pointing at the HTTP endpoint address and ssh
+#   at the SSH one. Kept out because the addresses are outputs here and the
+#   records are owned there. One zone suffices while every client shares the
+#   VPC with the endpoints; a client network that does not needs its own zone
+#   for the same domain, or the load balancer fallback.
