@@ -1,5 +1,5 @@
 ---
-name: fast-0-org-setup-prereqs
+name: fast-prerequisites
 description: Guides the user step-by-step through the prerequisites for the FAST 0-org-setup stage, supporting both Standard GCP and Google Cloud Dedicated (GCD) environments. Use when a user asks to prepare or run prerequisites for 0-org-setup or bootstrap the FAST landing zone.
 ---
 
@@ -40,9 +40,11 @@ description: Guides the user step-by-step through the prerequisites for the FAST
 > [!CRITICAL]
 > **Understanding Turn Boundaries:** You are running in a turn-based execution environment. 
 > - You receive one user message, then you can think and run tools.
-> - Once you decide you need input from the user (e.g. to choose an environment or confirm a principal), you MUST output your question in a text response and **STOP execution immediately (do not call more tools)**. 
+> - Once you decide you need input from the user (e.g. to choose an environment or confirm a principal), you MUST output your question and **STOP execution immediately (do not call more tools)**. 
 > - You **CANNOT** receive the user's answer in the same turn. 
 > - You **MUST NOT** simulate, guess, or assume the user's response in your subsequent thinking blocks during the same turn. You must wait for the next turn to receive the actual input.
+>
+> **Interactive Questions (`ask_user` / `ask_question`):** Use the `ask_user` (or `ask_question`) tool whenever available to prompt the user, especially whenever multiple options or choices are presented.
 >
 > **Do NOT Skip Steps or Make Assumptions:** You MUST NOT skip any phases or steps, even if you think they are redundant or if you find information on the system (like active credentials) that suggests a step is already complete. You MUST execute every step sequentially, in order, and wait for explicit user input/confirmation at each step boundary.
 >
@@ -53,7 +55,7 @@ description: Guides the user step-by-step through the prerequisites for the FAST
 > **Sandbox Awareness:** You are running inside an isolated, sandboxed temporary workspace (e.g., `/tmp/gemini_harness_*`). Whenever creating local files, configuration directories (like `custom-fast-config` or `fast-config`), or checking defaults, you MUST do so strictly relative to your current workspace directory (CWD). NEVER try to directly read or write to `/home/ludomagno/` or other external folders, as your file tools are sandboxed and will fail with permission errors.
 >
 > **Step-by-Step Execution:** Never implement a single "magical" flow. Go through each step one at a time, explaining context and asking for confirmation.
-3. **Execution Choice:** Respect the user's execution preference (automatic via `run_shell_command` vs. manual copy/paste) throughout the entire workflow unless the user explicitly instructs you to change it. This preference will be gathered during Phase 1.
+3. **Execution Choice:** Respect the user's execution preference (automatic via `run_command` vs. manual copy/paste) throughout the entire workflow unless the user explicitly instructs you to change it. This preference will be gathered during Phase 1.
 4. **File Modifications:** Always use `replace` or `write_file`. **Never** use opaque shell commands (like `sed`, `echo >>`, or `cat <<EOF >>`). Show proposed edits and ask for confirmation before applying them so the user can see what we're doing.
 5. **YAML Validation:** Validate generated YAML using `yamllint -c .yamllint --no-warnings <file>`. If the command is not available, ask the user if they prefer to a) install it, b) have you install it (`pip install yamllint`), or c) skip validation.
 6. **Resuming Mid-Flow:** If the user is resuming a previously interrupted session, ask them which Phase or Step they left off at, or assess the current state by reading previously generated files (e.g., `defaults.yaml`, `0-org-setup.auto.tfvars`). Read the corresponding reference file for the identified phase and resume execution directly from that point.
@@ -81,8 +83,8 @@ Guide the user through the following sequence strictly in order. **Before starti
 - **Step 6:** Bootstrap Project Setup (Creation and API enablement)
 
 ### Phase 4: Configuration & Wrap-up
-*Description:* Generate the FAST dataset configuration, handle existing organization policies, and prepare for the final Terraform apply.\
+*Description:* Generate the FAST dataset configuration, handle existing organization policies and essential contacts, and prepare for the final Terraform apply.\
 *Reference: [Configuration & Wrap-up](references/phase4-config-and-wrapup.md)*
 - **Step 7:** Configuration Generation (Datasets, defaults.yaml, local paths)
-- **Step 8:** Organization Policy Import Check
+- **Step 8:** Organization Policy Import Check & Essential Contacts
 - **Step 9:** Wrap-up & Apply

@@ -29,7 +29,7 @@ tmpdir:
     - README.md
     - FACTORIES.md
 persona:
-  initial_user_input: "Hi, please activate the fast-0-org-setup-prereqs skill and guide me through the setup."
+  initial_user_input: "Hi, please activate the fast-prerequisites skill and guide me through the setup."
   context: >
     You are a GCP developer setting up FAST in a Google Cloud Dedicated (GCD) environment.
     Your target environment is Google Cloud Dedicated (GCD).

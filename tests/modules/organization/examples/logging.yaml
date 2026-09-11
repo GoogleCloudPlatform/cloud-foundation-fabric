@@ -1,10 +1,10 @@
-# Copyright 2025 Google LLC
+# Copyright 2026 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#      http://www.apache.org/licenses/LICENSE-2.0
+#     https://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -28,6 +28,7 @@ values:
     default_partition_expiration_ms: null
     default_table_expiration_ms: null
     delete_contents_on_destroy: false
+    deletion_policy: DELETE
     description: Terraform managed.
     effective_labels:
       goog-terraform-provisioned: 'true'
@@ -60,6 +61,7 @@ values:
       goog-terraform-provisioned: 'true'
     timeouts: null
   module.destination-project.google_project_service.project_services["logging.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: test-dest-prj
@@ -70,6 +72,7 @@ values:
     cors: []
     custom_placement_config: []
     default_event_based_hold: null
+    deletion_policy: DELETE
     effective_labels:
       goog-terraform-provisioned: 'true'
     enable_object_retention: null
@@ -100,6 +103,7 @@ values:
     name: no-gce-instances
     org_id: '1122334455'
   module.org.google_logging_organization_sink.sink["alert"]:
+    deletion_policy: DELETE
     description: alert (Terraform-managed).
     destination: logging.googleapis.com/projects/test-dest-prj
     disabled: false
@@ -110,6 +114,7 @@ values:
     name: alert
     org_id: '1122334455'
   module.org.google_logging_organization_sink.sink["audit"]:
+    deletion_policy: DELETE
     description: audit (Terraform-managed).
     destination: storage.googleapis.com/test-prod-log-audit-0
     disabled: false
@@ -120,6 +125,7 @@ values:
     name: audit
     org_id: '1122334455'
   module.org.google_logging_organization_sink.sink["debug"]:
+    deletion_policy: DELETE
     description: debug (Terraform-managed).
     disabled: false
     exclusions:
@@ -135,6 +141,7 @@ values:
   module.org.google_logging_organization_sink.sink["info"]:
     bigquery_options:
     - use_partitioned_tables: true
+    deletion_policy: DELETE
     description: info (Terraform-managed).
     disabled: false
     exclusions: []
@@ -144,6 +151,7 @@ values:
     name: info
     org_id: '1122334455'
   module.org.google_logging_organization_sink.sink["notice"]:
+    deletion_policy: DELETE
     description: notice (Terraform-managed).
     destination: pubsub.googleapis.com/projects/project-id/topics/pubsub_sink
     disabled: false
@@ -154,6 +162,7 @@ values:
     name: notice
     org_id: '1122334455'
   module.org.google_logging_organization_sink.sink["warnings"]:
+    deletion_policy: DELETE
     description: warnings (Terraform-managed).
     destination: storage.googleapis.com/test-gcs_sink
     disabled: false
@@ -180,11 +189,14 @@ values:
     bucket: test-prod-log-audit-0
     condition: []
     role: roles/storage.objectCreator
+    timeouts: null
   module.org.google_storage_bucket_iam_member.storage_sinks_binding["warnings"]:
     bucket: test-gcs_sink
     condition: []
     role: roles/storage.objectCreator
+    timeouts: null
   module.pubsub.google_pubsub_topic.default:
+    deletion_policy: DELETE
     effective_labels:
       goog-terraform-provisioned: 'true'
     ingestion_data_source_settings: []
@@ -195,6 +207,7 @@ values:
     name: pubsub_sink
     project: project-id
     schema_settings: []
+    tags: null
     terraform_labels:
       goog-terraform-provisioned: 'true'
     timeouts: null
@@ -215,3 +228,5 @@ counts:
   google_storage_bucket_iam_member: 2
   modules: 6
   resources: 20
+
+outputs: {}

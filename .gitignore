@@ -35,3 +35,4 @@ env/
 logs/*
 .jetskicli
 .agents
+scratch/

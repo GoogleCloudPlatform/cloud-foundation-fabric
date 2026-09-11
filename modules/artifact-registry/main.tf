@@ -134,7 +134,7 @@ resource "google_artifact_registry_repository" "registry" {
       }
       dynamic "common_repository" {
         for_each = (
-          contains(["docker", "maven", "npm", "python"], local.format_string) &&
+          contains(["docker", "go", "maven", "npm", "python"], local.format_string) &&
           try(local.format_obj.remote.common_repository, null) != null
           ? [""] : []
         )
@@ -241,7 +241,7 @@ resource "google_artifact_registry_repository" "registry" {
   lifecycle {
     precondition {
       condition = local.mode_string != "remote" || contains(
-        ["apt", "docker", "maven", "npm", "python", "yum"], local.format_string
+        ["apt", "docker", "go", "maven", "npm", "python", "yum"], local.format_string
       )
       error_message = "Invalid format for remote repository."
     }

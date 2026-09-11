@@ -23,6 +23,17 @@ gce_instance:
   service_account: $iam_principals:service_accounts/prod-gce-ws-0/ws-default
   service_account_scopes:
     - https://www.googleapis.com/auth/cloud-platform
+  boost_configs:
+    boost-1:
+      machine_type: n1-standard-2
+      accelerators:
+        nvidia-tesla-t4: 1
+    boost-2:
+      machine_type: n1-standard-4
+      accelerators: {}
+      pool_size: 2
+      boot_disk_size_gb: 30
+      enable_nested_virtualization: true
 persistent_directories:
   - mount_path: /home
     gce_pd:

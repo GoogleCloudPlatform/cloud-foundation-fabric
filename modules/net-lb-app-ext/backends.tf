@@ -47,7 +47,7 @@ resource "google_compute_backend_bucket" "default" {
         for_each = (
           p.value.bypass_cache_on_request_headers == null
           ? []
-          : [p.value.bypass_cache_on_request_headers]
+          : p.value.bypass_cache_on_request_headers
         )
         iterator = h
         content {

@@ -4,7 +4,7 @@
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#      http://www.apache.org/licenses/LICENSE-2.0
+#     https://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,6 +14,7 @@
 
 values:
   module.agent-gateway.google_network_services_agent_gateway.default:
+    deletion_policy: DELETE
     description: Terraform managed.
     effective_labels:
       goog-terraform-provisioned: 'true'
@@ -23,11 +24,11 @@ values:
     location: europe-west1
     name: my-gateway
     network_config:
-    - egress:
+    - dns_peering_config: []
+      egress:
       - network_attachment: projects/my-project-id/regions/europe-west1/serviceAttachments/my-sa
     project: my-prj-id
-    protocols:
-    - MCP
+    protocols: null
     registries: null
     self_managed: []
     terraform_labels:

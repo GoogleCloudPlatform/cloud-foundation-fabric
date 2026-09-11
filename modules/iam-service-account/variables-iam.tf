@@ -21,6 +21,21 @@ variable "iam" {
   nullable    = false
 }
 
+variable "iam_billing_bindings" {
+  description = "Billing account role bindings granted to this service account, by arbitrary key."
+  type = map(object({
+    billing_account_id = string
+    role               = string
+    condition = optional(object({
+      expression  = string
+      title       = string
+      description = optional(string)
+    }))
+  }))
+  nullable = false
+  default  = {}
+}
+
 variable "iam_billing_roles" {
   description = "Billing account roles granted to this service account, by billing account id. Non-authoritative."
   type        = map(list(string))
@@ -72,11 +87,41 @@ variable "iam_by_principals" {
   nullable    = false
 }
 
+variable "iam_folder_bindings" {
+  description = "Folder role bindings granted to this service account, by arbitrary key."
+  type = map(object({
+    folder_id = string
+    role      = string
+    condition = optional(object({
+      expression  = string
+      title       = string
+      description = optional(string)
+    }))
+  }))
+  nullable = false
+  default  = {}
+}
+
 variable "iam_folder_roles" {
   description = "Folder roles granted to this service account, by folder id. Non-authoritative."
   type        = map(list(string))
   default     = {}
   nullable    = false
+}
+
+variable "iam_organization_bindings" {
+  description = "Organization role bindings granted to this service account, by arbitrary key."
+  type = map(object({
+    organization_id = string
+    role            = string
+    condition = optional(object({
+      expression  = string
+      title       = string
+      description = optional(string)
+    }))
+  }))
+  nullable = false
+  default  = {}
 }
 
 variable "iam_organization_roles" {
@@ -86,6 +131,21 @@ variable "iam_organization_roles" {
   nullable    = false
 }
 
+variable "iam_project_bindings" {
+  description = "Project role bindings granted to this service account, by arbitrary key."
+  type = map(object({
+    project_id = string
+    role       = string
+    condition = optional(object({
+      expression  = string
+      title       = string
+      description = optional(string)
+    }))
+  }))
+  nullable = false
+  default  = {}
+}
+
 variable "iam_project_roles" {
   description = "Project roles granted to this service account, by project id."
   type        = map(list(string))
@@ -93,11 +153,41 @@ variable "iam_project_roles" {
   nullable    = false
 }
 
+variable "iam_sa_bindings" {
+  description = "Service account role bindings granted to this service account, by arbitrary key."
+  type = map(object({
+    service_account_id = string
+    role               = string
+    condition = optional(object({
+      expression  = string
+      title       = string
+      description = optional(string)
+    }))
+  }))
+  nullable = false
+  default  = {}
+}
+
 variable "iam_sa_roles" {
   description = "Service account roles granted to this service account, by service account name."
   type        = map(list(string))
   default     = {}
   nullable    = false
+}
+
+variable "iam_storage_bindings" {
+  description = "Storage role bindings granted to this service account, by arbitrary key."
+  type = map(object({
+    bucket = string
+    role   = string
+    condition = optional(object({
+      expression  = string
+      title       = string
+      description = optional(string)
+    }))
+  }))
+  nullable = false
+  default  = {}
 }
 
 variable "iam_storage_roles" {

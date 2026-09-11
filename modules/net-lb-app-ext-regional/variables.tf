@@ -56,8 +56,9 @@ variable "group_configs" {
 variable "http_proxy_config" {
   description = "HTTP proxy configuration."
   type = object({
-    name        = optional(string)
-    description = optional(string, "Terraform managed.")
+    name                   = optional(string)
+    description            = optional(string, "Terraform managed.")
+    http_keepalive_timeout = optional(string)
   })
   default  = {}
   nullable = false
@@ -70,6 +71,7 @@ variable "https_proxy_config" {
     description                      = optional(string, "Terraform managed.")
     certificate_manager_certificates = optional(list(string))
     certificate_map                  = optional(string)
+    http_keepalive_timeout           = optional(string)
     quic_override                    = optional(string)
     ssl_policy                       = optional(string)
   })

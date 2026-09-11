@@ -321,12 +321,8 @@ resource "google_container_cluster" "cluster" {
     for_each = var.access_config.private_nodes == true ? [""] : []
     content {
       enable_private_nodes = true
-      enable_private_endpoint = (
-        var.access_config.ip_access == null
-        # when ip_access is disabled, the API returns true. We return
-        # true to avoid a permadiff
-        ? true
-        : try(var.access_config.ip_access.disable_public_endpoint, null)
+      enable_private_endpoint = try(
+        var.access_config.ip_access.disable_public_endpoint, null
       )
       master_ipv4_cidr_block = try(var.access_config.master_ipv4_cidr_block, null)
       private_endpoint_subnetwork = try(
@@ -415,12 +411,6 @@ resource "google_container_cluster" "cluster" {
       enabled = var.enable_features.vertical_pod_autoscaling
     }
   }
-  dynamic "enterprise_config" {
-    for_each = var.enable_features.enterprise_cluster != null ? [""] : []
-    content {
-      desired_tier = var.enable_features.enterprise_cluster ? "ENTERPRISE" : "STANDARD"
-    }
-  }
 }
 
 resource "google_gke_backup_backup_plan" "backup_plan" {
@@ -435,8 +425,11 @@ resource "google_gke_backup_backup_plan" "backup_plan" {
     backup_retain_days      = try(each.value.retention_policy_days)
     locked                  = try(each.value.retention_policy_lock)
   }
-  backup_schedule {
-    cron_schedule = each.value.schedule
+  dynamic "backup_schedule" {
+    for_each = each.value.schedule != null ? [""] : []
+    content {
+      cron_schedule = each.value.schedule
+    }
   }
 
   backup_config {

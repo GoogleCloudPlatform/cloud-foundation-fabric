@@ -150,7 +150,6 @@ variable "enable_features" {
       kms_key_name = optional(string)
     }))
     vertical_pod_autoscaling = optional(bool, false)
-    enterprise_cluster       = optional(bool)
   })
   default = {}
   validation {

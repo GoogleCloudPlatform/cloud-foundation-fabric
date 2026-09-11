@@ -1,10 +1,10 @@
-# Copyright 2025 Google LLC
+# Copyright 2026 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#      http://www.apache.org/licenses/LICENSE-2.0
+#     https://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -43,9 +43,11 @@ values:
     default_partition_expiration_ms: null
     default_table_expiration_ms: null
     delete_contents_on_destroy: true
+    deletion_policy: DELETE
     description: Terraform managed.
     effective_labels:
       goog-terraform-provisioned: 'true'
+    external_catalog_dataset_options: []
     external_dataset_reference: []
     friendly_name: null
     labels: null
@@ -61,12 +63,14 @@ values:
     cors: []
     custom_placement_config: []
     default_event_based_hold: null
+    deletion_policy: DELETE
     effective_labels:
       goog-terraform-provisioned: 'true'
     enable_object_retention: null
     encryption: []
     force_destroy: true
     hierarchical_namespace: []
+    ip_filter: []
     labels: null
     lifecycle_rule: []
     location: EU
@@ -81,6 +85,7 @@ values:
     timeouts: null
     uniform_bucket_level_access: true
   module.host-project.google_compute_shared_vpc_host_project.shared_vpc_host[0]:
+    deletion_policy: DELETE
     project: test-host
     timeouts: null
   module.host-project.google_project.project[0]:
@@ -99,6 +104,7 @@ values:
       goog-terraform-provisioned: 'true'
     timeouts: null
   module.kms.google_kms_crypto_key.default["key-global"]:
+    deletion_policy: DELETE
     effective_labels:
       goog-terraform-provisioned: 'true'
     labels: null
@@ -146,6 +152,7 @@ values:
     project: test-project
   module.project.google_logging_project_sink.sink["debug"]:
     custom_writer_identity: null
+    deletion_policy: DELETE
     description: debug (Terraform-managed).
     disabled: false
     exclusions:
@@ -161,6 +168,7 @@ values:
     bigquery_options:
     - use_partitioned_tables: false
     custom_writer_identity: null
+    deletion_policy: DELETE
     description: info (Terraform-managed).
     disabled: false
     exclusions: []
@@ -170,6 +178,7 @@ values:
     unique_writer_identity: true
   module.project.google_logging_project_sink.sink["notice"]:
     custom_writer_identity: null
+    deletion_policy: DELETE
     description: notice (Terraform-managed).
     destination: pubsub.googleapis.com/projects/project-id/topics/pubsub_sink
     disabled: false
@@ -180,6 +189,7 @@ values:
     unique_writer_identity: true
   module.project.google_logging_project_sink.sink["warnings"]:
     custom_writer_identity: null
+    deletion_policy: DELETE
     description: warnings (Terraform-managed).
     destination: storage.googleapis.com/test-gcs_sink
     disabled: false
@@ -425,42 +435,49 @@ values:
     project: test-host
     role: roles/vpcaccess.user
   module.project.google_project_service.project_services["apigee.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: test-project
     service: apigee.googleapis.com
     timeouts: null
   module.project.google_project_service.project_services["bigquery.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: test-project
     service: bigquery.googleapis.com
     timeouts: null
   module.project.google_project_service.project_services["compute.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: test-project
     service: compute.googleapis.com
     timeouts: null
   module.project.google_project_service.project_services["container.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: test-project
     service: container.googleapis.com
     timeouts: null
   module.project.google_project_service.project_services["logging.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: test-project
     service: logging.googleapis.com
     timeouts: null
   module.project.google_project_service.project_services["run.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: test-project
     service: run.googleapis.com
     timeouts: null
   module.project.google_project_service.project_services["storage.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: test-project
@@ -487,16 +504,20 @@ values:
     bucket: test-gcs_sink
     condition: []
     role: roles/storage.objectCreator
+    timeouts: null
   module.pubsub.google_pubsub_topic.default:
+    deletion_policy: DELETE
     effective_labels:
       goog-terraform-provisioned: 'true'
     ingestion_data_source_settings: []
     kms_key_name: null
     labels: null
     message_retention_duration: null
+    message_transforms: []
     name: pubsub_sink
     project: project-id
     schema_settings: []
+    tags: null
     terraform_labels:
       goog-terraform-provisioned: 'true'
     timeouts: null

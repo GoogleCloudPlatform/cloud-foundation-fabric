@@ -34,7 +34,7 @@ values:
       - region: europe-west8
     labels:
       environment: prod
-    name: my-vpc-send-all-to-nva
+    name: pbr-nva
     next_hop_ilb_ip: 10.0.0.253
     next_hop_other_routes: null
     priority: 101

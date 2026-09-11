@@ -4,7 +4,7 @@
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#      http://www.apache.org/licenses/LICENSE-2.0
+#     https://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -28,6 +28,7 @@ values:
     default_partition_expiration_ms: null
     default_table_expiration_ms: null
     delete_contents_on_destroy: false
+    deletion_policy: DELETE
     description: Terraform managed.
     effective_labels:
       goog-terraform-provisioned: 'true'
@@ -60,6 +61,7 @@ values:
       goog-terraform-provisioned: 'true'
     timeouts: null
   module.destination-project.google_project_service.project_services["logging.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: test-dest-prj
@@ -69,6 +71,7 @@ values:
     condition: []
     role: roles/bigquery.dataEditor
   module.folder-sink.google_folder.folder[0]:
+    deletion_policy: DELETE
     deletion_protection: false
     display_name: Folder name
     parent: folders/1122334455
@@ -80,6 +83,7 @@ values:
     filter: resource.type=gce_instance
     name: no-gce-instances
   module.folder-sink.google_logging_folder_sink.sink["alert"]:
+    deletion_policy: DELETE
     description: alert (Terraform-managed).
     destination: logging.googleapis.com/projects/test-dest-prj
     disabled: false
@@ -89,6 +93,7 @@ values:
     intercept_children: false
     name: alert
   module.folder-sink.google_logging_folder_sink.sink["debug"]:
+    deletion_policy: DELETE
     description: debug (Terraform-managed).
     disabled: false
     exclusions:
@@ -103,6 +108,7 @@ values:
   module.folder-sink.google_logging_folder_sink.sink["info"]:
     bigquery_options:
     - use_partitioned_tables: false
+    deletion_policy: DELETE
     description: info (Terraform-managed).
     disabled: false
     exclusions: []
@@ -111,6 +117,7 @@ values:
     intercept_children: false
     name: info
   module.folder-sink.google_logging_folder_sink.sink["notice"]:
+    deletion_policy: DELETE
     description: notice (Terraform-managed).
     destination: pubsub.googleapis.com/projects/project-id/topics/pubsub_sink
     disabled: false
@@ -120,6 +127,7 @@ values:
     intercept_children: false
     name: notice
   module.folder-sink.google_logging_folder_sink.sink["warnings"]:
+    deletion_policy: DELETE
     description: warnings (Terraform-managed).
     destination: storage.googleapis.com/test-gcs_sink
     disabled: false
@@ -151,6 +159,7 @@ values:
     cors: []
     custom_placement_config: []
     default_event_based_hold: null
+    deletion_policy: DELETE
     effective_labels:
       goog-terraform-provisioned: 'true'
     enable_object_retention: null
@@ -172,6 +181,7 @@ values:
     timeouts: null
     uniform_bucket_level_access: true
   module.pubsub.google_pubsub_topic.default:
+    deletion_policy: DELETE
     effective_labels:
       goog-terraform-provisioned: 'true'
     ingestion_data_source_settings: []
@@ -204,3 +214,5 @@ counts:
   google_storage_bucket_iam_member: 1
   modules: 6
   resources: 19
+
+outputs: {}

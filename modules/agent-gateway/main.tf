@@ -41,8 +41,8 @@ resource "google_network_services_agent_gateway" "default" {
   name        = var.name
   description = var.description
   labels      = var.labels
-  protocols   = var.protocols
   registries  = var.registries
+
 
   dynamic "google_managed" {
     for_each = var.is_google_managed ? [""] : []
@@ -58,14 +58,35 @@ resource "google_network_services_agent_gateway" "default" {
   }
 
   dynamic "network_config" {
-    for_each = local.network_attachment_id == null ? [] : [""]
+    for_each = local.network_attachment_id != null || var.networking_config.dns_peering_config != null ? [""] : []
 
     content {
-      egress {
-        network_attachment = local.network_attachment_id
+      dynamic "egress" {
+        for_each = local.network_attachment_id != null ? [""] : []
+        content {
+          network_attachment = local.network_attachment_id
+        }
+      }
+
+      dynamic "dns_peering_config" {
+        for_each = var.networking_config.dns_peering_config != null ? [""] : []
+        content {
+          domains = var.networking_config.dns_peering_config.domains
+          target_network = lookup(
+            local.ctx.networks,
+            var.networking_config.dns_peering_config.target_network,
+            var.networking_config.dns_peering_config.target_network
+          )
+          target_project = lookup(
+            local.ctx.project_ids,
+            var.networking_config.dns_peering_config.target_project,
+            var.networking_config.dns_peering_config.target_project
+          )
+        }
       }
     }
   }
+
 
   dynamic "self_managed" {
     for_each = var.is_google_managed ? [] : [""]

@@ -1,6 +1,6 @@
 # FAST 0-org-setup Prerequisites - Testing Workflows
 
-This document outlines the various testing workflows and combinations for the `fast-0-org-setup-prereqs` skill to ensure all branches of the skill's logic are covered.
+This document outlines the various testing workflows and combinations for the `fast-prerequisites` skill to ensure all branches of the skill's logic are covered.
 
 ## Core Variables & Decision Points
 
@@ -12,7 +12,7 @@ This document outlines the various testing workflows and combinations for the `f
 6. **Billing Account Access Level:** Billing Administrator vs. Billing User vs. No Access
 7. **Bootstrap Project:** Pre-existing (with or without API check) vs. New project created by user
 8. **Configuration / Dataset:** Standard GCP datasets vs. `classic-gcd` dataset
-9. **Org Policy Import Check:** Pre-existing policies found vs. No policies found
+9. **Org Policy Import Check & Essential Contacts:** Pre-existing policies found vs. No policies found; Essential Contacts configured (deploying user vs. custom email) vs. Essential Contacts policy set to allow all
 
 ## Comprehensive Test Scenarios
 

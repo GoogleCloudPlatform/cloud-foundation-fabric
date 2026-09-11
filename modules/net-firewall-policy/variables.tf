@@ -32,6 +32,10 @@ variable "context" {
     networks         = optional(map(string), {})
     project_ids      = optional(map(string), {})
     tag_values       = optional(map(string), {})
+    tag_vars = optional(object({
+      projects     = optional(map(map(string)), {})
+      organization = optional(map(string), {})
+    }), {})
   })
   default  = {}
   nullable = false
@@ -214,6 +218,13 @@ variable "region" {
 
 variable "security_profile_group_ids" {
   description = "The optional security groups ids to be referenced in factories."
+  type        = map(string)
+  nullable    = false
+  default     = {}
+}
+
+variable "tag_bindings" {
+  description = "Tag bindings for this firewall policy, in key => tag value id format."
   type        = map(string)
   nullable    = false
   default     = {}

@@ -20,7 +20,7 @@ values:
   module.vpc["gateway"].google_compute_route.gateway["gateway"]:
     description: Terraform-managed.
     dest_range: 0.0.0.0/0
-    name: my-network-with-route-gateway-gateway
+    name: gateway-route
     next_hop_gateway: default-internet-gateway
     next_hop_ilb: null
     next_hop_instance: null
@@ -47,7 +47,7 @@ values:
   module.vpc["ilb"].google_compute_route.gateway["gateway"]:
     description: Terraform-managed.
     dest_range: 0.0.0.0/0
-    name: my-network-with-route-ilb-gateway
+    name: gateway-route
     next_hop_gateway: default-internet-gateway
     next_hop_ilb: null
     next_hop_instance: null
@@ -74,7 +74,7 @@ values:
   module.vpc["instance"].google_compute_route.gateway["gateway"]:
     description: Terraform-managed.
     dest_range: 0.0.0.0/0
-    name: my-network-with-route-instance-gateway
+    name: gateway-route
     next_hop_gateway: default-internet-gateway
     next_hop_ilb: null
     next_hop_instance: null
@@ -102,7 +102,7 @@ values:
   module.vpc["ip"].google_compute_route.gateway["gateway"]:
     description: Terraform-managed.
     dest_range: 0.0.0.0/0
-    name: my-network-with-route-ip-gateway
+    name: gateway-route
     next_hop_gateway: default-internet-gateway
     next_hop_ilb: null
     next_hop_instance: null
@@ -130,7 +130,7 @@ values:
   module.vpc["vpn_tunnel"].google_compute_route.gateway["gateway"]:
     description: Terraform-managed.
     dest_range: 0.0.0.0/0
-    name: my-network-with-route-vpn-tunnel-gateway
+    name: gateway-route
     next_hop_gateway: default-internet-gateway
     next_hop_ilb: null
     next_hop_instance: null

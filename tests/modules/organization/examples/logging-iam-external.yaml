@@ -1,10 +1,10 @@
-# Copyright 2025 Google LLC
+# Copyright 2026 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#      http://www.apache.org/licenses/LICENSE-2.0
+#     https://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,31 +13,50 @@
 # limitations under the License.
 
 values:
+  google_project_iam_member.log-bucket-writer:
+    condition:
+    - description: Grants bucketWriter for audit-0, audit-1.
+      title: log_bucket_writer
+    project: project-id
+    role: roles/logging.bucketWriter
   module.log-bucket-0.google_logging_project_bucket_config.bucket[0]:
     bucket_id: audit-0
+    cmek_settings: []
+    enable_analytics: false
+    index_configs: []
     location: global
+    locked: null
     project: project-id
     retention_days: 30
   module.log-bucket-1.google_logging_project_bucket_config.bucket[0]:
     bucket_id: audit-1
+    cmek_settings: []
+    enable_analytics: false
+    index_configs: []
     location: global
+    locked: null
     project: project-id
     retention_days: 30
   module.org.google_logging_organization_sink.sink["audit-0"]:
+    deletion_policy: DELETE
+    description: audit-0 (Terraform-managed).
+    disabled: false
+    exclusions: []
     filter: severity=NOTICE
     include_children: true
+    intercept_children: false
     name: audit-0
     org_id: '1122334455'
   module.org.google_logging_organization_sink.sink["audit-1"]:
+    deletion_policy: DELETE
+    description: audit-1 (Terraform-managed).
+    disabled: false
+    exclusions: []
     filter: severity=WARNING
     include_children: true
+    intercept_children: false
     name: audit-1
     org_id: '1122334455'
-  google_project_iam_member.log-bucket-writer:
-    project: project-id
-    role: roles/logging.bucketWriter
-    condition:
-    - title: log_bucket_writer
 
 counts:
   google_logging_organization_sink: 2
@@ -45,3 +64,5 @@ counts:
   google_project_iam_member: 1
   modules: 3
   resources: 5
+
+outputs: {}

@@ -85,6 +85,7 @@ variable "boot_disk" {
   nullable = false
   validation {
     condition = (
+      var.tpu_config != null ||
       var.boot_disk.initialize_params != null ||
       var.boot_disk.source.attach != null ||
       var.boot_disk.source.snapshot != null ||
@@ -129,6 +130,7 @@ variable "context" {
   description = "Context-specific interpolations."
   type = object({
     addresses      = optional(map(string), {})
+    condition_vars = optional(map(map(string)), {})
     custom_roles   = optional(map(string), {})
     kms_keys       = optional(map(string), {})
     iam_principals = optional(map(string), {})
@@ -232,6 +234,43 @@ variable "iam" {
   description = "IAM bindings in {ROLE => [MEMBERS]} format."
   type        = map(list(string))
   default     = {}
+}
+
+variable "iap_tunnel_iam" {
+  description = "IAP tunnel IAM bindings in {ROLE => [MEMBERS]} format."
+  type        = map(list(string))
+  default     = {}
+  nullable    = false
+}
+
+variable "iap_tunnel_iam_bindings" {
+  description = "Authoritative IAP tunnel IAM bindings in {KEY => {role = ROLE, members = [], condition = {}}}. Keys are arbitrary."
+  type = map(object({
+    members = list(string)
+    role    = string
+    condition = optional(object({
+      expression  = string
+      title       = string
+      description = optional(string)
+    }))
+  }))
+  default  = {}
+  nullable = false
+}
+
+variable "iap_tunnel_iam_bindings_additive" {
+  description = "Individual additive IAP tunnel IAM bindings. Keys are arbitrary."
+  type = map(object({
+    member = string
+    role   = string
+    condition = optional(object({
+      expression  = string
+      title       = string
+      description = optional(string)
+    }))
+  }))
+  default  = {}
+  nullable = false
 }
 
 variable "instance_schedule" {
@@ -377,6 +416,7 @@ variable "network_interfaces" {
     stack_type                  = optional(string)
     queue_count                 = optional(number) # NEW
     internal_ipv6_prefix_length = optional(number) # NEW
+    external_ipv6               = optional(bool, false)
     addresses = optional(object({
       internal = optional(string)
       external = optional(string)
@@ -560,6 +600,29 @@ variable "tags" {
   description = "Instance network tags for firewall rule targets."
   type        = list(string)
   default     = []
+}
+
+variable "tpu_config" {
+  description = "TPU configuration. If null, a standard VM is created."
+  type = object({
+    runtime_version = optional(string)
+    queued          = optional(bool, true)
+  })
+  default = null
+  validation {
+    condition = (
+      var.tpu_config == null ||
+      var.create_template != null ||
+      var.tpu_config.runtime_version != null
+    )
+    error_message = "TPU runtime version must be specified when creating a TPU VM."
+  }
+  validation {
+    condition = try(var.tpu_config.runtime_version, null) == null || (
+      try(regex("^(?:ct|v)([0-9])", var.machine_type)[0], "---") == try(coalesce(regex("(?:tpuv([0-9])|\\-v([0-9])\\-)", var.tpu_config.runtime_version)...), "---")
+    )
+    error_message = "TPU machine type and runtime version compatibility check failed. Please ensure both are of the same generation (v5 or v6)."
+  }
 }
 
 variable "zone" {

@@ -16,7 +16,7 @@
 
 resource "google_compute_instance" "default" {
   provider                   = google-beta
-  count                      = local.is_template ? 0 : 1
+  count                      = local.is_gce ? 1 : 0
   project                    = local.project_id
   zone                       = local.zone
   name                       = var.name
@@ -164,6 +164,12 @@ resource "google_compute_instance" "default" {
             null
           )
           network_tier = try(config.value.network_tier, null)
+        }
+      }
+      dynamic "ipv6_access_config" {
+        for_each = config.value.external_ipv6 ? [""] : []
+        content {
+          network_tier = "PREMIUM"
         }
       }
       dynamic "alias_ip_range" {

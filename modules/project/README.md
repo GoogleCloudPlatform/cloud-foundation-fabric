@@ -15,6 +15,7 @@ This module implements the creation and management of one GCP project including 
     - [Cloudservices Editor Role](#cloudservices-editor-role)
     - [Skipping Service Agent IAM Grants](#skipping-service-agent-iam-grants)
     - [Service Agent Aliases](#service-agent-aliases)
+    - [Service Agent Grants on External Resources](#service-agent-grants-on-external-resources)
 - [Shared VPC](#shared-vpc)
 - [Organization Policies](#organization-policies)
   - [Dry-Run Mode](#dry-run-mode)
@@ -393,6 +394,46 @@ Notice that some service agents appear under multiple names. For example, the Ku
 | gs-project-accounts            | storage                    |
 | monitoring-notification        | monitoring                 |
 | serverless-robot-prod          | cloudrun run               |
+
+#### Service Agent Grants on External Resources
+
+A service agent's member string embeds the project number, which is only known once the project exists. This module is therefore the only place that can grant one of its own service agents a role on a resource it does not own. The `service_agents_project_bindings` and `service_agents_folder_bindings` variables express those grants, with the target and the role resolved through `context`, and the `service` attribute accepting any of the agent names or aliases listed above.
+
+Entries are silently ignored when their service is not enabled on the project, since the corresponding agent does not exist.
+
+```hcl
+module "project" {
+  source          = "./fabric/modules/project"
+  billing_account = var.billing_account_id
+  name            = "project"
+  parent          = var.folder_id
+  prefix          = var.prefix
+  services = [
+    "artifactregistry.googleapis.com",
+    "container.googleapis.com",
+  ]
+  context = {
+    folder_ids  = { target = "folders/1234567890" }
+    project_ids = { target = "target-project" }
+  }
+  service_agents_folder_bindings = {
+    container-browser = {
+      service = "container"
+      folder  = "$folder_ids:target"
+      role    = "roles/browser"
+    }
+  }
+  service_agents_project_bindings = {
+    ar-reader = {
+      service = "artifactregistry"
+      project = "$project_ids:target"
+      role    = "roles/artifactregistry.reader"
+    }
+  }
+}
+
+# tftest modules=1 resources=10 inventory=service-agents-external-iam.yaml
+```
 
 ## Shared VPC
 
@@ -956,36 +997,55 @@ The following examples demonstrate how to configure CMEK encryption for differen
 
 For composer v3:
 
-```
+```hcl
 module "project" {
-  source  =  "./fabric/modules/project"
+  source          = "./fabric/modules/project"
   billing_account = var.billing_account_id
   name            = "project"
   prefix          = var.prefix
   parent          = var.folder_id
   services = [
     "composer.googleapis.com",
+    "storage.googleapis.com"
   ]
   service_encryption_key_ids = {
     "composer.googleapis.com" = [module.kms.keys.key-regional.id]
   }
 }
+
+module "kms" {
+  source     = "./fabric/modules/kms"
+  project_id = var.project_id
+  keyring = {
+    location = var.region
+    name     = "${var.prefix}-keyring"
+  }
+  keys = {
+    "key-regional" = {}
+  }
+}
+# tftest modules=2 resources=10 e2e
 ```
 
 For composer v2:
 
-```
+```hcl
 module "project" {
-  source  =  "./fabric/modules/project"
+  source          = "./fabric/modules/project"
   billing_account = var.billing_account_id
   name            = "project"
   prefix          = var.prefix
   parent          = var.folder_id
   services = [
+    "artifactregistry.googleapis.com",
     "composer.googleapis.com",
+    "compute.googleapis.com",
+    "container.googleapis.com",
+    "pubsub.googleapis.com",
+    "storage.googleapis.com"
   ]
   service_encryption_key_ids = {
-    "composer.googleapis.com"         = [module.kms.keys.key-regional.id]
+    "composer.googleapis.com" = [module.kms.keys.key-regional.id]
     # Composer v2 dependencies
     "artifactregistry.googleapis.com" = [module.kms.keys.key-regional.id]
     "container-engine-robot"          = [module.kms.keys.key-regional.id]
@@ -993,6 +1053,19 @@ module "project" {
     "pubsub.googleapis.com"           = [module.kms.keys.key-regional.id]
   }
 }
+
+module "kms" {
+  source     = "./fabric/modules/kms"
+  project_id = var.project_id
+  keyring = {
+    location = var.region
+    name     = "${var.prefix}-keyring"
+  }
+  keys = {
+    "key-regional" = {}
+  }
+}
+# tftest modules=2 resources=27 e2e
 ```
 
 ## Custom Security Health Analytics Modules
@@ -1385,9 +1458,13 @@ module "project" {
   source = "./fabric/modules/project"
   name   = "project"
   custom_roles = {
-    "myRole" = [
-      "compute.instances.list",
-    ]
+    "myRole" = {
+      title       = "My custom role"
+      description = "Allows listing compute instances."
+      permissions = [
+        "compute.instances.list",
+      ]
+    }
   }
   context = {
     condition_vars = {
@@ -1428,6 +1505,7 @@ Custom roles can also be specified via a factory in a similar way to organizatio
 
 - the role name defaults to the file name but can be overridden via a `name` attribute in the yaml
 - role permissions are defined in an `includedPermissions` map
+- role title, description and launch stage can optionally be set via the `title`, `description` and `stage` attributes
 
 Custom roles defined via the variable are merged with those coming from the factory, and override them in case of duplicate names.
 
@@ -1451,6 +1529,9 @@ includedPermissions:
 
 ```yaml
 name: projectViewer
+title: Project viewer
+description: Allows viewing project resources.
+stage: GA
 includedPermissions:
   - resourcemanager.projects.get
   - resourcemanager.projects.getIamPolicy
@@ -1518,7 +1599,7 @@ module "project" {
     "compute.googleapis.com"
   ]
 }
-# tftest modules=1 resources=5 inventory=quotas.yaml e2e
+# tftest modules=1 resources=5 inventory=quotas.yaml
 ```
 
 ## Quotas factory
@@ -1540,7 +1621,7 @@ module "project" {
     "compute.googleapis.com"
   ]
 }
-# tftest modules=1 resources=5 files=quota-cpus-ew8 inventory=quotas.yaml e2e
+# tftest modules=1 resources=5 files=quota-cpus-ew8 inventory=quotas.yaml
 ```
 
 ```yaml
@@ -1565,11 +1646,11 @@ Additionally, the Privileged Access Manager Service Agent must be created and gr
 
 ```hcl
 module "project" {
-  source              = "./fabric/modules/project"
-  billing_account     = var.billing_account_id
-  name                = "project"
-  parent              = var.folder_id
-  prefix              = var.prefix
+  source          = "./fabric/modules/project"
+  billing_account = var.billing_account_id
+  name            = "project"
+  parent          = var.folder_id
+  prefix          = var.prefix
   pam_entitlements = {
     net-admins = {
       max_request_duration = "3600s"
@@ -1587,6 +1668,7 @@ module "project" {
     }
   }
 }
+# tftest modules=1 resources=2
 ```
 
 ### Privileged Access Manager (PAM) Entitlements Factory
@@ -1597,7 +1679,7 @@ Note that entitlements defined via `pam_entitlements` take precedence over those
 
 ```hcl
 module "project" {
-  source  =  "./fabric/modules/project"
+  source          = "./fabric/modules/project"
   billing_account = var.billing_account_id
   name            = "project"
   parent          = var.folder_id
@@ -1606,6 +1688,25 @@ module "project" {
     pam_entitlements = "configs/pam-entitlements/"
   }
 }
+# tftest modules=1 resources=2 files=pam
+```
+
+```yaml
+# yaml-language-server: $schema=../schemas/pam-entitlements.schema.json
+
+net-admins:
+  max_request_duration: 3600s
+  eligible_users:
+    - group:gcp-network-admins@example.com
+  privileged_access:
+    - role: roles/compute.networkAdmin
+    - role: roles/compute.admin
+  manual_approvals:
+    require_approver_justification: true
+    steps:
+      - approvers:
+          - group:gcp-organization-admins@example.com
+# tftest-file id=pam path=configs/pam-entitlements/entitlements.yaml schema=pam-entitlements.schema.json
 ```
 
 ## VPC Service Controls
@@ -2342,6 +2443,7 @@ module "project" {
 | [quotas.tf](./quotas.tf) | None | <code>google_cloud_quotas_quota_preference</code> |
 | [scc-mute-configs.tf](./scc-mute-configs.tf) | Project-level SCC mute configurations. | <code>google_scc_v2_project_mute_config</code> |
 | [scc-sha-custom-modules.tf](./scc-sha-custom-modules.tf) | Project-level Custom modules with Security Health Analytics. | <code>google_scc_management_project_security_health_analytics_custom_module</code> |
+| [service-agents-iam.tf](./service-agents-iam.tf) | Service agent IAM bindings on external resources. | <code>google_folder_iam_member</code> · <code>google_project_iam_member</code> |
 | [service-agents.tf](./service-agents.tf) | Service agents supporting resources. | <code>google_project_default_service_accounts</code> · <code>google_project_iam_member</code> · <code>google_project_service_identity</code> |
 | [shared-vpc.tf](./shared-vpc.tf) | Shared VPC project-level configuration. | <code>google_compute_shared_vpc_host_project</code> · <code>google_compute_shared_vpc_service_project</code> · <code>google_compute_subnetwork_iam_member</code> · <code>google_project_iam_member</code> |
 | [tags.tf](./tags.tf) | Manages GCP Secure Tags, keys, values, and IAM. | <code>google_tags_tag_binding</code> · <code>google_tags_tag_key</code> · <code>google_tags_tag_key_iam_binding</code> · <code>google_tags_tag_key_iam_member</code> · <code>google_tags_tag_value</code> · <code>google_tags_tag_value_iam_binding</code> · <code>google_tags_tag_value_iam_member</code> |
@@ -2360,7 +2462,7 @@ module "project" {
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [name](variables.tf#L252) | Project name and id suffix. | <code>string</code> | ✓ |  |
+| [name](variables.tf#L266) | Project name and id suffix. | <code>string</code> | ✓ |  |
 | [alerts](variables-observability.tf#L17) | Monitoring alerts. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [asset_feeds](variables.tf#L18) | Cloud Asset Inventory feeds. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [asset_search](variables.tf#L51) | Cloud Asset Inventory search configurations. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
@@ -2370,12 +2472,12 @@ module "project" {
 | [compute_metadata](variables.tf#L110) | Optional compute metadata key/values. Only usable if compute API has been enabled. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 | [contacts](variables.tf#L117) | List of essential contacts for this resource. Must be in the form EMAIL -> [NOTIFICATION_TYPES]. Valid notification types are ALL, SUSPENSION, SECURITY, TECHNICAL, BILLING, LEGAL, PRODUCT_UPDATES. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [context](variables.tf#L135) | Context-specific interpolations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [custom_roles](variables.tf#L162) | Map of role name => list of permissions to create in this project. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [default_network_tier](variables.tf#L169) | Default compute network tier for the project. | <code>string</code> |  | <code>null</code> |
-| [default_service_account](variables.tf#L175) | Project default service account setting: can be one of `delete`, `deprivilege`, `disable`, or `keep`. | <code>string</code> |  | <code>&#34;keep&#34;</code> |
-| [deletion_policy](variables.tf#L188) | Deletion policy setting for this project. | <code>string</code> |  | <code>&#34;DELETE&#34;</code> |
-| [descriptive_name](variables.tf#L199) | Descriptive project name. Set when name differs from project id. | <code>string</code> |  | <code>null</code> |
-| [factories_config](variables.tf#L205) | Paths to data files and folders that enable factory functionality. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [custom_roles](variables.tf#L162) | Map of role name => role attributes to create in this project. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [default_network_tier](variables.tf#L183) | Default compute network tier for the project. | <code>string</code> |  | <code>null</code> |
+| [default_service_account](variables.tf#L189) | Project default service account setting: can be one of `delete`, `deprivilege`, `disable`, or `keep`. | <code>string</code> |  | <code>&#34;keep&#34;</code> |
+| [deletion_policy](variables.tf#L202) | Deletion policy setting for this project. | <code>string</code> |  | <code>&#34;DELETE&#34;</code> |
+| [descriptive_name](variables.tf#L213) | Descriptive project name. Set when name differs from project id. | <code>string</code> |  | <code>null</code> |
+| [factories_config](variables.tf#L219) | Paths to data files and folders that enable factory functionality. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam](variables-iam.tf#L17) | Authoritative IAM bindings in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam_bindings](variables-iam.tf#L24) | Authoritative IAM bindings in {KEY => {role = ROLE, members = [], condition = {}}}. Keys are arbitrary. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam_bindings_additive](variables-iam.tf#L39) | Individual additive IAM bindings. Keys are arbitrary. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
@@ -2383,9 +2485,9 @@ module "project" {
 | [iam_by_principals_additive](variables-iam.tf#L54) | Additive IAM binding in {PRINCIPAL => [ROLES]} format. Principals need to be statically defined to avoid errors. Merged internally with the `iam_bindings_additive` variable. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam_by_principals_conditional](variables-iam.tf#L68) | Authoritative IAM binding in {PRINCIPAL => {roles = [roles], condition = {cond}}} format. Principals need to be statically defined to avoid errors. Condition is required. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam_deny_policies](variables-iam.tf#L98) | IAM Deny policies to be applied to the project. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [kms_autokeys](variables.tf#L221) | KMS Autokey key handles. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [labels](variables.tf#L239) | Resource labels. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [lien_reason](variables.tf#L246) | If non-empty, creates a project lien with this description. | <code>string</code> |  | <code>null</code> |
+| [kms_autokeys](variables.tf#L235) | KMS Autokey key handles. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [labels](variables.tf#L253) | Resource labels. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [lien_reason](variables.tf#L260) | If non-empty, creates a project lien with this description. | <code>string</code> |  | <code>null</code> |
 | [log_scopes](variables-observability.tf#L117) | Log scopes under this project. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [logging_data_access](variables-observability.tf#L127) | Control activation of data access logs. The special 'allServices' key denotes configuration for all services. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [logging_exclusions](variables-observability.tf#L138) | Logging exclusions for this project in the form {NAME -> FILTER}. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
@@ -2394,26 +2496,28 @@ module "project" {
 | [metric_scopes](variables-observability.tf#L216) | List of projects that will act as metric scopes for this project. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
 | [network_tags](variables-tags.tf#L17) | Network tags by key name. If `id` is provided, key creation is skipped. The `iam` attribute behaves like the similarly named one at module level. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [notification_channels](variables-observability.tf#L223) | Monitoring notification channels. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [org_policies](variables.tf#L257) | Organization policies applied to this project keyed by policy name. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [org_policies](variables.tf#L271) | Organization policies applied to this project keyed by policy name. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [pam_entitlements](variables-pam.tf#L17) | Privileged Access Manager entitlements for this resource, keyed by entitlement ID. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [parent](variables.tf#L285) | Parent folder or organization in 'folders/folder_id' or 'organizations/org_id' format. | <code>string</code> |  | <code>null</code> |
-| [prefix](variables.tf#L299) | Optional prefix used to generate project id and name. | <code>string</code> |  | <code>null</code> |
-| [project_reuse](variables.tf#L309) | Reuse existing project if not null. If name and number are not passed in, a data source is used. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [parent](variables.tf#L299) | Parent folder or organization in 'folders/folder_id' or 'organizations/org_id' format. | <code>string</code> |  | <code>null</code> |
+| [prefix](variables.tf#L313) | Optional prefix used to generate project id and name. | <code>string</code> |  | <code>null</code> |
+| [project_reuse](variables.tf#L323) | Reuse existing project if not null. If name and number are not passed in, a data source is used. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [quotas](variables-quotas.tf#L17) | Service quota configuration. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [scc_mute_configs](variables-scc.tf#L17) | SCC mute configurations keyed by name. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [scc_sha_custom_modules](variables-scc.tf#L28) | SCC custom modules keyed by module name. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [service_agents_config](variables.tf#L329) | Automatic service agent configuration options. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [service_config](variables.tf#L341) | Configure service API activation. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#8230;&#125;</code> |
-| [service_encryption_key_ids](variables.tf#L353) | Service Agents to be granted encryption/decryption permissions over Cloud KMS encryption keys. Format {SERVICE_AGENT => [KEY_ID]}. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [services](variables.tf#L360) | Service APIs to enable. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
-| [shared_vpc_host_config](variables.tf#L366) | Configures this project as a Shared VPC host project (mutually exclusive with shared_vpc_service_project). | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [shared_vpc_service_config](variables.tf#L376) | Configures this project as a Shared VPC service project (mutually exclusive with shared_vpc_host_config). | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#8230;&#125;</code> |
-| [skip_delete](variables.tf#L413) | Deprecated. Use deletion_policy. | <code>bool</code> |  | <code>null</code> |
+| [service_agents_config](variables.tf#L343) | Automatic service agent configuration options. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [service_agents_folder_bindings](variables-iam.tf#L134) | Additive IAM bindings for this project's service agents on external folders, in key => binding format. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [service_agents_project_bindings](variables-iam.tf#L150) | Additive IAM bindings for this project's service agents on external projects, in key => binding format. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [service_config](variables.tf#L355) | Configure service API activation. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#8230;&#125;</code> |
+| [service_encryption_key_ids](variables.tf#L367) | Service Agents to be granted encryption/decryption permissions over Cloud KMS encryption keys. Format {SERVICE_AGENT => [KEY_ID]}. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [services](variables.tf#L374) | Service APIs to enable. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
+| [shared_vpc_host_config](variables.tf#L380) | Configures this project as a Shared VPC host project (mutually exclusive with shared_vpc_service_project). | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [shared_vpc_service_config](variables.tf#L390) | Configures this project as a Shared VPC service project (mutually exclusive with shared_vpc_host_config). | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#8230;&#125;</code> |
+| [skip_delete](variables.tf#L427) | Deprecated. Use deletion_policy. | <code>bool</code> |  | <code>null</code> |
 | [tag_bindings](variables-tags.tf#L89) | Tag bindings for this project, in key => tag value id format. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
 | [tags](variables-tags.tf#L96) | Tags by key name. If `id` is provided, key or value creation is skipped. The `iam` attribute behaves like the similarly named one at module level. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [tags_config](variables-tags.tf#L171) | Fine-grained control on tag resource and IAM creation. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [universe](variables.tf#L425) | GCP universe where to deploy the project. The prefix will be prepended to the project id. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [vpc_sc](variables.tf#L436) | VPC-SC configuration for the project, use when `ignore_changes` for resources is set in the VPC-SC module. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [universe](variables.tf#L439) | GCP universe where to deploy the project. The prefix will be prepended to the project id. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [vpc_sc](variables.tf#L450) | VPC-SC configuration for the project, use when `ignore_changes` for resources is set in the VPC-SC module. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [workload_identity_pools](variables-identity-providers.tf#L17) | Workload Identity Federation pools and providers. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
@@ -2427,26 +2531,26 @@ module "project" {
 | [custom_roles](outputs.tf#L45) | Map of custom roles resources created in the project. |  |
 | [default_service_accounts](outputs.tf#L50) | Emails of the default service accounts for this project. |  |
 | [id](outputs.tf#L55) | Project id. |  |
-| [kms_autokeys](outputs.tf#L73) | KMS Autokey key ids. |  |
-| [name](outputs.tf#L80) | Project name. |  |
-| [network_tag_keys](outputs.tf#L92) | Tag key resources. |  |
-| [network_tag_values](outputs.tf#L101) | Tag value resources. |  |
-| [notification_channel_names](outputs.tf#L109) | Notification channel names. |  |
-| [notification_channels](outputs.tf#L117) | Full notification channel objects. |  |
-| [number](outputs.tf#L122) | Project number. |  |
-| [organization_policies_ids](outputs.tf#L137) | Map of ORGANIZATION_POLICIES => ID in the organization. |  |
-| [project_id](outputs.tf#L144) | Project id. |  |
-| [quota_configs](outputs.tf#L162) | Quota configurations. |  |
-| [quotas](outputs.tf#L173) | Quota resources. |  |
-| [scc_custom_sha_modules_ids](outputs.tf#L178) | Map of SCC CUSTOM SHA MODULES => ID in the project. |  |
-| [service_agents](outputs.tf#L183) | List of all (active) service agents for this project. |  |
-| [services](outputs.tf#L192) | Service APIs to enable in the project. |  |
-| [sink_writer_identities](outputs.tf#L201) | Writer identities created for each sink. |  |
-| [tag_keys](outputs.tf#L208) | Tag key resources. |  |
-| [tag_values](outputs.tf#L217) | Tag value resources. |  |
-| [workload_identity_pool_ids](outputs.tf#L225) | Workload identity provider ids. |  |
-| [workload_identity_provider_ids](outputs.tf#L232) | Workload identity provider attributes. |  |
-| [workload_identity_providers](outputs.tf#L240) | Workload identity provider attributes. |  |
+| [kms_autokeys](outputs.tf#L75) | KMS Autokey key ids. |  |
+| [name](outputs.tf#L82) | Project name. |  |
+| [network_tag_keys](outputs.tf#L94) | Tag key resources. |  |
+| [network_tag_values](outputs.tf#L103) | Tag value resources. |  |
+| [notification_channel_names](outputs.tf#L111) | Notification channel names. |  |
+| [notification_channels](outputs.tf#L119) | Full notification channel objects. |  |
+| [number](outputs.tf#L124) | Project number. |  |
+| [organization_policies_ids](outputs.tf#L141) | Map of ORGANIZATION_POLICIES => ID in the organization. |  |
+| [project_id](outputs.tf#L148) | Project id. |  |
+| [quota_configs](outputs.tf#L168) | Quota configurations. |  |
+| [quotas](outputs.tf#L179) | Quota resources. |  |
+| [scc_custom_sha_modules_ids](outputs.tf#L184) | Map of SCC CUSTOM SHA MODULES => ID in the project. |  |
+| [service_agents](outputs.tf#L189) | List of all (active) service agents for this project. |  |
+| [services](outputs.tf#L200) | Service APIs to enable in the project. |  |
+| [sink_writer_identities](outputs.tf#L209) | Writer identities created for each sink. |  |
+| [tag_keys](outputs.tf#L216) | Tag key resources. |  |
+| [tag_values](outputs.tf#L225) | Tag value resources. |  |
+| [workload_identity_pool_ids](outputs.tf#L233) | Workload identity provider ids. |  |
+| [workload_identity_provider_ids](outputs.tf#L240) | Workload identity provider attributes. |  |
+| [workload_identity_providers](outputs.tf#L248) | Workload identity provider attributes. |  |
 
 ## Fixtures
 

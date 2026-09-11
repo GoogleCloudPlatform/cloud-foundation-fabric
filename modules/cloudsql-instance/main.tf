@@ -141,9 +141,12 @@ resource "google_sql_database_instance" "primary" {
           : []
         )
         content {
-          psc_enabled               = true
-          allowed_consumer_projects = local.psc_allowed_consumer_projects
-          network_attachment_uri    = try(var.network_config.connectivity.psc_config.network_attachment_uri, null)
+          psc_enabled                        = true
+          allowed_consumer_projects          = local.psc_allowed_consumer_projects
+          network_attachment_uri             = try(var.network_config.connectivity.psc_config.network_attachment_uri, null)
+          psc_auto_connection_policy_enabled = var.network_config.connectivity.psc_config.psc_auto_connection_policy_enabled
+          psc_auto_dns_enabled               = var.network_config.connectivity.psc_config.psc_auto_dns_enabled
+          psc_write_endpoint_dns_enabled     = var.network_config.connectivity.psc_config.psc_write_endpoint_dns_enabled
 
           dynamic "psc_auto_connections" {
             for_each = local.psc_auto_connections
@@ -348,19 +351,18 @@ resource "google_sql_database_instance" "replicas" {
           : []
         )
         content {
-          psc_enabled               = true
-          allowed_consumer_projects = local.psc_allowed_consumer_projects
-          network_attachment_uri    = try(var.network_config.connectivity.psc_config.network_attachment_uri, null)
+          psc_enabled                        = true
+          allowed_consumer_projects          = local.psc_allowed_consumer_projects
+          network_attachment_uri             = try(var.network_config.connectivity.psc_config.network_attachment_uri, null)
+          psc_auto_connection_policy_enabled = var.network_config.connectivity.psc_config.psc_auto_connection_policy_enabled
+          psc_auto_dns_enabled               = var.network_config.connectivity.psc_config.psc_auto_dns_enabled
+          psc_write_endpoint_dns_enabled     = var.network_config.connectivity.psc_config.psc_write_endpoint_dns_enabled
 
           dynamic "psc_auto_connections" {
-            for_each = (
-              try(var.network_config.connectivity.psc_config.psc_auto_connections, null) != null
-              ? [""]
-              : []
-            )
+            for_each = local.psc_auto_connections
             content {
-              consumer_network            = local.psc_consumer_network
-              consumer_service_project_id = local.psc_consumer_service_project_id
+              consumer_network            = psc_auto_connections.value.consumer_network
+              consumer_service_project_id = psc_auto_connections.value.consumer_service_project_id
             }
           }
         }

@@ -160,10 +160,24 @@ variable "context" {
 }
 
 variable "custom_roles" {
-  description = "Map of role name => list of permissions to create in this project."
-  type        = map(list(string))
-  default     = {}
-  nullable    = false
+  description = "Map of role name => role attributes to create in this project."
+  type = map(object({
+    permissions = list(string)
+    title       = optional(string)
+    description = optional(string)
+    stage       = optional(string)
+  }))
+  default  = {}
+  nullable = false
+  validation {
+    condition = alltrue([
+      for k, v in var.custom_roles : contains(
+        ["ALPHA", "BETA", "GA", "DEPRECATED", "DISABLED", "EAP"],
+        coalesce(v.stage, "GA")
+      )
+    ])
+    error_message = "Stage must be one of ALPHA, BETA, GA, DEPRECATED, DISABLED, EAP."
+  }
 }
 
 variable "default_network_tier" {

@@ -1,10 +1,10 @@
-# Copyright 2023 Google LLC
+# Copyright 2026 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#      http://www.apache.org/licenses/LICENSE-2.0
+#     https://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,14 +20,19 @@ values:
     org_id: '1122334455'
     role: organizations/1122334455/roles/myRoletest
   module.org.google_organization_iam_custom_role.roles["myRoletest"]:
-    description: Terraform-managed.
+    deletion_policy: DELETE
+    description: Allows listing compute instances.
     org_id: '1122334455'
     permissions:
     - compute.instances.list
     role_id: myRoletest
     stage: GA
-    title: Custom role myRoletest
+    title: My custom role
 
 counts:
   google_organization_iam_binding: 1
   google_organization_iam_custom_role: 1
+  modules: 1
+  resources: 2
+
+outputs: {}

@@ -17,6 +17,11 @@
 location: $locations:primary
 project_id: $project_ids:prod-sec-core-0
 ca_pool_config:
-  create_pool: {}
+  create_pool:
+    enterprise_tier: true
+    publishing_options:
+      encoding_format: PEM
+      publish_ca_cert: true
+      publish_crl: true
 ca_configs:
   prod-ca-0-0: {}

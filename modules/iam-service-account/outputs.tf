@@ -39,8 +39,8 @@ output "id" {
 }
 
 output "name" {
-  description = "Service account name."
-  value       = local.static_id
+  description = "Service account email (mirrors email output for symmetry when chaining create and reuse)."
+  value       = local.static_email
   depends_on = [
     local.service_account
   ]

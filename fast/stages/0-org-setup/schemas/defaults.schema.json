@@ -674,6 +674,12 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
+        "access_levels": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
         "cidr_ranges_sets": {
           "type": "object",
           "additionalProperties": {

@@ -27,6 +27,7 @@ locals {
   }
   _googleapis_routes = {
     for k, v in local._googleapis_ranges : "${k}-googleapis" => {
+      name          = null
       description   = "Terraform-managed."
       dest_range    = v
       next_hop      = "default-internet-gateway"
@@ -53,7 +54,7 @@ resource "google_compute_route" "gateway" {
   for_each    = local.routes.gateway
   project     = local.project_id
   network     = local.network.name
-  name        = "${var.name}-${each.key}"
+  name        = coalesce(each.value.name, "${var.name}-${each.key}")
   description = each.value.description
   dest_range = lookup(
     local.ctx.cidr_ranges, each.value.dest_range, each.value.dest_range
@@ -67,7 +68,7 @@ resource "google_compute_route" "ilb" {
   for_each    = local.routes.ilb
   project     = local.project_id
   network     = local.network.name
-  name        = "${var.name}-${each.key}"
+  name        = coalesce(each.value.name, "${var.name}-${each.key}")
   description = each.value.description
   dest_range = lookup(
     local.ctx.cidr_ranges, each.value.dest_range, each.value.dest_range
@@ -83,7 +84,7 @@ resource "google_compute_route" "instance" {
   for_each    = local.routes.instance
   project     = local.project_id
   network     = local.network.name
-  name        = "${var.name}-${each.key}"
+  name        = coalesce(each.value.name, "${var.name}-${each.key}")
   description = each.value.description
   dest_range = lookup(
     local.ctx.cidr_ranges, each.value.dest_range, each.value.dest_range
@@ -99,7 +100,7 @@ resource "google_compute_route" "ip" {
   for_each    = local.routes.ip
   project     = local.project_id
   network     = local.network.name
-  name        = "${var.name}-${each.key}"
+  name        = coalesce(each.value.name, "${var.name}-${each.key}")
   description = each.value.description
   dest_range = lookup(
     local.ctx.cidr_ranges, each.value.dest_range, each.value.dest_range
@@ -115,7 +116,7 @@ resource "google_compute_route" "vpn_tunnel" {
   for_each    = local.routes.vpn_tunnel
   project     = local.project_id
   network     = local.network.name
-  name        = "${var.name}-${each.key}"
+  name        = coalesce(each.value.name, "${var.name}-${each.key}")
   description = each.value.description
   dest_range = lookup(
     local.ctx.cidr_ranges, each.value.dest_range, each.value.dest_range
@@ -129,12 +130,20 @@ resource "google_network_connectivity_policy_based_route" "default" {
   for_each              = var.policy_based_routes
   project               = local.project_id
   network               = local.network.id
-  name                  = "${var.name}-${each.key}"
+  name                  = coalesce(each.value.name, "${var.name}-${each.key}")
   description           = each.value.description
   labels                = each.value.labels
   priority              = each.value.priority
   next_hop_other_routes = each.value.use_default_routing ? "DEFAULT_ROUTING" : null
-  next_hop_ilb_ip       = each.value.use_default_routing ? null : each.value.next_hop_ilb_ip
+  next_hop_ilb_ip = (
+    each.value.use_default_routing
+    ? null
+    : lookup(
+      local.ctx.addresses,
+      each.value.next_hop_ilb_ip,
+      each.value.next_hop_ilb_ip
+    )
+  )
   filter {
     protocol_version = "IPV4"
     ip_protocol      = each.value.filter.ip_protocol

@@ -42,15 +42,27 @@ locals {
           }
         }
       }
-      kms_keys   = local.projects_kms_keys[k]
-      number     = module.projects[k].number
-      project_id = module.projects[k].project_id
+      bigquery_datasets = {
+        for sk, sv in lookup(v, "datasets", {}) :
+        "${k}/${sk}" => (
+          module.bigquery-datasets["${k}/${sk}"].id
+        )
+      }
+      custom_roles = {
+        for sk, sv in module.projects[k].custom_roles :
+        "${k}/${sk}" => (
+          sv.id
+        )
+      }
+      kms_keys = local.projects_kms_keys[k]
+      number   = module.projects[k].number
       log_buckets = {
         for sk, sv in lookup(v, "log_buckets", {}) :
         "${k}/${sk}" => (
           module.log-buckets["${k}/${sk}"].id
         )
       }
+      project_id = module.projects[k].project_id
       pubsub_topics = {
         for sk, sv in lookup(v, "pubsub_topics", {}) :
         "${k}/${sk}" => (
@@ -102,6 +114,20 @@ locals {
       }
     }
   )
+}
+
+output "bigquery_datasets" {
+  description = "BigQuery dataset ids."
+  value = merge([
+    for k, v in local.outputs_projects : v.bigquery_datasets
+  ]...)
+}
+
+output "custom_roles" {
+  description = "Custom role ids."
+  value = merge([
+    for k, v in local.outputs_projects : v.custom_roles
+  ]...)
 }
 
 output "folder_ids" {

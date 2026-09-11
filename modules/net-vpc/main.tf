@@ -90,6 +90,9 @@ resource "google_compute_network" "network" {
   network_firewall_policy_enforcement_order = var.firewall_policy_enforcement_order
   enable_ula_internal_ipv6                  = var.ipv6_config.enable_ula_internal
   internal_ipv6_range                       = var.ipv6_config.internal_range
+  bgp_always_compare_med                    = try(var.bgp_config.always_compare_med, null)
+  bgp_best_path_selection_mode              = try(var.bgp_config.best_path_selection_mode, null)
+  bgp_inter_region_cost                     = try(var.bgp_config.inter_region_cost, null)
 }
 
 resource "google_compute_network_peering" "local" {

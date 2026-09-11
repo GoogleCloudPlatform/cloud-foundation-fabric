@@ -35,3 +35,8 @@ tests:
       - customizations.yaml
     extra_dirs:
       - ../../../tests/fast/stages/s0_org_setup/data-customizations
+  caa:
+    inventory:
+      - caa.yaml
+    extra_dirs:
+      - ../../../tests/fast/stages/s0_org_setup/data-caa

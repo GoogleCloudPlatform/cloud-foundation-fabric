@@ -6,6 +6,7 @@ This module allows managing a single Pub/Sub topic, including multiple subscript
 - [Simple topic with IAM](#simple-topic-with-iam)
 - [Topic with schema](#topic-with-schema)
 - [Subscriptions](#subscriptions)
+- [Subscription deletion protection](#subscription-deletion-protection)
 - [Push subscriptions](#push-subscriptions)
 - [BigQuery subscriptions](#bigquery-subscriptions)
 - [BigQuery Subscription with service account email](#bigquery-subscription-with-service-account-email)
@@ -97,6 +98,24 @@ module "pubsub" {
   }
 }
 # tftest modules=1 resources=3 inventory=subscriptions.yaml e2e
+```
+
+## Subscription deletion protection
+
+Subscription filters are immutable, so changing one destroys and recreates the subscription. Since a subscription's IAM policy is a property of the subscription itself, GCP removes the policy with it, and this module's IAM bindings are not re-created: they identify the subscription by a name that a filter edit leaves unchanged. Set `deletion_policy` to `PREVENT` where that destroy should fail loudly instead. `ABANDON` removes the subscription from state without deleting it.
+
+```hcl
+module "pubsub" {
+  source     = "./fabric/modules/pubsub"
+  project_id = var.project_id
+  name       = "my-topic"
+  subscriptions = {
+    test-protected = {
+      deletion_policy = "PREVENT"
+    }
+  }
+}
+# tftest modules=1 resources=2 inventory=subscription-deletion-policy.yaml
 ```
 
 ## Push subscriptions

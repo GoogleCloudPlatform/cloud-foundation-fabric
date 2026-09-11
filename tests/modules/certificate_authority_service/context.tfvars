@@ -31,6 +31,11 @@ location   = "$locations:ew8"
 ca_pool_config = {
   create_pool = {
     name = "test-ca"
+    publishing_options = {
+      encoding_format = "PEM"
+      publish_ca_cert = true
+      publish_crl     = true
+    }
   }
 }
 ca_configs = {

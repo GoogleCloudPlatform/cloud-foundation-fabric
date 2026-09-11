@@ -2,7 +2,7 @@
 
 ## The Problem: Skill Environment Dependencies
 
-During E2E testing of the `fast-0-org-setup-prereqs` skill, the autonomous agent hallucinated that it needed to `git clone` the `cloud-foundation-fabric` repository. 
+During E2E testing of the `fast-prerequisites` skill, the autonomous agent hallucinated that it needed to `git clone` the `cloud-foundation-fabric` repository. 
 
 This occurred because the test harness executes the Gemini CLI in a completely empty, isolated temporary workspace (`/tmp/gemini_harness_*`). However, the FAST skill *assumes* it is being executed from the root of the `cloud-foundation-fabric` repository because it needs to:
 1. Read available datasets from `fast/stages/0-org-setup/datasets/*/defaults.yaml`.

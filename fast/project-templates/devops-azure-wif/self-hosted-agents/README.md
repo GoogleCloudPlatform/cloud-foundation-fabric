@@ -211,5 +211,10 @@ module "test-agent" {
   }
   project_id = "my-prj"
 }
-# tftest modules=4 resources=6
+# tftest modules=4 resources=6 files=token
+```
+
+```txt
+foo-token
+# tftest-file id=token path=token.txt
 ```

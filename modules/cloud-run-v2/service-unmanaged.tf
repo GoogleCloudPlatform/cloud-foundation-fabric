@@ -20,6 +20,7 @@ resource "google_cloud_run_v2_service" "service_unmanaged" {
   project              = local.project_id
   location             = local.location
   name                 = var.name
+  default_uri_disabled = var.service_config.default_uri_disabled
   ingress              = var.service_config.ingress
   invoker_iam_disabled = var.service_config.invoker_iam_disabled
   labels               = var.labels
@@ -28,10 +29,29 @@ resource "google_cloud_run_v2_service" "service_unmanaged" {
   deletion_protection  = var.deletion_protection
   iap_enabled          = var.service_config.iap_config != null
 
+  dynamic "binary_authorization" {
+    for_each = var.binary_authorization == null ? [] : [""]
+    content {
+      breakglass_justification = var.binary_authorization.breakglass_justification
+      policy                   = var.binary_authorization.policy
+      use_default              = var.binary_authorization.use_default
+    }
+  }
+
   dynamic "multi_region_settings" {
     for_each = local.multi_region_regions == null ? [] : [""]
     content {
       regions = local.multi_region_regions
+    }
+  }
+
+  dynamic "traffic" {
+    for_each = var.service_config.traffic == null ? [] : var.service_config.traffic
+    content {
+      percent  = traffic.value.percent
+      revision = traffic.value.revision
+      tag      = traffic.value.tag
+      type     = traffic.value.type
     }
   }
 

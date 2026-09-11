@@ -38,6 +38,9 @@ locals {
           enterprise_tier = try(
             v.ca_pool_config.create_pool.enterprise_tier, false
           )
+          publishing_options = try(
+            v.ca_pool_config.create_pool.publishing_options, null
+          )
         }
         use_pool = try(v.ca_pool_config.use_pool.id, null) == null ? null : {
           id = v.ca_pool_config.use_pool.id

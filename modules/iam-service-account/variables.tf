@@ -45,6 +45,16 @@ variable "create_ignore_already_exists" {
   }
 }
 
+variable "deletion_policy" {
+  description = "Deletion policy: DELETE, ABANDON, or PREVENT."
+  type        = string
+  default     = null
+  validation {
+    condition     = var.deletion_policy == null || contains(["ABANDON", "DELETE", "PREVENT"], var.deletion_policy)
+    error_message = "deletion_policy must be one of 'ABANDON', 'DELETE', 'PREVENT'."
+  }
+}
+
 variable "description" {
   description = "Optional description."
   type        = string

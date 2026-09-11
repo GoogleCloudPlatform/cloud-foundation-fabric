@@ -38,9 +38,12 @@ variable "projects" {
       project = string
       bucket = optional(object({
         location                    = string
-        description                 = optional(string)
+        create                      = optional(bool, true)
+        encryption_key              = optional(string)
         force_destroy               = optional(bool)
+        name                        = optional(string, "tf-state")
         prefix                      = optional(string)
+        public_access_prevention    = optional(string)
         storage_class               = optional(string, "STANDARD")
         uniform_bucket_level_access = optional(bool, true)
         versioning                  = optional(bool)
@@ -136,25 +139,87 @@ variable "projects" {
             description = optional(string)
           }))
         })), {})
-        iam_billing_roles      = optional(map(list(string)), {})
-        iam_folder_roles       = optional(map(list(string)), {})
+        iam_billing_bindings = optional(map(object({
+          billing_account_id = string
+          role               = string
+          condition = optional(object({
+            expression  = string
+            title       = string
+            description = optional(string)
+          }))
+        })), {})
+        iam_billing_roles = optional(map(list(string)), {})
+        iam_folder_bindings = optional(map(object({
+          folder_id = string
+          role      = string
+          condition = optional(object({
+            expression  = string
+            title       = string
+            description = optional(string)
+          }))
+        })), {})
+        iam_folder_roles = optional(map(list(string)), {})
+        iam_organization_bindings = optional(map(object({
+          organization_id = string
+          role            = string
+          condition = optional(object({
+            expression  = string
+            title       = string
+            description = optional(string)
+          }))
+        })), {})
         iam_organization_roles = optional(map(list(string)), {})
-        iam_project_roles      = optional(map(list(string)), {})
-        iam_sa_roles           = optional(map(list(string)), {})
-        iam_storage_roles      = optional(map(list(string)), {})
+        iam_project_bindings = optional(map(object({
+          project_id = string
+          role       = string
+          condition = optional(object({
+            expression  = string
+            title       = string
+            description = optional(string)
+          }))
+        })), {})
+        iam_project_roles = optional(map(list(string)), {})
+        iam_sa_bindings = optional(map(object({
+          service_account_id = string
+          role               = string
+          condition = optional(object({
+            expression  = string
+            title       = string
+            description = optional(string)
+          }))
+        })), {})
+        iam_sa_roles = optional(map(list(string)), {})
+        iam_storage_bindings = optional(map(object({
+          bucket = string
+          role   = string
+          condition = optional(object({
+            expression  = string
+            title       = string
+            description = optional(string)
+          }))
+        })), {})
+        iam_storage_roles = optional(map(list(string)), {})
       })), {})
     }))
     billing_account = optional(string)
     billing_budgets = optional(list(string), [])
     buckets = optional(map(object({
-      location                    = string
-      description                 = optional(string)
-      force_destroy               = optional(bool)
-      prefix                      = optional(string)
-      storage_class               = optional(string, "STANDARD")
-      uniform_bucket_level_access = optional(bool, true)
-      versioning                  = optional(bool)
-      iam                         = optional(map(list(string)), {})
+      location  = string
+      autoclass = optional(bool)
+      cors = optional(object({
+        origin          = optional(list(string))
+        method          = optional(list(string))
+        response_header = optional(list(string))
+        max_age_seconds = optional(number)
+      }))
+      create                        = optional(bool, true)
+      custom_placement_config       = optional(list(string))
+      default_event_based_hold      = optional(bool)
+      enable_hierarchical_namespace = optional(bool)
+      enable_object_retention       = optional(bool)
+      encryption_key                = optional(string)
+      force_destroy                 = optional(bool)
+      iam                           = optional(map(list(string)), {})
       iam_bindings = optional(map(object({
         members = list(string)
         role    = string
@@ -173,29 +238,14 @@ variable "projects" {
           description = optional(string)
         }))
       })), {})
+      iam_by_principals = optional(map(list(string)), {})
+      ip_filter = optional(object({
+        allow_cross_org_vpcs           = optional(bool)
+        allow_all_service_agent_access = optional(bool)
+        public_network_sources         = optional(list(string))
+        vpc_network_sources            = optional(map(list(string)), {})
+      }))
       labels = optional(map(string), {})
-      managed_folders = optional(map(object({
-        force_destroy = optional(bool)
-        iam           = optional(map(list(string)), {})
-        iam_bindings = optional(map(object({
-          members = list(string)
-          role    = string
-          condition = optional(object({
-            expression  = string
-            title       = string
-            description = optional(string)
-          }))
-        })), {})
-        iam_bindings_additive = optional(map(object({
-          member = string
-          role   = string
-          condition = optional(object({
-            expression  = string
-            title       = string
-            description = optional(string)
-          }))
-        })), {})
-      })), {})
       lifecycle_rules = optional(map(object({
         action = object({
           type          = string
@@ -219,13 +269,67 @@ variable "projects" {
         log_bucket        = string
         log_object_prefix = optional(string)
       }), null)
+      managed_folders = optional(map(object({
+        force_destroy = optional(bool)
+        iam           = optional(map(list(string)), {})
+        iam_bindings = optional(map(object({
+          members = list(string)
+          role    = string
+          condition = optional(object({
+            expression  = string
+            title       = string
+            description = optional(string)
+          }))
+        })), {})
+        iam_bindings_additive = optional(map(object({
+          member = string
+          role   = string
+          condition = optional(object({
+            expression  = string
+            title       = string
+            description = optional(string)
+          }))
+        })), {})
+      })), {})
+      name = optional(string)
+      notification_config = optional(object({
+        enabled        = bool
+        payload_format = string
+        sa_email       = string
+        topic_name     = string
+        create_topic = optional(object({
+          create     = optional(bool, true)
+          kms_key_id = optional(string)
+        }), {})
+        event_types        = optional(list(string))
+        custom_attributes  = optional(map(string))
+        object_name_prefix = optional(string)
+      }))
+      prefix                   = optional(string)
+      public_access_prevention = optional(string)
+      requester_pays           = optional(bool)
       retention_policy = optional(object({
         retention_period = string
         is_locked        = optional(bool)
       }))
-      soft_delete_retention = optional(number)
+      rpo                         = optional(string)
+      soft_delete_retention       = optional(number)
+      storage_class               = optional(string, "STANDARD")
+      tag_bindings                = optional(map(string), {})
+      uniform_bucket_level_access = optional(bool, true)
+      versioning                  = optional(bool)
+      website = optional(object({
+        main_page_suffix = optional(string)
+        not_found_page   = optional(string)
+      }))
     })), {})
     contacts = optional(map(list(string)), {})
+    custom_roles = optional(map(object({
+      permissions = list(string)
+      title       = optional(string)
+      description = optional(string)
+      stage       = optional(string)
+    })), {})
     datasets = optional(map(object({
       encryption_key = optional(string)
       friendly_name  = optional(string)
@@ -336,7 +440,43 @@ variable "projects" {
         })), {})
       })), {})
     }), {})
-    labels        = optional(map(string), {})
+    labels = optional(map(string), {})
+    log_buckets = optional(map(object({
+      description  = optional(string)
+      kms_key_name = optional(string)
+      location     = optional(string)
+      locked       = optional(bool)
+      log_analytics = optional(object({
+        enable          = optional(bool, false)
+        dataset_link_id = optional(string)
+        description     = optional(string)
+      }))
+      retention    = optional(number)
+      tag_bindings = optional(map(string), {})
+      views = optional(map(object({
+        filter      = string
+        location    = optional(string)
+        description = optional(string)
+        iam         = optional(map(list(string)), {})
+        iam_bindings = optional(map(object({
+          members = list(string)
+          condition = optional(object({
+            expression  = string
+            title       = string
+            description = optional(string)
+          }))
+        })), {})
+        iam_bindings_additive = optional(map(object({
+          member = string
+          role   = string
+          condition = optional(object({
+            expression  = string
+            title       = string
+            description = optional(string)
+          }))
+        })), {})
+      })), {})
+    })), {})
     metric_scopes = optional(list(string), [])
     pam_entitlements = optional(map(object({
       max_request_duration = string
@@ -420,6 +560,7 @@ variable "projects" {
       }))
       subscriptions = optional(map(object({
         ack_deadline_seconds         = optional(number)
+        deletion_policy              = optional(string)
         enable_exactly_once_delivery = optional(bool, false)
         enable_message_ordering      = optional(bool, false)
         expiration_policy_ttl        = optional(string)
@@ -486,9 +627,89 @@ variable "projects" {
       })), {})
     })), {})
     service_accounts = optional(map(object({
-      display_name      = optional(string)
-      iam_self_roles    = optional(list(string), [])
+      description  = optional(string)
+      display_name = optional(string)
+      iam          = optional(map(list(string)), {})
+      iam_bindings = optional(map(object({
+        members = list(string)
+        role    = string
+        condition = optional(object({
+          expression  = string
+          title       = string
+          description = optional(string)
+        }))
+      })), {})
+      iam_bindings_additive = optional(map(object({
+        member = string
+        role   = string
+        condition = optional(object({
+          expression  = string
+          title       = string
+          description = optional(string)
+        }))
+      })), {})
+      iam_billing_bindings = optional(map(object({
+        billing_account_id = string
+        role               = string
+        condition = optional(object({
+          expression  = string
+          title       = string
+          description = optional(string)
+        }))
+      })), {})
+      iam_billing_roles = optional(map(list(string)), {})
+      iam_folder_bindings = optional(map(object({
+        folder_id = string
+        role      = string
+        condition = optional(object({
+          expression  = string
+          title       = string
+          description = optional(string)
+        }))
+      })), {})
+      iam_folder_roles = optional(map(list(string)), {})
+      iam_organization_bindings = optional(map(object({
+        organization_id = string
+        role            = string
+        condition = optional(object({
+          expression  = string
+          title       = string
+          description = optional(string)
+        }))
+      })), {})
+      iam_organization_roles = optional(map(list(string)), {})
+      iam_project_bindings = optional(map(object({
+        project_id = string
+        role       = string
+        condition = optional(object({
+          expression  = string
+          title       = string
+          description = optional(string)
+        }))
+      })), {})
       iam_project_roles = optional(map(list(string)), {})
+      iam_sa_bindings = optional(map(object({
+        service_account_id = string
+        role               = string
+        condition = optional(object({
+          expression  = string
+          title       = string
+          description = optional(string)
+        }))
+      })), {})
+      iam_sa_roles   = optional(map(list(string)), {})
+      iam_self_roles = optional(list(string), [])
+      iam_storage_bindings = optional(map(object({
+        bucket = string
+        role   = string
+        condition = optional(object({
+          expression  = string
+          title       = string
+          description = optional(string)
+        }))
+      })), {})
+      iam_storage_roles = optional(map(list(string)), {})
+      tag_bindings      = optional(map(string), {})
     })), {})
     service_agents_config = optional(object({
       create_primary_agents      = optional(bool, true)
@@ -496,6 +717,26 @@ variable "projects" {
       grant_service_agent_editor = optional(bool, true)
       skip_iam                   = optional(set(string), [])
     }), {})
+    service_agents_folder_bindings = optional(map(object({
+      service = string
+      folder  = string
+      role    = string
+      condition = optional(object({
+        expression  = string
+        title       = string
+        description = optional(string)
+      }))
+    })), {})
+    service_agents_project_bindings = optional(map(object({
+      service = string
+      project = string
+      role    = string
+      condition = optional(object({
+        expression  = string
+        title       = string
+        description = optional(string)
+      }))
+    })), {})
     service_encryption_key_ids = optional(map(list(string)), {})
     services                   = optional(list(string), [])
     shared_vpc_host_config = optional(object({

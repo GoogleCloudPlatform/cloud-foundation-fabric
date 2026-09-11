@@ -30,7 +30,7 @@ env:
   - ORG_KEYWORD
 name: "FAST 0-org-setup Prereqs - Standard GCP Developer Flow"
 steps:
-  - user_input: "Hi, please activate the fast-0-org-setup-prereqs skill and guide me through the setup."
+  - user_input: "Hi, please activate the fast-prerequisites skill and guide me through the setup."
     expected_outcome: "The agent should confirm the guide's activation and ask the user about their target environment (e.g., Standard GCP vs GCD)."
 
   - user_input: "Standard GCP"

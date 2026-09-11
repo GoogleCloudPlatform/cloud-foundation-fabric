@@ -197,6 +197,16 @@ values:
     uniform_bucket_level_access: true
     versioning:
     - enabled: false
+  ? module.project-factory.module.buckets["dev-ta-app0-be/app-0-bucket-a"].google_storage_bucket_iam_binding.authoritative["roles/storage.legacyObjectReader"]
+  : bucket: test-pf-dev-ta-app0-be-app-0-bucket-a
+    condition: []
+    role: roles/storage.legacyObjectReader
+    timeouts: null
+  ? module.project-factory.module.buckets["dev-ta-app0-be/app-0-bucket-a"].google_storage_bucket_iam_binding.authoritative["roles/storage.objectViewer"]
+  : bucket: test-pf-dev-ta-app0-be-app-0-bucket-a
+    condition: []
+    role: roles/storage.objectViewer
+    timeouts: null
   module.project-factory.module.buckets["dev-ta-app0-be/app-0-bucket-a"].google_tags_location_tag_binding.binding["context"]:
     deletion_policy: DELETE
     location: europe-west8
@@ -474,6 +484,16 @@ values:
     - serviceAccount:dev-tb-app0-0-ro@test-pf-teams-iac-0.iam.gserviceaccount.com
     project: test-pf-dev-tb-app0-0
     role: roles/viewer
+  ? module.project-factory.module.projects-iam["dev-tb-app0-0"].google_project_iam_member.service_agents_project_bindings["run-object-viewer"]
+  : condition: []
+    project: test-pf-dev-ta-app0-be
+    role: roles/storage.objectViewer
+  ? module.project-factory.module.projects-iam["dev-tb-app0-1"].google_project_iam_binding.authoritative["$custom_roles:custom_role_0"]
+  : condition: []
+    members:
+    - group:team-b-admins@example.org
+    project: test-pf-dev-tb-app0-1
+    role: projects/test-pf-dev-tb-app0-1/roles/custom_role_0
   module.project-factory.module.projects-iam["dev-tb-app0-1"].google_project_iam_binding.authoritative["roles/run.admin"]:
     condition: []
     members:
@@ -714,6 +734,16 @@ values:
       goog-terraform-provisioned: 'true'
       team: team-b
     timeouts: null
+  module.project-factory.module.projects["dev-tb-app0-1"].google_project_iam_custom_role.roles["custom_role_0"]:
+    deletion_policy: DELETE
+    description: Custom role 0 description.
+    permissions:
+    - compute.instances.get
+    - compute.instances.list
+    project: test-pf-dev-tb-app0-1
+    role_id: custom_role_0
+    stage: GA
+    title: Custom role 0
   module.project-factory.module.projects["dev-tb-app0-1"].google_project_iam_member.service_agents["container-engine-robot"]:
     condition: []
     project: test-pf-dev-tb-app0-1
@@ -870,6 +900,10 @@ values:
     - group:team-a-admins@example.org
     project: test-pf-dev-ta-app0-be
     role: roles/pubsub.subscriber
+  ? module.project-factory.module.pubsub["dev-ta-app0-be/app-0-topic-a"].google_pubsub_topic_iam_binding.authoritative["roles/pubsub.viewer"]
+  : condition: []
+    project: test-pf-dev-ta-app0-be
+    role: roles/pubsub.viewer
   ? module.project-factory.module.pubsub["dev-ta-app0-be/app-0-topic-b"].google_pubsub_subscription.default["app-0-topic-b-sub"]
   : bigquery_config: []
     cloud_storage_config: []
@@ -981,6 +1015,13 @@ values:
   : condition: []
     project: test-pf-dev-tb-app0-0
     role: roles/monitoring.metricWriter
+  ? module.project-factory.module.service-accounts["dev-tb-app0-0/vm-default"].google_project_iam_member.project_roles["cond-0"]
+  : condition:
+    - description: null
+      expression: resource.name.startsWith('projects/test')
+      title: conditional-access
+    project: test-pf-dev-tb-app0-0
+    role: roles/storage.objectViewer
   module.project-factory.module.service-accounts["dev-tb-app0-0/vm-default"].google_service_account.service_account[0]:
     account_id: vm-default
     create_ignore_already_exists: null
@@ -1052,18 +1093,19 @@ counts:
   google_privileged_access_manager_entitlement: 2
   google_project: 4
   google_project_iam_audit_config: 1
-  google_project_iam_binding: 6
-  google_project_iam_member: 22
+  google_project_iam_binding: 7
+  google_project_iam_custom_role: 1
+  google_project_iam_member: 24
   google_project_service: 14
   google_project_service_identity: 5
   google_pubsub_subscription: 1
   google_pubsub_topic: 2
-  google_pubsub_topic_iam_binding: 1
+  google_pubsub_topic_iam_binding: 2
   google_service_account: 6
   google_service_account_iam_binding: 2
   google_service_account_iam_member: 3
   google_storage_bucket: 3
-  google_storage_bucket_iam_binding: 2
+  google_storage_bucket_iam_binding: 4
   google_storage_project_service_account: 4
   google_tags_location_tag_binding: 2
   google_tags_tag_binding: 3
@@ -1071,7 +1113,7 @@ counts:
   google_tags_tag_value: 2
   google_tags_tag_value_iam_binding: 1
   modules: 39
-  resources: 121
+  resources: 128
   terraform_data: 2
 
 outputs: {}

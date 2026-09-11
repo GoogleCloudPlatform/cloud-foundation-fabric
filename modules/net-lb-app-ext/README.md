@@ -19,6 +19,7 @@ Due to the complexity of the underlying resources, changes to the configuration 
     - [Instance Groups](#instance-groups)
     - [Managed Instance Groups](#managed-instance-groups)
     - [Storage Buckets](#storage-buckets)
+    - [Cloud CDN](#cloud-cdn)
     - [Network Endpoint Groups (NEGs)](#network-endpoint-groups-negs)
     - [Zonal NEG creation](#zonal-neg-creation)
     - [Hybrid NEG creation](#hybrid-neg-creation)
@@ -34,7 +35,6 @@ Due to the complexity of the underlying resources, changes to the configuration 
 - [Deploying changes to load balancer configurations](#deploying-changes-to-load-balancer-configurations)
   - [Changing the Network Endpoint Group](#changing-the-network-endpoint-group)
   - [Updating SSL certificate](#updating-ssl-certificate)
-- [Recipes](#recipes)
 - [Files](#files)
 - [Variables](#variables)
 - [Outputs](#outputs)
@@ -384,6 +384,58 @@ module "glb-0" {
   health_check_configs = {}
 }
 # tftest modules=1 resources=4 inventory=storage.yaml e2e
+```
+
+#### Cloud CDN
+
+Cloud CDN can be enabled on backend buckets and backend services via the `enable_cdn` flag, and tuned via the `cdn_policy` attribute. The `bypass_cache_on_request_headers` attribute allows bypassing the cache for requests carrying specific headers (e.g. `Authorization`):
+
+```hcl
+module "glb-0" {
+  source     = "./fabric/modules/net-lb-app-ext"
+  project_id = var.project_id
+  name       = "glb-test-0"
+  backend_buckets_config = {
+    static = {
+      bucket_name = var.bucket
+      enable_cdn  = true
+      cdn_policy = {
+        bypass_cache_on_request_headers = ["Authorization", "Pragma"]
+        cache_mode                      = "CACHE_ALL_STATIC"
+      }
+    }
+  }
+  backend_service_configs = {
+    default = {
+      backends = [{
+        group = "projects/my-project/zones/europe-west8-b/instanceGroups/ig-b"
+      }]
+      enable_cdn = true
+      cdn_policy = {
+        bypass_cache_on_request_headers = ["Authorization"]
+        cache_mode                      = "CACHE_ALL_STATIC"
+        signed_url_cache_max_age_sec    = 7200
+      }
+    }
+  }
+  urlmap_config = {
+    default_service = "default"
+    host_rules = [{
+      hosts        = ["*"]
+      path_matcher = "pathmap"
+    }]
+    path_matchers = {
+      pathmap = {
+        default_service = "default"
+        path_rules = [{
+          paths   = ["/static", "/static/*"]
+          service = "static"
+        }]
+      }
+    }
+  }
+}
+# tftest modules=1 resources=6 inventory=cloud-cdn.yaml
 ```
 
 #### Network Endpoint Groups (NEGs)
@@ -1176,6 +1228,7 @@ After applying this change, you can update the backend service to point to the n
       port_name     = "http"
     }
   }
+# tftest skip reason=tutorial-step
 ```
 
 If you prefer to maintain the original naming convention, you can modify `neg-0` to point to the `hello2` service. After making this change, switch the backend configuration back to `neg-0`, and finally remove `neg-1`.
@@ -1209,10 +1262,6 @@ After provisioning this change, and verifying that the new certificate is provis
 
 <!-- TFDOC OPTS files:1 -->
 <!-- BEGIN TFDOC -->
-## Recipes
-
-- [Expose Cloud Run service with Global External Application Load Balancer protected by IAP](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/blob/master/modules/net-lb-app-ext/recipe-cloud-run-iap)
-
 ## Files
 
 | name | description | resources |

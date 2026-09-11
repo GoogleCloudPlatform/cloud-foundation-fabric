@@ -63,7 +63,16 @@ locals {
           service_account              = try(v.gce_instance.service_account, null)
           service_account_scopes       = try(v.gce_instance.service_account_scopes, null)
           tags                         = try(v.gce_instance.tags, null)
-          accelerators                 = try(v.gce_instance.accelerators, [])
+          accelerators                 = try(v.gce_instance.accelerators, {})
+          boost_configs = {
+            for kk, vv in try(v.gce_instance.boost_configs, {}) : kk => {
+              machine_type                 = try(vv.machine_type, null)
+              boot_disk_size_gb            = try(vv.boot_disk_size_gb, null)
+              enable_nested_virtualization = try(vv.enable_nested_virtualization, null)
+              pool_size                    = try(vv.pool_size, null)
+              accelerators                 = try(vv.accelerators, {})
+            }
+          }
           shielded_instance_config = (
             try(v.gce_instance.shielded_instance_config, null) == null ? null : {
               enable_secure_boot = try(

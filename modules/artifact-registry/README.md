@@ -370,9 +370,9 @@ module "additive_iam" {
 |---|---|:---:|:---:|:---:|
 | [cleanup_policies](variables.tf#L17) | Object containing details about the cleanup policies for an Artifact Registry repository. | <code>map&#40;object&#40;&#123;&#8230;default &#61; null</code> | ✓ |  |
 | [format](variables.tf#L83) | Repository format. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
-| [location](variables.tf#L236) | Registry location. Use `gcloud beta artifacts locations list' to get valid values. | <code>string</code> | ✓ |  |
-| [name](variables.tf#L241) | Registry name. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L246) | Registry project id. | <code>string</code> | ✓ |  |
+| [location](variables.tf#L244) | Registry location. Use `gcloud beta artifacts locations list' to get valid values. | <code>string</code> | ✓ |  |
+| [name](variables.tf#L249) | Registry name. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L254) | Registry project id. | <code>string</code> | ✓ |  |
 | [cleanup_policy_dry_run](variables.tf#L38) | If true, the cleanup pipeline is prevented from deleting versions in this repository. | <code>bool</code> |  | <code>null</code> |
 | [context](variables.tf#L44) | Context-specific interpolations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [description](variables.tf#L65) | An optional description for the repository. | <code>string</code> |  | <code>&#34;Terraform-managed registry&#34;</code> |
@@ -382,9 +382,9 @@ module "additive_iam" {
 | [iam_bindings](variables-iam.tf#L43) | Authoritative IAM bindings in {KEY => {role = ROLE, members = [], condition = {}}}. Keys are arbitrary. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam_bindings_additive](variables-iam.tf#L58) | Individual additive IAM bindings. Keys are arbitrary. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam_by_principals](variables-iam.tf#L73) | Authoritative IAM binding in {PRINCIPAL => [ROLES]} format. Principals need to be statically defined to avoid cycle errors. Merged internally with the `iam` variable. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [labels](variables.tf#L230) | Labels to be attached to the registry. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [tag_bindings](variables.tf#L251) | Tag bindings for this repository, in key => tag value id format. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [universe](variables.tf#L258) | GCP universe where to deploy the project. The prefix will be prepended to the project id. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [labels](variables.tf#L238) | Labels to be attached to the registry. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [tag_bindings](variables.tf#L259) | Tag bindings for this repository, in key => tag value id format. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [universe](variables.tf#L266) | GCP universe where to deploy the project. The prefix will be prepended to the project id. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 
 ## Outputs
 

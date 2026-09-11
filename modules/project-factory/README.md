@@ -42,6 +42,7 @@ The code is meant to be executed by a high level service account with powerful p
   - [Service account context ids](#service-account-context-ids)
   - [Log bucket context ids](#log-bucket-context-ids)
   - [Other context ids](#other-context-ids)
+- [Service agent grants outside the project](#service-agent-grants-outside-the-project)
 - [Example](#example)
 - [Files](#files)
 - [Variables](#variables)
@@ -206,7 +207,6 @@ automation:
       description: Read-only automation sa for app example 0.
   bucket:
     # bucket name: foo-prod-app-example-0-tf-state
-    description: Terraform state bucket for app example 0.
     iam:
       roles/storage.objectCreator:
         - $iam_principals:service_accounts/iac-core-0/rw
@@ -263,7 +263,6 @@ automation:
       description: Read/write automation sa for team a app 0.
   buckets:
     state:
-      description: Terraform state bucket for team a app 0.
       iam:
         roles/storage.objectCreator:
           - $iam_principals:service_accounts/my-project/rw
@@ -281,8 +280,8 @@ Assuming keys of the form `my_folder`, `my_project`, `my_sa`, etc. this is an ex
 - `$folder_ids:my_folder`
 - `$iam_principals:my_principal`
 - `$iam_principals:service_accounts/my_project/my_sa`
-- `$iam_principals:service_agents/_self_/my_api`
-- `$iam_principals:service_agents/my_project/my_api`
+- `$iam_principals:service_agents/_self_/my_api` *only resolves for agents whose API is enabled in the project*
+- `$iam_principals:service_agents/my_project/my_api` *only resolves for agents whose API is enabled in the target project*
 - `$iam_principalsets:service_accounts/all`
 - `$kms_keys:my_key`
 - `$log_buckets:my_project/my_bucket`
@@ -403,6 +402,14 @@ tag_bindings:
 vpc_sc:
   perimeter_name: $vpc_sc_perimeters:default
 ```
+
+## Service agent grants outside the project
+
+The `service_agents_project_bindings` and `service_agents_folder_bindings` project attributes grant a project's own service agents roles on projects and folders the project does not own. Their `service` attribute takes a service agent name or alias, while target and role are resolved through context.
+
+Where both the granting project and the target are managed by the same factory, using `iam_by_principals` in combination with the `$service_agents` context is the preferred way of accomplishing the same, as it defines IAM grants in the context of the resource they apply to instead of the other way round.
+
+Reach for the service agent grants attributes when the target lives outside the factory, for example a folder or a project owned by a preceding stage. Service agents are defined here and are not known on the resource side, so granting from this end avoids shuffling static values around between stages, in the form of fully qualified service agent emails.
 
 ## Example
 
@@ -664,7 +671,7 @@ service_accounts:
       roles/iam.serviceAccountUser:
         - $iam_principals:service_accounts/_self_/app-0-fe
         - $iam_principals:service_agents/_self_/compute
-        - $iam_principals:service_agents/dev-tb-app0-0/compute
+        - $iam_principals:service_agents/dev-tb-app0-0/storage
     iam_bindings_additive:
       test:
         role: roles/iam.serviceAccountUser
@@ -694,6 +701,11 @@ billing_budgets:
 buckets:
   app-0-bucket-a:
     location: europe-west8
+    iam:
+      roles/storage.objectViewer:
+        - $iam_principals:service_agents/_self_/compute
+      roles/storage.legacyObjectReader:
+        - $iam_principals:service_agents/dev-tb-app0-0/storage
     tag_bindings:
       context: $tag_values:context/gke
   app-0-bucket-b:
@@ -730,6 +742,8 @@ pubsub_topics:
     iam:
       roles/pubsub.subscriber:
         - group:team-a-admins@example.org
+      roles/pubsub.viewer:
+        - $iam_principals:service_agents/_self_/pubsub
   app-0-topic-b:
     subscriptions:
       app-0-topic-b-sub: {}
@@ -779,11 +793,23 @@ service_accounts:
     iam:
       roles/iam.serviceAccountTokenCreator:
         - $iam_principals:service_accounts/dev-tb-app0-0/automation/rw
+    iam_project_bindings:
+      cond-0:
+        project_id: $project_ids:dev-tb-app0-0
+        role: roles/storage.objectViewer
+        condition:
+          expression: resource.name.startsWith('projects/test')
+          title: conditional-access
 data_access_logs:
   storage.googleapis.com:
     DATA_READ:
       exempted_members:
         - $iam_principals:gcp-devops
+service_agents_project_bindings:
+  run-object-viewer:
+    service: run
+    project: $project_ids:dev-ta-app0-be
+    role: roles/storage.objectViewer
 automation:
   project: test-pf-teams-iac-0
   # prefix used for automation resources can be explicitly set if needed
@@ -797,7 +823,6 @@ automation:
     ro:
       description: Team B app 0 read-only automation sa.
   bucket:
-    description: Team B app 0 Terraform state bucket.
     iam:
       roles/storage.objectCreator:
         - $iam_principals:service_accounts/dev-tb-app0-0/automation/rw
@@ -841,17 +866,26 @@ Granting permissions to service accounts defined in other project through interp
 ```yaml
 billing_account: 012345-67890A-BCDEF0
 labels:
- app: app-0
- team: team-b
+  app: app-0
+  team: team-b
 parent: $folder_ids:team-b/app-0
 services:
   - container.googleapis.com
   - storage.googleapis.com
+custom_roles:
+  custom_role_0:
+    permissions:
+      - compute.instances.get
+      - compute.instances.list
+    title: "Custom role 0"
+    description: "Custom role 0 description."
 iam:
   "roles/run.admin":
     - $iam_principals:service_accounts/dev-ta-app0-be/app-0-be
   "roles/run.developer":
     - $iam_principals:service_accounts/dev-tb-app0-1/app-0-be
+  "$custom_roles:custom_role_0":
+    - group:team-b-admins@example.org
 service_accounts:
   app-0-be:
     display_name: "Backend instances."
@@ -914,20 +948,22 @@ compute.disableSerialPortAccess:
 
 | name | description | sensitive |
 |---|---|:---:|
-| [folder_ids](outputs.tf#L107) | Folder ids. |  |
-| [iam_principals](outputs.tf#L112) | IAM principals mappings. |  |
-| [kms_keys](outputs.tf#L117) | KMS key ids. |  |
-| [log_buckets](outputs.tf#L122) | Log bucket ids. |  |
-| [project_ids](outputs.tf#L129) | Project ids. |  |
-| [project_numbers](outputs.tf#L134) | Project numbers. |  |
-| [projects](outputs.tf#L141) | Project attributes. |  |
-| [pubsub_topics](outputs.tf#L146) | PubSub topic ids. |  |
-| [service_account_emails](outputs.tf#L153) | Service account emails. |  |
-| [service_account_iam_emails](outputs.tf#L160) | Service account IAM-format emails. |  |
-| [service_account_ids](outputs.tf#L167) | Service account IDs. |  |
-| [service_accounts](outputs.tf#L174) | Service account emails. |  |
-| [service_agents](outputs.tf#L179) | Service agent emails. |  |
-| [storage_buckets](outputs.tf#L190) | Bucket names. |  |
+| [bigquery_datasets](outputs.tf#L119) | BigQuery dataset ids. |  |
+| [custom_roles](outputs.tf#L126) | Custom role ids. |  |
+| [folder_ids](outputs.tf#L133) | Folder ids. |  |
+| [iam_principals](outputs.tf#L138) | IAM principals mappings. |  |
+| [kms_keys](outputs.tf#L143) | KMS key ids. |  |
+| [log_buckets](outputs.tf#L148) | Log bucket ids. |  |
+| [project_ids](outputs.tf#L155) | Project ids. |  |
+| [project_numbers](outputs.tf#L160) | Project numbers. |  |
+| [projects](outputs.tf#L167) | Project attributes. |  |
+| [pubsub_topics](outputs.tf#L172) | PubSub topic ids. |  |
+| [service_account_emails](outputs.tf#L179) | Service account emails. |  |
+| [service_account_iam_emails](outputs.tf#L186) | Service account IAM-format emails. |  |
+| [service_account_ids](outputs.tf#L193) | Service account IDs. |  |
+| [service_accounts](outputs.tf#L200) | Service account emails. |  |
+| [service_agents](outputs.tf#L205) | Service agent emails. |  |
+| [storage_buckets](outputs.tf#L216) | Bucket names. |  |
 <!-- END TFDOC -->
 ## Tests
 
@@ -971,7 +1007,7 @@ module "project-factory" {
     basepath = "data"
   }
 }
-# tftest modules=10 resources=36 files=test-0,test-1,test-2 inventory=test-1.yaml
+# tftest modules=16 resources=49 files=test-0,test-1,test-2 inventory=test-1.yaml
 ```
 
 ```yaml
@@ -1008,6 +1044,55 @@ automation:
     auto-tag-test:
       tag_bindings:
         project-level: $tag_values:test-0/context/project-factory
+# test forwarding of the full gcs bucket attribute surface
+buckets:
+  attrs-test:
+    autoclass: false
+    default_event_based_hold: true
+    enable_hierarchical_namespace: false
+    public_access_prevention: enforced
+    requester_pays: true
+    # rpo is only accepted on dual-region buckets
+    location: EU
+    custom_placement_config:
+      - europe-west1
+      - europe-west4
+    rpo: DEFAULT
+    cors:
+      origin:
+        - https://example.com
+      method:
+        - GET
+      response_header:
+        - Content-Type
+      max_age_seconds: 3600
+    ip_filter:
+      allow_all_service_agent_access: true
+      public_network_sources:
+        - 192.0.2.0/24
+    notification_config:
+      enabled: true
+      payload_format: JSON_API_V1
+      sa_email: service-1234567890@gs-project-accounts.iam.gserviceaccount.com
+      topic_name: attrs-test-notifications
+    website:
+      main_page_suffix: index.html
+      not_found_page: 404.html
+# test forwarding of the full logging-bucket attribute surface
+log_buckets:
+  audit-logs:
+    description: Test log bucket description.
+    locked: false
+    retention: 365
+    tag_bindings:
+      project-level: $tag_values:test-0/context/project-factory
+    views:
+      audit-view:
+        description: Test log view.
+        filter: 'LOG_ID("cloudaudit.googleapis.com/activity")'
+        iam:
+          roles/logging.viewAccessor:
+            - $iam_principals:tag-test
 # tftest-file id=test-0 path=data/projects/test-0.yaml
 ```
 
@@ -1034,5 +1119,23 @@ prefix: bar
 services:
   - iam.googleapis.com
   - storage.googleapis.com
+service_accounts:
+  # service account IAM is applied in a second pass, so bindings declared via
+  # iam_bindings/iam_bindings_additive alone also need to trigger it
+  bindings-only:
+    iam_bindings:
+      token-creator:
+        role: roles/iam.serviceAccountTokenCreator
+        members:
+          - user:user1@example.com
+  bindings-additive-only:
+    iam_bindings_additive:
+      key-admin:
+        role: roles/iam.serviceAccountKeyAdmin
+        member: user:user1@example.com
+      # cross-service account reference, only resolvable in the second pass
+      token-creator:
+        role: roles/iam.serviceAccountTokenCreator
+        member: $iam_principals:service_accounts/_self_/bindings-only
 # tftest-file id=test-2 path=data/projects/test-2.yaml
 ```
