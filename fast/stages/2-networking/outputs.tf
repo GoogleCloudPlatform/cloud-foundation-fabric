@@ -18,6 +18,10 @@ locals {
   tfvars = {
     host_project_ids     = module.projects.project_ids
     host_project_numbers = module.projects.project_numbers
+    network_attachment_ids = {
+      for vpc_key, vpc in module.vpc-factory.vpcs :
+      vpc_key => vpc.network_attachment_ids
+    }
     subnet_ips = {
       for vpc_key, vpc in module.vpc-factory.vpcs : vpc_key => vpc.subnet_ips
     }
@@ -78,6 +82,11 @@ output "host_project_ids" {
 output "host_project_numbers" {
   description = "Project numbers."
   value       = local.tfvars.host_project_numbers
+}
+
+output "network_attachment_ids" {
+  description = "PSC network attachment ids."
+  value       = local.tfvars.network_attachment_ids
 }
 
 output "subnet_ips" {
