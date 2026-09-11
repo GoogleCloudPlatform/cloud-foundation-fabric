@@ -486,13 +486,13 @@ module "cluster-1" {
 # tftest modules=1 resources=1
 ```
 
-### Disable PSC endpoint creation
+### Disable PSC endpoint creation 
 
 To disable IP access to the GKE control plane and prevent PSC endpoint creation, set `var.access_config.ip_access` to `null` or omit the variable.
 
 ```hcl
 module "cluster-1" {
-  source     = "./fabric/modules/gke-cluster-autopilot"
+  source     = "./fabric/modules/gke-cluster-standard"
   project_id = "myproject"
   name       = "cluster-1"
   location   = "europe-west1"
