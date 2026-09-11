@@ -50,6 +50,17 @@ module "ssm" {
     # playground. The pool's project and location are independent of the
     # instance's, so europe-west8 here against europe-west4 above is fine
     ca_pool_id = var.ca_pool_id
+    # custom hostnames under ssm.gcp.qix.it, in place of the generated ones
+    # under europe-west4.p.sourcemanager.dev. The generated names embed the
+    # instance id and the project number, so they change on any rebuild;
+    # these are ours and survive one. All four are required by the API, and
+    # their certificate is signed by the CA pool above.
+    custom_host_config = {
+      api      = "api.${var.domain}"
+      git_http = "git.${var.domain}"
+      git_ssh  = "ssh.${var.domain}"
+      html     = var.domain
+    }
   }
   repositories = {
     for k, v in var.repositories : k => {
@@ -233,11 +244,12 @@ resource "google_cloudbuild_worker_pool" "default" {
 #
 # 2-networking  the europe-west4 workload and proxy-only subnets, and the
 #   psa-build range with export_routes. All applied. Still to do there:
-#   peered_domains for europe-west4.p.sourcemanager.dev., currently commented
-#   out, without which the pool resolves the instance hostnames through public
-#   DNS and clone fails even though the route works.
+#   peered_domains for ssm.gcp.qix.it., currently commented out, without which
+#   the pool resolves the instance hostnames through public DNS and clone
+#   fails even though the route works. Custom hostnames take the region out of
+#   the suffix, so this line no longer has to change if the instance moves.
 #
-# 2-networking DNS  the private zone for europe-west4.p.sourcemanager.dev.
-#   attached to the VPC, and four A records against the two load balancer
-#   addresses this template outputs. Kept out because the addresses are
-#   outputs here and the records are owned there.
+# 2-networking DNS  the private zone for ssm.gcp.qix.it. attached to the VPC,
+#   with api, git and the apex pointing at the HTTP load balancer address and
+#   ssh at the SSH one. Kept out because the addresses are outputs here and
+#   the records are owned there.
