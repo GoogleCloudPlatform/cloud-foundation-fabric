@@ -61,9 +61,22 @@ variable "private_configs" {
     is_private           = optional(bool, true)
     ca_pool_id           = optional(string)
     psc_allowed_projects = optional(list(string))
+    custom_host_config = optional(object({
+      api      = string
+      git_http = string
+      git_ssh  = string
+      html     = string
+    }))
   })
   nullable = false
   default  = {}
+  validation {
+    condition = (
+      var.private_configs.custom_host_config == null ||
+      var.private_configs.ca_pool_id != null
+    )
+    error_message = "Custom hostnames need a CA pool to sign their certificate."
+  }
 }
 
 variable "project_id" {

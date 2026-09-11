@@ -14,6 +14,14 @@
  * limitations under the License.
  */
 
+output "host_config" {
+  description = "Instance hostnames, custom when custom_host_config is set."
+  value = try(
+    google_secure_source_manager_instance.instance[0].host_config[0],
+    null
+  )
+}
+
 output "http_service_attachment" {
   description = "PSC service attachment for the instance HTTP endpoint."
   value = try(

@@ -47,6 +47,15 @@ resource "google_secure_source_manager_instance" "instance" {
       is_private           = true
       ca_pool              = var.private_configs.ca_pool_id
       psc_allowed_projects = var.private_configs.psc_allowed_projects
+      dynamic "custom_host_config" {
+        for_each = var.private_configs.custom_host_config == null ? [] : [""]
+        content {
+          api      = var.private_configs.custom_host_config.api
+          git_http = var.private_configs.custom_host_config.git_http
+          git_ssh  = var.private_configs.custom_host_config.git_ssh
+          html     = var.private_configs.custom_host_config.html
+        }
+      }
     }
   }
 }

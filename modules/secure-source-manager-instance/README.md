@@ -69,6 +69,8 @@ module "ssm_instance" {
 
 You can optionally specify a Certificate Authority (CAS) pool and use your own certificate, and list additional projects allowed to set up Private Service Connect connections to the instance.
 
+Custom hostnames replace the Google-assigned ones under `REGION.p.sourcemanager.dev`, and require a CA pool since their certificate is signed by it. All four are mandatory, and like everything else on an instance they cannot be changed after creation.
+
 Repositories can be assigned their own service account, which Secure Source Manager uses as the triggering identity when it starts a build for that repository. Without it a repository falls back to the shared Secure Source Manager service agent, so set it whenever repositories need to be isolated from one another.
 
 ```hcl
@@ -81,6 +83,12 @@ module "ssm_instance" {
     is_private           = true
     ca_pool_id           = "projects/another-project/locations/${var.region}/caPools/my-ca-pool"
     psc_allowed_projects = ["another-project"]
+    custom_host_config = {
+      api      = "api.ssm.example.com"
+      git_http = "git.ssm.example.com"
+      git_ssh  = "ssh.ssm.example.com"
+      html     = "ssm.example.com"
+    }
   }
   repositories = {
     my-repository = {
@@ -228,8 +236,8 @@ module "ssm_instance" {
 |---|---|:---:|:---:|:---:|
 | [instance_id](variables.tf#L36) | Instance ID. | <code>string</code> | ✓ |  |
 | [location](variables.tf#L53) | Location. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L69) | Project ID. | <code>string</code> | ✓ |  |
-| [repositories](variables.tf#L74) | Repositories. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> | ✓ |  |
+| [project_id](variables.tf#L82) | Project ID. | <code>string</code> | ✓ |  |
+| [repositories](variables.tf#L87) | Repositories. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> | ✓ |  |
 | [deletion_policy](variables.tf#L17) | Instance deletion policy, one of PREVENT, ABANDON, DELETE. | <code>string</code> |  | <code>null</code> |
 | [iam](variables-iam.tf#L17) | IAM bindings. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam_bindings](variables-iam.tf#L23) | IAM bindings. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
@@ -243,10 +251,11 @@ module "ssm_instance" {
 
 | name | description | sensitive |
 |---|---|:---:|
-| [http_service_attachment](outputs.tf#L17) | PSC service attachment for the instance HTTP endpoint. |  |
-| [instance](outputs.tf#L25) | Instance. |  |
-| [instance_id](outputs.tf#L30) | Instance id. |  |
-| [repositories](outputs.tf#L35) | Repositories. |  |
-| [repository_ids](outputs.tf#L40) | Repository ids. |  |
-| [ssh_service_attachment](outputs.tf#L45) | PSC service attachment for the instance SSH endpoint. |  |
+| [host_config](outputs.tf#L17) | Instance hostnames, custom when custom_host_config is set. |  |
+| [http_service_attachment](outputs.tf#L25) | PSC service attachment for the instance HTTP endpoint. |  |
+| [instance](outputs.tf#L33) | Instance. |  |
+| [instance_id](outputs.tf#L38) | Instance id. |  |
+| [repositories](outputs.tf#L43) | Repositories. |  |
+| [repository_ids](outputs.tf#L48) | Repository ids. |  |
+| [ssh_service_attachment](outputs.tf#L53) | PSC service attachment for the instance SSH endpoint. |  |
 <!-- END TFDOC -->
