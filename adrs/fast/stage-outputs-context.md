@@ -1,6 +1,6 @@
 # Stage outputs and context
 
-**authors:** [Ludo](https://github.com/ludoo) (with Opus 5 help)
+**authors:** [Ludo](https://github.com/ludoo) (with Opus 5 help)\
 **date:** 10 September 2026
 
 ## Status
