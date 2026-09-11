@@ -13,6 +13,7 @@
 # limitations under the License.
 'Pytest configuration.'
 
+import hashlib
 import itertools
 import pytest
 
@@ -20,6 +21,39 @@ pytest_plugins = (
     'tests.fixtures',
     'tests.collectors',
 )
+
+
+def pytest_addoption(parser):
+  group = parser.getgroup('sharding')
+  group.addoption('--shard-id', type=int, default=0, metavar='N',
+                  help='Zero-based index of this shard.')
+  group.addoption('--shard-count', type=int, default=1, metavar='N',
+                  help='Total number of shards (1 disables sharding).')
+
+
+def pytest_collection_modifyitems(config, items):
+  """Keep only the tests belonging to the current shard.
+
+  Tests are assigned to shards by hashing their node id, so every shard
+  computes the same partition without talking to the others. hashlib is
+  used instead of hash() because Python randomizes string hashing per
+  process, which would make shards disagree and silently drop tests.
+  """
+  count = config.getoption('shard_count')
+  if count <= 1:
+    return
+  shard_id = config.getoption('shard_id')
+  if not 0 <= shard_id < count:
+    raise pytest.UsageError(f'--shard-id must be in [0, {count}), '
+                            f'got {shard_id}')
+  selected, deselected = [], []
+  for item in items:
+    digest = hashlib.sha256(item.nodeid.encode()).digest()
+    bucket = int.from_bytes(digest[:8], 'big') % count
+    (selected if bucket == shard_id else deselected).append(item)
+  if deselected:
+    config.hook.pytest_deselected(items=deselected)
+  items[:] = selected
 
 
 def pytest_terminal_summary(terminalreporter, exitstatus, config):
