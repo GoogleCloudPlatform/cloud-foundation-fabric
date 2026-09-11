@@ -112,7 +112,7 @@ resource "google_iam_workforce_pool_provider" "default" {
         )
         content {
           value {
-            plain_text = each.value.identity_provider.oidc.client_secret
+            plain_text = each.value.identity_provider.oidc.client_secret.value == null ? trimspace(file("${each.value.identity_provider.oidc.client_secret.file}")) : each.value.identity_provider.oidc.client_secret.value
           }
         }
       }

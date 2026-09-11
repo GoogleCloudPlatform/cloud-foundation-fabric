@@ -38,10 +38,13 @@ variable "workforce_identity_pools" {
       scim_usage                 = optional(string)
       identity_provider = object({
         oidc = optional(object({
-          issuer_uri    = string
-          client_id     = string
-          client_secret = optional(string)
-          jwks_json     = optional(string)
+          issuer_uri = string
+          client_id  = string
+          client_secret = optional(object({
+            value = optional(string)
+            file  = optional(string)
+          }))
+          jwks_json = optional(string)
           web_sso_config = optional(object({
             # TODO: validation
             response_type             = optional(string, "CODE")
