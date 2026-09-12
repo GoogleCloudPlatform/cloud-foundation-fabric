@@ -14,19 +14,33 @@
  * limitations under the License.
  */
 
-locals {
-  prefix = var.prefix == null ? "" : "${var.prefix}-"
+
+variable "location" {
+  type    = string
+  default = "europe-west8"
 }
 
-module "build-sa-test" {
-  source     = "../../../modules/iam-service-account"
-  project_id = var.project_ids.build
-  name       = "build-test-0"
-  prefix     = var.prefix
-  iam_project_roles = {
-    (var.project_ids.build) = [
-      "roles/logging.logWriter",
-      "roles/cloudbuild.workerPoolUser",
-    ]
+variable "network_config" {
+  type = object({
+    build_network_attachment = string
+  })
+  default = {
+    build_network_attachment = "projects/ldj-dev-net-spoke-0/regions/europe-west8/networkAttachments/cloudbuild-ew8"
+  }
+}
+
+variable "prefix" {
+  type    = string
+  default = "test-0"
+}
+
+variable "project_ids" {
+  type = object({
+    build = string
+    ssm   = string
+  })
+  default = {
+    build = "tf-playground-dev-build-pool-0"
+    ssm   = "foo"
   }
 }

@@ -14,19 +14,17 @@
  * limitations under the License.
  */
 
-locals {
-  prefix = var.prefix == null ? "" : "${var.prefix}-"
-}
-
-module "build-sa-test" {
-  source     = "../../../modules/iam-service-account"
-  project_id = var.project_ids.build
-  name       = "build-test-0"
-  prefix     = var.prefix
-  iam_project_roles = {
-    (var.project_ids.build) = [
-      "roles/logging.logWriter",
-      "roles/cloudbuild.workerPoolUser",
-    ]
+resource "google_cloudbuild_worker_pool" "default" {
+  project  = var.project_ids.build
+  name     = "${local.prefix}default-0"
+  location = var.location
+  worker_config {
+    disk_size_gb   = 100
+    machine_type   = "e2-standard-2"
+    no_external_ip = true
+  }
+  private_service_connect {
+    network_attachment = var.network_config.build_network_attachment
+    route_all_traffic  = true
   }
 }
