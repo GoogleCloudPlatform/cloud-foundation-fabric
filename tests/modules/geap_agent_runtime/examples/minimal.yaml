@@ -13,15 +13,15 @@
 # limitations under the License.
 
 values:
-  module.agent_engine.google_project_iam_member.iam_member_identity["roles/aiplatform.user"]:
+  module.agent_runtime.google_project_iam_member.iam_member_identity["roles/aiplatform.user"]:
     condition: []
     project: project-id
     role: roles/aiplatform.user
-  module.agent_engine.google_project_iam_member.iam_member_identity["roles/storage.objectViewer"]:
+  module.agent_runtime.google_project_iam_member.iam_member_identity["roles/storage.objectViewer"]:
     condition: []
     project: project-id
     role: roles/storage.objectViewer
-  module.agent_engine.google_vertex_ai_reasoning_engine.managed[0]:
+  module.agent_runtime.google_vertex_ai_reasoning_engine.managed[0]:
     deletion_policy: DELETE
     description: Terraform managed.
     display_name: my-agent

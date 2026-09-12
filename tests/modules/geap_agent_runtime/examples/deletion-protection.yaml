@@ -13,15 +13,15 @@
 # limitations under the License.
 
 values:
-  module.agent_engine.google_project_iam_member.iam_member_identity["roles/aiplatform.user"]:
+  module.agent_runtime.google_project_iam_member.iam_member_identity["roles/aiplatform.user"]:
     condition: []
     project: project-id
     role: roles/aiplatform.user
-  module.agent_engine.google_project_iam_member.iam_member_identity["roles/storage.objectViewer"]:
+  module.agent_runtime.google_project_iam_member.iam_member_identity["roles/storage.objectViewer"]:
     condition: []
     project: project-id
     role: roles/storage.objectViewer
-  module.agent_engine.google_storage_bucket.default[0]:
+  module.agent_runtime.google_storage_bucket.default[0]:
     autoclass: []
     cors: []
     custom_placement_config: []
@@ -47,7 +47,7 @@ values:
       goog-terraform-provisioned: 'true'
     timeouts: null
     uniform_bucket_level_access: true
-  module.agent_engine.google_storage_bucket_object.dependencies[0]:
+  module.agent_runtime.google_storage_bucket_object.dependencies[0]:
     bucket: my-agent
     cache_control: null
     content_disposition: null
@@ -63,10 +63,9 @@ values:
     name: dependencies.tar.gz
     retention: []
     source: assets/src/dependencies.tar.gz
-    source_md5hash: 49a4c43e6bef605c2fa6ddabac48ba6a
     temporary_hold: null
     timeouts: null
-  module.agent_engine.google_storage_bucket_object.pickle[0]:
+  module.agent_runtime.google_storage_bucket_object.pickle[0]:
     bucket: my-agent
     cache_control: null
     content_disposition: null
@@ -82,10 +81,9 @@ values:
     name: pickle.pkl
     retention: []
     source: assets/src/pickle.pkl
-    source_md5hash: 493cf9bf3e59e39913e61916549f95a5
     temporary_hold: null
     timeouts: null
-  module.agent_engine.google_storage_bucket_object.requirements[0]:
+  module.agent_runtime.google_storage_bucket_object.requirements[0]:
     bucket: my-agent
     cache_control: null
     content_disposition: null
@@ -101,10 +99,9 @@ values:
     name: requirements.txt
     retention: []
     source: assets/src/requirements.txt
-    source_md5hash: 0acf2b14e855722af60e03e8fa8b04ff
     temporary_hold: null
     timeouts: null
-  module.agent_engine.google_vertex_ai_reasoning_engine.managed[0]:
+  module.agent_runtime.google_vertex_ai_reasoning_engine.managed[0]:
     deletion_policy: FORCE
     description: Terraform managed.
     display_name: my-agent

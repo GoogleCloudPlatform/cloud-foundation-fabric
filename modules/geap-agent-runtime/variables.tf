@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-variable "agent_engine_config" {
+variable "agent_runtime_config" {
   description = "The agent configuration. Supported values for agent_framework: 'google-adk', 'langchain', 'langgraph', 'ag2', 'llama-index', 'custom'."
   type = object({
     # Add validation once API stabilizes
@@ -40,10 +40,10 @@ variable "agent_engine_config" {
 
   validation {
     condition = (
-      var.agent_engine_config.identity_type == "AGENT_IDENTITY"
-      || var.agent_engine_config.identity_type == "SERVICE_ACCOUNT"
+      var.agent_runtime_config.identity_type == "AGENT_IDENTITY"
+      || var.agent_runtime_config.identity_type == "SERVICE_ACCOUNT"
     )
-    error_message = "var.agent_engine_config.identity_type must be either AGENT_IDENTITY or SERVICE_ACCOUNT."
+    error_message = "var.agent_runtime_config.identity_type must be either AGENT_IDENTITY or SERVICE_ACCOUNT."
   }
 }
 
@@ -61,6 +61,7 @@ variable "bucket_config" {
 variable "context" {
   description = "Context-specific interpolations."
   type = object({
+    agent_gateways          = optional(map(string), {})
     custom_roles            = optional(map(string), {})
     iam_principals          = optional(map(string), {})
     locations               = optional(map(string), {})
@@ -126,7 +127,7 @@ variable "deployment_config" {
 }
 
 variable "description" {
-  description = "The Agent Engine description."
+  description = "The GEAP Agent Runtime description."
   type        = string
   nullable    = false
   default     = "Terraform managed."
@@ -184,14 +185,20 @@ variable "name" {
 variable "networking_config" {
   description = "Networking configuration."
   type = object({
-    network_attachment_id = string
+    # Agent Gateways the runtime attaches to, for inbound and outbound traffic
+    agent_gateways = optional(object({
+      egress  = optional(string)
+      ingress = optional(string)
+    }), {})
     # key is the domain
     dns_peering_configs = optional(map(object({
       target_network_name = string
       target_project_id   = optional(string)
-    })))
+    })), {})
+    network_attachment_id = optional(string)
   })
-  default = null
+  nullable = false
+  default  = {}
 }
 
 variable "project_id" {

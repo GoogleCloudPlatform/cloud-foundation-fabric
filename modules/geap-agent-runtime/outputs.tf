@@ -15,12 +15,12 @@
  */
 
 output "agent" {
-  description = "The Agent Engine object."
+  description = "The GEAP Agent Runtime object."
   value       = local.resource.object
 }
 
 output "id" {
-  description = "Fully qualified Agent Engine id."
+  description = "Fully qualified GEAP Agent Runtime id."
   value       = local.resource.id
 }
 

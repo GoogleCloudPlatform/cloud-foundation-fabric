@@ -13,7 +13,29 @@
 # limitations under the License.
 
 values:
-  module.agent_engine.google_vertex_ai_reasoning_engine.managed[0]:
+  module.agent_runtime.google_project_iam_member.iam_member_identity["roles/aiplatform.user"]:
+    condition: []
+    project: project-id
+    role: roles/aiplatform.user
+  module.agent_runtime.google_project_iam_member.iam_member_identity["roles/storage.objectViewer"]:
+    condition: []
+    project: project-id
+    role: roles/storage.objectViewer
+  module.agent_runtime.google_vertex_ai_reasoning_engine.managed[0]:
+    context_spec:
+    - example_store_config: []
+      memory_bank_config:
+      - customization_configs: []
+        disable_memory_revisions: false
+        generation_config:
+        - model: projects/my-project/locations/us-central1/publishers/google/models/gemini-2.0-flash-001
+        similarity_search_config:
+        - embedding_model: projects/my-project/locations/us-central1/publishers/google/models/text-embedding-005
+        structured_memory_configs: []
+        ttl_config:
+        - default_ttl: 2592000s
+          granular_ttl_config: []
+          memory_revision_default_ttl: null
     deletion_policy: DELETE
     description: Terraform managed.
     display_name: my-agent
@@ -30,9 +52,9 @@ values:
       class_methods: null
       container_spec: []
       example_store: null
-      identity_type: SERVICE_ACCOUNT
+      identity_type: AGENT_IDENTITY
       package_spec: []
-      service_account: my-agent@project-id.iam.gserviceaccount.com
+      service_account: null
       source_code_spec:
       - agent_config_source: []
         developer_connect_source: []
@@ -49,8 +71,9 @@ values:
     timeouts: null
 
 counts:
+  google_project_iam_member: 2
   google_vertex_ai_reasoning_engine: 1
   modules: 1
-  resources: 1
+  resources: 3
 
 outputs: {}

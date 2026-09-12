@@ -13,15 +13,15 @@
 # limitations under the License.
 
 values:
-  module.agent_engine.google_project_iam_member.iam_member_identity["roles/aiplatform.user"]:
+  module.agent_runtime.google_project_iam_member.iam_member_identity["roles/aiplatform.user"]:
     condition: []
-    project: project-id
+    project: test-project-1
     role: roles/aiplatform.user
-  module.agent_engine.google_project_iam_member.iam_member_identity["roles/storage.objectViewer"]:
+  module.agent_runtime.google_project_iam_member.iam_member_identity["roles/storage.objectViewer"]:
     condition: []
-    project: project-id
+    project: test-project-1
     role: roles/storage.objectViewer
-  module.agent_engine.google_vertex_ai_reasoning_engine.managed[0]:
+  module.agent_runtime.google_vertex_ai_reasoning_engine.managed[0]:
     deletion_policy: DELETE
     description: Terraform managed.
     display_name: my-agent
@@ -29,8 +29,8 @@ values:
       goog-terraform-provisioned: 'true'
     encryption_spec: []
     labels: null
-    project: project-id
-    region: europe-west8
+    project: test-project-1
+    region: europe-west1
     spec:
     - agent_card: null
       agent_framework: google-adk
@@ -38,22 +38,29 @@ values:
       class_methods: null
       container_spec: []
       deployment_spec:
-      - agent_gateway_config: []
+      - agent_gateway_config:
+        - agent_to_anywhere_config:
+          - agent_gateway: projects/test-project-1/locations/europe-west1/agentGateways/egress-gw
+          client_to_agent_config:
+          - agent_gateway: projects/test-project-1/locations/europe-west1/agentGateways/ingress-gw
         agent_server_mode: null
         dedicated_ingress_endpoint_enabled: null
         env: []
         keep_alive_probe: []
         psc_interface_config:
         - dns_peering_configs:
-          - domain: googleapis.com.
-            target_network: my-network
-            target_project: project-id
-          network_attachment: projects/project-id/regions/europe-west8/networkAttachments/my-nat
+          - domain: example.com
+            target_network: my-vpc-1
+            target_project: test-project-1
+          - domain: my-company.local
+            target_network: my-vpc-2
+            target_project: company-dns-project
+          network_attachment: projects/test-project-1/regions/europe-west1/networkAttachments/core-service
         secret_env: []
       example_store: null
       identity_type: AGENT_IDENTITY
       package_spec: []
-      service_account: null
+      service_account: my-sa@$test-project-1.iam.gserviceaccount.com
       source_code_spec:
       - agent_config_source: []
         developer_connect_source: []
