@@ -246,7 +246,7 @@ One provider detail worth carrying into planning: default timeouts on `google_se
 - opening the web interface from inside a perimeter needs browser access to three URLs beyond the instance itself: `https://accounts.google.com`, `https://LOCATION-sourcemanagerredirector-pa.client6.google.com` for the instance's own region, and `https://lh3.googleusercontent.com`
 - a `SERVICE_NOT_ALLOWED_FROM_VPC` audit log violation caused by GKE limitations can be ignored; the supported products page states this explicitly
 
-## Private Service Connect pools are gated, tested 2026-09-13
+## Private Service Connect pools are gated, tested 2026-09-12
 
 A pool cannot reach the VPC through a network attachment today. A well-formed `v1` create carrying `privateServiceConnect` with `networkAttachment`, `publicIpAddressDisabled` and `routeAllTraffic` returns `400 INVALID_ARGUMENT: Private Service Connect feature is unavailable`. The fields are in the `v1` discovery document, so this is an allowlist on the project or organisation, not a missing feature and not a second generation pool concern (those are a separate `v2` `workerPoolSecondGen` resource, whose `gcloud builds worker-pools apply` command does not exist in SDK 584.0.0 on any track).
 

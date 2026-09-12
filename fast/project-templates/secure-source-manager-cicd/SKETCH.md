@@ -1,8 +1,10 @@
 # The sketch
 
-The parts of this configuration that are not live yet. They were comments inside `main.tf` until 2026-09-13, which left that file mostly prose; it now carries only code that runs. Reasoning is in [README.md](README.md), open questions in [TODO.md](TODO.md), observed behaviour and caveats in [SSM-CB.md](SSM-CB.md).
+The parts of this configuration that are not live yet. They were comments inside `main.tf` until 2026-09-12, which left that file mostly prose; it now carries only code that runs. Reasoning is in [README.md](README.md), open questions in [TODO.md](TODO.md), observed behaviour and caveats in [SSM-CB.md](SSM-CB.md).
 
 Attribute names below were taken from each module's `variables.tf` where they were verified, and marked TODO where they were not. Nothing here is expected to plan.
+
+As of 2026-09-12 the instance and worker pool blocks are superseded by `ssm-instance.tf` and `build-pool.tf`, which are live and authoritative; read them rather than the versions below. The load balancer and identity blocks are still ahead of the code.
 
 The configuration spans two projects with one provider, because one automation service account, `dev-build-ssm-0-rw`, holds IAM in both. The instance project holds the instance, its repositories, their per-repository service accounts and the Private Service Connect endpoints fronting the service attachments, in `europe-west4` — Secure Source Manager runs in eleven regions and only two are in Europe. The build project holds the private worker pool and the build identities the triggers file names, in `europe-west8`, the primary location for everything else here. The regions differ on purpose, and `global_access` on the endpoints is what lets a pool in one reach endpoints in the other across the same VPC.
 

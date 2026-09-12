@@ -17,7 +17,7 @@
 resource "google_cloudbuild_worker_pool" "default" {
   project  = var.project_ids.build
   name     = "${local.prefix}default-0"
-  location = var.location
+  location = var.locations.build
   worker_config {
     disk_size_gb   = 100
     machine_type   = "e2-standard-2"

@@ -1,6 +1,6 @@
 # Working in this directory
 
-A FAST project template bringing up a private Secure Source Manager instance and the Cloud Build machinery that runs pipelines from its repositories. It does not plan yet; the worker pool in `build-pool.tf` is the only live resource. Work happens on branch `ludo/ssm-cb` in this repository and, for the landing zone side, in `~/dev/tf-playground/fast-config/ludo`.
+A FAST project template bringing up a private Secure Source Manager instance and the Cloud Build machinery that runs pipelines from its repositories. It plans and applies. Live as of 2026-09-12: the worker pool in `build-pool.tf`, a test build identity in `main.tf`, and the instance in `ssm-instance.tf`. Not live: the load balancers, the repositories and the identity chain. Work happens on branch `ludo/ssm-cb` in this repository and, for the landing zone side, in `~/dev/tf-playground/fast-config/ludo`.
 
 Read the repository's [AGENTS.md](../../../AGENTS.md) for Fabric conventions and [skills/fabric-builder](../../../skills/fabric-builder/SKILL.md) for how to consume modules. Neither is loaded automatically by the skill tool, because `skills/` in the repository root is not a location the harness discovers.
 
@@ -12,7 +12,7 @@ Read the repository's [AGENTS.md](../../../AGENTS.md) for Fabric conventions and
 
 [README.md](README.md) is this template's own design: what it creates, and the three landing zone prerequisites that sit outside it. It carries the reasoning that would otherwise be re-derived — why the CA pool is mandatory, why a private zone is the only way anything resolves, and why a peered DNS domain is needed on top of it.
 
-[SKETCH.md](SKETCH.md) is the sketch, not code: module blocks with verified attribute names and a trailing section naming what is deliberately owned elsewhere. `main.tf` and `build-pool.tf` hold what is live, which today is the worker pool and a test build identity.
+[SKETCH.md](SKETCH.md) is the sketch, not code: module blocks with verified attribute names and a trailing section naming what is deliberately owned elsewhere. Its instance and worker pool blocks have been superseded by the live files; its load balancer and identity blocks are still the plan.
 
 ## The landing zone side
 
