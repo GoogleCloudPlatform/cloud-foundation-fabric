@@ -73,7 +73,7 @@ values:
     timeouts: null
     vpn_tunnel: null
   module.example-va.google_compute_router_peer.default[0]:
-    advertise_mode: CUSTOM
+    advertise_mode: DEFAULT
     advertised_groups: null
     advertised_ip_ranges: []
     advertised_route_priority: null
