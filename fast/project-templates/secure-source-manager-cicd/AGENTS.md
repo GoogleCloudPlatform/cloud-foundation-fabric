@@ -27,7 +27,7 @@ The two symlinks in this directory, `dev-build-ssm-0.auto.tfvars.json` and `dev-
 
 ## Tooling
 
-`tools/tfdoc.py` and the other Python tools need `~/venv/bin/python3`; the system interpreter has no `marko`. Module example tests are `~/venv/bin/python3 -m pytest -q -k 'secure_source_manager' tests/examples` from the repository root, about 95 seconds. Everything the repository AGENTS.md says about running `terraform fmt`, `check_documentation.py`, yamllint and `check_boilerplate.py` before committing applies here.
+`tools/tfdoc.py` and the other Python tools need their dependencies, which the system interpreter does not carry — `marko` in particular. Run them through `uv`, which is what this host has: `uvx --with marko python3 tools/tfdoc.py`, or `uv run` against the repository's requirements files. Module example tests are `uv run pytest -q -k 'secure_source_manager' tests/examples` from the repository root, about 95 seconds. Earlier versions of this file pointed at `~/venv/bin/python3`, which exists on some hosts and not on zb; prefer uv and do not assume a virtualenv. Everything the repository AGENTS.md says about running `terraform fmt`, `check_documentation.py`, yamllint and `check_boilerplate.py` before committing applies here.
 
 ## Picking up
 

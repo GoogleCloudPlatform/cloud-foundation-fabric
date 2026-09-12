@@ -273,6 +273,22 @@ One provider detail worth carrying into planning: default timeouts on `google_se
 - opening the web interface from inside a perimeter needs browser access to three URLs beyond the instance itself: `https://accounts.google.com`, `https://LOCATION-sourcemanagerredirector-pa.client6.google.com` for the instance's own region, and `https://lh3.googleusercontent.com`
 - a `SERVICE_NOT_ALLOWED_FROM_VPC` audit log violation caused by GKE limitations can be ignored, which the supported products page states explicitly and which is worth knowing before someone spends a day on it
 
+## Private Service Connect pools are gated, tested 2026-09-13
+
+The pool cannot reach the VPC through a network attachment today. The API answers a well-formed create with `400 INVALID_ARGUMENT: Private Service Connect feature is unavailable`, which is an allowlist on the project or the organisation rather than anything about the request. Everything below was established by probing, because three layers hide this failure.
+
+The field exists and is documented. The `v1` discovery document carries `PrivatePoolV1Config.privateServiceConnect` with `networkAttachment`, `publicIpAddressDisabled` and `routeAllTraffic`, all immutable, and the first two marked required. So this is not a second generation feature, and not a gap in the `v1` surface. Second generation pools are a separate thing, on a `v2` `workerPoolSecondGen` resource created by `gcloud builds worker-pools apply`, a command that does not exist in SDK 584.0.0 on any track even though the CLI's own error message names it.
+
+Three clients fail differently, and only one of them tells the truth.
+
+- Terraform's `google_cloudbuild_worker_pool` in provider 8.2.0 has a `private_service_connect` block but no field for `publicIpAddressDisabled`. Its only public IP field is `worker_config.no_external_ip`, which maps to the peered-network shape `networkConfig.egressOption`. An apply succeeds, the pool comes up with `egressOption: NO_PUBLIC_EGRESS` and no PSC configuration at all, and the read does not restore the block, so every subsequent plan wants to replace the pool forever.
+- `gcloud beta builds worker-pools create --network-attachment --route-all-traffic --disable-public-ip-address` also succeeds and also produces a pool with no PSC configuration, in that case with `egressOption: PUBLIC_EGRESS` — so the flag asking for no public IP was discarded along with the rest.
+- A raw `POST` to `v1` carrying only `privateServiceConnect`, including `publicIpAddressDisabled`, and no `networkConfig`, returns the 400 above. This is the only client that reports the real state of the world.
+
+What that means for the design. The decision to reach the VPC by Private Service Connect rather than private service access is not implementable until the feature is enabled for the organisation. Asking for enrollment is one route. The other is to go back to a peered-network pool, which brings back the `psa-build` range, makes `peered_domains` load-bearing again because a worker on the producer side of a peering cannot see the VPC's private zones or its response policies, and restores the one configuration where the Google-side tenant project had already been observed to sit inside the perimeter.
+
+One unrelated thing this settled: the organisation policy `compute.vmExternalIpAccess` is not a backstop for worker public IPs. The workers live in a Google-managed tenant project in Google's organisation, so our policies have no reach over them, and a pool with `PUBLIC_EGRESS` was created without complaint. Any claim that the no-external-IP requirement is preventively enforced is wrong; it rests on the pool's own configuration being correct.
+
 ## What we still need to test
 
 The infrastructure we bring up exists to answer these. Two of them can invalidate the design above, and they are about trigger behaviour rather than instance configuration, so neither would require rebuilding the instance.
