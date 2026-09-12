@@ -4,8 +4,7 @@ The state of the work. Open items carry enough to act on; closed ones carry a li
 
 ## Next
 
-- [ ] **Remove the orphaned `dev-ca-1`** in `europe-west8`, left behind by the tier experiment.
-- [ ] **Does a DevOps tier pool work?** `enterprise_tier` was set while chasing the region problem and is not known to be required. It matters beyond this template: the security stage's `create_pool: {}` default is DevOps, so anyone following the README hits it. Answer it on the next instance rebuild rather than deleting a working instance, since instance id reuse may be blocked the way CA pool id reuse is, and that is not something to discover by losing the id.
+- [ ] **Confirm whether a deleted instance id can be reused.** Recreating against `dev-ca-3` reuses `test-0-dev-0`; CA pool ids cannot be reused, and if instance ids behave the same the create fails and the id has to change.
 
 
 Order settled 2026-09-13: pool first, on its own, then the instance and the two design-invalidating trigger tests before anything else.
@@ -18,6 +17,8 @@ Order settled 2026-09-13: pool first, on its own, then the instance and the two 
 - [ ] **README**: landing zone snippets for the hub zone and the peering are in now; drop the "nothing is implemented yet" banner once the template plans, and tidy `branch_rules` into alphabetical order in the SSM module's `repositories` object while in the file.
 
 ## Settled
+
+- **DevOps tier pools work, and the tier is a cost decision** (2026-09-12). `$200` per CA per month for Enterprise against `$20` for DevOps, and what Enterprise buys is listing, describing and revoking certificates. This playground runs DevOps on `dev-ca-3`; production should weigh revocation against the ten-fold price. README, CA pool section.
 
 - **The CA pool has to be in the instance's region** (2026-09-12). A pool in `europe-west8` against an instance in `europe-west4` fails `CreateInstance` with a permission error that is not about permissions and produces no logs anywhere. SSM-CB.md has the full elimination trail, which is worth reading before trusting any other "missing permission" from this API.
 

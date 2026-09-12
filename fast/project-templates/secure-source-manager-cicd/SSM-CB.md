@@ -284,7 +284,9 @@ The error names a permission because the service agent's write is refused across
 
 Two pool names are burned, because a CA pool id can never be reused once deleted. `dev-ca-0` was the original DevOps pool, `dev-ca-1` the Enterprise replacement in `europe-west8`, both in the wrong region, and `dev-ca-2` in `europe-west4` is the one that works. `dev-ca-1` is now orphaned and can be removed.
 
-The tier was a red herring. A DevOps pool in the instance's region, `dev-ca-3`, was accepted by `CreateInstance` for a throwaway instance on 2026-09-12, so Enterprise is not a requirement and the security stage's `create_pool: {}` default is usable. That test was run without `custom_host_config`, and only the create request is confirmed, not the completed instance.
+The tier was a red herring. A DevOps pool in the instance's region, `dev-ca-3`, was accepted by `CreateInstance` for a throwaway instance on 2026-09-12, so Enterprise is not a requirement and the security stage's `create_pool: {}` default is usable. That test was run without `custom_host_config` and was deleted before completing, so only the create request is confirmed.
+
+Tier is therefore a cost decision, not a functional one, and an expensive one: `$200` per CA per month for Enterprise against `$20` for DevOps. See the README's CA pool section.
 
 ## What we still need to test
 
@@ -299,7 +301,7 @@ Bring the pool up on its own first. It is cheap and mutable where the instance i
 5. Closed on 2026-09-12 by the probe build. See the section above.
 6. Closed on 2026-09-12 without testing: `psc_allowed_projects` is immutable. The Magic Modules definition marks the instance resource immutable as a whole, and the API has no update method. The list has to be right on the first apply.
 7. Confirm that a branch protection rule requiring a status check blocks a merge when the check fails. The API has the field, `requiredStatusChecks[].context`; the provider does not yet, so the rule is set in the web interface for this test.
-8. Closed on 2026-09-12: creation took 2 hours 16 minutes, from `create_time` 10:49:59 to `update_time` 13:06:29. The documentation says up to 60 minutes and the provider's timeout of 120 would not have covered it. Budget accordingly, and do not treat a long-running create as stuck.
+8. Closed on 2026-09-12: creation took 29 minutes 28 seconds, from the create operation's own `createTime` to its `endTime`. The documentation's "up to 60 minutes" is honest and the provider's 120 minute timeout is ample. Read the duration from `gcloud source-manager operations list`, not from the instance: `update_time` on the resource keeps moving long after creation and is not a completion time.
 
    The same instance settled two smaller things. Custom hostnames replace the generated ones outright: `host_config` comes back identical to `custom_host_config`, with no `p.sourcemanager.dev` name anywhere in the resource, so there is only one set of names to resolve. The service attachments are `projects/<tenant>-tp/regions/europe-west4/serviceAttachments/http-psc` and `.../ssh-psc`.
 9. Revalidate that the Secure Source Manager control plane can create builds in the build project under VPC Service Controls. It is the one hop that originates on Google infrastructure with a BYOSA token. The producer project is now confirmed inside the perimeter, which removes the worker-side doubt but not this one, since the trigger call originates elsewhere.

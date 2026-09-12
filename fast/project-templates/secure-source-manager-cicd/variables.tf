@@ -65,7 +65,7 @@ variable "ssm_config" {
     psc_allowed_projects = optional(list(string))
   })
   default = {
-    ca_pool_id      = "projects/ldj-dev-sec-core/locations/europe-west4/caPools/dev-ca-2"
+    ca_pool_id      = "projects/ldj-dev-sec-core/locations/europe-west4/caPools/dev-ca-3"
     deletion_policy = "DELETE"
     custom_host_config = {
       api      = "api.ssm.gcp.qix.it"
