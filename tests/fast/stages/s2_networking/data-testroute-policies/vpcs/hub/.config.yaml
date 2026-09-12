@@ -1,0 +1,60 @@
+# skip boilerplate check
+---
+# start of document (---) avoids errors if the file only contains comments
+
+# yaml-language-server: $schema=../../../../schemas/vpc.schema.json
+
+project_id: $project_ids:net-core-0
+name: hub-0
+delete_default_routes_on_create: true
+routers:
+  hybrid-connectivity-router:
+    region: $locations:primary
+    asn: 64514
+    route_policies:
+      import-rfc1918:
+        type: IMPORT
+        terms:
+          - priority: 1
+            match:
+              title: import-rfc1918-subnets
+              description: Accept the 3 RFC1918 ranges.
+              expression: "destination == '10.0.0.0/8' || destination == '172.16.0.0/12' || destination == '192.168.0.0/16'"
+            actions:
+              expression: accept()
+      import-drop-all:
+        type: IMPORT
+        terms:
+          - priority: 2
+            match:
+              title: default-drop
+              description: Drop all the routes not accepted above.
+              expression: "destination.inAnyRange(prefix('0.0.0.0/0').orLonger())"
+            actions:
+              expression: drop()
+      export-med:
+        type: EXPORT
+        terms:
+          - priority: 0
+            match:
+              expression: "destination == '10.0.0.0/24'"
+            actions:
+              expression: med.set(1000)
+routes:
+  default:
+    dest_range: 0.0.0.0/0
+    next_hop_type: "gateway"
+    next_hop: "default-internet-gateway"
+  named:
+    name: imported-route
+    dest_range: 172.16.0.0/16
+    next_hop_type: "gateway"
+    next_hop: "default-internet-gateway"
+policy_based_routes:
+  skip-pbr-for-nva:
+    name: imported-pbr
+    use_default_routing: true
+    priority: 100
+    target:
+      tags:
+        - nva
