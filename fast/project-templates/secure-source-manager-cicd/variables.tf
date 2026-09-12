@@ -22,10 +22,11 @@ variable "location" {
 
 variable "network_config" {
   type = object({
-    build_network_attachment = string
+    build_psa_range = optional(string, "/24")
+    vpc_self_link   = string
   })
   default = {
-    build_network_attachment = "projects/ldj-dev-net-spoke-0/regions/europe-west8/networkAttachments/cloudbuild-ew8"
+    vpc_self_link = "projects/ldj-dev-net-spoke-0/global/networks/dev-spoke-0"
   }
 }
 

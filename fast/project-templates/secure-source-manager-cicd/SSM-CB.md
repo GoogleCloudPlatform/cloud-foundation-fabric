@@ -140,27 +140,7 @@ The practical split is that a Terraform runner inside the perimeter can create i
 
 ### Network
 
-The instance publishes two service attachments and has no notion of an endpoint. The only consumer-side control on it is `psc_allowed_projects`, a list of projects permitted to connect, with the instance's own project implicit. Everything past that is ordinary Private Service Connect: any number of endpoints, in any number of networks, in any allowed project. The list is immutable like the rest of the instance, so it has to name every project that may ever hold an endpoint, and since allowing a project only permits endpoints there, the safe list is every VPC host project in the organisation.
-
-What decides the shape of this section is a single limit. **A Private Service Connect endpoint is reachable only from inside its own VPC network** — its address is not carried by VPC peering, VPN or Interconnect, and an endpoint must sit in the service attachment's region. So the list is short when every client shares a VPC with the endpoints, and long when they do not.
-
-With every client on one VPC:
-
-- a way for the VPC to resolve the instance hostnames: a private Cloud DNS zone attached to it, or, where the landing zone centralises zones in a hub that must not see these answers, a response policy bound to the VPC alone
-- an endpoint for the HTTP service attachment and a second for the SSH one, both in the instance's region, with global access if any client sits in another region of the same VPC
-- four A records, or four local-data rules: `-api`, `-git` and the bare instance name on the HTTP endpoint address, `-ssh` on the SSH one
-
-When a client is on another VPC, each additional network needs its own endpoint, its project added to `psc_allowed_projects`, and its own records for the same four names, because the name now resolves to a different address in each. A client that is not on a Google Cloud VPC at all — anything on-premises over VPN or Interconnect — cannot be served this way, and that case forces the alternative below.
-
-The alternative is what Google's guide documents, and its whole purpose is to replace an endpoint address with one that peering does carry:
-
-- a Private Service Connect network endpoint group for each service attachment
-- a proxy-only subnet with purpose `REGIONAL_MANAGED_PROXY` and role `ACTIVE`, using a mask of `/26` or shorter, with `/23` recommended
-- a regional backend service with scheme `INTERNAL_MANAGED` for each network endpoint group
-- a regional target TCP proxy for each backend service
-- a forwarding rule on port 443 for HTTP and a second on port 22 for SSH, both `INTERNAL_MANAGED` and premium tier, with global access for cross-region clients
-
-The A records then point at the forwarding rule addresses and one zone serves every connected network. Note what the proxy is not doing: it is a target TCP proxy and carries no certificate, because the instance's own certificate covers its hostnames and TLS runs end to end from the client. Custom hostnames therefore never require a load balancer — they require the CA pool whose chain the client trusts.
+The instance publishes two service attachments, HTTP and SSH, and has no notion of a consumer; the only consumer-side control is the immutable `psc_allowed_projects`. The design fronts each with a regional internal proxy load balancer, whose forwarding rule address is carried by peering, VPN and Interconnect, and resolves the custom hostnames from a single zone in the hub. The reasoning, the alternative of bare endpoints and why it was dropped, and the landing zone side are in the README's access path and DNS sections.
 
 ### Build
 
@@ -176,13 +156,7 @@ A Cloud Build private pool never runs in your VPC, and there are two mechanisms 
 
 The peered DNS domain is the part that catches people. Peering carries routes and not DNS, so a worker resolves against the producer network's resolver and cannot see a zone attached to yours. The failure looks nothing like a DNS failure: the route works, and `git clone` fails because the hostname resolved through public DNS.
 
-**Private Service Connect**, through a network attachment, gives each worker an interface in a subnet of your own VPC instead:
-
-- a subnet to draw worker addresses from, one address per concurrent worker, in the pool's region
-- a network attachment on it, with `ACCEPT_AUTOMATIC` — the manual alternative wants the producer's project number, which for Cloud Build is Google's
-- a pool created with `--network-attachment`, `--disable-public-ip-address`, and `--route-all-traffic` if public egress should also leave through your VPC and its Cloud NAT
-
-Nothing has to be forwarded, because a worker holding an interface in the VPC resolves against the VPC's resolver and sees its private zones directly. There is no range to allocate and no peering whose exported routes need checking, and the workers become ordinary subnet-scoped clients for firewall purposes. Since they are then on the VPC, they can also reach a Private Service Connect endpoint directly, which is what makes the short form of the network section above possible.
+**Private Service Connect**, through a network attachment, would give each worker an interface in a subnet of your own VPC instead — no range, no exported routes, nothing to forward. It is gated; see the section below.
 
 ### Identity
 
@@ -219,8 +193,8 @@ Where the BYOSA lives in a different project from the builds, disable the `iam.d
 2. Secure Source Manager reads `.cloudbuild/triggers.yaml` from the default branch and matches the event against the reference and file filters.
 3. The Secure Source Manager service agent mints a token for the repository's BYOSA.
 4. The BYOSA creates a build in the project the entry names, running as the service account the entry names, and Cloud Build checks the act-as permission.
-5. The build starts on the private worker pool, whose workers hold an interface in the VPC through the network attachment.
-6. The build resolves the git hostname against the VPC's resolver, which answers from the private zone, and reaches the instance through the A record, the Private Service Connect endpoint and the service attachment. On the private service access variant the resolution instead crosses a peered DNS domain, and the path runs through a forwarding rule, a target TCP proxy, a backend service and a network endpoint group before the service attachment.
+5. The build starts on the private worker pool, whose workers sit in a producer network peered to the VPC over the private service access range.
+6. The build resolves the git hostname through the peered DNS domain, which forwards the query to the VPC's resolver and the hub zone, and reaches the instance through the A record, the internal load balancer and the service attachment.
 7. The build fetches the certificate chain with `gcloud privateca pools get-ca-certs`, writes it to `cacert.pem`, and sets a git credential helper for the git hostname so that clone uses its own token.
 8. The build impersonates the read-only or read-write Terraform service account and runs plan or apply.
 
@@ -264,8 +238,7 @@ One provider detail worth carrying into planning: default timeouts on `google_se
 - the documentation says `serviceAccount` is required in the triggers file and never says what happens when you leave it out, so the behaviour our requirement turns on is undocumented, and a trigger dropped at parse time reports no status check at all rather than a failing one
 - nothing about an instance can be changed after creation. `projects.locations.instances` exposes create, delete, get, list and the IAM methods and no `patch`, `gcloud source-manager instances` has no `update` subcommand, and the provider marks the whole resource immutable, so `is_private`, `ca_pool`, `custom_host_config`, `psc_allowed_projects`, the CMEK key and workforce identity federation are each a one-shot decision. Getting one wrong costs a delete, another hour of creation, and a new instance ID inside every hostname, DNS record and clone URL that depends on it
 - the API's branch rule carries `requiredStatusChecks` and `requireCodeOwnerApproval`, and the Terraform resource carries neither, so until the provider catches up the merge gate and the code owner requirement are web interface settings and not Terraform-managed. Both matter here: one is the gate, the other is what gives CODEOWNERS the weight the second boundary assigns it
-- a zone or response policy attached to a network that holds no endpoint resolves the hostnames to an address that network cannot reach, and the failure is a connect timeout rather than a name error; attach it only where an endpoint exists, and remove response policy rules when switching to the load balancer path, since a policy overrides any zone added later
-- endpoints and the load balancer path are alternatives rather than layers, and Google's guide opens by telling you to release any endpoints you already configured before building the load balancers. Switching from one to the other later is therefore not purely additive
+- endpoints and the load balancer path are alternatives rather than layers: Google's guide opens by telling you to release any endpoints before building the load balancers
 - the documentation creates the first repository from a bastion host inside the VPC, using the instance's own data plane API hostname, but the Terraform resource builds its URLs from the public control plane at `securesourcemanager.googleapis.com`, so the binding constraint on the runner is perimeter membership rather than VPC connectivity
 - a build running as your own service account cannot use the default logs bucket, so send logs to Cloud Logging or to a bucket you create
 - clients verifying TLS need the certificate chain in every trust store they use, including the one inside each container image a pipeline runs
@@ -275,31 +248,23 @@ One provider detail worth carrying into planning: default timeouts on `google_se
 
 ## Private Service Connect pools are gated, tested 2026-09-13
 
-The pool cannot reach the VPC through a network attachment today. The API answers a well-formed create with `400 INVALID_ARGUMENT: Private Service Connect feature is unavailable`, which is an allowlist on the project or the organisation rather than anything about the request. Everything below was established by probing, because three layers hide this failure.
+A pool cannot reach the VPC through a network attachment today. A well-formed `v1` create carrying `privateServiceConnect` with `networkAttachment`, `publicIpAddressDisabled` and `routeAllTraffic` returns `400 INVALID_ARGUMENT: Private Service Connect feature is unavailable`. The fields are in the `v1` discovery document, so this is an allowlist on the project or organisation, not a missing feature and not a second generation pool concern (those are a separate `v2` `workerPoolSecondGen` resource, whose `gcloud builds worker-pools apply` command does not exist in SDK 584.0.0 on any track).
 
-The field exists and is documented. The `v1` discovery document carries `PrivatePoolV1Config.privateServiceConnect` with `networkAttachment`, `publicIpAddressDisabled` and `routeAllTraffic`, all immutable, and the first two marked required. So this is not a second generation feature, and not a gap in the `v1` surface. Second generation pools are a separate thing, on a `v2` `workerPoolSecondGen` resource created by `gcloud builds worker-pools apply`, a command that does not exist in SDK 584.0.0 on any track even though the CLI's own error message names it.
+Only the raw API reports it. Terraform's `google_cloudbuild_worker_pool` in provider 8.2.0 has no field for the required `publicIpAddressDisabled`, so the API discards the block and creates a networkless pool with `NO_PUBLIC_EGRESS`; the read does not restore the block and every later plan wants to replace the pool. `gcloud beta builds worker-pools create --network-attachment --disable-public-ip-address` does the same and ends with `PUBLIC_EGRESS`. That last pool also settled that `compute.vmExternalIpAccess` is no backstop: the workers run in a Google-managed tenant project outside our organisation.
 
-Three clients fail differently, and only one of them tells the truth.
-
-- Terraform's `google_cloudbuild_worker_pool` in provider 8.2.0 has a `private_service_connect` block but no field for `publicIpAddressDisabled`. Its only public IP field is `worker_config.no_external_ip`, which maps to the peered-network shape `networkConfig.egressOption`. An apply succeeds, the pool comes up with `egressOption: NO_PUBLIC_EGRESS` and no PSC configuration at all, and the read does not restore the block, so every subsequent plan wants to replace the pool forever.
-- `gcloud beta builds worker-pools create --network-attachment --route-all-traffic --disable-public-ip-address` also succeeds and also produces a pool with no PSC configuration, in that case with `egressOption: PUBLIC_EGRESS` — so the flag asking for no public IP was discarded along with the rest.
-- A raw `POST` to `v1` carrying only `privateServiceConnect`, including `publicIpAddressDisabled`, and no `networkConfig`, returns the 400 above. This is the only client that reports the real state of the world.
-
-What that means for the design. The decision to reach the VPC by Private Service Connect rather than private service access is not implementable until the feature is enabled for the organisation. Asking for enrollment is one route. The other is to go back to a peered-network pool, which brings back the `psa-build` range, makes `peered_domains` load-bearing again because a worker on the producer side of a peering cannot see the VPC's private zones or its response policies, and restores the one configuration where the Google-side tenant project had already been observed to sit inside the perimeter.
-
-One unrelated thing this settled: the organisation policy `compute.vmExternalIpAccess` is not a backstop for worker public IPs. The workers live in a Google-managed tenant project in Google's organisation, so our policies have no reach over them, and a pool with `PUBLIC_EGRESS` was created without complaint. Any claim that the no-external-IP requirement is preventively enforced is wrong; it rests on the pool's own configuration being correct.
+The design therefore uses private service access, and switches when the allowlist opens: one block on the pool resource, a network attachment and subnet in place of the peering, and no peered domain. The load balancers and the hub zone stay either way.
 
 ## What we still need to test
 
 The infrastructure we bring up exists to answer these. Two of them can invalidate the design above, and they are about trigger behaviour rather than instance configuration, so neither would require rebuilding the instance.
 
-Bring the pool up on its own first. It is cheap and mutable where the instance is an hour and immutable, and it answers everything that does not need a repository to exist: that build traffic is attributed to our perimeter, that the workers reach what they must through the attachment and our Cloud NAT, and that they resolve against the VPC's resolver and see its private zones. Private Service Connect endpoint reachability waits, because there is no endpoint until the instance exists, but it is the same interface doing the resolving and routing, so a pool that passes the three above has established most of what it rests on. Then build the instance and run the trigger tests against it immediately.
+Bring the pool up on its own first. It is cheap and mutable where the instance is an hour and immutable, and it answers everything that does not need a repository to exist: that build traffic is attributed to our perimeter, and what a worker with no public egress can reach. Reaching the instance through the load balancer and resolving its hostnames through the peered domain have to wait for the instance.
 
 1. Confirm that a pull request build runs the `.cloudbuild/cloudbuild.yaml` from the pull request head commit rather than from the default branch. Push a pull request whose build configuration differs from the default branch's and see which steps execute. The whole third boundary above turns on this, and it is currently inferred.
 2. Find out whether omitting `serviceAccount` from a triggers file fails the build, drops the trigger silently, or falls back to an identity, and if it falls back, which one. Then find out what a dropped trigger does to a branch protection rule that requires its status check. Our isolation requirement depends on the first half and our merge gate on the second.
-3. Find out whether `google_secure_source_manager_repository` can create a repository in a Private Service Connect instance from a runner outside the VPC but inside the perimeter. The provider targets the public control plane, so the expected answer is yes and the expected failure mode is a perimeter one.
-4. Confirm that a worker whose only interface comes from a network attachment can reach a Private Service Connect endpoint on the same VPC. The short form of the network section rests on it, and it is inferred from the interface being an ordinary VPC interface rather than tested.
-5. Find out what a worker pool with no external IP and `route_all_traffic` can reach, which with a network attachment is a question about your own Cloud NAT and egress rules rather than about the pool. If we revisit Developer Connect, establish whether the proxy at `REGION-git.developerconnect.dev` is reachable through private.googleapis.com, and price what adding that VIP does to the perimeter.
+3. Find out whether `google_secure_source_manager_repository` can create a repository in a private instance from a runner outside the VPC but inside the perimeter. The provider targets the public control plane, so the expected answer is yes and the expected failure mode is a perimeter one.
+4. Confirm that a worker on the private service access peering reaches the load balancer address and resolves the hostnames through the peered domain. Both are inferred from the peering exporting subnet routes and forwarding the suffix.
+5. Find out what a worker pool with no external IP can reach: Google APIs through Private Google Access, and nothing else is the expectation.
 
    Two of the requirements this setup exists to satisfy are settled here, and they are requirements rather than preferences: workers with no external IP address, and build traffic attributable to our perimeter. The second is the one at risk, because `route_all_traffic` names an intent and the workers run in a Google-managed tenant network that may keep a default route of its own. If it does, the flag carries what the attachment matches and the rest leaves through Google's egress, outside the perimeter and out of our audit logs, with no symptom in the plan or in the pool's own configuration.
 
@@ -309,7 +274,7 @@ Bring the pool up on its own first. It is cheap and mutable where the instance i
 6. Closed on 2026-09-12 without testing: `psc_allowed_projects` is immutable. The Magic Modules definition marks the instance resource immutable as a whole, and the API has no update method. The list has to be right on the first apply.
 7. Confirm that a branch protection rule requiring a status check blocks a merge when the check fails. The API has the field, `requiredStatusChecks[].context`; the provider does not yet, so the rule is set in the web interface for this test.
 8. Measure how long instance creation actually takes. The documentation says up to 60 minutes and the provider's own timeout is now 120.
-9. Revalidate that the Secure Source Manager control plane can create builds in the build project under VPC Service Controls. It is the one hop in the sequence above that originates on Google infrastructure rather than inside a perimeter project, carrying a BYOSA token. An earlier test with a private service access pool showed the Google-side tenant project being treated as inside the perimeter of the project owning the connected VPC. That should hold for a network attachment too, but it was observed with PSA and has not been with PSC.
+9. Revalidate that the Secure Source Manager control plane can create builds in the build project under VPC Service Controls. It is the one hop that originates on Google infrastructure with a BYOSA token; an earlier private service access pool showed the tenant project treated as inside the perimeter of the VPC's project, and this design is that configuration again.
 
 Two questions were closed by cross-checking rather than by testing. Terraform can set the repository service account from 7.44.0. Whether the Secure Source Manager service agent can itself hold `iam.serviceAccounts.actAs` on a custom Cloud Build service account is still unresolved — the documentation implies it cannot and a review asserted it can — but the design mandates a BYOSA on every repository, so the answer changes nothing here.
 

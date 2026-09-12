@@ -23,8 +23,8 @@ resource "google_cloudbuild_worker_pool" "default" {
     machine_type   = "e2-standard-2"
     no_external_ip = true
   }
-  private_service_connect {
-    network_attachment = var.network_config.build_network_attachment
-    route_all_traffic  = true
+  network_config {
+    peered_network          = var.network_config.vpc_self_link
+    peered_network_ip_range = var.network_config.build_psa_range
   }
 }

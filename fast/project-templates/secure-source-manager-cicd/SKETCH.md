@@ -122,42 +122,53 @@ module "build-sa" {
 }
 
 # ------------------------------------------------------------------------
-# network: PSC access path to the instance
+# network: load balancers in front of the instance
 # ------------------------------------------------------------------------
 
-# One endpoint per service attachment and no load balancers. The instance
-# publishes the two attachments and nothing else; who may connect to them is
-# psc_allowed_projects on the instance, granted per project.
+# One regional internal proxy load balancer per service attachment, as in
+# Google's guide: PSC NEG, backend service, target TCP proxy, forwarding rule.
+# The forwarding rule address is an ordinary internal address that peering,
+# VPN and Interconnect carry, which is what lets the build workers reach the
+# instance from the producer side of the private service access peering, and
+# the hub and on-premises clients from theirs. A PSC endpoint would not: its
+# address is valid only inside the VPC that holds it.
 #
-# global_access is what makes the region split work: the endpoints are in
-# europe-west4 with the instance, while the worker pool and everything else
-# are in europe-west8 of this same VPC.
+# The proxy carries no certificate. TLS runs end to end from the client to the
+# instance, whose certificate covers the custom hostnames.
 #
-# The limit to know: an endpoint address is reachable only from inside its own
-# VPC, never across a peering, VPN or Interconnect. Clients on the hub or
-# on-premises therefore need either their own endpoint and their own private
-# zone, or the fallback in the README — a net-lb-proxy-int per attachment,
-# whose forwarding rule is an ordinary internal address that peering carries.
-module "psc-endpoints" {
-  source     = "../../../modules/net-address"
+# global_access is the module default and is what makes the region split
+# work: the load balancers are in europe-west4 with the instance, while the
+# pool and everything else are in europe-west8. The proxy-only subnet is
+# europe-west4/ilb-l7-ew4 in the dev VPC.
+module "lb" {
+  source     = "../../../modules/net-lb-proxy-int"
+  for_each = {
+    http = { port = 443, attachment = module.ssm.http_service_attachment }
+    ssh  = { port = 22, attachment = module.ssm.ssh_service_attachment }
+  }
   project_id = var.project_id
-  psc_addresses = {
-    "${var.instance_id}-http" = {
-      region           = var.region
-      subnet_self_link = var.network_config.subnetwork
-      service_attachment = {
-        psc_service_attachment_link = module.ssm.http_service_attachment
-        global_access               = true
+  region     = var.region
+  name       = "${var.instance_id}-${each.key}"
+  forwarding_rules_config = {
+    "" = { port = each.value.port }
+  }
+  backend_service_config = {
+    backends = [{ group = "${var.instance_id}-${each.key}" }]
+  }
+  neg_configs = {
+    "${var.instance_id}-${each.key}" = {
+      psc = {
+        network        = var.network_config.vpc_self_link
+        subnetwork     = var.network_config.subnetwork
+        region         = var.region
+        producer_port  = each.value.port
+        target_service = each.value.attachment
       }
     }
-    "${var.instance_id}-ssh" = {
-      region           = var.region
-      subnet_self_link = var.network_config.subnetwork
-      service_attachment = {
-        psc_service_attachment_link = module.ssm.ssh_service_attachment
-        global_access               = true
-      }
-    }
+  }
+  vpc_config = {
+    network    = var.network_config.vpc_self_link
+    subnetwork = var.network_config.subnetwork
   }
 }
 
@@ -166,17 +177,13 @@ module "psc-endpoints" {
 # ------------------------------------------------------------------------
 
 # Raw resource by decision: Fabric does not write modules for single
-# resources.
+# resources. Live in build-pool.tf; kept here for the shape.
 #
-# private_service_connect and network_config are mutually exclusive, and this
-# is the whole reason the design has no peered DNS domain: on an attachment
-# the workers hold an interface in the VPC, so they resolve against its
-# resolver and see its private zones. The attachment is regional and lives in
-# the pool's region, europe-west8/na in the dev VPC, created by the networking
-# stage rather than here.
-#
-# route_all_traffic sends public egress through the VPC as well as private, so
-# builds reach the internet through nat-ew8 and under this VPC's controls.
+# The workers reach the VPC over a private service access peering on the
+# psa-build range, created by the networking stage. Private Service Connect
+# through a network attachment was the first choice and is gated; see
+# SSM-CB.md. Name resolution needs the peered_domains entry on that peering,
+# since a worker on the producer side does not see the VPC's zones.
 resource "google_cloudbuild_worker_pool" "default" {
   project  = var.pool_project_id
   name     = var.worker_pool_config.name
@@ -186,9 +193,9 @@ resource "google_cloudbuild_worker_pool" "default" {
     machine_type   = var.worker_pool_config.machine_type
     no_external_ip = true
   }
-  private_service_connect {
-    network_attachment = var.network_config.network_attachment
-    route_all_traffic  = true
+  network_config {
+    peered_network          = var.network_config.vpc_self_link
+    peered_network_ip_range = var.network_config.build_psa_range
   }
 }
 ```
@@ -198,5 +205,5 @@ resource "google_cloudbuild_worker_pool" "default" {
 Listed so the boundary is explicit.
 
 - **2-security** — the CA pool and CA, `dev-ca-0` in `ldj-dev-sec-core`, plus `roles/privateca.certificateRequester` for the instance project's Secure Source Manager service agent. The factory places that one through `service_agents_project_bindings`, because the member string embeds the project number. Already in `dev-build-ssm-0.yaml`.
-- **2-networking** — the `europe-west4` workload subnet the endpoints sit in, the `europe-west8/na` subnet at `10.8.208.0/24`, and the `cloudbuild-ew8` network attachment on it. The proxy-only subnet and the `psa-build` range are no longer part of this design and the range is free.
-- **2-networking DNS** — resolution for `ssm.gcp.qix.it`, through response policy rules on the dev VPC rather than a zone, since an endpoint address is not network-wide. Kept out because the addresses are outputs here and the records are owned there. See the DNS section in README.md for why a zone in the hub would resolve for clients that cannot reach the address.
+- **2-networking** — the `europe-west4/gce` subnet the forwarding rule addresses come from, the proxy-only subnet `europe-west4/ilb-l7-ew4`, and the private service access peering on `psa-build` at `10.8.200.0/24` with `ssm.gcp.qix.it.` as a peered domain.
+- **2-networking DNS** — the `ssm.gcp.qix.it.` private zone in the hub, `pvt-ssm.yaml` under `net-core-0`. Kept out because the addresses are outputs here and the records are owned there; the records are filled in after the first apply.
