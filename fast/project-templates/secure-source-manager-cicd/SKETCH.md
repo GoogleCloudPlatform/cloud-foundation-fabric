@@ -1,6 +1,6 @@
 # The sketch
 
-The parts of this configuration that are not live yet, kept as a sketch. They were comments inside `main.tf` until 2026-09-13, which left that file mostly prose; it now carries only code that runs, and everything explanatory lives in a document instead. Reasoning is in [README.md](README.md), open questions in [TODO.md](TODO.md), observed behaviour and caveats in [SSM-CB.md](SSM-CB.md).
+The parts of this configuration that are not live yet. They were comments inside `main.tf` until 2026-09-13, which left that file mostly prose; it now carries only code that runs. Reasoning is in [README.md](README.md), open questions in [TODO.md](TODO.md), observed behaviour and caveats in [SSM-CB.md](SSM-CB.md).
 
 Attribute names below were taken from each module's `variables.tf` where they were verified, and marked TODO where they were not. Nothing here is expected to plan.
 
@@ -18,7 +18,7 @@ module "ssm" {
   project_id = var.project_id
   location   = var.region
   # the instance id ends up inside every hostname, DNS record and clone URL,
-  # and nothing about an instance can be changed after creation
+  # and nothing about an instance can change after creation
   instance_id = var.instance_id
   private_configs = {
     is_private = true
@@ -30,7 +30,7 @@ module "ssm" {
     # under europe-west4.p.sourcemanager.dev. The generated names embed the
     # instance id and the project number, so they change on any rebuild;
     # these are ours and survive one. All four are required by the API, and
-    # their certificate is signed by the CA pool above.
+    # the CA pool above signs their certificate.
     custom_host_config = {
       api      = "api.${var.domain}"
       git_http = "git.${var.domain}"
@@ -67,12 +67,12 @@ module "ssm" {
 # One BYOSA per repository, in the instance project. iam_sa_roles carries the
 # act-as edges: a map of target service account id to roles, granted on the
 # target service account resource rather than on a project, which is the rule
-# the whole isolation requirement rests on.
+# the isolation requirement rests on.
 #
 # These live in var.project_id while the builds they create run in
 # var.pool_project_id, which is why dev-build-ssm-0 disables
 # iam.disableCrossProjectServiceAccountUsage. Only the project hosting the
-# service account needs that; the resource side needs no mirror.
+# service account needs that.
 module "repo-sa" {
   source     = "../../../modules/iam-service-account"
   for_each   = var.repositories
@@ -126,12 +126,12 @@ module "build-sa" {
 # ------------------------------------------------------------------------
 
 # One regional internal proxy load balancer per service attachment, as in
-# Google's guide: PSC NEG, backend service, target TCP proxy, forwarding rule.
-# The forwarding rule address is an ordinary internal address that peering,
-# VPN and Interconnect carry, which is what lets the build workers reach the
-# instance from the producer side of the private service access peering, and
-# the hub and on-premises clients from theirs. A PSC endpoint would not: its
-# address is valid only inside the VPC that holds it.
+# Google's guide: PSC NEG, backend service, target TCP proxy, forwarding
+# rule. The forwarding rule address is an ordinary internal address that
+# peering, VPN and Interconnect carry, which is what lets the build workers
+# reach the instance from the producer side of the private service access
+# peering, and the hub and on-premises clients from theirs. A PSC endpoint
+# would not: its address is valid only inside the VPC that holds it.
 #
 # The proxy carries no certificate. TLS runs end to end from the client to the
 # instance, whose certificate covers the custom hostnames.

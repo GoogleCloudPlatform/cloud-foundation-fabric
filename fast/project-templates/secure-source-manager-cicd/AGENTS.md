@@ -6,17 +6,17 @@ Read the repository's [AGENTS.md](../../../AGENTS.md) for Fabric conventions and
 
 ## The documents, in the order they answer questions
 
-[TODO.md](TODO.md) is the state of the work: every open question, every settled one with the reason and the commit. Read it first and it tells you where the session stopped. Nothing else here is a working list.
+[TODO.md](TODO.md) is the state of the work: every open question, every settled one with the reason and the commit. Read it first; it tells you where the session stopped. Nothing else here is a working list.
 
 [SSM-CB.md](SSM-CB.md) is the design, moved here from the work vault on 2026-09-12, and it is authoritative on behaviour rather than on code. Go to it for how Secure Source Manager starts a build, what the triggers file contains, the identity chain, the two escalation paths, the full IAM grant table, and the caveats. Its last section lists what has never been tested against real infrastructure, and two of those can still invalidate the design.
 
-[README.md](README.md) is this template's own design: what it creates, and the three landing zone prerequisites that sit outside it. It carries the reasoning that would otherwise be re-derived — why the CA pool is mandatory rather than optional, why a private zone is the only way anything resolves, and why a peered DNS domain is needed on top of it.
+[README.md](README.md) is this template's own design: what it creates, and the three landing zone prerequisites that sit outside it. It carries the reasoning that would otherwise be re-derived — why the CA pool is mandatory, why a private zone is the only way anything resolves, and why a peered DNS domain is needed on top of it.
 
 [SKETCH.md](SKETCH.md) is the sketch, not code: module blocks with verified attribute names and a trailing section naming what is deliberately owned elsewhere. `main.tf` and `build-pool.tf` hold what is live, which today is the worker pool and a test build identity.
 
 ## The landing zone side
 
-These live in `~/dev/tf-playground/fast-config/ludo/data` and are not in this repository. Two of them carry long comment blocks recording what was settled and why, which is usually faster to read than reconstructing it.
+These live in `~/dev/tf-playground/fast-config/ludo/data` and are not in this repository. Two of them carry long comment blocks recording what was settled and why.
 
 - `2-project-factory/projects/shared/dev-build-ssm-0.yaml` — the instance project. Its header is the best single summary of the design decisions and their reasons.
 - `2-project-factory/projects/shared/dev-build-pool-0.yaml` — the build project, holding the worker pool and the build identities.
@@ -35,7 +35,7 @@ Read TODO.md, then the header comment in `dev-build-ssm-0.yaml`. Between them yo
 
 Then check `git log --oneline` on `ludo/ssm-cb` and whether the branch has been pushed, because it usually has not.
 
-Two habits are worth carrying in. The provider is authoritative on what fields exist and checking it is cheap, so check it rather than guessing; almost everything this design needs is already in the provider and the gaps have been module surface. But the landing zone, the conventions and most of the modules were written by the person you are working with, so ask him rather than inferring intent from his code — reading four files to reconstruct a decision he would state in a sentence costs his time and produces a conclusion he never sees and cannot correct.
+Two habits are worth carrying in. The provider is authoritative on what fields exist and checking it is cheap, so check it rather than guessing; almost everything this design needs is already in the provider and the gaps have been module surface. The landing zone, the conventions and most of the modules were written by the person you are working with, so ask him rather than inferring intent from his code.
 
 ## Handing over
 

@@ -1,16 +1,16 @@
 # TODO
 
-The state of the work. Open items carry enough to act on; closed ones carry a line and a pointer, because the reasoning lives in README.md, SSM-CB.md or the `fast-config` YAML headers and is not repeated here. Rewritten 2026-09-14 when the network design went back to private service access and load balancers.
+The state of the work. Open items carry enough to act on; closed ones carry a line and a pointer, because the reasoning lives in README.md, SSM-CB.md or the `fast-config` YAML headers and is not repeated here. Rewritten 2026-09-14.
 
 ## Next
 
 Order settled 2026-09-13: pool first, on its own, then the instance and the two design-invalidating trigger tests before anything else.
 
 - [ ] **Apply the landing zone changes** in `fast-config/ludo`: the dev VPC back on `psa_configs` with `psa-build` at `10.8.200.0/24` and `ssm.gcp.qix.it.` as a peered domain, the `na` subnet and `cloudbuild-ew8` attachment gone, the empty `pvt-ssm.yaml` hub zone, and the reworded `dev-build-ssm-0.yaml` header. Then check the peering exports subnet routes and whether `--no-export-subnet-routes-with-public-ip` matters.
-- [ ] **Bring the pool up on the peering** with `build-pool.tf` as it now stands, and run one build as `build-test-0` that calls an API the perimeter denies. The violation has to land in our perimeter's audit logs with the worker as the source; that is the attribution requirement, and it is a requirement of the regulated environment, not a property to note afterwards. Same build: confirm what a no-public-egress worker reaches.
+- [ ] **Bring the pool up on the peering** with `build-pool.tf` as it now stands, and run one build as `build-test-0` that calls an API the perimeter denies. The violation has to land in our perimeter's audit logs with the worker as the source. Same build: confirm what a no-public-egress worker reaches.
 - [ ] **Wire the sketch into `main.tf`**: instance, repositories, BYOSAs, build identities, the two `net-lb-proxy-int` blocks, with a `context` variable carrying the network, CA pool and second project as logical names. The SSM module resolves context already; the template does not pass it yet.
 - [ ] **Build the instance, then immediately test the two trigger behaviours** that can invalidate the design: whether a pull request build runs `.cloudbuild/cloudbuild.yaml` from the pull request head rather than the default branch, and what omitting `serviceAccount` from a triggers file does. The rest of the test list is in SSM-CB.md.
-- [ ] **Fill the `pvt-ssm.yaml` records** from the load balancer addresses the template outputs, and narrow `network_users` in `dev-build-ssm-0.yaml` to `network_subnet_users` on `europe-west4/gce` and `europe-west4/ilb-l7-ew4` once we know what the service project actually needs. `service_agent_iam` there is a guess copied from the pool project.
+- [ ] **Fill the `pvt-ssm.yaml` records** from the load balancer addresses the template outputs, and narrow `network_users` in `dev-build-ssm-0.yaml` to `network_subnet_users` on `europe-west4/gce` and `europe-west4/ilb-l7-ew4` once we know what the service project needs. `service_agent_iam` there is a guess copied from the pool project.
 - [ ] **How this template names the SSM service agent.** No `project` module here, so no `service_agents` output. The factory tfvars carries `number`; a `number` variable plus interpolation is the cheap answer, `modules/projects-data-source` the one that costs an API read.
 - [ ] **README**: landing zone snippets for the hub zone and the peering are in now; drop the "nothing is implemented yet" banner once the template plans, and tidy `branch_rules` into alphabetical order in the SSM module's `repositories` object while in the file.
 
@@ -18,7 +18,7 @@ Order settled 2026-09-13: pool first, on its own, then the instance and the two 
 
 - **Private Service Connect for the pool is gated** (2026-09-13). Evidence in SSM-CB.md. The design uses private service access and switches back when the allowlist opens; the load balancers and the hub zone are unaffected by that switch.
 - **Load balancers, not endpoints** (2026-09-14). An endpoint address does not cross the peering the workers now sit behind; a forwarding rule address does, and it serves the hub and on-premises too. README, access path section.
-- **DNS is one private zone in the hub**, `ssm.gcp.qix.it.`, plus a peered domain on the PSA peering so the workers see it. The response policy idea existed only because an endpoint address is per-network. README, DNS section.
+- **DNS is one private zone in the hub**, `ssm.gcp.qix.it.`, plus a peered domain on the PSA peering so the workers see it. README, DNS section.
 - **`compute.vmExternalIpAccess` is no backstop** for worker public IPs; the tenant project is outside our organisation. SSM-CB.md, gated section.
 - **`psc_allowed_projects` is immutable**; list every VPC host project at creation. Recorded in `dev-build-ssm-0.yaml`.
 - **Custom hostnames** under `ssm.gcp.qix.it`: `api.`, `git.`, `ssh.` and the apex. Survive a rebuild and take the region out of the suffix. Module support in `b4467f49e`.
