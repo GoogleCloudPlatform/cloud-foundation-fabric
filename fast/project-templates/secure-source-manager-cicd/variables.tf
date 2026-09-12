@@ -15,9 +15,15 @@
  */
 
 
-variable "location" {
-  type    = string
-  default = "europe-west8"
+variable "locations" {
+  type = object({
+    build = string
+    ssm   = string
+  })
+  default = {
+    build = "europe-west8"
+    ssm   = "europe-west4"
+  }
 }
 
 variable "network_config" {
@@ -42,6 +48,36 @@ variable "project_ids" {
   })
   default = {
     build = "tf-playground-dev-build-pool-0"
-    ssm   = "foo"
+    ssm   = "tf-playground-dev-build-ssm-0"
+  }
+}
+
+variable "ssm_config" {
+  type = object({
+    ca_pool_id      = string
+    deletion_policy = optional(string, null)
+    custom_host_config = object({
+      api      = string
+      git_http = string
+      git_ssh  = string
+      html     = string
+    })
+    psc_allowed_projects = optional(list(string))
+  })
+  default = {
+    ca_pool_id      = "projects/ldj-dev-sec-core/locations/europe-west8/caPools/dev-ca-0"
+    deletion_policy = "DELETE"
+    custom_host_config = {
+      api      = "api.ssm.gcp.qix.it"
+      git_http = "git.ssm.gcp.qix.it"
+      git_ssh  = "ssh.ssm.gcp.qix.it"
+      html     = "ssm.gcp.qix.it"
+    }
+    psc_allowed_projects = [
+      "ldj-dev-net-spoke-0",
+      "ldj-dr-net-spoke-0",
+      "ldj-prod-net-landing-0",
+      "ldj-prod-net-spoke-0"
+    ]
   }
 }

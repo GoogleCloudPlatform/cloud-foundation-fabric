@@ -14,16 +14,18 @@
  * limitations under the License.
  */
 
-output "build_pool_id" {
-  value = google_cloudbuild_worker_pool.default.id
-}
-
-output "ssm_instance" {
-  value = {
-    id              = module.ssm-instance.instance_id
-    hosts           = module.ssm-instance.host_config
-    http_attachment = module.ssm-instance.http_service_attachment
-    ssh_attachment  = module.ssm-instance.ssh_service_attachment
-    repository_ids  = module.ssm-instance.repository_ids
+module "ssm-instance" {
+  source          = "../../../modules/secure-source-manager-instance"
+  project_id      = var.project_ids.ssm
+  location        = var.locations.ssm
+  instance_id     = "${local.prefix}dev-0"
+  deletion_policy = var.ssm_config.deletion_policy
+  private_configs = {
+    is_private = true
+    ca_pool_id = var.ssm_config.ca_pool_id
+    # immutable, so every VPC host project in the org is listed up front
+    psc_allowed_projects = var.ssm_config.psc_allowed_projects
+    custom_host_config   = var.ssm_config.custom_host_config
   }
+  repositories = {}
 }
