@@ -4,7 +4,6 @@ The state of the work. Open items carry enough to act on; closed ones carry a li
 
 ## Next
 
-- [ ] **Confirm whether a deleted instance id can be reused.** Recreating against `dev-ca-3` reuses `test-0-dev-0`; CA pool ids cannot be reused, and if instance ids behave the same the create fails and the id has to change.
 
 
 Order settled 2026-09-13: pool first, on its own, then the instance and the two design-invalidating trigger tests before anything else.
@@ -17,6 +16,8 @@ Order settled 2026-09-13: pool first, on its own, then the instance and the two 
 - [ ] **README**: landing zone snippets for the hub zone and the peering are in now; drop the "nothing is implemented yet" banner once the template plans, and tidy `branch_rules` into alphabetical order in the SSM module's `repositories` object while in the file.
 
 ## Settled
+
+- **The instance is up on the DevOps pool** (2026-09-12), `test-0-dev-0` in `europe-west4` against `dev-ca-3`, built in 27 minutes. Instance ids are reusable after deletion, unlike CA pool ids, so a rebuild costs half an hour and nothing else. The service attachments move to a new tenant project on every rebuild, so nothing downstream may hardcode them.
 
 - **DevOps tier pools work, and the tier is a cost decision** (2026-09-12). `$200` per CA per month for Enterprise against `$20` for DevOps, and what Enterprise buys is listing, describing and revoking certificates. This playground runs DevOps on `dev-ca-3`; production should weigh revocation against the ten-fold price. README, CA pool section.
 
