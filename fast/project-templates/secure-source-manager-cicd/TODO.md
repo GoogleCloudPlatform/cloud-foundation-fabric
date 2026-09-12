@@ -4,7 +4,8 @@ The state of the work. Open items carry enough to act on; closed ones carry a li
 
 ## Next
 
-- [ ] **Remove the orphaned `dev-ca-1`** in `europe-west8`, left behind by the tier experiment. Also decide whether `enterprise_tier` stays: it was changed while chasing the region problem and is not known to be required.
+- [ ] **Remove the orphaned `dev-ca-1`** in `europe-west8`, left behind by the tier experiment.
+- [ ] **Does a DevOps tier pool work?** `enterprise_tier` was set while chasing the region problem and is not known to be required. It matters beyond this template: the security stage's `create_pool: {}` default is DevOps, so anyone following the README hits it. Answer it on the next instance rebuild rather than deleting a working instance, since instance id reuse may be blocked the way CA pool id reuse is, and that is not something to discover by losing the id.
 
 
 Order settled 2026-09-13: pool first, on its own, then the instance and the two design-invalidating trigger tests before anything else.
