@@ -264,6 +264,26 @@ The same build answered the egress question. `curl` to the public internet fails
 
 The build configuration is `builds/probe.yaml`.
 
+## psc_allowed_projects cannot name a project in another perimeter, tested 2026-09-12
+
+The first `CreateInstance` was denied with an egress violation out of `servicePerimeters/default`, target `projects/1028380281545`, which is `ldj-dr-net-spoke-0`. The audit record's `resourceNames` carries the `psc_allowed_projects` list, and the DR spoke lives in a different perimeter, so naming it is an egress. There was no ingress violation: running Terraform from a workstation under the `geo_it` access level is fine.
+
+The list is therefore bounded twice over. It is immutable, so every project that may ever attach has to be named at creation; and every project named has to be inside the same perimeter. Where those two collide, as they do for DR, the project is left out and the instance can never serve it without a rebuild, a perimeter bridge, or moving the project. DR is not in this design's access path, so it is left out.
+
+## The CA pool must be in the instance's region, tested 2026-09-12
+
+`CreateInstance` fails fast with `P4SA_MISSING_PERMISSION`: the service agent "is not able to create certificates on CAPool ...: generic::permission_denied: Write access to project 'ldj-dev-sec-core' was denied". The wording points at IAM and IAM is not the cause. Recorded here because the elimination cost several hours and should not be repeated.
+
+Ruled out, each by a direct test rather than by reasoning. Project-level `roles/privateca.certificateRequester` is present, placed by the factory. A pool-scoped binding of the same role changes nothing. `roles/owner` on the whole CA project changes nothing, which is what takes IAM off the table entirely. VPC Service Controls logs nothing, in the perimeter's own bucket or in the CA project, and the earlier instance-create egress violation proves this service does log when the perimeter is the cause. The service identity exists and the project module creates it anyway, from `service-agents.yaml`, so it was never missing; bindings are by email string, so materialising it later changes nothing either. The CA project carries no org policies and no location restriction. The pool tier is not it: moving from DevOps to Enterprise, which costs a pool replacement, failed identically. Enabling `privateca.googleapis.com` in the instance project, on the theory that cross-project API use needs it on the calling side, failed identically.
+
+The striking part is the silence. The service agent makes no audited call anywhere in the organisation, so no log will ever name the missing permission and the usual troubleshooting path does not exist.
+
+The cause was the region. The pool was in `europe-west8` and the instance in `europe-west4`; a pool in `europe-west4` works. The sketch had asserted that the pool's project and location are independent of the instance's, which is true of the project and false of the location, and that unchecked assertion is what cost the afternoon. Every Google example uses one region for both, which in hindsight was the available evidence.
+
+The error names a permission because the service agent's write is refused across regions, not because anything about IAM is wrong. Nothing in the message, and nothing in any log, points at the region.
+
+Two pool names are burned, because a CA pool id can never be reused once deleted. `dev-ca-0` was the original DevOps pool, `dev-ca-1` the Enterprise replacement in `europe-west8`, both in the wrong region, and `dev-ca-2` in `europe-west4` is the one that works. `dev-ca-1` is now orphaned and can be removed. The tier change was incidental and is not known to be required, so an Enterprise pool is not established as a requirement here.
+
 ## What we still need to test
 
 The infrastructure we bring up exists to answer these. Two of them can invalidate the design above, and they are about trigger behaviour rather than instance configuration, so neither would require rebuilding the instance.

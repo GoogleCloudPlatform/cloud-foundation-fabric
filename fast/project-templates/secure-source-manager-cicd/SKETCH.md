@@ -23,8 +23,8 @@ module "ssm" {
   private_configs = {
     is_private = true
     # projects/ldj-dev-sec-core/locations/europe-west8/caPools/dev-ca-0 in the
-    # playground. The pool's project and location are independent of the
-    # instance's, so europe-west8 here against europe-west4 above is fine
+    # playground. The pool's project is independent of the instance's, its
+    # location is not: the pool must sit in the instance's region
     ca_pool_id = var.ca_pool_id
     # custom hostnames under ssm.gcp.qix.it, in place of the generated ones
     # under europe-west4.p.sourcemanager.dev. The generated names embed the

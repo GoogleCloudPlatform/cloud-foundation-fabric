@@ -65,7 +65,7 @@ variable "ssm_config" {
     psc_allowed_projects = optional(list(string))
   })
   default = {
-    ca_pool_id      = "projects/ldj-dev-sec-core/locations/europe-west8/caPools/dev-ca-0"
+    ca_pool_id      = "projects/ldj-dev-sec-core/locations/europe-west4/caPools/dev-ca-2"
     deletion_policy = "DELETE"
     custom_host_config = {
       api      = "api.ssm.gcp.qix.it"
@@ -73,9 +73,9 @@ variable "ssm_config" {
       git_ssh  = "ssh.ssm.gcp.qix.it"
       html     = "ssm.gcp.qix.it"
     }
+    # only projects in our perimeter: dr is in a different one
     psc_allowed_projects = [
       "ldj-dev-net-spoke-0",
-      "ldj-dr-net-spoke-0",
       "ldj-prod-net-landing-0",
       "ldj-prod-net-spoke-0"
     ]

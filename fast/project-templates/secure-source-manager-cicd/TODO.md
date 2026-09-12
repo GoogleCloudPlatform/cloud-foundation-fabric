@@ -4,6 +4,9 @@ The state of the work. Open items carry enough to act on; closed ones carry a li
 
 ## Next
 
+- [ ] **Remove the orphaned `dev-ca-1`** in `europe-west8`, left behind by the tier experiment. Also decide whether `enterprise_tier` stays: it was changed while chasing the region problem and is not known to be required.
+
+
 Order settled 2026-09-13: pool first, on its own, then the instance and the two design-invalidating trigger tests before anything else.
 
 - [ ] **Write the delegation on `dev-sec-core`**: a conditioned `roles/resourcemanager.projectIamAdmin` for `dev-build-ssm-0-rw`, limited to `roles/privateca.auditor`, in the security project's data. Settled 2026-09-12, never written. Without it the build identities' `iam_project_roles` grant fails on first apply.
@@ -14,6 +17,8 @@ Order settled 2026-09-13: pool first, on its own, then the instance and the two 
 - [ ] **README**: landing zone snippets for the hub zone and the peering are in now; drop the "nothing is implemented yet" banner once the template plans, and tidy `branch_rules` into alphabetical order in the SSM module's `repositories` object while in the file.
 
 ## Settled
+
+- **The CA pool has to be in the instance's region** (2026-09-12). A pool in `europe-west8` against an instance in `europe-west4` fails `CreateInstance` with a permission error that is not about permissions and produces no logs anywhere. SSM-CB.md has the full elimination trail, which is worth reading before trusting any other "missing permission" from this API.
 
 - **The pool is up and the perimeter sees it correctly** (2026-09-12). Running on the PSA peering with a `/26` carved from `psa-build`. A probe build proved the producer project is inside our perimeter and that the BYOSA is the attributed principal; the worker has no public egress and resolves both Google API VIPs. SSM-CB.md, attribution section. The pool project needs `servicenetworking.googleapis.com` enabled even though the connection lives in the host project.
 - **The networking stage is applied** (2026-09-14). PSA range `psa-build`, the service networking connection, the `ssm.gcp.qix.it.` peered domain and the `pvt-ssm` hub zone are live; the `na` subnet and `cloudbuild-ew8` attachment are gone. The peering came up with `exportSubnetRoutesWithPublicIp: false` on its own, so `--no-export-subnet-routes-with-public-ip` needs no module work.
