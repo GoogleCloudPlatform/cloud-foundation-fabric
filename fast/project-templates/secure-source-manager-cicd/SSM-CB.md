@@ -146,11 +146,11 @@ What decides the shape of this section is a single limit. **A Private Service Co
 
 With every client on one VPC:
 
-- a private Cloud DNS zone for the instance hostnames, attached to the VPC network
+- a way for the VPC to resolve the instance hostnames: a private Cloud DNS zone attached to it, or, where the landing zone centralises zones in a hub that must not see these answers, a response policy bound to the VPC alone
 - an endpoint for the HTTP service attachment and a second for the SSH one, both in the instance's region, with global access if any client sits in another region of the same VPC
-- four A records in the private zone: `-api`, `-git` and the bare instance name on the HTTP endpoint address, `-ssh` on the SSH one
+- four A records, or four local-data rules: `-api`, `-git` and the bare instance name on the HTTP endpoint address, `-ssh` on the SSH one
 
-When a client is on another VPC, each additional network needs its own endpoint, its project added to `psc_allowed_projects`, and its own private zone for the same domain attached to disjoint client networks, because the name now resolves to a different address in each. A client that is not on a Google Cloud VPC at all — anything on-premises over VPN or Interconnect — cannot be served this way, and that case forces the alternative below.
+When a client is on another VPC, each additional network needs its own endpoint, its project added to `psc_allowed_projects`, and its own records for the same four names, because the name now resolves to a different address in each. A client that is not on a Google Cloud VPC at all — anything on-premises over VPN or Interconnect — cannot be served this way, and that case forces the alternative below.
 
 The alternative is what Google's guide documents, and its whole purpose is to replace an endpoint address with one that peering does carry:
 
@@ -264,7 +264,7 @@ One provider detail worth carrying into planning: default timeouts on `google_se
 - the documentation says `serviceAccount` is required in the triggers file and never says what happens when you leave it out, so the behaviour our requirement turns on is undocumented, and a trigger dropped at parse time reports no status check at all rather than a failing one
 - nothing about an instance can be changed after creation. `projects.locations.instances` exposes create, delete, get, list and the IAM methods and no `patch`, `gcloud source-manager instances` has no `update` subcommand, and the provider marks the whole resource immutable, so `is_private`, `ca_pool`, `custom_host_config`, `psc_allowed_projects`, the CMEK key and workforce identity federation are each a one-shot decision. Getting one wrong costs a delete, another hour of creation, and a new instance ID inside every hostname, DNS record and clone URL that depends on it
 - the branch rule resource carries pull request, review count, comment, stale review and linear history settings and no required status check, so the merge gate this design leans on may be a web interface setting rather than a Terraform one; check the REST reference before depending on it
-- a private zone attached to a network that holds no endpoint resolves the hostnames to an address that network cannot reach, and the failure is a connect timeout rather than a name error; attach the zone only where an endpoint exists
+- a zone or response policy attached to a network that holds no endpoint resolves the hostnames to an address that network cannot reach, and the failure is a connect timeout rather than a name error; attach it only where an endpoint exists, and remove response policy rules when switching to the load balancer path, since a policy overrides any zone added later
 - endpoints and the load balancer path are alternatives rather than layers, and Google's guide opens by telling you to release any endpoints you already configured before building the load balancers. Switching from one to the other later is therefore not purely additive
 - the documentation creates the first repository from a bastion host inside the VPC, using the instance's own data plane API hostname, but the Terraform resource builds its URLs from the public control plane at `securesourcemanager.googleapis.com`, so the binding constraint on the runner is perimeter membership rather than VPC connectivity
 - a build running as your own service account cannot use the default logs bucket, so send logs to Cloud Logging or to a bucket you create
