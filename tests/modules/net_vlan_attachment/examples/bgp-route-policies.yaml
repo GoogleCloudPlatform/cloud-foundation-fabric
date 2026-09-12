@@ -82,10 +82,10 @@ values:
     enable: true
     enable_ipv6: false
     export_policies:
-    - export-policy-be7fe702
+    - export-policy-ec6efe79
     import_policies:
-    - import-rfc1918-5baac578
-    - import-drop-all-6f8f7ce1
+    - import-rfc1918-5bc1718c
+    - import-drop-all-e2c150e0
     interface: vlan-attachment-intf
     md5_authentication_key: []
     name: vlan-attachment-peer
@@ -98,7 +98,7 @@ values:
     zero_advertised_route_priority: null
     zero_custom_learned_route_priority: false
   module.example-va.google_compute_router_route_policy.default["export-policy"]:
-    name: export-policy-be7fe702
+    name: export-policy-ec6efe79
     project: myproject
     region: europe-west8
     router: interconnect-router
@@ -106,6 +106,10 @@ values:
     - actions:
       - description: null
         expression: med.set(1000)
+        location: null
+        title: null
+      - description: null
+        expression: accept()
         location: null
         title: null
       match:
@@ -117,7 +121,7 @@ values:
     timeouts: null
     type: ROUTE_POLICY_TYPE_EXPORT
   module.example-va.google_compute_router_route_policy.default["import-drop-all"]:
-    name: import-drop-all-6f8f7ce1
+    name: import-drop-all-e2c150e0
     project: myproject
     region: europe-west8
     router: interconnect-router
@@ -136,7 +140,7 @@ values:
     timeouts: null
     type: ROUTE_POLICY_TYPE_IMPORT
   module.example-va.google_compute_router_route_policy.default["import-rfc1918"]:
-    name: import-rfc1918-5baac578
+    name: import-rfc1918-5bc1718c
     project: myproject
     region: europe-west8
     router: interconnect-router

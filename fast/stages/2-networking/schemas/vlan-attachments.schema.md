@@ -79,12 +79,13 @@
       - items: *reference([route_policy_term](#refs-route_policy_term))*
 - **route_policy_term**<a name="refs-route_policy_term"></a>: *object*
   <br>*additional properties: false*
-  - ⁺**actions**: *object*
-    <br>*additional properties: false*
-    - ⁺**expression**: *string*
-    - **title**: *string*
-    - **description**: *string*
-    - **location**: *string*
+  - ⁺**actions**: *array*
+    - items: *object*
+      <br>*additional properties: false*
+      - ⁺**expression**: *string*
+      - **title**: *string*
+      - **description**: *string*
+      - **location**: *string*
   - ⁺**match**: *object*
     <br>*additional properties: false*
     - ⁺**expression**: *string*

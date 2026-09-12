@@ -82,13 +82,13 @@ variable "router_config" {
       type = string
       terms = list(object({
         priority = number
-        match = optional(object({
+        match = object({
           expression  = string
           title       = optional(string)
           description = optional(string)
           location    = optional(string)
-        }))
-        actions = optional(object({
+        })
+        actions = list(object({
           expression  = string
           title       = optional(string)
           description = optional(string)

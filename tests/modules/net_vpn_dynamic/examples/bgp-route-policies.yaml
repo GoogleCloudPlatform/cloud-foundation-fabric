@@ -223,10 +223,10 @@ values:
     enable: true
     enable_ipv6: false
     export_policies:
-    - export-policy-c4be966d
+    - export-policy-e61b0530
     import_policies:
-    - import-rfc1918-5baac578
-    - import-drop-all-6f8f7ce1
+    - import-rfc1918-5bc1718c
+    - import-drop-all-e2c150e0
     interface: gateway-1-remote-1
     md5_authentication_key: []
     name: gateway-1-remote-1
@@ -240,7 +240,7 @@ values:
     zero_advertised_route_priority: null
     zero_custom_learned_route_priority: false
   module.vpn-dynamic.google_compute_router_route_policy.default["export-policy"]:
-    name: export-policy-c4be966d
+    name: export-policy-e61b0530
     project: my-project
     region: europe-west1
     router: vpn-gateway-1
@@ -248,6 +248,10 @@ values:
     - actions:
       - description: null
         expression: med.set(1000)
+        location: null
+        title: null
+      - description: null
+        expression: accept()
         location: null
         title: null
       match:
@@ -259,7 +263,7 @@ values:
     timeouts: null
     type: ROUTE_POLICY_TYPE_EXPORT
   module.vpn-dynamic.google_compute_router_route_policy.default["import-drop-all"]:
-    name: import-drop-all-6f8f7ce1
+    name: import-drop-all-e2c150e0
     project: my-project
     region: europe-west1
     router: vpn-gateway-1
@@ -278,7 +282,7 @@ values:
     timeouts: null
     type: ROUTE_POLICY_TYPE_IMPORT
   module.vpn-dynamic.google_compute_router_route_policy.default["import-rfc1918"]:
-    name: import-rfc1918-5baac578
+    name: import-rfc1918-5bc1718c
     project: my-project
     region: europe-west1
     router: vpn-gateway-1

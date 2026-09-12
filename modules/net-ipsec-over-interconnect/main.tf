@@ -175,15 +175,18 @@ resource "google_compute_router_route_policy" "default" {
       priority = terms.value.priority
       match {
         expression  = terms.value.match.expression
-        title       = try(terms.value.match.title, null)
-        description = try(terms.value.match.description, null)
-        location    = try(terms.value.match.location, null)
+        title       = terms.value.match.title
+        description = terms.value.match.description
+        location    = terms.value.match.location
       }
-      actions {
-        expression  = terms.value.actions.expression
-        title       = try(terms.value.actions.title, null)
-        description = try(terms.value.actions.description, null)
-        location    = try(terms.value.actions.location, null)
+      dynamic "actions" {
+        for_each = terms.value.actions
+        content {
+          expression  = actions.value.expression
+          title       = actions.value.title
+          description = actions.value.description
+          location    = actions.value.location
+        }
       }
     }
   }

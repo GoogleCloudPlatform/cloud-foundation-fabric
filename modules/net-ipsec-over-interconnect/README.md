@@ -169,9 +169,9 @@ module "vpngw-a" {
               title       = "import-rfc1918-subnets"
               description = "Accept the 3 RFC1918 subnets."
             }
-            actions = {
+            actions = [{
               expression = "accept()"
-            }
+            }]
           }
         ]
       }
@@ -185,9 +185,9 @@ module "vpngw-a" {
               title       = "default-drop"
               description = "Drop all the routes not accepted above"
             }
-            actions = {
+            actions = [{
               expression = "drop()"
-            }
+            }]
           }
         ]
       }
@@ -199,9 +199,10 @@ module "vpngw-a" {
             match = {
               expression = "destination == '10.255.255.0/24'"
             }
-            actions = {
-              expression = "med.set(1000)"
-            }
+            actions = [
+              { expression = "med.set(1000)" },
+              { expression = "accept()" }
+            ]
           }
         ]
       }

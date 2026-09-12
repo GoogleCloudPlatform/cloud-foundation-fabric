@@ -261,23 +261,26 @@
       ],
       "properties": {
         "actions": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "expression"
-          ],
-          "properties": {
-            "expression": {
-              "type": "string"
-            },
-            "title": {
-              "type": "string"
-            },
-            "description": {
-              "type": "string"
-            },
-            "location": {
-              "type": "string"
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "expression"
+            ],
+            "properties": {
+              "expression": {
+                "type": "string"
+              },
+              "title": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              },
+              "location": {
+                "type": "string"
+              }
             }
           }
         },

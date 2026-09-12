@@ -324,9 +324,12 @@ routers:
             match:
               expression: "destination == '10.0.0.0/8'"
             actions:
-              expression: accept()
+              - expression: med.set(1000)
+              - expression: accept()
 # [...]
 ```
+
+Each term requires at least one action, and takes a list of them applied in the order they are declared.
 
 ```yaml
 # in vpcs/[vpc-name]/vpns/[vpn-name].yaml

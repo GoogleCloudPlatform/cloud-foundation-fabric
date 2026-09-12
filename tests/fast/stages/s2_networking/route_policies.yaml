@@ -14,7 +14,7 @@
 
 values:
   google_compute_router_route_policy.default["hub/hybrid-connectivity-router/export-med"]:
-    name: export-med-5a604b96
+    name: export-med-05a4ba7f
     project: fast-prod-net-core-0
     region: europe-west1
     router: hub-hybrid-connectivity-router
@@ -22,6 +22,10 @@ values:
     - actions:
       - description: null
         expression: med.set(1000)
+        location: null
+        title: null
+      - description: null
+        expression: accept()
         location: null
         title: null
       match:
@@ -32,7 +36,7 @@ values:
       priority: 0
     type: ROUTE_POLICY_TYPE_EXPORT
   google_compute_router_route_policy.default["hub/hybrid-connectivity-router/import-drop-all"]:
-    name: import-drop-all-71c6475c
+    name: import-drop-all-29e697e2
     project: fast-prod-net-core-0
     region: europe-west1
     router: hub-hybrid-connectivity-router
@@ -50,7 +54,7 @@ values:
       priority: 2
     type: ROUTE_POLICY_TYPE_IMPORT
   google_compute_router_route_policy.default["hub/hybrid-connectivity-router/import-rfc1918"]:
-    name: import-rfc1918-65efc7d1
+    name: import-rfc1918-be8b0a43
     project: fast-prod-net-core-0
     region: europe-west1
     router: hub-hybrid-connectivity-router
@@ -71,24 +75,24 @@ values:
   # both consumers resolve policy keys to the same generated names
   module.vlan-attachments["hub-onprem-0"].google_compute_router_peer.default[0]:
     export_policies:
-    - export-med-5a604b96
+    - export-med-05a4ba7f
     import_policies:
-    - import-rfc1918-65efc7d1
-    - import-drop-all-71c6475c
+    - import-rfc1918-be8b0a43
+    - import-drop-all-29e697e2
     router: hub-hybrid-connectivity-router
   module.vpn-ha["hub/to-onprem"].google_compute_router_peer.bgp_peer["remote-0"]:
     export_policies:
-    - export-med-5a604b96
+    - export-med-05a4ba7f
     import_policies:
-    - import-rfc1918-65efc7d1
-    - import-drop-all-71c6475c
+    - import-rfc1918-be8b0a43
+    - import-drop-all-29e697e2
     router: hub-hybrid-connectivity-router
   module.vpn-ha["hub/to-onprem"].google_compute_router_peer.bgp_peer["remote-1"]:
     export_policies:
-    - export-med-5a604b96
+    - export-med-05a4ba7f
     import_policies:
-    - import-rfc1918-65efc7d1
-    - import-drop-all-71c6475c
+    - import-rfc1918-be8b0a43
+    - import-drop-all-29e697e2
     router: hub-hybrid-connectivity-router
 
 counts:

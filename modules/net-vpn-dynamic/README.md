@@ -161,9 +161,9 @@ module "vpn-dynamic" {
               title       = "import-rfc1918-subnets"
               description = "Accept the 3 RFC1918 subnets."
             }
-            actions = {
+            actions = [{
               expression = "accept()"
-            }
+            }]
           }
         ]
       }
@@ -177,9 +177,9 @@ module "vpn-dynamic" {
               title       = "default-drop"
               description = "Drop all the routes not accepted above"
             }
-            actions = {
+            actions = [{
               expression = "drop()"
-            }
+            }]
           }
         ]
       }
@@ -191,9 +191,10 @@ module "vpn-dynamic" {
             match = {
               expression = "destination == '192.168.0.0/24'"
             }
-            actions = {
-              expression = "med.set(1000)"
-            }
+            actions = [
+              { expression = "med.set(1000)" },
+              { expression = "accept()" }
+            ]
           }
         ]
       }

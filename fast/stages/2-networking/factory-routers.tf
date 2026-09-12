@@ -109,11 +109,14 @@ resource "google_compute_router_route_policy" "default" {
         description = try(terms.value.match.description, null)
         location    = try(terms.value.match.location, null)
       }
-      actions {
-        expression  = terms.value.actions.expression
-        title       = try(terms.value.actions.title, null)
-        description = try(terms.value.actions.description, null)
-        location    = try(terms.value.actions.location, null)
+      dynamic "actions" {
+        for_each = terms.value.actions
+        content {
+          expression  = actions.value.expression
+          title       = try(actions.value.title, null)
+          description = try(actions.value.description, null)
+          location    = try(actions.value.location, null)
+        }
       }
     }
   }

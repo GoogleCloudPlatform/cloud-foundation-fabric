@@ -50,7 +50,8 @@ routers:
     #           description: Accept the 3 RFC1918 ranges.
     #           expression: "destination == '10.0.0.0/8' || destination == '172.16.0.0/12' || destination == '192.168.0.0/16'"
     #         actions:
-    #           expression: accept()
+    #           - expression: med.set(1000)
+    #           - expression: accept()
     #   import-drop-all:
     #     type: IMPORT
     #     terms:
@@ -60,7 +61,7 @@ routers:
     #           description: Drop all the routes not accepted above.
     #           expression: "destination.inAnyRange(prefix('0.0.0.0/0').orLonger())"
     #         actions:
-    #           expression: drop()
+    #           - expression: drop()
 routes:
   default:
     dest_range: 0.0.0.0/0

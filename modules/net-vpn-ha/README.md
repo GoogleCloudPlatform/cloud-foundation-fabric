@@ -341,9 +341,9 @@ module "vpn_ha" {
               title       = "import-rfc1918-subnets"
               description = "Accept the 3 RFC1918 subnets."
             }
-            actions = {
+            actions = [{
               expression = "accept()"
-            }
+            }]
           }
         ]
       }
@@ -357,9 +357,9 @@ module "vpn_ha" {
               title       = "default-drop"
               description = "Drop all the routes not accepted above"
             }
-            actions = {
+            actions = [{
               expression = "drop()"
-            }
+            }]
           }
         ]
       }
@@ -371,9 +371,10 @@ module "vpn_ha" {
             match = {
               expression = "destination == '10.10.0.0/24'"
             }
-            actions = {
-              expression = "med.set(1000)"
-            }
+            actions = [
+              { expression = "med.set(1000)" },
+              { expression = "accept()" }
+            ]
           }
         ]
       }
