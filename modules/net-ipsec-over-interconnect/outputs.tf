@@ -37,6 +37,12 @@ output "random_secret" {
   value       = local.secret
 }
 
+output "route_policies" {
+  description = "BGP route policy names, keyed by route policy key."
+  value       = local.policy_names
+  depends_on  = [google_compute_router_route_policy.default]
+}
+
 output "router" {
   description = "Router resource (only if auto-created)."
   value       = one(google_compute_router.default[*])

@@ -20,6 +20,9 @@ locals {
     ? google_compute_address.gateway[0].address
     : var.gateway_address
   )
+  policy_names = {
+    for k, v in try(var.router_config.route_policies, {}) : k => "${k}-${substr(sha256(jsonencode(v)), 0, 8)}"
+  }
   router = (
     var.router_config.create
     ? try(google_compute_router.router[0].name, null)
@@ -110,6 +113,8 @@ resource "google_compute_router_peer" "bgp_peer" {
   project                   = var.project_id
   name                      = "${var.name}-${each.key}"
   router                    = coalesce(each.value.router, local.router)
+  export_policies           = each.value.bgp_peer.export_policies == null ? null : [for p in each.value.bgp_peer.export_policies : lookup(local.policy_names, p, p)]
+  import_policies           = each.value.bgp_peer.import_policies == null ? null : [for p in each.value.bgp_peer.import_policies : lookup(local.policy_names, p, p)]
   peer_ip_address           = each.value.bgp_peer.address
   peer_asn                  = each.value.bgp_peer.asn
   advertised_route_priority = each.value.bgp_peer.route_priority
@@ -191,4 +196,41 @@ resource "google_compute_vpn_tunnel" "tunnels" {
 
 resource "random_id" "secret" {
   byte_length = 8
+}
+
+resource "google_compute_router_route_policy" "default" {
+  for_each = var.router_config.route_policies
+  project  = var.project_id
+  region   = var.region
+  router   = local.router
+  name     = local.policy_names[each.key]
+  type     = each.value.type == "IMPORT" ? "ROUTE_POLICY_TYPE_IMPORT" : each.value.type == "EXPORT" ? "ROUTE_POLICY_TYPE_EXPORT" : null
+
+  dynamic "terms" {
+    for_each = try(each.value.terms, [])
+    content {
+      priority = terms.value.priority
+      match {
+        expression  = terms.value.match.expression
+        title       = terms.value.match.title
+        description = terms.value.match.description
+        location    = terms.value.match.location
+      }
+      dynamic "actions" {
+        for_each = terms.value.actions
+        content {
+          expression  = actions.value.expression
+          title       = actions.value.title
+          description = actions.value.description
+          location    = actions.value.location
+        }
+      }
+    }
+  }
+
+  lifecycle {
+    create_before_destroy = true
+  }
+
+  depends_on = [google_compute_router.router]
 }

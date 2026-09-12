@@ -37,6 +37,31 @@ routers:
         "10.0.0.0/8": "rfc1918-10"
         "172.16.0.0/12": "rfc1918-172"
         "192.168.0.0/16": "rfc1918-192"
+    # Uncomment to define BGP route policies on this router. Tunnels and VLAN
+    # attachments reference them by key from their bgp_peer configuration.
+    # (see https://docs.cloud.google.com/network-connectivity/docs/router/how-to/configuring-route-policies)
+    # route_policies:
+    #   import-rfc1918:
+    #     type: IMPORT
+    #     terms:
+    #       - priority: 1
+    #         match:
+    #           title: import-rfc1918-subnets
+    #           description: Accept the 3 RFC1918 ranges.
+    #           expression: "destination == '10.0.0.0/8' || destination == '172.16.0.0/12' || destination == '192.168.0.0/16'"
+    #         actions:
+    #           - expression: med.set(1000)
+    #           - expression: accept()
+    #   import-drop-all:
+    #     type: IMPORT
+    #     terms:
+    #       - priority: 2
+    #         match:
+    #           title: default-drop
+    #           description: Drop all the routes not accepted above.
+    #           expression: "destination.inAnyRange(prefix('0.0.0.0/0').orLonger())"
+    #         actions:
+    #           - expression: drop()
 routes:
   default:
     dest_range: 0.0.0.0/0
