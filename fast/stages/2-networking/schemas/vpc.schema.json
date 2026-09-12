@@ -367,6 +367,36 @@
         }
       }
     },
+    "route_policies": {
+      "type": "object",
+      "description": "A map of BGP route policies to create on this router.",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[a-z]([-a-z0-9]{0,52}[a-z0-9])?$": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "type",
+            "terms"
+          ],
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": [
+                "IMPORT",
+                "EXPORT"
+              ]
+            },
+            "terms": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/route_policy_term"
+              }
+            }
+          }
+        }
+      }
+    },
     "route_policy_term": {
       "type": "object",
       "additionalProperties": false,
@@ -378,6 +408,7 @@
       "properties": {
         "actions": {
           "type": "object",
+          "additionalProperties": false,
           "required": [
             "expression"
           ],
@@ -398,6 +429,7 @@
         },
         "match": {
           "type": "object",
+          "additionalProperties": false,
           "required": [
             "expression"
           ],
@@ -417,7 +449,9 @@
           }
         },
         "priority": {
-          "type": "number"
+          "type": "number",
+          "minimum": 0,
+          "maximum": 2147483647
         }
       }
     },
@@ -495,23 +529,7 @@
               }
             },
             "route_policies": {
-              "type": "object",
-              "patternProperties": {
-                "^[a-z0-9-]+$": {
-                  "type": "object",
-                  "properties": {
-                    "type": {
-                      "type": "string"
-                    },
-                    "terms": {
-                      "type": "array",
-                      "items": {
-                        "$ref": "#/$defs/route_policy_term"
-                      }
-                    }
-                  }
-                }
-              }
+              "$ref": "#/$defs/route_policies"
             }
           }
         }

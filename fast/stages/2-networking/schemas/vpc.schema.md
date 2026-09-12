@@ -117,14 +117,24 @@
     - items: *string*
   - **range_prefix**: *string*
   - **service_producer**: *string*
+- **route_policies**<a name="refs-route_policies"></a>: *object*
+  <br>*additional properties: false*
+  - **`^[a-z]([-a-z0-9]{0,52}[a-z0-9])?$`**: *object*
+    <br>*additional properties: false*
+    - ⁺**type**: *string*
+      <br>*enum: ['IMPORT', 'EXPORT']*
+    - ⁺**terms**: *array*
+      - items: *reference([route_policy_term](#refs-route_policy_term))*
 - **route_policy_term**<a name="refs-route_policy_term"></a>: *object*
   <br>*additional properties: false*
   - ⁺**actions**: *object*
+    <br>*additional properties: false*
     - ⁺**expression**: *string*
     - **title**: *string*
     - **description**: *string*
     - **location**: *string*
   - ⁺**match**: *object*
+    <br>*additional properties: false*
     - ⁺**expression**: *string*
     - **title**: *string*
     - **description**: *string*
@@ -149,11 +159,7 @@
       - **all_subnets**: *boolean*
       - **ip_ranges**: *object*
         - **`.*`**: *string*
-    - **route_policies**: *object*
-      - **`^[a-z0-9-]+$`**: *object*
-        - **type**: *string*
-        - **terms**: *array*
-          - items: *reference([route_policy_term](#refs-route_policy_term))*
+    - **route_policies**: *reference([route_policies](#refs-route_policies))*
 - **simple_subnet**<a name="refs-simple_subnet"></a>: *object*
   - ⁺**name**: *string*
   - ⁺**ip_cidr_range**: *string*

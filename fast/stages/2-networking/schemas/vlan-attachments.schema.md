@@ -36,8 +36,13 @@
   - **asn**: *number*
   - **keepalive**: *number*
   - **name**: *string*
+  - **route_policies**: *reference([route_policies](#refs-route_policies))*
 - **bgp_peer**: *object*
   <br>*additional properties: false*
+  - **export_policies**: *array*
+    - items: *string*
+  - **import_policies**: *array*
+    - items: *string*
   - **custom_advertise**: *object*
     <br>*additional properties: false*
     - ⁺**all_subnets**: *boolean*
@@ -64,6 +69,29 @@
 
 ## Definitions
 
+- **route_policies**<a name="refs-route_policies"></a>: *object*
+  <br>*additional properties: false*
+  - **`^[a-z]([-a-z0-9]{0,52}[a-z0-9])?$`**: *object*
+    <br>*additional properties: false*
+    - ⁺**type**: *string*
+      <br>*enum: ['IMPORT', 'EXPORT']*
+    - ⁺**terms**: *array*
+      - items: *reference([route_policy_term](#refs-route_policy_term))*
+- **route_policy_term**<a name="refs-route_policy_term"></a>: *object*
+  <br>*additional properties: false*
+  - ⁺**actions**: *object*
+    <br>*additional properties: false*
+    - ⁺**expression**: *string*
+    - **title**: *string*
+    - **description**: *string*
+    - **location**: *string*
+  - ⁺**match**: *object*
+    <br>*additional properties: false*
+    - ⁺**expression**: *string*
+    - **title**: *string*
+    - **description**: *string*
+    - **location**: *string*
+  - ⁺**priority**: *number*
 - **ncc_spoke_config**<a name="refs-ncc_spoke_config"></a>: *object*
   - **hub**: *string*
   - **description**: *string*

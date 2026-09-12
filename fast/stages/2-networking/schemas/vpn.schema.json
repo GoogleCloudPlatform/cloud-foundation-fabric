@@ -81,6 +81,94 @@
         }
       ]
     },
+    "route_policies": {
+      "type": "object",
+      "description": "A map of BGP route policies to create on this router.",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[a-z]([-a-z0-9]{0,52}[a-z0-9])?$": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "type",
+            "terms"
+          ],
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": [
+                "IMPORT",
+                "EXPORT"
+              ]
+            },
+            "terms": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/route_policy_term"
+              }
+            }
+          }
+        }
+      }
+    },
+    "route_policy_term": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "actions",
+        "match",
+        "priority"
+      ],
+      "properties": {
+        "actions": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "expression"
+          ],
+          "properties": {
+            "expression": {
+              "type": "string"
+            },
+            "title": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            },
+            "location": {
+              "type": "string"
+            }
+          }
+        },
+        "match": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "expression"
+          ],
+          "properties": {
+            "expression": {
+              "type": "string"
+            },
+            "title": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            },
+            "location": {
+              "type": "string"
+            }
+          }
+        },
+        "priority": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 2147483647
+        }
+      }
+    },
     "router_config": {
       "type": "object",
       "properties": {
@@ -92,6 +180,9 @@
         },
         "name": {
           "type": "string"
+        },
+        "route_policies": {
+          "$ref": "#/$defs/route_policies"
         }
       }
     },

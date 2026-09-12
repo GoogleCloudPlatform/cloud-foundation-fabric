@@ -20,10 +20,34 @@
 - **peer_gateways**<a name="refs-peer_gateways"></a>: *object*
   - **`^[a-z0-9-]+$`**: *reference([peer_gateway](#refs-peer_gateway))*
 - **peer_gateway**<a name="refs-peer_gateway"></a>: *object*
+- **route_policies**<a name="refs-route_policies"></a>: *object*
+  <br>*additional properties: false*
+  - **`^[a-z]([-a-z0-9]{0,52}[a-z0-9])?$`**: *object*
+    <br>*additional properties: false*
+    - ⁺**type**: *string*
+      <br>*enum: ['IMPORT', 'EXPORT']*
+    - ⁺**terms**: *array*
+      - items: *reference([route_policy_term](#refs-route_policy_term))*
+- **route_policy_term**<a name="refs-route_policy_term"></a>: *object*
+  <br>*additional properties: false*
+  - ⁺**actions**: *object*
+    <br>*additional properties: false*
+    - ⁺**expression**: *string*
+    - **title**: *string*
+    - **description**: *string*
+    - **location**: *string*
+  - ⁺**match**: *object*
+    <br>*additional properties: false*
+    - ⁺**expression**: *string*
+    - **title**: *string*
+    - **description**: *string*
+    - **location**: *string*
+  - ⁺**priority**: *number*
 - **router_config**<a name="refs-router_config"></a>: *object*
   - **asn**: *number*
   - **create**: *boolean*
   - **name**: *string*
+  - **route_policies**: *reference([route_policies](#refs-route_policies))*
 - **tunnels**<a name="refs-tunnels"></a>: *object*
   - **`^[a-z0-9-]+$`**: *reference([tunnel](#refs-tunnel))*
 - **tunnel**<a name="refs-tunnel"></a>: *object*
