@@ -25,4 +25,4 @@ resource "time_static" "default" {}
 resource "tls_private_key" "default" {}
 # resource "vsphere_role" "default" {}
 # resource "kubernetes_secret" "default" {}
-resource "aws_vpc" "default" {}
+# resource "aws_vpc" "default" {}
