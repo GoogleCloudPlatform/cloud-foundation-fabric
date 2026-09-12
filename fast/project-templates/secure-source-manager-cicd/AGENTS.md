@@ -8,7 +8,7 @@ Read the repository's [AGENTS.md](../../../AGENTS.md) for Fabric conventions and
 
 [TODO.md](TODO.md) is the state of the work: every open question, every settled one with the reason and the commit. Read it first and it tells you where the session stopped. Nothing else here is a working list.
 
-[SSM-CB.md](SSM-CB.md) is a symlink to the design in the work vault, and it is authoritative on behaviour rather than on code. Go to it for how Secure Source Manager starts a build, what the triggers file contains, the identity chain, the two escalation paths, the full IAM grant table, and the caveats. Its last section lists what has never been tested against real infrastructure, and two of those can still invalidate the design.
+[SSM-CB.md](SSM-CB.md) is the design, moved here from the work vault on 2026-09-12, and it is authoritative on behaviour rather than on code. Go to it for how Secure Source Manager starts a build, what the triggers file contains, the identity chain, the two escalation paths, the full IAM grant table, and the caveats. Its last section lists what has never been tested against real infrastructure, and two of those can still invalidate the design.
 
 [README.md](README.md) is this template's own design: what it creates, and the three landing zone prerequisites that sit outside it. It carries the reasoning that would otherwise be re-derived — why the CA pool is mandatory rather than optional, why a private zone is the only way anything resolves, and why a peered DNS domain is needed on top of it.
 
@@ -43,4 +43,4 @@ Before the session ends, put each thing where it belongs rather than in a summar
 
 Tick the TODO item and say what settled it, with the commit. Design reasoning goes in README.md, landing zone reasoning in the relevant `fast-config` YAML header, behaviour and caveats in SSM-CB.md. If a thread was dropped, record the one-line why.
 
-Commit here on `ludo/ssm-cb` and do not push. The work vault is different: update its CHANGELOG.md and push, since SSM-CB.md lives there and a future session reads it before it reads any of this.
+Commit here on `ludo/ssm-cb` and do not push. SSM-CB.md lives here now, so there is no vault side to update.
