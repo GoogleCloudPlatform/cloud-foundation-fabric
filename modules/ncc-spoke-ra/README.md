@@ -234,6 +234,8 @@ module "spoke-ra" {
 }
 # tftest modules=5 resources=14 fixtures=fixtures/compute-vm-nva.tf e2e inventory=bgp-route-policies.yaml
 ```
+
+Route policies cannot be edited in place: any change to a term forces a replacement, and the replacement is rejected while the policy is still attached to a BGP peer. To work around this the module appends a hash of the policy contents to its name and sets `create_before_destroy`, so an edited policy is created under a new name and peers are repointed to it before the previous one is removed. Generated names are exposed in the `route_policies` output. Peers refer to policies via their map key; any name the module does not manage is passed through unchanged.
 <!-- BEGIN TFDOC -->
 ## Variables
 
@@ -254,8 +256,9 @@ module "spoke-ra" {
 |---|---|:---:|
 | [hub](outputs.tf#L17) | NCC hub resource (only if auto-created). |  |
 | [id](outputs.tf#L22) | Fully qualified hub id. |  |
-| [router](outputs.tf#L27) | Cloud Router resource. |  |
-| [spoke_ra](outputs.tf#L32) | NCC spoke resource. |  |
+| [route_policies](outputs.tf#L27) | BGP route policy names, keyed by route policy key. |  |
+| [router](outputs.tf#L33) | Cloud Router resource. |  |
+| [spoke_ra](outputs.tf#L38) | NCC spoke resource. |  |
 
 ## Fixtures
 

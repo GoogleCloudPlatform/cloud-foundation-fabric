@@ -409,6 +409,8 @@ module "vpn_ha" {
 # tftest modules=1 resources=15 inventory=bgp-route-policies.yaml
 ```
 
+Route policies cannot be edited in place: any change to a term forces a replacement, and the replacement is rejected while the policy is still attached to a BGP peer. To work around this the module appends a hash of the policy contents to its name and sets `create_before_destroy`, so an edited policy is created under a new name and peers are repointed to it before the previous one is removed. Generated names are exposed in the `route_policies` output. Peers refer to policies via their map key; any name the module does not manage is passed through unchanged.
+
 You can optionally avoid to specify MD5 keys and the module will automatically generate them for you.
 <!-- BEGIN TFDOC -->
 ## Recipes
@@ -441,11 +443,12 @@ You can optionally avoid to specify MD5 keys and the module will automatically g
 | [md5_keys](outputs.tf#L42) | BGP tunnels MD5 keys. | ✓ |
 | [name](outputs.tf#L54) | VPN gateway name (only if auto-created). |  |
 | [random_secret](outputs.tf#L59) | Generated secret. | ✓ |
-| [router](outputs.tf#L65) | Router resource (only if auto-created). |  |
-| [router_name](outputs.tf#L70) | Router name. |  |
-| [self_link](outputs.tf#L75) | HA VPN gateway self link. |  |
-| [shared_secrets](outputs.tf#L80) | IPSEC tunnels shared secrets. | ✓ |
-| [tunnel_names](outputs.tf#L89) | VPN tunnel names. |  |
-| [tunnel_self_links](outputs.tf#L97) | VPN tunnel self links. |  |
-| [tunnels](outputs.tf#L105) | VPN tunnel resources. |  |
+| [route_policies](outputs.tf#L65) | BGP route policy names, keyed by route policy key. |  |
+| [router](outputs.tf#L71) | Router resource (only if auto-created). |  |
+| [router_name](outputs.tf#L76) | Router name. |  |
+| [self_link](outputs.tf#L81) | HA VPN gateway self link. |  |
+| [shared_secrets](outputs.tf#L86) | IPSEC tunnels shared secrets. | ✓ |
+| [tunnel_names](outputs.tf#L95) | VPN tunnel names. |  |
+| [tunnel_self_links](outputs.tf#L103) | VPN tunnel self links. |  |
+| [tunnels](outputs.tf#L111) | VPN tunnel resources. |  |
 <!-- END TFDOC -->

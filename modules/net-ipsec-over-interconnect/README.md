@@ -256,6 +256,8 @@ module "vpngw-a" {
 }
 # tftest modules=1 resources=19 inventory=bgp-route-policies.yaml
 ```
+
+Route policies cannot be edited in place: any change to a term forces a replacement, and the replacement is rejected while the policy is still attached to a BGP peer. To work around this the module appends a hash of the policy contents to its name and sets `create_before_destroy`, so an edited policy is created under a new name and peers are repointed to it before the previous one is removed. Generated names are exposed in the `route_policies` output. Peers refer to policies via their map key; any name the module does not manage is passed through unchanged.
 <!-- BEGIN TFDOC -->
 ## Variables
 
@@ -278,8 +280,9 @@ module "vpngw-a" {
 | [external_gateway](outputs.tf#L25) | External VPN gateway resource. |  |
 | [id](outputs.tf#L30) | Fully qualified VPN gateway id. |  |
 | [random_secret](outputs.tf#L35) | Generated secret. |  |
-| [router](outputs.tf#L40) | Router resource (only if auto-created). |  |
-| [router_name](outputs.tf#L45) | Router name. |  |
-| [self_link](outputs.tf#L50) | HA VPN gateway self link. |  |
-| [tunnels](outputs.tf#L55) | VPN tunnel resources. |  |
+| [route_policies](outputs.tf#L40) | BGP route policy names, keyed by route policy key. |  |
+| [router](outputs.tf#L46) | Router resource (only if auto-created). |  |
+| [router_name](outputs.tf#L51) | Router name. |  |
+| [self_link](outputs.tf#L56) | HA VPN gateway self link. |  |
+| [tunnels](outputs.tf#L61) | VPN tunnel resources. |  |
 <!-- END TFDOC -->

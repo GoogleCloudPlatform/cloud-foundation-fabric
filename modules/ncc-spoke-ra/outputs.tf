@@ -24,6 +24,12 @@ output "id" {
   value       = try(google_network_connectivity_hub.hub[0].id, null)
 }
 
+output "route_policies" {
+  description = "BGP route policy names, keyed by route policy key."
+  value       = local.policy_names
+  depends_on  = [google_compute_router_route_policy.default]
+}
+
 output "router" {
   description = "Cloud Router resource."
   value       = google_compute_router.cr

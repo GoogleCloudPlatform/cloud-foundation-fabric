@@ -308,6 +308,44 @@ routers:
 # [...]
 ```
 
+Routers can also declare BGP route policies, which VPN tunnels and VLAN attachments then reference by key from their `bgp_peer` configuration.
+
+```yaml
+# [...]
+routers:
+  vpn-router:
+    region: $locations:primary
+    asn: 64514
+    route_policies:
+      import-rfc1918:
+        type: IMPORT
+        terms:
+          - priority: 1
+            match:
+              expression: "destination == '10.0.0.0/8'"
+            actions:
+              expression: accept()
+# [...]
+```
+
+```yaml
+# in vpcs/[vpc-name]/vpns/[vpn-name].yaml
+router_config:
+  name: $routers:my-vpc/vpn-router
+tunnels:
+  remote-0:
+    bgp_peer:
+      address: 169.254.1.1
+      asn: 64513
+      import_policies:
+        - import-rfc1918
+# [...]
+```
+
+A route policy cannot be edited in place: changing a term forces a replacement, and that replacement is rejected while the policy is still attached to a BGP peer. Two mechanisms make the swap work. The name stored in GCP carries a hash of the policy contents, so an edited policy is a differently named resource rather than an update to the existing one, and `create_before_destroy` ensures the new policy exists and the peers point at it before the old one is deleted. The practical consequence is that the name visible in the console changes on every edit, while the key used in YAML stays stable.
+
+Policies can equally be declared under a VPN's or VLAN attachment's own `router_config` when the router is created by the module rather than by the stage, in which case peers reference them by key in exactly the same way.
+
 ### VPC Connectivity
 
 This stage supports multiple ways to connect VPCs to other VPCs or other networks:
