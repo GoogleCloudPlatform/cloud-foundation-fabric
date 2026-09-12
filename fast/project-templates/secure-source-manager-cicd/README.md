@@ -4,6 +4,8 @@ This setup brings up a private Secure Source Manager instance and the Cloud Buil
 
 Secure Source Manager reads a `.cloudbuild/triggers.yaml` file from each repository's default branch and starts Cloud Build itself, so no `google_cloudbuild_trigger` resource takes part. Everything this configuration does is create resources and grant IAM.
 
+The design targets a regulated environment, and two of its requirements come from there rather than from Secure Source Manager. Build workers must have no external IP address, which is not a preference to be traded against convenience. And build traffic must be attributable to the customer's VPC Service Controls perimeter: an API call made from a build step should be subject to the same perimeter as a call made from anywhere else in the environment, and should be visible in the same audit logs. Those two are a large part of why the pool is private and why all its traffic is routed through the VPC, and they are the properties the first apply has to demonstrate rather than assume — see the network attachment section.
+
 **This is a work in progress and nothing is implemented yet.** The sections below record the design, the prerequisites, and the points still to be resolved.
 
 ## Landing zone configuration
@@ -95,6 +97,10 @@ The attachment is regional and must be in the pool's region, which need not be t
 - `route_all_traffic` on the pool decides whether the workers' public egress leaves through your VPC as well as their private traffic. With it on, builds reach the internet through your Cloud NAT and under your egress controls, which is usually the point of running a private pool at all. With it off, only RFC 1918 and RFC 6598 destinations take the attachment.
 - The workers become clients of your VPC for firewall purposes, so ingress rules that admit them are ordinary subnet-scoped rules rather than rules against a peered range.
 
+`route_all_traffic` is the provider's name for an intent, not a description of the routes the workers end up with. The workers run in a Google-managed tenant network and hold an interface into yours through the attachment; whether that tenant-side interface also keeps a default route of its own, and how it compares to the one reached through the attachment, is not something the setting states. It matters because the perimeter requirement depends on it: if a tenant default route survives, `route_all_traffic` carries the destinations the attachment matches and everything else leaves through Google's own egress, where the calls are attributed to a network outside your perimeter and are absent from your audit logs. Treat the routing as an assumption to be confirmed on the first build, not as settled by the flag.
+
+No external IP is a separate control and it has a backstop. `no_external_ip` lives in `worker_config`, which predates Private Service Connect pools, while the API carries `publicIpAddressDisabled` inside the `privateServiceConnect` block, so whether the provider maps one onto the other for a PSC pool is unverified. The `compute.vmExternalIpAccess` organization policy reaches the tenant instances, so a pool that would come up with external addresses fails to be created instead of coming up wrong. That turns the provider's uncertainty into a loud failure rather than a silent one, which is the only reason it is safe to find out by applying.
+
 **To document here:** the landing zone snippet with its surrounding context, and a note on sizing the attachment subnet against expected build concurrency.
 
 ## The access path to the instance
@@ -131,3 +137,12 @@ Three boundaries do three different jobs here, and only the first is IAM:
 - what a `pull_request` trigger's identity may do comes from that identity's own permissions and nothing else, so it has to be safe in the hands of everyone who can open a pull request
 
 The last one is stricter than it sounds: a plan identity that reads Terraform state hands that state to every pull request author, and state files carry secrets in practice.
+
+### Two branch rule settings are made by hand
+
+The second boundary is the one the provider cannot fully express today. `google_secure_source_manager_branch_rule` carries neither `requiredStatusChecks` nor `requireCodeOwnerApproval`, although the REST resource `projects.locations.repositories.branchRules` has both, so Terraform can create the rule and protect the branch but cannot set the merge gate or make CODEOWNERS binding. Both have to be set in the web interface, per repository, after the branch rule is created, and both have to be set again if the rule is recreated:
+
+- **Required status checks** — add the build's status check context, so a failing build blocks the merge. Without it the build runs and reports and nothing stops a merge that ignores it.
+- **Require code owner approval** — without it CODEOWNERS is advisory, and since committing to the default branch is what decides which identities a repository may name, an advisory CODEOWNERS leaves the second boundary resting on branch protection alone.
+
+Until the provider catches up these are operational steps, not configuration, which means nothing detects their absence. Check them when a repository is added. Closing the gap upstream is recorded as follow-up work in [TODO.md](TODO.md).
