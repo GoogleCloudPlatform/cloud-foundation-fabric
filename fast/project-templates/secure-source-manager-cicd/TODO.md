@@ -6,7 +6,6 @@ The state of the work. Open items carry enough to act on; closed ones carry a li
 
 Order settled 2026-09-13: pool first, on its own, then the instance and the two design-invalidating trigger tests before anything else.
 
-- [ ] **Apply the landing zone changes** in `fast-config/ludo`: the dev VPC back on `psa_configs` with `psa-build` at `10.8.200.0/24` and `ssm.gcp.qix.it.` as a peered domain, the `na` subnet and `cloudbuild-ew8` attachment gone, the empty `pvt-ssm.yaml` hub zone, and the reworded `dev-build-ssm-0.yaml` header. Then check the peering exports subnet routes and whether `--no-export-subnet-routes-with-public-ip` matters.
 - [ ] **Write the delegation on `dev-sec-core`**: a conditioned `roles/resourcemanager.projectIamAdmin` for `dev-build-ssm-0-rw`, limited to `roles/privateca.auditor`, in the security project's data. Settled 2026-09-12, never written. Without it the build identities' `iam_project_roles` grant fails on first apply.
 - [ ] **Bring the pool up on the peering** with `build-pool.tf` as it now stands. This replaces the networkless pool the PSC attempt left behind, which every plan already wants to replace. Then run one build as `build-test-0` that calls an API the perimeter denies. The violation has to land in our perimeter's audit logs with the worker as the source. Same build: confirm what a no-public-egress worker reaches.
 - [ ] **Wire the sketch into `main.tf`**: instance, repositories, BYOSAs, build identities, the two `net-lb-proxy-int` blocks, with a `context` variable carrying the network, CA pool and second project as logical names. The SSM module resolves context already; the template does not pass it yet.
@@ -16,6 +15,8 @@ Order settled 2026-09-13: pool first, on its own, then the instance and the two 
 - [ ] **README**: landing zone snippets for the hub zone and the peering are in now; drop the "nothing is implemented yet" banner once the template plans, and tidy `branch_rules` into alphabetical order in the SSM module's `repositories` object while in the file.
 
 ## Settled
+
+- **The networking stage is applied** (2026-09-14). PSA range `psa-build`, the service networking connection, the `ssm.gcp.qix.it.` peered domain and the `pvt-ssm` hub zone are live; the `na` subnet and `cloudbuild-ew8` attachment are gone. The peering came up with `exportSubnetRoutesWithPublicIp: false` on its own, so `--no-export-subnet-routes-with-public-ip` needs no module work.
 
 - **Private Service Connect for the pool is gated** (2026-09-13). Evidence in SSM-CB.md. The design uses private service access and switches back when the allowlist opens; the load balancers and the hub zone are unaffected by that switch.
 - **Load balancers, not endpoints** (2026-09-14). An endpoint address does not cross the peering the workers now sit behind; a forwarding rule address does, and it serves the hub and on-premises too. README, access path section.
