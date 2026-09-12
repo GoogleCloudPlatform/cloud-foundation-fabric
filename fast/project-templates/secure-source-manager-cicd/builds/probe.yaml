@@ -1,0 +1,24 @@
+steps:
+  - name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        echo "== egress IP =="
+        timeout 15 curl -sS https://ifconfig.me || echo "NO PUBLIC EGRESS"
+        echo
+        echo "== private.googleapis.com =="
+        timeout 10 getent hosts private.googleapis.com || echo "no resolve"
+        echo "== restricted.googleapis.com =="
+        timeout 10 getent hosts restricted.googleapis.com || echo "no resolve"
+        echo
+        echo "== in-perimeter API call (own project) =="
+        timeout 30 gcloud builds worker-pools list --region=europe-west8 --project=tf-playground-dev-build-pool-0 2>&1 | tail -5
+        echo
+        echo "== cross-perimeter read, expect a VPC-SC denial =="
+        timeout 30 gcloud storage ls gs://gcp-public-data-landsat/ 2>&1 | tail -20
+options:
+  logging: CLOUD_LOGGING_ONLY
+  pool:
+    name: projects/tf-playground-dev-build-pool-0/locations/europe-west8/workerPools/test-0-default-0
+serviceAccount: projects/tf-playground-dev-build-pool-0/serviceAccounts/test-0-build-test-0@tf-playground-dev-build-pool-0.iam.gserviceaccount.com

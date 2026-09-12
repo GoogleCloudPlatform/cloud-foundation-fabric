@@ -254,6 +254,16 @@ Only the raw API reports it. Terraform's `google_cloudbuild_worker_pool` in prov
 
 The design therefore uses private service access, and switches when the allowlist opens: one block on the pool resource, a network attachment and subnet in place of the peering, and no peered domain. The load balancers and the hub zone stay either way.
 
+## Perimeter attribution and worker egress, tested 2026-09-12
+
+A build on the private service access pool, running as the `build-test-0` identity, listed a bucket outside the perimeter. The denial landed in `accessPolicies/278440118580/servicePerimeters/default` as an egress violation with `violationReason: RESOURCES_NOT_IN_SAME_SERVICE_PERIMETER`, and it carries the two attributions the design depends on. `principalEmail` is the build identity, not the Cloud Build service agent, so a BYOSA is what the perimeter sees and per-repository identities are meaningful to it. `egressViolations[0].source` is `projects/744301293705/[servicenetworking.googleapis.com]`, the Google-managed producer project holding the workers, which means that project is inside our perimeter rather than outside it — the assumption this whole design rests on, previously observed once and now confirmed.
+
+The record is written to the VPC host project, `projects/ldj-dev-net-spoke-0/logs/cloudaudit.googleapis.com%2Fpolicy`, not to the build project. Look there. In this organisation the perimeter events are collected in `projects/ldj-prod-audit-org-0/locations/global/buckets/vpc-sc/views/_AllLogs`.
+
+The same build answered the egress question. `curl` to the public internet fails, so `no_external_ip` holds. Both `private.googleapis.com` and `restricted.googleapis.com` resolve for the worker, to the usual `199.36.153.8/30` and `199.36.153.4/30` VIPs. `callerIp` on the violation is `gce-internal-ip`.
+
+The build configuration is `builds/probe.yaml`.
+
 ## What we still need to test
 
 The infrastructure we bring up exists to answer these. Two of them can invalidate the design above, and they are about trigger behaviour rather than instance configuration, so neither would require rebuilding the instance.
@@ -264,15 +274,11 @@ Bring the pool up on its own first. It is cheap and mutable where the instance i
 2. Find out whether omitting `serviceAccount` from a triggers file fails the build, drops the trigger silently, or falls back to an identity, and if it falls back, which one. Then find out what a dropped trigger does to a branch protection rule that requires its status check. Our isolation requirement depends on the first half and our merge gate on the second.
 3. Find out whether `google_secure_source_manager_repository` can create a repository in a private instance from a runner outside the VPC but inside the perimeter. The provider targets the public control plane, so the expected answer is yes and the expected failure mode is a perimeter one.
 4. Confirm that a worker on the private service access peering reaches the load balancer address and resolves the hostnames through the peered domain. Both are inferred from the peering exporting subnet routes and forwarding the suffix.
-5. Find out what a worker pool with no external IP can reach: Google APIs through Private Google Access, and nothing else is the expectation.
-
-   Test attribution rather than routing, which we cannot read: make a build step call an API the perimeter denies, and confirm the violation appears in our perimeter's audit logs with the worker as the source. An earlier private service access pool showed the tenant project treated as inside the perimeter of the VPC's project, but that was observed once and this design depends on it. Denied somewhere we cannot see, or not denied at all, means the assumption is wrong. The external IP half has no test and no backstop: `compute.vmExternalIpAccess` does not reach the tenant project, so it rests on `no_external_ip` being set.
-
-   Both are answerable before the instance exists. The pool is cheap and mutable where the instance is an hour and immutable, so bring up a pool, run one build, and settle these first.
+5. Closed on 2026-09-12 by the probe build. See the section above.
 6. Closed on 2026-09-12 without testing: `psc_allowed_projects` is immutable. The Magic Modules definition marks the instance resource immutable as a whole, and the API has no update method. The list has to be right on the first apply.
 7. Confirm that a branch protection rule requiring a status check blocks a merge when the check fails. The API has the field, `requiredStatusChecks[].context`; the provider does not yet, so the rule is set in the web interface for this test.
 8. Measure how long instance creation actually takes. The documentation says up to 60 minutes and the provider's own timeout is now 120.
-9. Revalidate that the Secure Source Manager control plane can create builds in the build project under VPC Service Controls. It is the one hop that originates on Google infrastructure with a BYOSA token; an earlier private service access pool showed the tenant project treated as inside the perimeter of the VPC's project, and this design is that configuration again.
+9. Revalidate that the Secure Source Manager control plane can create builds in the build project under VPC Service Controls. It is the one hop that originates on Google infrastructure with a BYOSA token. The producer project is now confirmed inside the perimeter, which removes the worker-side doubt but not this one, since the trigger call originates elsewhere.
 
 Two questions were closed by cross-checking rather than by testing. Terraform can set the repository service account from 7.44.0. Whether the Secure Source Manager service agent can itself hold `iam.serviceAccounts.actAs` on a custom Cloud Build service account is still unresolved — the documentation implies it cannot and a review asserted it can — but the design mandates a BYOSA on every repository, so the answer changes nothing here.
 

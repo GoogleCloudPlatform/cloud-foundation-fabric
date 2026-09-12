@@ -14,34 +14,6 @@
  * limitations under the License.
  */
 
-
-variable "location" {
-  type    = string
-  default = "europe-west8"
-}
-
-variable "network_config" {
-  type = object({
-    build_psa_range = optional(string, "/26")
-    vpc_self_link   = string
-  })
-  default = {
-    vpc_self_link = "projects/ldj-dev-net-spoke-0/global/networks/dev-spoke-0"
-  }
-}
-
-variable "prefix" {
-  type    = string
-  default = "test-0"
-}
-
-variable "project_ids" {
-  type = object({
-    build = string
-    ssm   = string
-  })
-  default = {
-    build = "tf-playground-dev-build-pool-0"
-    ssm   = "foo"
-  }
+output "build_pool_id" {
+  value = google_cloudbuild_worker_pool.default.id
 }

@@ -7,7 +7,6 @@ The state of the work. Open items carry enough to act on; closed ones carry a li
 Order settled 2026-09-13: pool first, on its own, then the instance and the two design-invalidating trigger tests before anything else.
 
 - [ ] **Write the delegation on `dev-sec-core`**: a conditioned `roles/resourcemanager.projectIamAdmin` for `dev-build-ssm-0-rw`, limited to `roles/privateca.auditor`, in the security project's data. Settled 2026-09-12, never written. Without it the build identities' `iam_project_roles` grant fails on first apply.
-- [ ] **Bring the pool up on the peering** with `build-pool.tf` as it now stands. This replaces the networkless pool the PSC attempt left behind, which every plan already wants to replace. Then run one build as `build-test-0` that calls an API the perimeter denies. The violation has to land in our perimeter's audit logs with the worker as the source. Same build: confirm what a no-public-egress worker reaches.
 - [ ] **Wire the sketch into `main.tf`**: instance, repositories, BYOSAs, build identities, the two `net-lb-proxy-int` blocks, with a `context` variable carrying the network, CA pool and second project as logical names. The SSM module resolves context already; the template does not pass it yet.
 - [ ] **Build the instance, then immediately test the two trigger behaviours** that can invalidate the design: whether a pull request build runs `.cloudbuild/cloudbuild.yaml` from the pull request head rather than the default branch, and what omitting `serviceAccount` from a triggers file does. The rest of the test list is in SSM-CB.md.
 - [ ] **Fill the `pvt-ssm.yaml` records** from the load balancer addresses the template outputs, and narrow `network_users` in `dev-build-ssm-0.yaml` to `network_subnet_users` on `europe-west4/gce` and `europe-west4/ilb-l7-ew4` once we know what the service project needs. `service_agent_iam` there is a guess copied from the pool project.
@@ -16,6 +15,7 @@ Order settled 2026-09-13: pool first, on its own, then the instance and the two 
 
 ## Settled
 
+- **The pool is up and the perimeter sees it correctly** (2026-09-12). Running on the PSA peering with a `/26` carved from `psa-build`. A probe build proved the producer project is inside our perimeter and that the BYOSA is the attributed principal; the worker has no public egress and resolves both Google API VIPs. SSM-CB.md, attribution section. The pool project needs `servicenetworking.googleapis.com` enabled even though the connection lives in the host project.
 - **The networking stage is applied** (2026-09-14). PSA range `psa-build`, the service networking connection, the `ssm.gcp.qix.it.` peered domain and the `pvt-ssm` hub zone are live; the `na` subnet and `cloudbuild-ew8` attachment are gone. The peering came up with `exportSubnetRoutesWithPublicIp: false` on its own, so `--no-export-subnet-routes-with-public-ip` needs no module work.
 
 - **Private Service Connect for the pool is gated** (2026-09-13). Evidence in SSM-CB.md. The design uses private service access and switches back when the allowlist opens; the load balancers and the hub zone are unaffected by that switch.
