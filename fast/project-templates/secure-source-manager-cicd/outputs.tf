@@ -18,6 +18,11 @@ output "build_pool_id" {
   value = google_cloudbuild_worker_pool.default.id
 }
 
+output "ssm_lb_address" {
+  description = "Shared VIP of the two load balancers, for the ssm.gcp.qix.it A records."
+  value       = module.ssm-lb-ip.internal_addresses[local.ssm_lb_ip].address
+}
+
 output "ssm_instance" {
   value = {
     id              = module.ssm-instance.instance_id

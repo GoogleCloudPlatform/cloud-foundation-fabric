@@ -4,9 +4,9 @@ The parts of this configuration that are not live yet. They were comments inside
 
 Attribute names below were taken from each module's `variables.tf` where they were verified, and marked TODO where they were not. Nothing here is expected to plan.
 
-As of 2026-09-12 the instance and worker pool blocks are superseded by `ssm-instance.tf` and `build-pool.tf`, which are live and authoritative; read them rather than the versions below. The load balancer and identity blocks are still ahead of the code.
+As of 2026-09-12 the instance and worker pool blocks are superseded by `ssm-instance.tf` and `build-pool.tf`, and as of 2026-09-13 the load balancer block by `ssm-load-balancers.tf`. Those files are live and authoritative; read them rather than the versions below. The identity blocks are still ahead of the code.
 
-The configuration spans two projects with one provider, because one automation service account, `dev-build-ssm-0-rw`, holds IAM in both. The instance project holds the instance, its repositories, their per-repository service accounts and the Private Service Connect endpoints fronting the service attachments, in `europe-west4` — Secure Source Manager runs in eleven regions and only two are in Europe. The build project holds the private worker pool and the build identities the triggers file names, in `europe-west8`, the primary location for everything else here. The regions differ on purpose, and `global_access` on the endpoints is what lets a pool in one reach endpoints in the other across the same VPC.
+The configuration spans two projects with one provider, because one automation service account, `dev-build-ssm-0-rw`, holds IAM in both. The instance project holds the instance, its repositories, their per-repository service accounts and the two internal proxy load balancers fronting the service attachments, in `europe-west4` — Secure Source Manager runs in eleven regions and only two are in Europe. The build project holds the private worker pool and the build identities the triggers file names, in `europe-west8`, the primary location for everything else here. The regions differ on purpose, and `global_access` on the forwarding rules is what lets a pool in one region reach a load balancer in the other across the same VPC.
 
 ## Blocks
 
@@ -121,57 +121,6 @@ module "build-sa" {
   }
   # impersonation of the terraform service accounts the pipeline uses
   iam_sa_roles = each.value.impersonate_service_accounts
-}
-
-# ------------------------------------------------------------------------
-# network: load balancers in front of the instance
-# ------------------------------------------------------------------------
-
-# One regional internal proxy load balancer per service attachment, as in
-# Google's guide: PSC NEG, backend service, target TCP proxy, forwarding
-# rule. The forwarding rule address is an ordinary internal address that
-# peering, VPN and Interconnect carry, which is what lets the build workers
-# reach the instance from the producer side of the private service access
-# peering, and the hub and on-premises clients from theirs. A PSC endpoint
-# would not: its address is valid only inside the VPC that holds it.
-#
-# The proxy carries no certificate. TLS runs end to end from the client to the
-# instance, whose certificate covers the custom hostnames.
-#
-# global_access is the module default and is what makes the region split
-# work: the load balancers are in europe-west4 with the instance, while the
-# pool and everything else are in europe-west8. The proxy-only subnet is
-# europe-west4/ilb-l7-ew4 in the dev VPC.
-module "lb" {
-  source     = "../../../modules/net-lb-proxy-int"
-  for_each = {
-    http = { port = 443, attachment = module.ssm.http_service_attachment }
-    ssh  = { port = 22, attachment = module.ssm.ssh_service_attachment }
-  }
-  project_id = var.project_id
-  region     = var.region
-  name       = "${var.instance_id}-${each.key}"
-  forwarding_rules_config = {
-    "" = { port = each.value.port }
-  }
-  backend_service_config = {
-    backends = [{ group = "${var.instance_id}-${each.key}" }]
-  }
-  neg_configs = {
-    "${var.instance_id}-${each.key}" = {
-      psc = {
-        network        = var.network_config.vpc_self_link
-        subnetwork     = var.network_config.subnetwork
-        region         = var.region
-        producer_port  = each.value.port
-        target_service = each.value.attachment
-      }
-    }
-  }
-  vpc_config = {
-    network    = var.network_config.vpc_self_link
-    subnetwork = var.network_config.subnetwork
-  }
 }
 
 # ------------------------------------------------------------------------

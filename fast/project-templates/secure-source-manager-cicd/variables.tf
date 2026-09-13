@@ -29,9 +29,12 @@ variable "locations" {
 variable "network_config" {
   type = object({
     build_psa_range = optional(string, "/26")
+    subnetwork      = string
     vpc_self_link   = string
   })
   default = {
+    # the load balancer VIP is reserved here and both forwarding rules pin to it
+    subnetwork    = "projects/ldj-dev-net-spoke-0/regions/europe-west4/subnetworks/gce"
     vpc_self_link = "projects/ldj-dev-net-spoke-0/global/networks/dev-spoke-0"
   }
 }

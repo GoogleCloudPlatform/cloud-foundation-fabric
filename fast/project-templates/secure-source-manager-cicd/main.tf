@@ -16,6 +16,8 @@
 
 locals {
   prefix = var.prefix == null ? "" : "${var.prefix}-"
+  # name of the reserved load balancer address
+  ssm_lb_ip = "${local.prefix}dev-0-ssm-lb"
 }
 
 module "build-sa-test" {
