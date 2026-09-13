@@ -42,11 +42,11 @@ module "ssm-lb" {
       port    = each.value
     }
   }
-  # a PSC NEG backend cannot balance by UTILIZATION, which is the module default
+  # a PSC NEG backend only accepts the UTILIZATION balancing mode, which is the
+  # module default: CONNECTION and RATE are refused by the API
   backend_service_config = {
     backends = [{
-      group          = "psc"
-      balancing_mode = "CONNECTION"
+      group = "psc"
     }]
   }
   neg_configs = {
