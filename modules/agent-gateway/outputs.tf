@@ -19,6 +19,30 @@ output "agent_gateway" {
   value       = google_network_services_agent_gateway.default
 }
 
+output "authz_extension_ids" {
+  description = "The authorization extension ids, keyed by service."
+  value = {
+    for k, v in {
+      iap = one(google_network_services_authz_extension.iap[*].id)
+      model_armor = one(
+        google_network_services_authz_extension.model_armor[*].id
+      )
+    } : k => v if v != null
+  }
+}
+
+output "authz_policy_ids" {
+  description = "The authorization policy ids, keyed by service."
+  value = {
+    for k, v in {
+      iap = one(google_network_security_authz_policy.iap[*].id)
+      model_armor = one(
+        google_network_security_authz_policy.model_armor[*].id
+      )
+    } : k => v if v != null
+  }
+}
+
 output "id" {
   description = "The Agent Gateway id."
   value       = google_network_services_agent_gateway.default.id
