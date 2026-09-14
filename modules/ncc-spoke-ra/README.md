@@ -4,9 +4,20 @@ This module allows management of NCC Spokes backed by Router Appliances. Network
 
 The module manages a hub (optionally), a spoke, and the corresponding Cloud Router and BGP sessions to the router appliance(s).
 
+<!-- BEGIN TOC -->
+- [Examples](#examples)
+  - [Simple hub and spoke](#simple-hub-and-spoke)
+  - [Two spokes](#two-spokes)
+  - [Spoke with load-balanced router appliances](#spoke-with-load-balanced-router-appliances)
+  - [Simple hub and spoke with BGP Route Policies](#simple-hub-and-spoke-with-bgp-route-policies)
+- [Variables](#variables)
+- [Outputs](#outputs)
+- [Fixtures](#fixtures)
+<!-- END TOC -->
+
 ## Examples
 
-### Simple hub & spoke
+### Simple hub and spoke
 
 ```hcl
 module "spoke-ra" {
@@ -138,6 +149,94 @@ module "spoke-ra" {
 }
 # tftest modules=5 resources=13 fixtures=fixtures/compute-vm-nva.tf e2e
 ```
+
+### Simple hub and spoke with BGP Route Policies
+
+```hcl
+module "spoke-ra" {
+  source     = "./fabric/modules/ncc-spoke-ra"
+  hub        = { create = true, name = "ncc-hub" }
+  name       = "spoke-ra"
+  project_id = var.project_id
+  region     = var.region
+  router_appliances = [
+    {
+      internal_ip     = module.compute-vm-primary-b.internal_ip
+      vm_self_link    = module.compute-vm-primary-b.self_link
+      import_policies = ["import-rfc1918", "import-drop-all"]
+      export_policies = ["export-policy"]
+    }
+  ]
+  router_config = {
+    asn           = 65000
+    ip_interface0 = "10.0.16.14"
+    ip_interface1 = "10.0.16.15"
+    peer_asn      = 65001
+    custom_advertise = {
+      all_subnets = true
+      ip_ranges = {
+        "10.10.10.0/24" = "default"
+      }
+    }
+    route_policies = {
+      "import-rfc1918" = {
+        type = "IMPORT"
+        terms = [
+          {
+            priority = 1
+            match = {
+              expression  = "destination == '10.0.0.0/8' || destination == '172.16.0.0/12' || destination == '192.168.0.0/16'"
+              title       = "import-rfc1918-subnets"
+              description = "Accept the 3 RFC1918 subnets."
+            }
+            actions = [{
+              expression = "accept()"
+            }]
+          }
+        ]
+      }
+      "import-drop-all" = {
+        type = "IMPORT"
+        terms = [
+          {
+            priority = 1
+            match = {
+              expression  = "destination.inAnyRange(prefix('0.0.0.0/0').orLonger())"
+              title       = "default-drop"
+              description = "Drop all the routes not accepted above"
+            }
+            actions = [{
+              expression = "drop()"
+            }]
+          }
+        ]
+      }
+      "export-policy" = {
+        type = "EXPORT"
+        terms = [
+          {
+            priority = 0
+            match = {
+              expression = "destination == '10.10.10.0/24'"
+            }
+            actions = [
+              { expression = "med.set(1000)" },
+              { expression = "accept()" }
+            ]
+          }
+        ]
+      }
+    }
+  }
+  vpc_config = {
+    network_name     = var.vpc.self_link
+    subnet_self_link = var.subnet.self_link
+  }
+}
+# tftest modules=5 resources=14 fixtures=fixtures/compute-vm-nva.tf e2e inventory=bgp-route-policies.yaml
+```
+
+Route policies cannot be edited in place: any change to a term forces a replacement, and the replacement is rejected while the policy is still attached to a BGP peer. To work around this the module appends a hash of the policy contents to its name and sets `create_before_destroy`, so an edited policy is created under a new name and peers are repointed to it before the previous one is removed. Generated names are exposed in the `route_policies` output. Peers refer to policies via their map key; any name the module does not manage is passed through unchanged.
 <!-- BEGIN TFDOC -->
 ## Variables
 
@@ -147,9 +246,9 @@ module "spoke-ra" {
 | [name](variables.tf#L37) | The name of the NCC spoke. | <code>string</code> | ✓ |  |
 | [project_id](variables.tf#L42) | The ID of the project where the NCC hub & spokes will be created. | <code>string</code> | ✓ |  |
 | [region](variables.tf#L47) | Region where the spoke is located. | <code>string</code> | ✓ |  |
-| [router_appliances](variables.tf#L52) | List of router appliances this spoke is associated with. | <code>list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> | ✓ |  |
-| [router_config](variables.tf#L60) | Configuration of the Cloud Router. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
-| [vpc_config](variables.tf#L76) | Network and subnetwork for the CR interfaces. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| [router_appliances](variables.tf#L52) | List of router appliances this spoke is associated with. Import and export policies are applied to the BGP peers connecting the VPC Cloud Router to the NCC router appliances. | <code>list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> | ✓ |  |
+| [router_config](variables.tf#L62) | Configuration of the Cloud Router. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| [vpc_config](variables.tf#L122) | Network and subnetwork for the CR interfaces. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
 | [data_transfer](variables.tf#L17) | Site-to-site data transfer feature, available only in some regions. | <code>bool</code> |  | <code>false</code> |
 
 ## Outputs
@@ -158,8 +257,9 @@ module "spoke-ra" {
 |---|---|:---:|
 | [hub](outputs.tf#L17) | NCC hub resource (only if auto-created). |  |
 | [id](outputs.tf#L22) | Fully qualified hub id. |  |
-| [router](outputs.tf#L27) | Cloud Router resource. |  |
-| [spoke_ra](outputs.tf#L32) | NCC spoke resource. |  |
+| [route_policies](outputs.tf#L27) | BGP route policy names, keyed by route policy key. |  |
+| [router](outputs.tf#L33) | Cloud Router resource. |  |
+| [spoke_ra](outputs.tf#L38) | NCC spoke resource. |  |
 
 ## Fixtures
 

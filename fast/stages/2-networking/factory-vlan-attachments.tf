@@ -64,6 +64,10 @@ locals {
     for k, v in local._vlan_attachments_preprocess : k => merge(v, {
       region = try(v.region, local.vpc_defaults.region, null)
       mtu    = try(v.mtu, local.vpcs[v.vpc_key].mtu, local.vpc_defaults.mtu, 1500)
+      bgp_peer = try(v.bgp_peer, null) == null ? null : merge(v.bgp_peer, {
+        export_policies = try(v.bgp_peer.export_policies, null) == null ? null : [for p in v.bgp_peer.export_policies : lookup(local.policy_names, "${try(replace(v.router_config.name, "$routers:", ""), "")}/${p}", p)]
+        import_policies = try(v.bgp_peer.import_policies, null) == null ? null : [for p in v.bgp_peer.import_policies : lookup(local.policy_names, "${try(replace(v.router_config.name, "$routers:", ""), "")}/${p}", p)]
+      })
     })
   }
 
@@ -174,7 +178,7 @@ module "vlan-attachments" {
     project_ids = local.ctx_projects.project_ids
     routers     = local.ctx_routers.names
   }
-  depends_on = [module.vpc-factory]
+  depends_on = [module.vpc-factory, google_compute_router_route_policy.default]
 }
 
 resource "google_compute_interconnect_attachment_group" "default" {
