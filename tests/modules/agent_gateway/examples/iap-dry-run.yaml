@@ -13,31 +13,16 @@
 # limitations under the License.
 
 values:
-  module.agent-gateway.google_network_services_agent_gateway.default:
-    deletion_policy: DELETE
-    description: Terraform managed.
-    effective_labels:
-      goog-terraform-provisioned: 'true'
-    google_managed:
-    - governed_access_path: AGENT_TO_ANYWHERE
-    labels: null
+  module.agent-gateway.google_network_services_authz_extension.iap[0]:
+    fail_open: false
     location: europe-west1
-    name: my-gateway
-    network_config:
-    - dns_peering_config:
-      - domains:
-        - agents.internal.
-        target_network: projects/my-host-project/global/networks/my-vpc
-        target_project: my-host-project
-      egress:
-      - network_attachment: projects/my-project-id/regions/europe-west1/serviceAttachments/my-sa
+    metadata:
+      iamEnforcementMode: DRY_RUN
+      iapPolicyVersion: V1
+    name: my-gateway-iap
     project: my-project-id
-    protocols: null
-    registries: null
-    self_managed: []
-    terraform_labels:
-      goog-terraform-provisioned: 'true'
-    timeouts: null
+    service: iap.googleapis.com
+    timeout: 2s
 
 counts:
   google_network_security_authz_policy: 1
