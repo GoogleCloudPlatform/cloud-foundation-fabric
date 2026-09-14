@@ -23,10 +23,6 @@ output "ssm_lb_address" {
   value       = module.ssm-lb-ip.internal_addresses[local.ssm_lb_ip].address
 }
 
-output "ssm_lb_prod_test_address" {
-  description = "Address of the throwaway second chain in the prod spoke."
-  value       = module.ssm-lb-prod-test.address
-}
 
 output "ssm_instance" {
   value = {

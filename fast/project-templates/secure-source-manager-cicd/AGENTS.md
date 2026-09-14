@@ -1,6 +1,6 @@
 # Working in this directory
 
-A FAST project template bringing up a private Secure Source Manager instance and the Cloud Build machinery that runs pipelines from its repositories. It plans and applies. Live as of 2026-09-12: the worker pool in `build-pool.tf`, a test build identity in `main.tf`, and the instance in `ssm-instance.tf`. Live as of 2026-09-14: the whole of `ssm-load-balancers.tf`, both chains sharing the VIP `10.8.4.6`, and the four A records under `ssm.gcp.qix.it` that resolve to it; the access path through them is probed and works from a build worker and from the hub. Not live: the repositories and the identity chain. Work happens on branch `ludo/ssm-cb` in this repository and, for the landing zone side, in `~/dev/tf-playground/fast-config/ludo`.
+A FAST project template bringing up a private Secure Source Manager instance and the Cloud Build machinery that runs pipelines from its repositories. It plans and applies. Live as of 2026-09-12: the worker pool in `build-pool.tf`, a test build identity in `main.tf`, and the instance in `ssm-instance.tf`. Live as of 2026-09-14: the whole of `ssm-load-balancers.tf`, both chains sharing the VIP `10.8.4.6`, and the four A records under `ssm.gcp.qix.it` that resolve to it; the access path through them is probed and works from a build worker and from the hub, and a throwaway second chain proved several VPCs can front the same attachment. Not live: the repositories and the identity chain, which are the next session's work. Work happens on branch `ludo/ssm-cb` in this repository and, for the landing zone side, in `~/dev/tf-playground/fast-config/ludo`.
 
 Read the repository's [AGENTS.md](../../../AGENTS.md) for Fabric conventions and [skills/fabric-builder](../../../skills/fabric-builder/SKILL.md) for how to consume modules. Neither is loaded automatically by the skill tool, because `skills/` in the repository root is not a location the harness discovers.
 
@@ -39,7 +39,9 @@ The hub bastion tests the human and on-premises view: `gcloud compute ssh bastio
 
 Read TODO.md, then the header comment in `dev-build-ssm-0.yaml`. Between them you have the open questions and the settled ones. Skim README.md for anything the task touches, and go to SSM-CB.md only for behaviour you are about to depend on.
 
-Then check `git log --oneline` on `ludo/ssm-cb` and whether the branch has been pushed, because it usually has not.
+Then check `git log --oneline` on `ludo/ssm-cb` and whether the branch has been pushed. It was pushed through 2026-09-14; before that it usually had not been.
+
+Check one thing before running anything: whether the three `impersonate_service_account` lines in `dev-build-ssm-0-rw-providers.tf` are still commented out. They were disabled on 2026-09-14 to apply a test chain in a project the automation account cannot reach, and the first TODO item is restoring them. While they are off, every apply here runs as whoever is logged in.
 
 Two habits are worth carrying in. The provider is authoritative on what fields exist and checking it is cheap, so check it rather than guessing; almost everything this design needs is already in the provider and the gaps have been module surface. The landing zone, the conventions and most of the modules were written by the person you are working with, so ask him rather than inferring intent from his code.
 

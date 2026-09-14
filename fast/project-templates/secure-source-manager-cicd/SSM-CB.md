@@ -327,7 +327,42 @@ The failure is silent at every layer that reports anything. `CreateNetworkEndpoi
 
 One thing this does not tell us. The attachment belongs to the Secure Source Manager tenant project, `h8863b364ae5d978cp-tp`, and we have no `compute.serviceAttachments.get` on it, so its `connectionPreference` and any limit on the number of connections are invisible. Two concurrent consumers work; how many it will take is unknown, and a customer with many environments should ask Google rather than discover it.
 
-The two bare probe NEGs were deleted once they had answered. The second chain is a different matter: it is live, it is in the template as `module.ssm-lb-prod-test` with static values, and it is managed by state that was applied with user credentials because the automation account has no rights in `ldj-prod-net-spoke-0`. It has to be destroyed and the impersonation in the providers file restored before any automated apply runs again, or that apply fails on a resource it cannot touch. The `ilb-l7` subnet is deliberately kept.
+Everything built for this test was removed once it had answered: the two bare probe NEGs, and then the second chain, whose module and output were taken back out of the template so an apply destroys it. Both that apply and the original one had to run as a user, because the automation account has no rights in `ldj-prod-net-spoke-0`, which is why impersonation was commented out in the providers file and has to be restored afterwards. The `ilb-l7` proxy-only subnet at `172.16.132.0/24` is deliberately kept: it is managed by the networking stage, costs nothing idle, and is the only part of this that is tedious to recreate.
+
+## What the instance certificate actually looks like, read 2026-09-14
+
+Read off the wire from the bastion, because nothing in the API shows it and re-deriving it costs a session.
+
+```
+Serial:   84:4e:67:b8:a1:bc:28:a2:f7:cd:14:d0:dd:5c:35:c3:c5:0f:04
+Issuer:   O = Test Example, CN = test.example.com
+Subject:  O = Google, CN = sourcemanager.dev
+Validity: Sep 12 15:21:30 2026 -> Dec 11 15:21:29 2026
+Key:      RSA 2048, sha256WithRSAEncryption
+SAN:      api.ssm.gcp.qix.it, ssm.gcp.qix.it, ssh.ssm.gcp.qix.it, git.ssm.gcp.qix.it
+Also:     Basic Constraints critical CA:FALSE, SKI, AKI
+Absent:   keyUsage, extendedKeyUsage
+```
+
+Four things in that are worth carrying.
+
+The subject is Google's and not ours. `CN = sourcemanager.dev` is a fixed service string that every instance presents, so the instance's identity is carried entirely by the SAN list and by which CA signed it. Do not expect the CN to mean anything.
+
+The chain is one certificate deep. The server sends the leaf and no issuer, so a client with an unprimed trust store gets `verify error 21`, which makes the `get-ca-certs` fetch structural rather than a convenience, and `roles/privateca.auditor` load-bearing with it.
+
+There is no `keyUsage` and no `extendedKeyUsage`. Absent EKU means unrestricted, so ordinary clients accept it, but a hardened trust store or a client that insists on `serverAuth` could refuse. Worth knowing before pointing a locked-down git client at it.
+
+The validity is 90 days, on an instance that is immutable in every other respect. Something must re-issue before `Dec 11 2026` or the instance stops serving, and we have never observed that happen — the Secure Source Manager service agent holds `certificateRequester` permanently, which suggests ongoing issuance, but that is reasoning from a grant rather than evidence. The serial above is the marker: read the certificate again before December, and a different serial proves renewal works while the same one is the alarm. We cannot watch it any other way, because `gcloud privateca certificates list` returns nothing on a DevOps-tier pool. The tier trade-off in the README is written up as being about revocation; it also costs the ability to audit issuance.
+
+## The CA subject is a Fabric default nobody set, found 2026-09-14
+
+The issuer above reads `O = Test Example, CN = test.example.com`. That is not a placeholder in this document; it is the real subject of `dev-ca-3`. `modules/certificate-authority-service/variables.tf` defaults `subject` to exactly that pair, `fast/stages/2-security/factory-cas.tf` re-applies the same default, and `dev-ca-3.yaml` omits `subject`, so it landed silently with no warning at plan or apply.
+
+It costs nothing functionally, because clients trust this CA by holding its root certificate rather than by its name, and verification passes. It is still wrong for anything real, it is stamped into every certificate the CA will ever sign, and a CA subject is immutable.
+
+It is recoverable without touching the instance, which is the part worth knowing: the instance binds to the *pool*, not to a CA. Add a CA with a proper subject to `dev-ca-3`, disable `dev-ca-3-0`, and subsequent issuance comes from the new one — which the 90-day renewal above would pick up on its own. The pool holds one CA today.
+
+The upstream question this raises is whether that default should exist at all. A required `subject` would have caught this at plan time in every deployment, at a cost of two lines per CA definition, against a default that silently produces a certificate authority called Test Example.
 
 ## What we still need to test
 

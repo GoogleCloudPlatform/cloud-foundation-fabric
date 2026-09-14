@@ -65,39 +65,3 @@ module "ssm-lb" {
   }
 }
 
-# Test chain: a second consumer of the same service attachment, in a second VPC
-# and its own project, which is where these load balancers belong in a design
-# with segregated environments. Static values on purpose — this is throwaway,
-# and parameterising it would imply it is part of the template. Needs the
-# proxy-only subnet ilb-l7 in europe-west4 on the prod spoke, and credentials
-# with rights in ldj-prod-net-spoke-0, which the automation account lacks.
-module "ssm-lb-prod-test" {
-  source     = "../../../modules/net-lb-proxy-int"
-  project_id = "ldj-prod-net-spoke-0"
-  region     = "europe-west4"
-  name       = "test-0-ssm-prod-0"
-  forwarding_rules_config = {
-    "" = {
-      port = 443
-    }
-  }
-  backend_service_config = {
-    backends = [{
-      group = "psc"
-    }]
-  }
-  neg_configs = {
-    psc = {
-      psc = {
-        network        = "projects/ldj-prod-net-spoke-0/global/networks/prod-spoke-0"
-        region         = "europe-west4"
-        subnetwork     = "projects/ldj-prod-net-spoke-0/regions/europe-west4/subnetworks/gce"
-        target_service = module.ssm-instance.http_service_attachment
-      }
-    }
-  }
-  vpc_config = {
-    network    = "projects/ldj-prod-net-spoke-0/global/networks/prod-spoke-0"
-    subnetwork = "projects/ldj-prod-net-spoke-0/regions/europe-west4/subnetworks/gce"
-  }
-}
