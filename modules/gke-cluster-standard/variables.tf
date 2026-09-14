@@ -220,8 +220,8 @@ variable "enable_features" {
       state    = string
       key_name = string
     }))
-    dataplane_v2         = optional(bool, true)
     datapath_provider    = optional(string)
+    dataplane_v2         = optional(bool, true)
     fqdn_network_policy  = optional(bool, true)
     gateway_api          = optional(bool, false)
     groups_for_rbac      = optional(string)
