@@ -1,0 +1,43 @@
+steps:
+  - name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        echo "== resolve the custom hostnames through the peered domain =="
+        for n in ssm.gcp.qix.it api.ssm.gcp.qix.it git.ssm.gcp.qix.it ssh.ssm.gcp.qix.it; do
+          echo -n "$n -> "
+          getent hosts "$n" || echo "NO RESOLVE"
+        done
+        echo
+        echo "== reach the load balancer VIP across the peering =="
+        timeout 10 bash -c "cat </dev/null >/dev/tcp/10.8.4.6/443" && echo "443 OPEN" || echo "443 UNREACHABLE"
+        timeout 10 bash -c "cat </dev/null >/dev/tcp/10.8.4.6/22" && echo "22 OPEN" || echo "22 UNREACHABLE"
+        echo
+        echo "== fetch the CA chain, the way a real pipeline would =="
+        echo "   (this identity has no privateca.auditor yet, so a denial here is the"
+        echo "    delegation test rather than a network result)"
+        if timeout 60 gcloud privateca pools get-ca-certs dev-ca-3 \
+             --location europe-west4 --project ldj-dev-sec-core \
+             --output-file /workspace/cacert.pem 2>&1 | tail -3; then
+          CA_ARG="--cacert /workspace/cacert.pem"
+        else
+          CA_ARG=""
+        fi
+        [ -s /workspace/cacert.pem ] && CA_ARG="--cacert /workspace/cacert.pem" || CA_ARG="-k"
+        echo "   using curl arg: $$CA_ARG"
+        echo
+        echo "== TLS to the git host =="
+        timeout 30 curl -sS -o /dev/null $$CA_ARG \
+          -w 'http=%{http_code} tls=%{ssl_verify_result} remote=%{remote_ip}\n' \
+          https://git.ssm.gcp.qix.it/ 2>&1
+        echo
+        echo "== and the api host =="
+        timeout 30 curl -sS -o /dev/null $$CA_ARG \
+          -w 'http=%{http_code} tls=%{ssl_verify_result} remote=%{remote_ip}\n' \
+          https://api.ssm.gcp.qix.it/ 2>&1
+options:
+  logging: CLOUD_LOGGING_ONLY
+  pool:
+    name: projects/tf-playground-dev-build-pool-0/locations/europe-west8/workerPools/test-0-default-0
+serviceAccount: projects/tf-playground-dev-build-pool-0/serviceAccounts/test-0-build-test-0@tf-playground-dev-build-pool-0.iam.gserviceaccount.com

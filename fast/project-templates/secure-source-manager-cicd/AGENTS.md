@@ -1,6 +1,6 @@
 # Working in this directory
 
-A FAST project template bringing up a private Secure Source Manager instance and the Cloud Build machinery that runs pipelines from its repositories. It plans and applies. Live as of 2026-09-12: the worker pool in `build-pool.tf`, a test build identity in `main.tf`, and the instance in `ssm-instance.tf`. Live as of 2026-09-14: the whole of `ssm-load-balancers.tf`, both chains sharing the VIP `10.8.4.6`, and the four A records under `ssm.gcp.qix.it` that resolve to it. Nothing has yet sent a packet through either chain. Not live: the repositories and the identity chain. Work happens on branch `ludo/ssm-cb` in this repository and, for the landing zone side, in `~/dev/tf-playground/fast-config/ludo`.
+A FAST project template bringing up a private Secure Source Manager instance and the Cloud Build machinery that runs pipelines from its repositories. It plans and applies. Live as of 2026-09-12: the worker pool in `build-pool.tf`, a test build identity in `main.tf`, and the instance in `ssm-instance.tf`. Live as of 2026-09-14: the whole of `ssm-load-balancers.tf`, both chains sharing the VIP `10.8.4.6`, and the four A records under `ssm.gcp.qix.it` that resolve to it; the access path through them is probed and works from a build worker and from the hub. Not live: the repositories and the identity chain. Work happens on branch `ludo/ssm-cb` in this repository and, for the landing zone side, in `~/dev/tf-playground/fast-config/ludo`.
 
 Read the repository's [AGENTS.md](../../../AGENTS.md) for Fabric conventions and [skills/fabric-builder](../../../skills/fabric-builder/SKILL.md) for how to consume modules. Neither is loaded automatically by the skill tool, because `skills/` in the repository root is not a location the harness discovers.
 
@@ -28,6 +28,12 @@ The two symlinks in this directory, `dev-build-ssm-0.auto.tfvars.json` and `dev-
 ## Tooling
 
 `tools/tfdoc.py` and the other Python tools need their dependencies, which the system interpreter does not carry — `marko` in particular. Run them through `uv`, which is what this host has: `uvx --with marko python3 tools/tfdoc.py`, or `uv run` against the repository's requirements files. Module example tests are `uv run pytest -q -k 'secure_source_manager' tests/examples` from the repository root, about 95 seconds. Earlier versions of this file pointed at `~/venv/bin/python3`, which exists on some hosts and not on zb; prefer uv and do not assume a virtualenv. Everything the repository AGENTS.md says about running `terraform fmt`, `check_documentation.py`, yamllint and `check_boilerplate.py` before committing applies here.
+
+## Probing the network from inside it
+
+This workstation has no route into the VPC, so anything that has to send a real packet runs from one of two places. A Cloud Build probe on the pool tests the worker's view: `gcloud builds submit --no-source --config builds/probe-ssm.yaml --region europe-west8 --project tf-playground-dev-build-pool-0`, and the output is in Cloud Logging rather than in the submit command's own tail — read it with `gcloud logging read 'resource.type="build" AND resource.labels.build_id="ID"'`. Escape any shell variable in the build config as `$$VAR`, or Cloud Build rejects the config as an unknown substitution.
+
+The hub bastion tests the human and on-premises view: `gcloud compute ssh bastion --project ldj-prod-net-landing-0 --zone europe-west8-b`. It has no external IP and gcloud tunnels through IAP by itself. Two things make it fail. gcloud passes `IdentitiesOnly` with `~/.ssh/google_compute_engine`, which on this host is an RSA key from 2020 that a current sshd refuses, so add `--ssh-key-file ~/.ssh/gce_ed25519`. And the session needs a live agent: `export SSH_AUTH_SOCK=~/.ssh/agent-herdr`, the stable symlink his `.bashrc` maintains, because the value inherited from the environment is usually a dead socket from an earlier connection.
 
 ## Picking up
 

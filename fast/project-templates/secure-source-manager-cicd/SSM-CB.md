@@ -288,6 +288,20 @@ The tier was a red herring. A DevOps pool in the instance's region, `dev-ca-3`, 
 
 Tier is therefore a cost decision, not a functional one, and an expensive one: `$200` per CA per month for Enterprise against `$20` for DevOps. See the README's CA pool section.
 
+## The access path works end to end, tested 2026-09-14
+
+Both halves of the path were probed the same afternoon, from the two places that matter, and both work. Neither had been exercised before: the load balancers had been created and nothing had sent a packet through them.
+
+From a Cloud Build worker on the private service access peering, `builds/probe-ssm.yaml` on the `test-0-default-0` pool. All four names resolve to the forwarding rule address, which settles the peered DNS domain: a worker sits on the producer network and answers from its own resolver, and the suffix forwarding is what carries `ssm.gcp.qix.it` across. Both ports are open on that address, which settles the route — the worker is in `europe-west8` on a peered producer network and the load balancers are in `europe-west4` in the dev spoke, so this crosses a region and a peering at once. The instance answers: `401` on the git host, `404` on the api host, both from `10.8.4.6`.
+
+From the bastion in the hub, `europe-west8`, the same four names and the same two ports, reached across the hub-to-spoke peering instead. This is the path a person or an on-premises client takes and it was the reason for choosing load balancers over endpoints; it now has evidence rather than an argument.
+
+The certificate is the part worth keeping. The TLS handshake on 443 presents `O = Google, CN = sourcemanager.dev`, issued by `O = Test Example, CN = test.example.com`, which is `dev-ca-3`, with a subject alternative name list holding exactly the four custom hostnames. So the proxy terminates nothing, TLS runs from the client to the instance, and the CA pool's only job in the data path is having signed those names. Verification fails with code 21 against a default trust store and succeeds against the chain from `gcloud privateca pools get-ca-certs`, which is the caveat about trust stores made concrete rather than a new finding.
+
+One thing the probe caught that is not about the network. The build identity has no `roles/privateca.auditor`, so `get-ca-certs` was denied on `privateca.caPools.get`, and the build fell back to an unverified connection. That is the expected state — the identity chain is not built yet — and it confirms the grant in the table above is load-bearing rather than defensive: without it a pipeline cannot obtain the chain it needs to clone. It does not yet test whether granting it through the `dev-sec-core` delegation works, which is still open.
+
+The SSH chain reaches a real sshd: the host key is offered and the connection ends in `Permission denied (publickey)`, which is the answer expected from an instance that has no repository and no registered key yet.
+
 ## What we still need to test
 
 The infrastructure we bring up exists to answer these. Two of them can invalidate the design above, and they are about trigger behaviour rather than instance configuration, so neither would require rebuilding the instance.
@@ -297,7 +311,7 @@ Bring the pool up on its own first. It is cheap and mutable where the instance i
 1. Confirm that a pull request build runs the `.cloudbuild/cloudbuild.yaml` from the pull request head commit rather than from the default branch. Push a pull request whose build configuration differs from the default branch's and see which steps execute. The whole third boundary above turns on this, and it is currently inferred.
 2. Find out whether omitting `serviceAccount` from a triggers file fails the build, drops the trigger silently, or falls back to an identity, and if it falls back, which one. Then find out what a dropped trigger does to a branch protection rule that requires its status check. Our isolation requirement depends on the first half and our merge gate on the second.
 3. Find out whether `google_secure_source_manager_repository` can create a repository in a private instance from a runner outside the VPC but inside the perimeter. The provider targets the public control plane, so the expected answer is yes and the expected failure mode is a perimeter one.
-4. Confirm that a worker on the private service access peering reaches the load balancer address and resolves the hostnames through the peered domain. Both are inferred from the peering exporting subnet routes and forwarding the suffix.
+4. Closed on 2026-09-14 by `builds/probe-ssm.yaml` and a parallel probe from the hub bastion. See the section below.
 5. Closed on 2026-09-12 by the probe build. See the section above.
 6. Closed on 2026-09-12 without testing: `psc_allowed_projects` is immutable. The Magic Modules definition marks the instance resource immutable as a whole, and the API has no update method. The list has to be right on the first apply.
 7. Confirm that a branch protection rule requiring a status check blocks a merge when the check fails. The API has the field, `requiredStatusChecks[].context`; the provider does not yet, so the rule is set in the web interface for this test.
