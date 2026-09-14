@@ -1,6 +1,6 @@
 # Working in this directory
 
-A FAST project template bringing up a private Secure Source Manager instance and the Cloud Build machinery that runs pipelines from its repositories. It plans and applies. Live as of 2026-09-12: the worker pool in `build-pool.tf`, a test build identity in `main.tf`, and the instance in `ssm-instance.tf`. Live as of 2026-09-13: the reserved load balancer address and the two PSC NEGs from `ssm-load-balancers.tf`. Not live: the backend services behind those NEGs, because `net-lb-proxy-int` sends a balancing mode that the API refuses for PSC NEG backends — read `~/dev/tf-playground/LB-PSC-WORK.md` before touching that file, and do not retry the apply until the module change is carried or merged — and the repositories and the identity chain. Work happens on branch `ludo/ssm-cb` in this repository and, for the landing zone side, in `~/dev/tf-playground/fast-config/ludo`.
+A FAST project template bringing up a private Secure Source Manager instance and the Cloud Build machinery that runs pipelines from its repositories. It plans and applies. Live as of 2026-09-12: the worker pool in `build-pool.tf`, a test build identity in `main.tf`, and the instance in `ssm-instance.tf`. Live as of 2026-09-14: the whole of `ssm-load-balancers.tf`, both chains sharing the VIP `10.8.4.6`, and the four A records under `ssm.gcp.qix.it` that resolve to it. Nothing has yet sent a packet through either chain. Not live: the repositories and the identity chain. Work happens on branch `ludo/ssm-cb` in this repository and, for the landing zone side, in `~/dev/tf-playground/fast-config/ludo`.
 
 Read the repository's [AGENTS.md](../../../AGENTS.md) for Fabric conventions and [skills/fabric-builder](../../../skills/fabric-builder/SKILL.md) for how to consume modules. Neither is loaded automatically by the skill tool, because `skills/` in the repository root is not a location the harness discovers.
 
@@ -12,7 +12,7 @@ Read the repository's [AGENTS.md](../../../AGENTS.md) for Fabric conventions and
 
 [README.md](README.md) is this template's own design: what it creates, and the three landing zone prerequisites that sit outside it. It carries the reasoning that would otherwise be re-derived — why the CA pool is mandatory, why a private zone is the only way anything resolves, and why a peered DNS domain is needed on top of it.
 
-[SKETCH.md](SKETCH.md) is the sketch, not code: module blocks with verified attribute names and a trailing section naming what is deliberately owned elsewhere. Its instance and worker pool blocks have been superseded by the live files; its load balancer and identity blocks are still the plan.
+[SKETCH.md](SKETCH.md) is the sketch, not code: module blocks with verified attribute names and a trailing section naming what is deliberately owned elsewhere. Its instance, worker pool and load balancer blocks have been superseded by the live files; only its identity blocks are still the plan.
 
 ## The landing zone side
 
@@ -34,8 +34,6 @@ The two symlinks in this directory, `dev-build-ssm-0.auto.tfvars.json` and `dev-
 Read TODO.md, then the header comment in `dev-build-ssm-0.yaml`. Between them you have the open questions and the settled ones. Skim README.md for anything the task touches, and go to SSM-CB.md only for behaviour you are about to depend on.
 
 Then check `git log --oneline` on `ludo/ssm-cb` and whether the branch has been pushed, because it usually has not.
-
-The load balancer work is blocked on an upstream module bug rather than on anything in this directory. `~/dev/tf-playground/LB-PSC-WORK.md` is the pickup for it and says which modules are affected, how to scope it per load balancer class, and what the fix shapes are; the fix belongs on its own branch and pull request, not here.
 
 Two habits are worth carrying in. The provider is authoritative on what fields exist and checking it is cheap, so check it rather than guessing; almost everything this design needs is already in the provider and the gaps have been module surface. The landing zone, the conventions and most of the modules were written by the person you are working with, so ask him rather than inferring intent from his code.
 
