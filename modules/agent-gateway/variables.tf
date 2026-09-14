@@ -47,7 +47,11 @@ variable "access_path" {
 variable "context" {
   description = "Context-specific interpolations."
   type = object({
+    condition_vars          = optional(map(map(string)), {})
+    custom_roles            = optional(map(string), {})
+    iam_principals          = optional(map(string), {})
     locations               = optional(map(string), {})
+    model_armor_templates   = optional(map(string), {})
     networks                = optional(map(string), {})
     project_ids             = optional(map(string), {})
     psc_network_attachments = optional(map(string), {})
@@ -62,6 +66,36 @@ variable "description" {
   default     = "Terraform managed."
 }
 
+variable "iap_config" {
+  description = "Delegate request authorization to Identity-Aware Proxy, which enforces the Agent Registry IAM policies. Creates an authorization extension and the 'REQUEST_AUTHZ' policy binding it to the gateway."
+  type = object({
+    fail_open = optional(bool, false)
+    # Null enforces the IAM policies. Set to 'DRY_RUN' to audit them.
+    iam_enforcement_mode = optional(string)
+    name                 = optional(string)
+    # 'V2' evaluates IAM Unified Access Policies, which the
+    # 'registry_iam*' variables cannot manage. See the README.
+    policy_version = optional(string, "V1")
+    timeout        = optional(string, "2s")
+  })
+  default = {}
+
+  validation {
+    condition = (
+      try(var.iap_config.iam_enforcement_mode, null) == null
+      || try(var.iap_config.iam_enforcement_mode, null) == "DRY_RUN"
+    )
+    error_message = "The iam_enforcement_mode must be 'DRY_RUN', or null to enforce the policies."
+  }
+
+  validation {
+    condition = contains(
+      ["V1", "V2"], try(var.iap_config.policy_version, "V1")
+    )
+    error_message = "The policy_version can be one of the following: 'V1', 'V2'."
+  }
+}
+
 variable "is_google_managed" {
   description = "Whether the Agent Gateway is Google or self-managed."
   type        = bool
@@ -73,6 +107,20 @@ variable "labels" {
   description = "Labels to associate to the Agent Gateway."
   type        = map(string)
   default     = null
+}
+
+variable "model_armor_config" {
+  description = "Delegate content authorization to Model Armor. Creates an authorization extension and the 'CONTENT_AUTHZ' policy binding it to the gateway. Templates are not managed here: pass their ids, either fully qualified or as short ids resolved against the gateway project and region."
+  type = object({
+    request_template_id  = string
+    response_template_id = string
+    # Restrict the traffic evaluated by Model Armor to these hosts.
+    authz_hosts = optional(list(string), [])
+    fail_open   = optional(bool, false)
+    name        = optional(string)
+    timeout     = optional(string, "2s")
+  })
+  default = null
 }
 
 variable "name" {
