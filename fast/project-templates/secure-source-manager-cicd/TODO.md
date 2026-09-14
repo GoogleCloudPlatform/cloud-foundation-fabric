@@ -31,7 +31,9 @@ The order is pool, then instance, then load balancers, then repositories. The fi
 - **Load balancers, not endpoints** (2026-09-12). An endpoint address does not cross the peering the workers now sit behind; a forwarding rule address does, and it serves the hub and on-premises too. README, access path section.
 - **DNS is one private zone in the hub**, `ssm.gcp.qix.it.`, plus a peered domain on the PSA peering so the workers see it. README, DNS section.
 - **`compute.vmExternalIpAccess` is no backstop** for worker public IPs; the tenant project is outside our organisation. SSM-CB.md, gated section.
-- **`psc_allowed_projects` is immutable**; list every VPC host project at creation. Recorded in `dev-build-ssm-0.yaml`.
+- **`psc_allowed_projects` names consumer projects, not host projects** (corrected 2026-09-14). A NEG in an unlisted project, on a network whose host project is listed, sits at `PENDING` forever and reports nothing. The list is immutable, so it has to name every project that will own a NEG or endpoint. SSM-CB.md, several consumers section.
+
+- **One attachment serves several VPCs** (2026-09-14). A second NEG in another VPC and another project reached `ACCEPTED` alongside the first, each with its own consumer address and connection id, so unconnected environments each build their own chain with no peering and no peering group limits. This is the answer to the segregated-VPC customer question. README, several VPCs section.
 - **Custom hostnames** under `ssm.gcp.qix.it`: `api.`, `git.`, `ssh.` and the apex. Survive a rebuild and take the region out of the suffix. Module support in `b4467f49e`.
 - **Two regions**: instance, CA pool and load balancers in `europe-west4`, build pool in `europe-west8`, joined by `global_access`. The CA pool has no choice; the build pool does.
 - **The delegation on `dev-sec-core` is written and applied** (2026-09-12): a conditioned `projectIamAdmin` for `dev-build-ssm-0-rw` allowing only `privateca.certificateRequester` and `privateca.auditor`, with the account named through a static `iam_principals` entry in the security stage's `defaults.yaml`.

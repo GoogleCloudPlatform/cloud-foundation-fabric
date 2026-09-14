@@ -140,7 +140,7 @@ The practical split is that a Terraform runner inside the perimeter can create i
 
 ### Network
 
-The instance publishes two service attachments, HTTP and SSH, and has no notion of a consumer; the only consumer-side control is the immutable `psc_allowed_projects`. The design fronts each with a regional internal proxy load balancer, whose forwarding rule address is carried by peering, VPN and Interconnect, and resolves the custom hostnames from a single zone in the hub. The reasoning, the alternative of bare endpoints and why it was dropped, and the landing zone side are in the README's access path and DNS sections.
+The instance publishes two service attachments, HTTP and SSH, and has no notion of a consumer; the only consumer-side control is the immutable `psc_allowed_projects`, which names the projects that may own a consumer resource rather than the host projects of their networks. The design fronts each attachment with a regional internal proxy load balancer, whose forwarding rule address is carried by peering, VPN and Interconnect, and resolves the custom hostnames from a single zone in the hub. Where environments are deliberately unconnected, the same attachment takes one such chain per VPC instead, which is tested below. The reasoning, the alternative of bare endpoints and why it was dropped, and the landing zone side are in the README's access path and DNS sections.
 
 ### Build
 
@@ -238,7 +238,8 @@ One provider detail worth carrying into planning: default timeouts on `google_se
 - the documentation says `serviceAccount` is required in the triggers file and never says what happens when you leave it out, so the behaviour our requirement turns on is undocumented, and a trigger dropped at parse time reports no status check at all rather than a failing one
 - nothing about an instance can be changed after creation. `projects.locations.instances` exposes create, delete, get, list and the IAM methods and no `patch`, `gcloud source-manager instances` has no `update` subcommand, and the provider marks the whole resource immutable, so `is_private`, `ca_pool`, `custom_host_config`, `psc_allowed_projects`, the CMEK key and workforce identity federation are each a one-shot decision. Getting one wrong costs a delete, another hour of creation, and a new instance ID inside every hostname, DNS record and clone URL that depends on it
 - the API's branch rule carries `requiredStatusChecks` and `requireCodeOwnerApproval`, and the Terraform resource carries neither, so until the provider catches up the merge gate and the code owner requirement are web interface settings and not Terraform-managed. Both matter here: one is the gate, the other is what gives CODEOWNERS the weight the second boundary assigns it
-- endpoints and the load balancer path are alternatives rather than layers: Google's guide opens by telling you to release any endpoints before building the load balancers
+- endpoints and the load balancer path are alternatives rather than layers: Google's guide opens by telling you to release any endpoints before building the load balancers, and a PSC NEG is the third member of that family rather than a layer on an endpoint — it targets the attachment directly and carries the connection itself
+- a consumer project missing from `psc_allowed_projects` produces no error anywhere: the NEG is created, Terraform applies clean, the load balancer builds, and the connection sits at `PENDING` forever. Since the list is immutable, the correction is a new instance
 - the documentation creates the first repository from a bastion host inside the VPC, using the instance's own data plane API hostname, but the Terraform resource builds its URLs from the public control plane at `securesourcemanager.googleapis.com`, so the binding constraint on the runner is perimeter membership rather than VPC connectivity
 - a build running as your own service account cannot use the default logs bucket, so send logs to Cloud Logging or to a bucket you create
 - clients verifying TLS need the certificate chain in every trust store they use, including the one inside each container image a pipeline runs
@@ -302,6 +303,22 @@ One thing the probe caught that is not about the network. The build identity has
 
 The SSH chain reaches a real sshd: the host key is offered and the connection ends in `Permission denied (publickey)`, which is the answer expected from an instance that has no repository and no registered key yet.
 
+## Several consumers on one attachment, and what the allowlist is keyed on, tested 2026-09-14
+
+Two findings from one pair of probes, prompted by a customer whose environments sit in separate VPCs, each with its own Interconnect, where peering between them is ruled out because it would subvert the network design and drag in peering group limits.
+
+A service attachment takes concurrent connections from several consumers. A second PSC NEG, in `ldj-prod-net-spoke-0`, a different VPC and a different project from the live one, targeting the same `http-psc` attachment, reached `ACCEPTED` within twenty seconds with its own consumer address and its own connection id, while the original connection stayed up. So the multi-environment shape works: each VPC builds its own NEG against the same attachment and fronts it with its own load balancer, its own VIP and its own DNS answer. Nothing is shared between them, no peering is needed, and no peering group limit applies, because each path is a private connection from that VPC to the producer rather than a route between VPCs.
+
+`psc_allowed_projects` is keyed on the project that owns the consumer resource, not on the host project of the network. This inverts what the design said until now, and the design said it on no evidence: the only live consumer is a NEG in the instance's own project, which is allowed implicitly, so the two readings had never been distinguished. The instrument that separates them is a NEG in `tf-playground-dev-build-pool-0`, a project outside the list, on the `dev-spoke-0` network whose host project `ldj-dev-net-spoke-0` is inside it. It sat at `PENDING` for three minutes with the prod NEG `ACCEPTED` as a control, and was deleted still pending.
+
+The consequence is sharper than it sounds, because the list is immutable. In a Shared VPC design the load balancer and its NEG live in a service project, so the list has to name every service project that will ever front the instance, not the few host projects. Naming host projects and expecting their service projects to inherit is a mistake you cannot correct without deleting the instance.
+
+The failure is silent at every layer that reports anything. `CreateNetworkEndpointGroup` succeeds, Terraform applies clean, the backend service and forwarding rule build on top of it without complaint, and the only symptom is traffic that never arrives. The status is on the NEG, at `pscData.pscConnectionStatus`, and it is the first thing to read when a consumer chain is silent.
+
+One thing this does not tell us. The attachment belongs to the Secure Source Manager tenant project, `h8863b364ae5d978cp-tp`, and we have no `compute.serviceAttachments.get` on it, so its `connectionPreference` and any limit on the number of connections are invisible. Two concurrent consumers work; how many it will take is unknown, and a customer with many environments should ask Google rather than discover it.
+
+The two probe NEGs were deleted and the original is `ACCEPTED`.
+
 ## What we still need to test
 
 The infrastructure we bring up exists to answer these. Two of them can invalidate the design above, and they are about trigger behaviour rather than instance configuration, so neither would require rebuilding the instance.
@@ -313,7 +330,7 @@ Bring the pool up on its own first. It is cheap and mutable where the instance i
 3. Find out whether `google_secure_source_manager_repository` can create a repository in a private instance from a runner outside the VPC but inside the perimeter. The provider targets the public control plane, so the expected answer is yes and the expected failure mode is a perimeter one.
 4. Closed on 2026-09-14 by `builds/probe-ssm.yaml` and a parallel probe from the hub bastion. See the section below.
 5. Closed on 2026-09-12 by the probe build. See the section above.
-6. Closed on 2026-09-12 without testing: `psc_allowed_projects` is immutable. The Magic Modules definition marks the instance resource immutable as a whole, and the API has no update method. The list has to be right on the first apply.
+6. Closed on 2026-09-12 without testing: `psc_allowed_projects` is immutable. The Magic Modules definition marks the instance resource immutable as a whole, and the API has no update method. The list has to be right on the first apply. What belongs in it was settled separately on 2026-09-14 and is not what this design assumed; see the section on several consumers above.
 7. Confirm that a branch protection rule requiring a status check blocks a merge when the check fails. The API has the field, `requiredStatusChecks[].context`; the provider does not yet, so the rule is set in the web interface for this test.
 8. Closed on 2026-09-12: creation took 29 minutes 28 seconds, from the create operation's own `createTime` to its `endTime`, and a second instance the same day took 32 minutes 45 seconds. The documentation's "up to 60 minutes" is honest and the provider's 120 minute timeout is ample. Read the duration from `gcloud source-manager operations list`, not from the instance: `update_time` on the resource keeps moving long after creation and is not a completion time.
 

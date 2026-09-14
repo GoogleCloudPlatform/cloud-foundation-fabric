@@ -76,7 +76,11 @@ variable "ssm_config" {
       git_ssh  = "ssh.ssm.gcp.qix.it"
       html     = "ssm.gcp.qix.it"
     }
-    # only projects in our perimeter: dr is in a different one
+    # these name the projects that may OWN a consumer NEG or endpoint, not the
+    # host projects of their networks: an unlisted project sits at PENDING
+    # forever and reports nothing. Immutable, so it cannot be corrected. It
+    # works today only because the live chain is in the instance project, which
+    # is allowed implicitly. dr is out for a separate reason: another perimeter
     psc_allowed_projects = [
       "ldj-dev-net-spoke-0",
       "ldj-prod-net-landing-0",
