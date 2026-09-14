@@ -307,7 +307,13 @@ The SSH chain reaches a real sshd: the host key is offered and the connection en
 
 Two findings from one pair of probes, prompted by a customer whose environments sit in separate VPCs, each with its own Interconnect, where peering between them is ruled out because it would subvert the network design and drag in peering group limits.
 
-A service attachment takes concurrent connections from several consumers. A second PSC NEG, in `ldj-prod-net-spoke-0`, a different VPC and a different project from the live one, targeting the same `http-psc` attachment, reached `ACCEPTED` within twenty seconds with its own consumer address and its own connection id, while the original connection stayed up. So the multi-environment shape works: each VPC builds its own NEG against the same attachment, in its own project, and fronts it with its own load balancer, its own VIP and its own DNS answer. This template builds one such chain rather than several, because one is enough to test the machinery. Nothing is shared between them, no peering is needed, and no peering group limit applies, because each path is a private connection from that VPC to the producer rather than a route between VPCs.
+A service attachment takes concurrent connections from several consumers, and the whole shape was built rather than inferred. A second complete chain — PSC NEG, backend service, target TCP proxy, forwarding rule — went up in `ldj-prod-net-spoke-0`, a different VPC, with the load balancer in that VPC's own project, which is where these belong in a segregated-environment design. It needed a proxy-only subnet in the region, `ilb-l7` at `172.16.132.0/24`, since the prod spoke had none.
+
+Both chains then served the same instance at the same time. Connection `78165123602056196` at consumer address `10.32.4.4` and connection `27796762220037125` at `10.8.4.5` were both `ACCEPTED`, and a verified HTTPS request for `git.ssm.gcp.qix.it` returned `401` through `10.32.4.5` and through `10.8.4.6` alike, each reporting its own remote address. The certificate arriving through the new chain is the instance's own, same issuer and same four names, so both paths terminate on the instance and neither proxy is in the TLS path.
+
+That also closes the placement question from the other end: the load balancer project was `ldj-prod-net-spoke-0`, which is in `psc_allowed_projects`, and the connection was accepted. A chain in its VPC's own project is the configuration the list was written for.
+
+This template keeps one chain rather than several, because one is enough for everything except this test. Nothing is shared between them, no peering is needed, and no peering group limit applies, because each path is a private connection from that VPC to the producer rather than a route between VPCs.
 
 `psc_allowed_projects` is keyed on the project that owns the consumer resource, not on the host project of the network. This inverts what the design said until now, and the design said it on no evidence: the only live consumer is a NEG in the instance's own project, which is allowed implicitly, so the two readings had never been distinguished. The instrument that separates them is a NEG in `tf-playground-dev-build-pool-0`, a project outside the list, on the `dev-spoke-0` network whose host project `ldj-dev-net-spoke-0` is inside it. It sat at `PENDING` for three minutes with the prod NEG `ACCEPTED` as a control, and was deleted still pending.
 
@@ -317,7 +323,7 @@ The failure is silent at every layer that reports anything. `CreateNetworkEndpoi
 
 One thing this does not tell us. The attachment belongs to the Secure Source Manager tenant project, `h8863b364ae5d978cp-tp`, and we have no `compute.serviceAttachments.get` on it, so its `connectionPreference` and any limit on the number of connections are invisible. Two concurrent consumers work; how many it will take is unknown, and a customer with many environments should ask Google rather than discover it.
 
-The two probe NEGs were deleted and the original is `ACCEPTED`.
+The two bare probe NEGs were deleted once they had answered. The second chain is a different matter: it is live, it is in the template as `module.ssm-lb-prod-test` with static values, and it is managed by state that was applied with user credentials because the automation account has no rights in `ldj-prod-net-spoke-0`. It has to be destroyed and the impersonation in the providers file restored before any automated apply runs again, or that apply fails on a resource it cannot touch. The `ilb-l7` subnet is deliberately kept.
 
 ## What we still need to test
 
