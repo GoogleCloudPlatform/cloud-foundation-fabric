@@ -221,6 +221,7 @@ variable "enable_features" {
       key_name = string
     }))
     dataplane_v2         = optional(bool, true)
+    datapath_provider    = optional(string)
     fqdn_network_policy  = optional(bool, true)
     gateway_api          = optional(bool, false)
     groups_for_rbac      = optional(string)
@@ -268,6 +269,16 @@ variable "enable_features" {
       var.enable_features.fqdn_network_policy ? var.enable_features.dataplane_v2 : true
     )
     error_message = "FQDN network policy is only supported for clusters with Dataplane v2."
+  }
+  validation {
+    condition = (
+      var.enable_features.datapath_provider == null
+      || contains(
+        ["DATAPATH_PROVIDER_UNSPECIFIED", "LEGACY_DATAPATH", "ADVANCED_DATAPATH"],
+        var.enable_features.datapath_provider
+      )
+    )
+    error_message = "Invalid datapath_provider value."
   }
   validation {
     condition = alltrue([
