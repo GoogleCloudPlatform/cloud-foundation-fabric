@@ -14,7 +14,7 @@ Those two properties shape the whole design, and they are why this pattern suits
 
 This document is the design; it started in a work vault and moved here on 2026-09-12 to sit next to the implementation. The earlier connectivity survey and the review of an earlier draft have both been deleted; the review's surviving findings are folded in here.
 
-The implementation is this directory, on branch `ludo/ssm-cb`. The template does not plan yet: `main.tf` is a sketch of the module wiring with the gaps marked, [README.md](README.md) carries the landing zone prerequisites, and [TODO.md](TODO.md) tracks every open question including the test list at the end of this document. The one design-blocking gap is closed — `modules/secure-source-manager-instance` now carries the repository service account, so the isolation requirement is Terraform-enforced rather than operator-remembered.
+The implementation is this directory, on branch `ludo/ssm-cb`. It plans and applies: as of 2026-09-14 the worker pool, the instance and both load balancers are live and the access path between them is probed. The repositories and the identity chain are not written. [README.md](README.md) carries the landing zone prerequisites, and [TODO.md](TODO.md) tracks every open question including the test list at the end of this document. The one design-blocking gap is closed — `modules/secure-source-manager-instance` now carries the repository service account, so the isolation requirement is Terraform-enforced rather than operator-remembered.
 
 ## Contents
 
