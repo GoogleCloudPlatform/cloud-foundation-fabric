@@ -16,6 +16,106 @@
 
 # tfdoc:file:description Agent Registry IAM bindings.
 
+locals {
+  # Each registry resource type is governed by a different Terraform
+  # resource, so bindings are grouped by the type of their target.
+  _iam_types = ["agent", "endpoint", "mcp_server", "registry"]
+
+  # Bindings by principal are inverted and merged into the role-keyed
+  # ones, which then fan out to every registry governed by the gateway.
+  _registry_iam_principal_roles = distinct(flatten(values(
+    var.registry_iam_by_principals
+  )))
+
+  _registry_iam_principals = {
+    for r in local._registry_iam_principal_roles : r => [
+      for k, v in var.registry_iam_by_principals :
+      k if try(index(v, r), null) != null
+    ]
+  }
+
+  _registry_iam_roles = {
+    for role in distinct(concat(
+      keys(var.registry_iam), keys(local._registry_iam_principals)
+    )) :
+    role => concat(
+      try(var.registry_iam[role], []),
+      try(local._registry_iam_principals[role], [])
+    )
+  }
+
+  # Keyed bindings target the whole registry, unless one of the '*_id'
+  # attributes narrows them down to a single registered resource. The
+  # location defaults to the gateway region.
+  _registry_iam_bindings = {
+    for k, v in var.registry_iam_bindings : k => merge(v, {
+      id = coalesce(
+        v.agent_id, v.endpoint_id, v.mcp_server_id, "registry"
+      )
+      location = lookup(
+        local.ctx.locations,
+        coalesce(v.location, var.region),
+        coalesce(v.location, var.region)
+      )
+      type = (
+        v.agent_id != null
+        ? "agent"
+        : (
+          v.endpoint_id != null
+          ? "endpoint"
+          : (v.mcp_server_id != null ? "mcp_server" : "registry")
+        )
+      )
+    })
+  }
+
+  _registry_iam_bindings_additive = {
+    for k, v in var.registry_iam_bindings_additive : k => merge(v, {
+      id = coalesce(
+        v.agent_id, v.endpoint_id, v.mcp_server_id, "registry"
+      )
+      location = lookup(
+        local.ctx.locations,
+        coalesce(v.location, var.region),
+        coalesce(v.location, var.region)
+      )
+      type = (
+        v.agent_id != null
+        ? "agent"
+        : (
+          v.endpoint_id != null
+          ? "endpoint"
+          : (v.mcp_server_id != null ? "mcp_server" : "registry")
+        )
+      )
+    })
+  }
+
+  registry_iam = merge([
+    for location in local.registry_locations : {
+      for role, members in local._registry_iam_roles :
+      "${location}/${role}" => {
+        location = location
+        members  = members
+        role     = role
+      }
+    }
+  ]...)
+
+  registry_iam_bindings = {
+    for t in local._iam_types : t => {
+      for k, v in local._registry_iam_bindings : k => v if v.type == t
+    }
+  }
+
+  registry_iam_bindings_additive = {
+    for t in local._iam_types : t => {
+      for k, v in local._registry_iam_bindings_additive :
+      k => v if v.type == t
+    }
+  }
+}
+
 # Bindings on the whole Agent Registry.
 
 resource "google_iap_agent_registry_iam_binding" "authoritative" {
