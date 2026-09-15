@@ -63,6 +63,7 @@ resource "google_compute_instance_template" "default" {
     disk_size_gb           = var.boot_disk.initialize_params.size
     disk_type              = var.boot_disk.initialize_params.type
     source_image           = var.boot_disk.source.image
+    source_snapshot        = var.boot_disk.source.snapshot
     provisioned_iops       = var.boot_disk.initialize_params.hyperdisk.provisioned_iops
     provisioned_throughput = var.boot_disk.initialize_params.hyperdisk.provisioned_throughput
     resource_manager_tags  = var.tag_bindings_immutable
@@ -108,6 +109,7 @@ resource "google_compute_instance_template" "default" {
       mode                  = var.attached_disks[disk_iter.value.key].mode
       resource_manager_tags = var.tag_bindings_immutable
       source_image          = var.attached_disks[disk_iter.value.key].source.image
+      source_snapshot       = var.attached_disks[disk_iter.value.key].source.snapshot
       source                = var.attached_disks[disk_iter.value.key].source.attach
       type                  = "PERSISTENT"
       # Cannot use `source` with any of the fields in
@@ -327,6 +329,7 @@ resource "google_compute_region_instance_template" "default" {
     disk_size_gb           = var.boot_disk.initialize_params.size
     disk_type              = var.boot_disk.initialize_params.type
     source_image           = var.boot_disk.source.image
+    source_snapshot        = var.boot_disk.source.snapshot
     provisioned_iops       = var.boot_disk.initialize_params.hyperdisk.provisioned_iops
     provisioned_throughput = var.boot_disk.initialize_params.hyperdisk.provisioned_throughput
     resource_manager_tags  = var.tag_bindings_immutable
@@ -373,6 +376,7 @@ resource "google_compute_region_instance_template" "default" {
       mode                  = var.attached_disks[disk_iter.value.key].mode
       resource_manager_tags = var.tag_bindings_immutable
       source_image          = var.attached_disks[disk_iter.value.key].source.image
+      source_snapshot       = var.attached_disks[disk_iter.value.key].source.snapshot
       source                = var.attached_disks[disk_iter.value.key].source.attach
       type                  = "PERSISTENT"
       # Cannot use `source` with any of the fields in

@@ -43,6 +43,7 @@ resource "google_compute_disk" "boot" {
     var.boot_disk.use_independent_disk.name, "${var.name}-boot"
   )
   image                  = var.boot_disk.source.image
+  snapshot               = var.boot_disk.source.snapshot
   architecture           = var.boot_disk.architecture
   type                   = var.boot_disk.initialize_params.type
   size                   = var.boot_disk.initialize_params.size

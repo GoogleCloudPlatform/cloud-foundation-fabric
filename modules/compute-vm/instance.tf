@@ -119,6 +119,7 @@ resource "google_compute_instance" "default" {
       content {
         architecture           = var.boot_disk.architecture
         image                  = var.boot_disk.source.image
+        snapshot               = var.boot_disk.source.snapshot
         size                   = var.boot_disk.initialize_params.size
         type                   = var.boot_disk.initialize_params.type
         resource_manager_tags  = var.tag_bindings_immutable
