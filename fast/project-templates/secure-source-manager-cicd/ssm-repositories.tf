@@ -23,7 +23,7 @@
 #   prefix     = var.prefix
 #   iam = {
 #     "roles/iam.serviceAccountTokenCreator" = [
-#       "serviceAccount:service-${var.project_numbers.ssm}@gcp-sa-sourcemanager.iam.gserviceaccount.com"
+#       module.ssm-project.service_agents["sourcemanager"].iam_email
 #     ]
 #   }
 #   iam_sa_roles = {

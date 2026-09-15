@@ -39,6 +39,15 @@ variable "network_config" {
   }
 }
 
+# the project factory writes this at the top level of the instance project's
+# tfvars, so the name is theirs and cannot be made more descriptive here. No
+# default: the number is the one value that must not be allowed to go stale,
+# and the symlinked tfvars always carries it
+variable "number" {
+  description = "Number of the instance project, from the project factory tfvars."
+  type        = number
+}
+
 variable "prefix" {
   type    = string
   default = "test-0"

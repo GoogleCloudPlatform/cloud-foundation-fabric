@@ -20,6 +20,33 @@ locals {
   ssm_lb_ip = "${local.prefix}dev-0-ssm-lb"
 }
 
+# the instance project belongs to the project factory; it is reused here for
+# the one thing this template needs from it, the SSM service agent email, which
+# the module derives from the project number instead of reading it. Name and
+# number come from the factory tfvars, so this costs no API call: the data
+# source path cannot be used, because attributes are the only way to declare
+# services_enabled and the agent is not derived for a service the module has
+# not been told about. Nothing else about the project is managed here, so agent
+# creation and default roles are off — the factory owns both, and leaving them
+# on would put the same IAM members in two states.
+module "ssm-project" {
+  source = "../../../modules/project"
+  name   = var.project_ids.ssm
+  prefix = null
+  project_reuse = {
+    use_data_source = false
+    attributes = {
+      name             = var.project_ids.ssm
+      number           = var.number
+      services_enabled = ["securesourcemanager.googleapis.com"]
+    }
+  }
+  service_agents_config = {
+    create_primary_agents = false
+    grant_default_roles   = false
+  }
+}
+
 module "build-sa-test" {
   source     = "../../../modules/iam-service-account"
   project_id = var.project_ids.build
