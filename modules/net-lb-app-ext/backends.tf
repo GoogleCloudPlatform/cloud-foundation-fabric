@@ -28,8 +28,16 @@ resource "google_compute_backend_bucket" "default" {
   compression_mode        = each.value.compression_mode
   custom_response_headers = each.value.custom_response_headers
   description             = each.value.description
-  edge_security_policy    = each.value.edge_security_policy
-  enable_cdn              = each.value.enable_cdn
+  edge_security_policy = (
+    each.value.edge_security_policy == null
+    ? null
+    : lookup(
+      local.ctx.security_policies,
+      each.value.edge_security_policy,
+      each.value.edge_security_policy
+    )
+  )
+  enable_cdn = each.value.enable_cdn
 
   dynamic "cdn_policy" {
     for_each = each.value.cdn_policy == null ? [] : [each.value.cdn_policy]
