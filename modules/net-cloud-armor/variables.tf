@@ -15,7 +15,7 @@
  */
 
 variable "adaptive_protection_config" {
-  description = "Adaptive Protection configuration. Only supported by global policies."
+  description = "Adaptive Protection configuration. Only supported by global CLOUD_ARMOR policies. Cloud Armor Standard only receives basic alerts, attack signatures and suggested rules require Cloud Armor Enterprise."
   type = object({
     layer_7_ddos_defense = optional(object({
       enable          = optional(bool, true)
@@ -47,6 +47,15 @@ variable "adaptive_protection_config" {
     )
     error_message = "Rule visibility must be one of STANDARD or PREMIUM."
   }
+  validation {
+    condition = alltrue(flatten([
+      for k, v in try(var.adaptive_protection_config.layer_7_ddos_defense.threshold_configs, {}) : [
+        for tg in v.traffic_granularity_configs :
+        contains(["HTTP_HEADER_HOST", "HTTP_PATH"], tg.type)
+      ]
+    ]))
+    error_message = "Traffic granularity type must be one of HTTP_HEADER_HOST or HTTP_PATH."
+  }
 }
 
 variable "advanced_options_config" {
@@ -77,6 +86,16 @@ variable "advanced_options_config" {
       )
     )
     error_message = "Log level must be one of NORMAL or VERBOSE."
+  }
+  validation {
+    condition = (
+      try(var.advanced_options_config.request_body_inspection_size, null) == null
+      || contains(
+        ["8KB", "16KB", "32KB", "48KB", "64KB"],
+        upper(try(var.advanced_options_config.request_body_inspection_size, ""))
+      )
+    )
+    error_message = "Request body inspection size must be one of 8KB, 16KB, 32KB, 48KB, 64KB."
   }
 }
 
@@ -145,7 +164,7 @@ variable "project_id" {
 }
 
 variable "recaptcha_options_config" {
-  description = "reCAPTCHA configuration options. Only supported by global policies."
+  description = "reCAPTCHA configuration options. Only supported by global CLOUD_ARMOR policies."
   type = object({
     redirect_site_key = string
   })
@@ -159,7 +178,7 @@ variable "region" {
 }
 
 variable "rules" {
-  description = "Policy rules. Use `match` for CLOUD_ARMOR, CLOUD_ARMOR_EDGE and CLOUD_ARMOR_INTERNAL_SERVICE policies, `network_match` for CLOUD_ARMOR_NETWORK policies."
+  description = "Policy rules, merged with factory rules. Use `match` for CLOUD_ARMOR, CLOUD_ARMOR_EDGE and CLOUD_ARMOR_INTERNAL_SERVICE policies, `network_match` for CLOUD_ARMOR_NETWORK policies. Consistency with the policy scope and type is checked at plan time."
   type = map(object({
     priority    = number
     action      = string
@@ -246,59 +265,76 @@ variable "rules" {
   }
   validation {
     condition = alltrue([
-      for k, v in var.rules : v.match == null || v.network_match == null
+      for k, v in var.rules :
+      v.rate_limit_options == null || can(regex(
+        "^(deny\\((403|404|429|502)\\)|redirect)$",
+        v.rate_limit_options.exceed_action
+      ))
     ])
-    error_message = "Rules cannot specify both 'match' and 'network_match'."
+    error_message = "Rate limit exceed action must be 'deny(STATUS)' with STATUS one of 403, 404, 429, 502, or 'redirect'."
   }
   validation {
     condition = alltrue([
       for k, v in var.rules :
-      v.match == null || (
-        (v.match.src_ip_ranges == null) != (v.match.expression == null)
+      try(v.rate_limit_options.enforce_on_key, null) == null
+      || contains(
+        [
+          "ALL", "IP", "HTTP_HEADER", "XFF_IP", "HTTP_COOKIE", "HTTP_PATH",
+          "SNI", "REGION_CODE", "TLS_JA3_FINGERPRINT", "TLS_JA4_FINGERPRINT",
+          "USER_IP"
+        ],
+        try(v.rate_limit_options.enforce_on_key, "")
       )
     ])
-    error_message = "Rule match must specify exactly one of 'src_ip_ranges' or 'expression'."
+    error_message = "Rate limit 'enforce_on_key' must be one of ALL, IP, HTTP_HEADER, XFF_IP, HTTP_COOKIE, HTTP_PATH, SNI, REGION_CODE, TLS_JA3_FINGERPRINT, TLS_JA4_FINGERPRINT, USER_IP."
+  }
+  validation {
+    condition = alltrue(flatten([
+      for k, v in var.rules : [
+        for c in try(v.rate_limit_options.enforce_on_key_configs, []) :
+        contains(
+          [
+            "ALL", "IP", "HTTP_HEADER", "XFF_IP", "HTTP_COOKIE", "HTTP_PATH",
+            "SNI", "REGION_CODE", "TLS_JA3_FINGERPRINT", "TLS_JA4_FINGERPRINT",
+            "USER_IP"
+          ],
+          c.type
+        )
+      ]
+    ]))
+    error_message = "Rate limit 'enforce_on_key_configs' type must be one of ALL, IP, HTTP_HEADER, XFF_IP, HTTP_COOKIE, HTTP_PATH, SNI, REGION_CODE, TLS_JA3_FINGERPRINT, TLS_JA4_FINGERPRINT, USER_IP."
+  }
+  validation {
+    condition = alltrue(flatten([
+      for k, v in var.rules : [
+        for e in try(v.preconfigured_waf_config.exclusions, []) : [
+          for f in concat(
+            e.request_cookies, e.request_headers,
+            e.request_query_params, e.request_uris
+            ) : contains(
+            ["EQUALS", "STARTS_WITH", "ENDS_WITH", "CONTAINS", "EQUALS_ANY"],
+            f.operator
+          )
+        ]
+      ]
+    ]))
+    error_message = "WAF exclusion operator must be one of EQUALS, STARTS_WITH, ENDS_WITH, CONTAINS, EQUALS_ANY."
   }
   validation {
     condition = alltrue([
-      for k, v in var.rules :
-      contains(["throttle", "rate_based_ban"], v.action) == (v.rate_limit_options != null)
+      for k, v in var.rules : alltrue([
+        for o in compact([
+          try(v.redirect_options.type, ""),
+          try(v.rate_limit_options.exceed_redirect_options.type, "")
+        ]) : contains(["GOOGLE_RECAPTCHA", "EXTERNAL_302"], o)
+      ])
     ])
-    error_message = "Rate limit options must be set if and only if action is 'throttle' or 'rate_based_ban'."
-  }
-  validation {
-    condition = alltrue([
-      for k, v in var.rules :
-      (v.action == "redirect") == (v.redirect_options != null)
-    ])
-    error_message = "Redirect options must be set if and only if action is 'redirect'."
-  }
-  validation {
-    condition = alltrue([
-      for k, v in var.rules :
-      v.rate_limit_options == null || (
-        v.rate_limit_options.enforce_on_key == null
-        || length(v.rate_limit_options.enforce_on_key_configs) == 0
-      )
-    ])
-    error_message = "Rate limit options cannot specify both 'enforce_on_key' and 'enforce_on_key_configs'."
-  }
-  validation {
-    condition = alltrue([
-      for k, v in var.rules : v.priority != 2147483647
-    ])
-    error_message = "Priority 2147483647 is reserved for the default rule, use the 'default_rule_config' variable instead."
-  }
-  validation {
-    condition = (
-      length(distinct([for k, v in var.rules : v.priority])) == length(var.rules)
-    )
-    error_message = "Rule priorities must be unique."
+    error_message = "Redirect type must be one of GOOGLE_RECAPTCHA or EXTERNAL_302."
   }
 }
 
 variable "type" {
-  description = "Policy type. Global policies support CLOUD_ARMOR, CLOUD_ARMOR_EDGE and CLOUD_ARMOR_INTERNAL_SERVICE, regional policies support CLOUD_ARMOR, CLOUD_ARMOR_EDGE and CLOUD_ARMOR_NETWORK."
+  description = "Policy type. Global policies support CLOUD_ARMOR, CLOUD_ARMOR_EDGE and CLOUD_ARMOR_INTERNAL_SERVICE, regional policies support CLOUD_ARMOR and CLOUD_ARMOR_NETWORK. Rules for types other than CLOUD_ARMOR only support the 'allow' and 'deny' actions."
   type        = string
   default     = "CLOUD_ARMOR"
   nullable    = false

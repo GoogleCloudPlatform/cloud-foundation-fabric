@@ -72,15 +72,16 @@ module "bucket" {
   }
 }
 
-# backend security policy: WAF, geo allowlist, rate limiting, L7 DDoS defense
+# backend security policy: WAF, geo allowlist, rate limiting, and optional
+# L7 DDoS defense via Adaptive Protection
 
 module "waf" {
   source     = "../../../modules/net-cloud-armor"
   project_id = module.project.id
   name       = "${var.name}-waf"
-  adaptive_protection_config = {
-    layer_7_ddos_defense = {}
-  }
+  adaptive_protection_config = (
+    var.adaptive_protection ? { layer_7_ddos_defense = {} } : null
+  )
   advanced_options_config = {
     json_parsing = "STANDARD"
   }

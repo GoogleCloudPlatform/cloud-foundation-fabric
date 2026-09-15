@@ -2,14 +2,17 @@
 
 This module provisions and configures [Cloud Armor security policies](https://cloud.google.com/armor/docs/security-policy-overview) along with their rules. It handles both global and regional policies through a unified interface, validating at plan time that all requested features are compatible with the selected policy scope and type.
 
-Attach the policy to load balancers using the `id` output, which can be passed to the `security_policy` (or `edge_security_policy`) attribute of backend services or buckets managed by the `net-lb-app-ext`, `net-lb-app-ext-regional` and `net-lb-app-int` modules. Cross-region internal Application Load Balancers, internal proxy Network Load Balancers, and internal passthrough Network Load Balancers do not support Cloud Armor, so their corresponding modules omit the attribute.
+Attach the policy to load balancers using the `id` output, which can be passed to the `security_policy` attribute of backend services managed by the `net-lb-app-ext`, `net-lb-app-ext-regional`, `net-lb-app-int` and `net-lb-ext` modules, or to the `edge_security_policy` attribute of backend buckets managed by `net-lb-app-ext`. Regional external passthrough Network Load Balancers managed by `net-lb-ext` only accept network edge policies of type `CLOUD_ARMOR_NETWORK`. Cloud Armor also protects global external proxy Network Load Balancers via backend policies, for which no module exists. Cross-region internal Application Load Balancers, internal proxy Network Load Balancers, and internal passthrough Network Load Balancers do not support Cloud Armor.
 
 The baseline rule at priority `2147483647` is always managed by the module via the `default_rule_config` variable and cannot be defined in `rules`.
+
+Rules are keyed by name in Terraform state, while the API identifies them by priority. Renaming a rule without changing its priority plans a create and a destroy for the same API resource, so use a `moved` block for renames, or change the priority at the same time.
 
 <!-- BEGIN TOC -->
 - [Examples](#examples)
   - [Global backend policy](#global-backend-policy)
   - [Rate limiting and redirects](#rate-limiting-and-redirects)
+  - [Adaptive Protection](#adaptive-protection)
   - [Regional backend policy](#regional-backend-policy)
   - [Network edge policy](#network-edge-policy)
   - [Edge policy for backend buckets](#edge-policy-for-backend-buckets)
@@ -25,7 +28,7 @@ The baseline rule at priority `2147483647` is always managed by the module via t
 
 ### Global backend policy
 
-Global backend security policy for the global external Application Load Balancer, featuring preconfigured WAF rules, rule exclusions, an IP allowlist, and Adaptive Protection.
+Global backend security policy for the global external Application Load Balancer, featuring preconfigured WAF rules, rule exclusions, an IP allowlist, and request header injection.
 
 ```hcl
 module "cloud-armor" {
@@ -34,11 +37,6 @@ module "cloud-armor" {
   name       = "waf-global"
   default_rule_config = {
     action = "deny(403)"
-  }
-  adaptive_protection_config = {
-    layer_7_ddos_defense = {
-      rule_visibility = "STANDARD"
-    }
   }
   advanced_options_config = {
     json_parsing = "STANDARD"
@@ -158,6 +156,34 @@ module "cloud-armor" {
 # tftest modules=1 resources=5 inventory=rate-limit.yaml
 ```
 
+### Adaptive Protection
+
+Adaptive Protection detects and mitigates Layer 7 DDoS attacks on global `CLOUD_ARMOR` policies. Cloud Armor Standard receives basic alerts, while attack signatures, suggested rules and automatic deployment require Cloud Armor Enterprise. Granular detection thresholds can be defined via `threshold_configs`.
+
+```hcl
+module "cloud-armor" {
+  source     = "./fabric/modules/net-cloud-armor"
+  project_id = var.project_id
+  name       = "adaptive"
+  adaptive_protection_config = {
+    layer_7_ddos_defense = {
+      rule_visibility = "STANDARD"
+      threshold_configs = {
+        api = {
+          auto_deploy_confidence_threshold = 0.8
+          auto_deploy_expiration_sec       = 3600
+          traffic_granularity_configs = [{
+            type  = "HTTP_PATH"
+            value = "/api"
+          }]
+        }
+      }
+    }
+  }
+}
+# tftest modules=1 resources=2 inventory=adaptive.yaml
+```
+
 ### Regional backend policy
 
 Defining `region` creates a regional policy for attachment to backend services of regional external and internal Application Load Balancers. Features available only globally (`redirect`, `header_action`, Adaptive Protection, reCAPTCHA) are rejected at plan time.
@@ -193,7 +219,7 @@ module "cloud-armor" {
 
 ### Network edge policy
 
-Regional policies configured with type `CLOUD_ARMOR_NETWORK` safeguard external passthrough Network Load Balancers, relying on `network_match` (layer 3/4 attributes and user-defined fields) rather than `match`. Defining custom rules requires Cloud Armor Enterprise with regional advanced network DDoS protection enabled.
+Regional policies configured with type `CLOUD_ARMOR_NETWORK` safeguard external passthrough Network Load Balancers, relying on `network_match` (layer 3/4 attributes and user-defined fields) rather than `match`. Rules only support the `allow` and `deny` actions. Defining custom rules requires Cloud Armor Enterprise with regional advanced network DDoS protection enabled, which is configured through a separate `CLOUD_ARMOR_NETWORK` policy setting `ddos_protection` and no rules, attached to a network edge security service. The module rejects policies combining `ddos_protection` and rules.
 
 ```hcl
 module "cloud-armor" {
@@ -262,7 +288,7 @@ module "cloud-armor" {
 
 ### Rules factory
 
-Rules may be defined in an external YAML file matching the [rules schema](./schemas/rules.schema.md), which the module automatically combines with rules supplied in the `rules` variable.
+Rules may be defined in an external YAML file matching the [rules schema](./schemas/rules.schema.md), which the module automatically combines with rules supplied in the `rules` variable. Rules from the `rules` variable take precedence when the same key is defined in both, and priorities must be unique across both sources. All plan-time consistency checks apply to factory rules too.
 
 ```hcl
 module "cloud-armor" {
@@ -316,16 +342,18 @@ throttle:
 
 ## Scope and type support matrix
 
-| Feature | Global `CLOUD_ARMOR` | Global `CLOUD_ARMOR_EDGE` | Regional `CLOUD_ARMOR` | Regional `CLOUD_ARMOR_NETWORK` |
-|---|:---:|:---:|:---:|:---:|
-| Load balancers | global external ALB (`net-lb-app-ext`), global proxy NLB | global external ALB (`net-lb-app-ext` backend buckets and CDN backends) | regional external ALB (`net-lb-app-ext-regional`), regional internal ALB (`net-lb-app-int`) | regional external passthrough NLB |
-| `match` (IP ranges, CEL expressions) | ✓ | ✓ | ✓ | |
-| `network_match`, `user_defined_fields`, `ddos_protection` | | | | ✓ |
-| `preconfigured_waf_config`, `rate_limit_options` | ✓ | ✓ | ✓ | ✓ |
-| `redirect` action, `header_action`, `exceed_redirect_options`, `recaptcha_options` | ✓ | | | |
-| `adaptive_protection_config`, `recaptcha_options_config`, `labels` | ✓ | ✓ | | |
+| Feature | Global `CLOUD_ARMOR` | Global `CLOUD_ARMOR_EDGE` | Global `CLOUD_ARMOR_INTERNAL_SERVICE` | Regional `CLOUD_ARMOR` | Regional `CLOUD_ARMOR_NETWORK` |
+|---|:---:|:---:|:---:|:---:|:---:|
+| Attachment | global external ALB backend services (`net-lb-app-ext`), global external proxy NLB (no module) | global external ALB backend buckets (`net-lb-app-ext`) and CDN-enabled backend services (not exposed by the module) | Cloud Service Mesh endpoint policies | regional external ALB (`net-lb-app-ext-regional`), regional internal ALB (`net-lb-app-int`) | regional external passthrough NLB (`net-lb-ext`) |
+| `match` (IP ranges, CEL expressions) | ✓ | ✓ (subset of attributes) | ✓ | ✓ | |
+| `network_match`, `user_defined_fields`, `ddos_protection` | | | | | ✓ |
+| `allow`, `deny` actions | ✓ | ✓ | ✓ | ✓ | ✓ (no status code) |
+| `throttle`, `rate_based_ban` actions, `preconfigured_waf_config` | ✓ | | | ✓ | |
+| `redirect` action, `header_action`, `exceed_redirect_options`, `recaptcha_options` | ✓ | | | | |
+| `adaptive_protection_config`, `recaptcha_options_config` | ✓ | | | | |
+| `labels` | ✓ | ✓ | ✓ | | |
 
-Incompatible feature and policy combinations fail validation at plan time.
+Incompatible feature and policy combinations fail validation at plan time. Edge policies only evaluate `origin.asn`, `origin.ip`, `origin.region_code`, `request.headers`, `request.method`, `request.path`, `request.query` and `request.scheme` in expressions. Internal service policies are in preview and their `fairshare` action is not available in the provider, so they are limited to `allow` and `deny` rules.
 
 <!-- TFDOC OPTS files:1 -->
 <!-- BEGIN TFDOC -->
@@ -350,20 +378,20 @@ Incompatible feature and policy combinations fail validation at plan time.
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [name](variables.tf#L135) | Policy name. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L141) | Project id where the policy will be created. | <code>string</code> | ✓ |  |
-| [adaptive_protection_config](variables.tf#L17) | Adaptive Protection configuration. Only supported by global policies. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [advanced_options_config](variables.tf#L52) | Advanced options configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [ddos_protection](variables.tf#L83) | DDoS protection level. Only supported by regional policies of type CLOUD_ARMOR_NETWORK. | <code>string</code> |  | <code>null</code> |
-| [default_rule_config](variables.tf#L96) | Configuration for the default rule with lowest priority, which is always present in a policy. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [description](variables.tf#L113) | Policy description. | <code>string</code> |  | <code>&#34;Terraform managed.&#34;</code> |
-| [factories_config](variables.tf#L119) | Paths to data files and folders that enable factory functionality. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [labels](variables.tf#L128) | Policy labels. Only supported by global policies. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [recaptcha_options_config](variables.tf#L147) | reCAPTCHA configuration options. Only supported by global policies. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [region](variables.tf#L155) | Policy region. Leave null or set to 'global' for a global policy. | <code>string</code> |  | <code>null</code> |
-| [rules](variables.tf#L161) | Policy rules. Use `match` for CLOUD_ARMOR, CLOUD_ARMOR_EDGE and CLOUD_ARMOR_INTERNAL_SERVICE policies, `network_match` for CLOUD_ARMOR_NETWORK policies. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [type](variables.tf#L300) | Policy type. Global policies support CLOUD_ARMOR, CLOUD_ARMOR_EDGE and CLOUD_ARMOR_INTERNAL_SERVICE, regional policies support CLOUD_ARMOR, CLOUD_ARMOR_EDGE and CLOUD_ARMOR_NETWORK. | <code>string</code> |  | <code>&#34;CLOUD_ARMOR&#34;</code> |
-| [user_defined_fields](variables.tf#L317) | User-defined fields for CLOUD_ARMOR_NETWORK policies, keyed by field name. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [name](variables.tf#L154) | Policy name. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L160) | Project id where the policy will be created. | <code>string</code> | ✓ |  |
+| [adaptive_protection_config](variables.tf#L17) | Adaptive Protection configuration. Only supported by global CLOUD_ARMOR policies. Cloud Armor Standard only receives basic alerts, attack signatures and suggested rules require Cloud Armor Enterprise. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [advanced_options_config](variables.tf#L61) | Advanced options configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [ddos_protection](variables.tf#L102) | DDoS protection level. Only supported by regional policies of type CLOUD_ARMOR_NETWORK. | <code>string</code> |  | <code>null</code> |
+| [default_rule_config](variables.tf#L115) | Configuration for the default rule with lowest priority, which is always present in a policy. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [description](variables.tf#L132) | Policy description. | <code>string</code> |  | <code>&#34;Terraform managed.&#34;</code> |
+| [factories_config](variables.tf#L138) | Paths to data files and folders that enable factory functionality. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [labels](variables.tf#L147) | Policy labels. Only supported by global policies. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [recaptcha_options_config](variables.tf#L166) | reCAPTCHA configuration options. Only supported by global CLOUD_ARMOR policies. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [region](variables.tf#L174) | Policy region. Leave null or set to 'global' for a global policy. | <code>string</code> |  | <code>null</code> |
+| [rules](variables.tf#L180) | Policy rules, merged with factory rules. Use `match` for CLOUD_ARMOR, CLOUD_ARMOR_EDGE and CLOUD_ARMOR_INTERNAL_SERVICE policies, `network_match` for CLOUD_ARMOR_NETWORK policies. Consistency with the policy scope and type is checked at plan time. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [type](variables.tf#L336) | Policy type. Global policies support CLOUD_ARMOR, CLOUD_ARMOR_EDGE and CLOUD_ARMOR_INTERNAL_SERVICE, regional policies support CLOUD_ARMOR and CLOUD_ARMOR_NETWORK. Rules for types other than CLOUD_ARMOR only support the 'allow' and 'deny' actions. | <code>string</code> |  | <code>&#34;CLOUD_ARMOR&#34;</code> |
+| [user_defined_fields](variables.tf#L353) | User-defined fields for CLOUD_ARMOR_NETWORK policies, keyed by field name. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
 

@@ -14,11 +14,7 @@
 
 values:
   module.cloud-armor.google_compute_security_policy.global[0]:
-    adaptive_protection_config:
-    - layer_7_ddos_defense_config:
-      - enable: true
-        rule_visibility: STANDARD
-        threshold_configs: []
+    adaptive_protection_config: []
     advanced_options_config:
     - json_parsing: STANDARD
       log_level: VERBOSE

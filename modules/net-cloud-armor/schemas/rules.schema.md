@@ -55,6 +55,7 @@
   - **rate_limit_options**: *object*
     <br>*additional properties: false*
     - ⁺**exceed_action**: *string*
+      <br>*pattern: ^(deny\((403|404|429|502)\)|redirect)$*
     - **rate_limit_threshold**: *reference([threshold](#refs-threshold))*
     - **ban_duration_sec**: *integer*
     - **ban_threshold**: *reference([threshold](#refs-threshold))*
@@ -65,6 +66,7 @@
       - items: *object*
         <br>*additional properties: false*
         - ⁺**type**: *string*
+          <br>*enum: ['ALL', 'IP', 'HTTP_HEADER', 'XFF_IP', 'HTTP_COOKIE', 'HTTP_PATH', 'SNI', 'REGION_CODE', 'TLS_JA3_FINGERPRINT', 'TLS_JA4_FINGERPRINT', 'USER_IP']*
         - **name**: *string*
     - **exceed_redirect_options**: *reference([redirect_options](#refs-redirect_options))*
   - **redirect_options**: *reference([redirect_options](#refs-redirect_options))*

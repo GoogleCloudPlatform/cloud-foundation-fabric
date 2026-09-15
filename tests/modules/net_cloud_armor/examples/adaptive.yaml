@@ -1,0 +1,73 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.cloud-armor.google_compute_security_policy.global[0]:
+    adaptive_protection_config:
+    - layer_7_ddos_defense_config:
+      - enable: true
+        rule_visibility: STANDARD
+        threshold_configs:
+        - auto_deploy_confidence_threshold: 0.8
+          auto_deploy_expiration_sec: 3600
+          auto_deploy_impacted_baseline_threshold: null
+          auto_deploy_load_threshold: null
+          detection_absolute_qps: null
+          detection_load_threshold: null
+          detection_relative_to_baseline_qps: null
+          name: api
+          traffic_granularity_configs:
+          - enable_each_unique_value: null
+            type: HTTP_PATH
+            value: /api
+    deletion_policy: DELETE
+    description: Terraform managed.
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    labels: null
+    name: adaptive
+    project: project-id
+    recaptcha_options_config: []
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+    type: CLOUD_ARMOR
+  module.cloud-armor.google_compute_security_policy_rule.global_default[0]:
+    action: allow
+    deletion_policy: DELETE
+    description: Default rule.
+    header_action: []
+    match:
+    - config:
+      - src_ip_ranges:
+        - '*'
+      expr: []
+      expr_options: []
+      versioned_expr: SRC_IPS_V1
+    preconfigured_waf_config: []
+    preview: false
+    priority: 2147483647
+    project: project-id
+    rate_limit_options: []
+    redirect_options: []
+    security_policy: adaptive
+    timeouts: null
+
+counts:
+  google_compute_security_policy: 1
+  google_compute_security_policy_rule: 1
+  modules: 1
+  resources: 2
+
+outputs: {}

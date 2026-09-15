@@ -25,6 +25,13 @@ variable "_testing" {
   default = null
 }
 
+variable "adaptive_protection" {
+  description = "Enable Adaptive Protection L7 DDoS defense on the backend policy. Cloud Armor Standard only receives basic alerts, attack signatures and suggested rules require Cloud Armor Enterprise."
+  type        = bool
+  default     = false
+  nullable    = false
+}
+
 variable "geo_allowlist" {
   description = "ISO 3166-1 alpha-2 region codes allowed to reach the application. Leave empty to allow all regions."
   type        = list(string)
@@ -54,9 +61,8 @@ variable "project_id" {
 variable "rate_limit" {
   description = "Per-client IP rate limit enforced on the application backend."
   type = object({
-    count            = optional(number, 100)
-    interval_sec     = optional(number, 60)
-    ban_duration_sec = optional(number, 300)
+    count        = optional(number, 100)
+    interval_sec = optional(number, 60)
   })
   default  = {}
   nullable = false

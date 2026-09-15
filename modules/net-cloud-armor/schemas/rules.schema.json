@@ -152,7 +152,8 @@
           ],
           "properties": {
             "exceed_action": {
-              "type": "string"
+              "type": "string",
+              "pattern": "^(deny\\((403|404|429|502)\\)|redirect)$"
             },
             "rate_limit_threshold": {
               "$ref": "#/$defs/threshold"
@@ -192,7 +193,20 @@
                 ],
                 "properties": {
                   "type": {
-                    "type": "string"
+                    "type": "string",
+                    "enum": [
+                      "ALL",
+                      "IP",
+                      "HTTP_HEADER",
+                      "XFF_IP",
+                      "HTTP_COOKIE",
+                      "HTTP_PATH",
+                      "SNI",
+                      "REGION_CODE",
+                      "TLS_JA3_FINGERPRINT",
+                      "TLS_JA4_FINGERPRINT",
+                      "USER_IP"
+                    ]
                   },
                   "name": {
                     "type": "string"
