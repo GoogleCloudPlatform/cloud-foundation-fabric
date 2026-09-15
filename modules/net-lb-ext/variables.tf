@@ -39,6 +39,7 @@ variable "backend_service_config" {
     description      = optional(string, "Terraform managed.")
     port_name        = optional(string)
     protocol         = optional(string, "UNSPECIFIED")
+    security_policy  = optional(string)
     session_affinity = optional(string)
     timeout_sec      = optional(number)
   })
@@ -84,10 +85,11 @@ variable "backends" {
 variable "context" {
   description = "Context-specific interpolations."
   type = object({
-    addresses   = optional(map(string), {})
-    locations   = optional(map(string), {})
-    project_ids = optional(map(string), {})
-    subnets     = optional(map(string), {})
+    addresses         = optional(map(string), {})
+    locations         = optional(map(string), {})
+    project_ids       = optional(map(string), {})
+    security_policies = optional(map(string), {})
+    subnets           = optional(map(string), {})
   })
   default  = {}
   nullable = false
