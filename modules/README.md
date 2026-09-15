@@ -46,6 +46,7 @@ These modules are used in the examples included in this repository. If you are u
 ## Networking modules
 
 - [Address reservation](./net-address)
+- [Cloud Armor Security Policy](./net-cloud-armor)
 - [Cloud Endpoints](./endpoints)
 - [DNS](./dns)
 - [DNS Response Policy](./dns-response-policy/)
