@@ -219,7 +219,7 @@ module "cloud-armor" {
 
 ### Network edge policy
 
-Regional policies configured with type `CLOUD_ARMOR_NETWORK` safeguard external passthrough Network Load Balancers, relying on `network_match` (layer 3/4 attributes and user-defined fields) rather than `match`. Rules only support the `allow` and `deny` actions. Defining custom rules requires Cloud Armor Enterprise with regional advanced network DDoS protection enabled, which is configured through a separate `CLOUD_ARMOR_NETWORK` policy setting `ddos_protection` and no rules, attached to a network edge security service. The module rejects policies combining `ddos_protection` and rules.
+Regional policies configured with type `CLOUD_ARMOR_NETWORK` safeguard external passthrough Network Load Balancers, relying on `network_match` (layer 3/4 attributes and user-defined fields) rather than `match`. Rules only support the `allow` and `deny` actions. Cloud Armor Enterprise is required to create a `CLOUD_ARMOR_NETWORK` policy at all: on lower service tiers the API rejects the policy itself with `Network Security Policies are not supported as part of the current Cloud Armor service tier`. Attaching one additionally requires regional advanced network DDoS protection, which is configured through a separate `CLOUD_ARMOR_NETWORK` policy setting `ddos_protection` and no rules, attached to a network edge security service. The module rejects policies combining `ddos_protection` and rules.
 
 ```hcl
 module "cloud-armor" {
@@ -353,7 +353,11 @@ throttle:
 | `adaptive_protection_config`, `recaptcha_options_config` | ✓ | | | | |
 | `labels` | ✓ | ✓ | ✓ | | |
 
-Incompatible feature and policy combinations fail validation at plan time. Edge policies only evaluate `origin.asn`, `origin.ip`, `origin.region_code`, `request.headers`, `request.method`, `request.path`, `request.query` and `request.scheme` in expressions. Internal service policies are in preview and their `fairshare` action is not available in the provider, so they are limited to `allow` and `deny` rules.
+Incompatible feature and policy combinations fail validation at plan time.
+
+Edge policy expressions depend on the attachment target, and the API enforces the distinction at rule creation rather than at attach time. Policies destined for Media CDN evaluate `origin.asn`, `origin.ip`, `origin.region_code`, `request.headers`, `request.method`, `request.path`, `request.query` and `request.scheme`. Policies attached to backend buckets of a global external Application Load Balancer only evaluate `origin.ip` (via `src_ip_ranges` or `inIpRange`) and `origin.region_code`; any other attribute is rejected with `Expression supported only for Media CDN edge policies`. The module cannot tell the two targets apart, so it does not validate this at plan time.
+
+Internal service policies are in preview and their `fairshare` action is not available in the provider, so they are limited to `allow` and `deny` rules.
 
 <!-- TFDOC OPTS files:1 -->
 <!-- BEGIN TFDOC -->
