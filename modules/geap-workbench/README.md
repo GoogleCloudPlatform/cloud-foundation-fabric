@@ -1,6 +1,6 @@
-# Google Cloud Vertex AI Workbench Instance Module
+# Gemini Enterprise Agent Platform (GEAP) Workbench Module
 
-This module manages Google Cloud Vertex AI Workbench (Jupyter Notebook) instances, supporting machine types, GPU hardware accelerators, private VPC networking, Shielded VM options, service account management, and IAM permissions.
+This module manages Gemini Enterprise Agent Platform (GEAP) Workbench (Jupyter Notebook) instances, supporting machine types, GPU hardware accelerators, private VPC networking, Shielded VM options, service account management, and IAM permissions.
 
 <!-- BEGIN TOC -->
 - [Basic Workbench Instance](#basic-workbench-instance)
@@ -15,7 +15,7 @@ This module manages Google Cloud Vertex AI Workbench (Jupyter Notebook) instance
 
 ```hcl
 module "workbench" {
-  source       = "./fabric/modules/vertex-ai-workbench"
+  source       = "./fabric/modules/geap-workbench"
   project_id   = var.project_id
   prefix       = "test"
   name         = "my-workbench"
@@ -29,7 +29,7 @@ module "workbench" {
 
 ```hcl
 module "workbench_gpu" {
-  source            = "./fabric/modules/vertex-ai-workbench"
+  source            = "./fabric/modules/geap-workbench"
   project_id        = var.project_id
   prefix            = "test"
   name              = "gpu-workbench"
@@ -74,7 +74,7 @@ module "workbench_gpu" {
 
 ```hcl
 module "workbench_enterprise" {
-  source                     = "./fabric/modules/vertex-ai-workbench"
+  source                     = "./fabric/modules/geap-workbench"
   project_id                 = var.project_id
   name                       = "enterprise-wb"
   location                   = "us-central1-b"
@@ -115,7 +115,7 @@ module "workbench_enterprise" {
 
 ```hcl
 module "workbench_custom_image" {
-  source     = "./fabric/modules/vertex-ai-workbench"
+  source     = "./fabric/modules/geap-workbench"
   project_id = var.project_id
   name       = "custom-wb"
   location   = "us-central1-a"
