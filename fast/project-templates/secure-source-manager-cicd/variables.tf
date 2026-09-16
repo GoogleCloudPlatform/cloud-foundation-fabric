@@ -53,14 +53,25 @@ variable "prefix" {
   default = "test-0"
 }
 
-variable "project_ids" {
+variable "projects_config" {
   type = object({
-    build = string
-    ssm   = string
+    build = optional(object({
+      project_id = string
+      number     = optional(number)
+    }))
+    ssm = object({
+      number     = number
+      project_id = string
+    })
   })
   default = {
-    build = "tf-playground-dev-build-pool-0"
-    ssm   = "tf-playground-dev-build-ssm-0"
+    build = {
+      project_id = "tf-playground-dev-build-pool-0"
+    }
+    ssm = {
+      number     = 169822929449
+      project_id = "tf-playground-dev-build-ssm-0"
+    }
   }
 }
 

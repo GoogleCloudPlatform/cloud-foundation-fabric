@@ -15,7 +15,7 @@
  */
 
 resource "google_cloudbuild_worker_pool" "default" {
-  project  = var.project_ids.build
+  project  = local.build_project.project_id
   name     = "${local.prefix}default-0"
   location = var.locations.build
   worker_config {

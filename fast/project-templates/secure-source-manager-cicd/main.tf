@@ -15,29 +15,24 @@
  */
 
 locals {
-  prefix = var.prefix == null ? "" : "${var.prefix}-"
-  # name of the reserved load balancer address
+  build_project = (
+    var.projects_config.build != null
+    ? var.projects_config.build
+    : var.projects_config.ssm
+  )
+  prefix    = var.prefix == null ? "" : "${var.prefix}-"
   ssm_lb_ip = "${local.prefix}dev-0-ssm-lb"
 }
 
-# the instance project belongs to the project factory; it is reused here for
-# the one thing this template needs from it, the SSM service agent email, which
-# the module derives from the project number instead of reading it. Name and
-# number come from the factory tfvars, so this costs no API call: the data
-# source path cannot be used, because attributes are the only way to declare
-# services_enabled and the agent is not derived for a service the module has
-# not been told about. Nothing else about the project is managed here, so agent
-# creation and default roles are off — the factory owns both, and leaving them
-# on would put the same IAM members in two states.
 module "ssm-project" {
   source = "../../../modules/project"
-  name   = var.project_ids.ssm
+  name   = var.projects_config.ssm.project_id
   prefix = null
   project_reuse = {
     use_data_source = false
     attributes = {
-      name             = var.project_ids.ssm
-      number           = var.number
+      name             = var.projects_config.ssm.project_id
+      number           = var.projects_config.ssm.number
       services_enabled = ["securesourcemanager.googleapis.com"]
     }
   }
@@ -49,11 +44,11 @@ module "ssm-project" {
 
 module "build-sa-test" {
   source     = "../../../modules/iam-service-account"
-  project_id = var.project_ids.build
+  project_id = local.build_project.project_id
   name       = "build-test-0"
   prefix     = var.prefix
   iam_project_roles = {
-    (var.project_ids.build) = [
+    (local.build_project.project_id) = [
       "roles/logging.logWriter",
       "roles/cloudbuild.workerPoolUser",
     ]

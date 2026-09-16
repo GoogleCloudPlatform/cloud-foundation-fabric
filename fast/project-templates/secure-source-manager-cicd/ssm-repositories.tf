@@ -18,7 +18,7 @@
 
 # module "ssm-repo-sa" {
 #   source     = "../../../modules/iam-service-account"
-#   project_id = var.project_ids.ssm
+#   project_id = module.ssm-project.project_id
 #   name       = "ssm-repo-test-0"
 #   prefix     = var.prefix
 #   iam = {
@@ -31,7 +31,7 @@
 #   }
 #   # builds are created in the pool project, so the Cloud Build roles land there
 #   iam_project_roles = {
-#     (var.project_ids.build) = [
+#     (local.build_project.project_id) = [
 #       "roles/cloudbuild.builds.editor",
 #       "roles/cloudbuild.workerPoolUser",
 #       "roles/serviceusage.serviceUsageConsumer",

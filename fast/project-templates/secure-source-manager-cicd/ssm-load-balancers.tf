@@ -16,7 +16,7 @@
 
 module "ssm-lb-ip" {
   source     = "../../../modules/net-address"
-  project_id = var.project_ids.ssm
+  project_id = module.ssm-project.project_id
   internal_addresses = {
     # key is the address name, which is also the key of the module output
     (local.ssm_lb_ip) = {
@@ -33,7 +33,7 @@ module "ssm-lb" {
     ssh  = 22
   }
   source     = "../../../modules/net-lb-proxy-int"
-  project_id = var.project_ids.ssm
+  project_id = module.ssm-project.project_id
   region     = var.locations.ssm
   name       = "${local.prefix}dev-0-${each.key}"
   forwarding_rules_config = {
