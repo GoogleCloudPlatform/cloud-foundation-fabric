@@ -34,6 +34,9 @@ context = {
   project_ids = {
     my-project = "test-project"
   }
+  security_policies = {
+    waf = "projects/test-project/regions/europe-west1/securityPolicies/waf"
+  }
   subnets = {
     my-subnet = "projects/test-project/regions/europe-west1/subnetworks/test-subnet"
   }
@@ -42,6 +45,13 @@ context = {
 group_configs = {
   default = {
     zone = "$locations:my-zone"
+  }
+}
+
+backend_service_configs = {
+  default = {
+    backends        = [{ group = "default" }]
+    security_policy = "$security_policies:waf"
   }
 }
 
