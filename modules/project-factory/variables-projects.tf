@@ -560,6 +560,7 @@ variable "projects" {
       }))
       subscriptions = optional(map(object({
         ack_deadline_seconds         = optional(number)
+        deletion_policy              = optional(string)
         enable_exactly_once_delivery = optional(bool, false)
         enable_message_ordering      = optional(bool, false)
         expiration_policy_ttl        = optional(string)

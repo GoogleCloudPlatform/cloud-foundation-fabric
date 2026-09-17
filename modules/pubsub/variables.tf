@@ -83,6 +83,7 @@ variable "subscriptions" {
   description = "Topic subscriptions. Also define push configs for push subscriptions. If options is set to null subscription defaults will be used. Labels default to topic labels if set to null."
   type = map(object({
     ack_deadline_seconds         = optional(number)
+    deletion_policy              = optional(string)
     enable_exactly_once_delivery = optional(bool, false)
     enable_message_ordering      = optional(bool, false)
     expiration_policy_ttl        = optional(string)
@@ -149,4 +150,12 @@ variable "subscriptions" {
   }))
   default  = {}
   nullable = false
+  validation {
+    condition = alltrue([
+      for k, v in var.subscriptions : contains(
+        ["ABANDON", "DELETE", "PREVENT"], coalesce(v.deletion_policy, "DELETE")
+      )
+    ])
+    error_message = "Subscription deletion policy must be one of 'ABANDON', 'DELETE' or 'PREVENT'."
+  }
 }

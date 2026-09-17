@@ -46,6 +46,7 @@ These modules are used in the examples included in this repository. If you are u
 ## Networking modules
 
 - [Address reservation](./net-address)
+- [Cloud Armor Security Policy](./net-cloud-armor)
 - [Cloud Endpoints](./endpoints)
 - [DNS](./dns)
 - [DNS Response Policy](./dns-response-policy/)
@@ -103,7 +104,10 @@ These modules are used in the examples included in this repository. If you are u
 
 ## AI
 
+- [Agent Gateway](./agent-gateway/README.md)
 - [AI Applications](./ai-applications/README.md)
+- [Gemini Enterprise Agent Platform (GEAP) - Agent Runtime](./geap-agent-runtime/README.md)
+- [Gemini Enterprise Agent Platform (GEAP) - Workbench](./geap-workbench/README.md)
 
 ## Development
 
