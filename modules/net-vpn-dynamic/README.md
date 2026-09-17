@@ -126,6 +126,9 @@ module "vpn-dynamic" {
 
 ### Classic VPN with single tunnel and BGP Route Policies
 
+> [!NOTE]
+> Cloud Router serializes configuration changes. Updating or deleting several route policies on the same router in a single apply may fail with `Error 400: [...] is not ready, resourceNotReady`. Re-running the apply converges, and `-parallelism=1` avoids the error entirely.
+
 ```hcl
 module "vm" {
   source     = "./fabric/modules/compute-vm"
@@ -171,7 +174,7 @@ module "vpn-dynamic" {
         type = "IMPORT"
         terms = [
           {
-            priority = 1
+            priority = 2
             match = {
               expression  = "destination.inAnyRange(prefix('0.0.0.0/0').orLonger())"
               title       = "default-drop"
@@ -224,7 +227,7 @@ module "vpn-dynamic" {
 # tftest modules=2 resources=15 inventory=bgp-route-policies.yaml
 ```
 
-Route policies cannot be edited in place: any change to a term forces a replacement, and the replacement is rejected while the policy is still attached to a BGP peer. To work around this the module appends a hash of the policy contents to its name and sets `create_before_destroy`, so an edited policy is created under a new name and peers are repointed to it before the previous one is removed. Generated names are exposed in the `route_policies` output. Peers refer to policies via their map key; any name the module does not manage is passed through unchanged.
+Policies are created on the router with their map key as name, and peers reference them by that same key. Editing a term is an in-place update, so names stay stable. Names the module does not manage (for example policies already defined on a pre-existing router) are passed through to the peer unchanged.
 <!-- BEGIN TFDOC -->
 ## Variables
 
@@ -248,11 +251,11 @@ Route policies cannot be edited in place: any change to a term forces a replacem
 | [id](outputs.tf#L27) | Fully qualified VPN gateway id. |  |
 | [name](outputs.tf#L32) | VPN gateway name. |  |
 | [random_secret](outputs.tf#L37) | Generated secret. | ✓ |
-| [route_policies](outputs.tf#L44) | BGP route policy names, keyed by route policy key. |  |
-| [router](outputs.tf#L50) | Router resource (only if auto-created). |  |
-| [router_name](outputs.tf#L55) | Router name. |  |
-| [self_link](outputs.tf#L60) | VPN gateway self link. |  |
-| [tunnel_names](outputs.tf#L65) | VPN tunnel names. |  |
-| [tunnel_self_links](outputs.tf#L73) | VPN tunnel self links. |  |
-| [tunnels](outputs.tf#L81) | VPN tunnel resources. |  |
+| [route_policies](outputs.tf#L44) | BGP route policy ids, keyed by route policy key. |  |
+| [router](outputs.tf#L51) | Router resource (only if auto-created). |  |
+| [router_name](outputs.tf#L56) | Router name. |  |
+| [self_link](outputs.tf#L61) | VPN gateway self link. |  |
+| [tunnel_names](outputs.tf#L66) | VPN tunnel names. |  |
+| [tunnel_self_links](outputs.tf#L74) | VPN tunnel self links. |  |
+| [tunnels](outputs.tf#L82) | VPN tunnel resources. |  |
 <!-- END TFDOC -->

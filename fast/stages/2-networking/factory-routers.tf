@@ -43,18 +43,12 @@ locals {
     for router_key, router_config in local.router_configs : [
       for policy_key, policy_config in router_config.route_policies : {
         "${router_key}/${policy_key}" = merge(policy_config, {
-          router_name = replace(router_key, "/", "-")
-          project     = lookup(local.ctx_projects.project_ids, replace(router_config.project_id, "$project_ids:", ""), router_config.project_id)
-          region      = lookup(local.ctx.locations, replace(router_config.region, "$locations:", ""), router_config.region)
-          name        = "${policy_key}-${substr(sha256(jsonencode(policy_config)), 0, 8)}"
+          name       = policy_key
+          router_key = router_key
         })
       }
     ]
   ])...)
-
-  policy_names = {
-    for k, v in local.router_route_policies : k => v.name
-  }
 }
 
 resource "google_compute_router" "default" {
@@ -93,14 +87,14 @@ resource "google_compute_router" "default" {
 
 resource "google_compute_router_route_policy" "default" {
   for_each = local.router_route_policies
-  project  = each.value.project
-  region   = each.value.region
-  router   = each.value.router_name
+  project  = google_compute_router.default[each.value.router_key].project
+  region   = google_compute_router.default[each.value.router_key].region
+  router   = google_compute_router.default[each.value.router_key].name
   name     = each.value.name
   type     = each.value.type == "IMPORT" ? "ROUTE_POLICY_TYPE_IMPORT" : each.value.type == "EXPORT" ? "ROUTE_POLICY_TYPE_EXPORT" : null
 
   dynamic "terms" {
-    for_each = try(each.value.terms, [])
+    for_each = each.value.terms
     content {
       priority = terms.value.priority
       match {
@@ -122,20 +116,17 @@ resource "google_compute_router_route_policy" "default" {
   }
 
   lifecycle {
-    create_before_destroy = true
     precondition {
       condition     = contains(["IMPORT", "EXPORT"], each.value.type)
       error_message = "Route policy type must be either 'IMPORT' or 'EXPORT'."
     }
     precondition {
-      condition     = length(try(each.value.terms, [])) == length(distinct([for t in try(each.value.terms, []) : t.priority]))
+      condition     = length(each.value.terms) == length(distinct([for t in each.value.terms : t.priority]))
       error_message = "Route policy term priorities must be unique."
     }
     precondition {
-      condition     = alltrue([for t in try(each.value.terms, []) : t.priority >= 0 && t.priority < 2147483648])
+      condition     = alltrue([for t in each.value.terms : t.priority >= 0 && t.priority < 2147483648])
       error_message = "Route policy term priority must be between 0 (inclusive) and 2147483648 (exclusive)."
     }
   }
-
-  depends_on = [google_compute_router.default]
 }

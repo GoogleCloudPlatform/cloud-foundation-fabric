@@ -345,9 +345,12 @@ tunnels:
 # [...]
 ```
 
-A route policy cannot be edited in place: changing a term forces a replacement, and that replacement is rejected while the policy is still attached to a BGP peer. Two mechanisms make the swap work. The name stored in GCP carries a hash of the policy contents, so an edited policy is a differently named resource rather than an update to the existing one, and `create_before_destroy` ensures the new policy exists and the peers point at it before the old one is deleted. The practical consequence is that the name visible in the console changes on every edit, while the key used in YAML stays stable.
+Each policy is created on its router using the map key as name, which is also the name peers use to reference it. Terms are patched in place, so editing a policy does not recreate it or detach it from its peers.
 
 Policies can equally be declared under a VPN's or VLAN attachment's own `router_config` when the router is created by the module rather than by the stage, in which case peers reference them by key in exactly the same way.
+
+> [!NOTE]
+> Cloud Router serializes configuration changes. Updating or deleting several route policies on the same router in a single apply may fail with `Error 400: [...] is not ready, resourceNotReady`. Re-running the apply converges, and `-parallelism=1` avoids the error entirely.
 
 ### VPC Connectivity
 

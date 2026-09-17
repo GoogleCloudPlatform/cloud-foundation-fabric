@@ -46,9 +46,10 @@ output "pairing_key" {
 }
 
 output "route_policies" {
-  description = "BGP route policy names, keyed by route policy key."
-  value       = local.policy_names
-  depends_on  = [google_compute_router_route_policy.default]
+  description = "BGP route policy ids, keyed by route policy key."
+  value = {
+    for k, v in google_compute_router_route_policy.default : k => v.id
+  }
 }
 
 output "router" {

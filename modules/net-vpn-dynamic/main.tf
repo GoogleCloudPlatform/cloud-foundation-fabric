@@ -20,9 +20,6 @@ locals {
     ? google_compute_address.gateway[0].address
     : var.gateway_address
   )
-  policy_names = {
-    for k, v in try(var.router_config.route_policies, {}) : k => "${k}-${substr(sha256(jsonencode(v)), 0, 8)}"
-  }
   router = (
     var.router_config.create
     ? try(google_compute_router.router[0].name, null)
@@ -113,8 +110,8 @@ resource "google_compute_router_peer" "bgp_peer" {
   project                   = var.project_id
   name                      = "${var.name}-${each.key}"
   router                    = coalesce(each.value.router, local.router)
-  export_policies           = each.value.bgp_peer.export_policies == null ? null : [for p in each.value.bgp_peer.export_policies : lookup(local.policy_names, p, p)]
-  import_policies           = each.value.bgp_peer.import_policies == null ? null : [for p in each.value.bgp_peer.import_policies : lookup(local.policy_names, p, p)]
+  export_policies           = each.value.bgp_peer.export_policies
+  import_policies           = each.value.bgp_peer.import_policies
   peer_ip_address           = each.value.bgp_peer.address
   peer_asn                  = each.value.bgp_peer.asn
   advertised_route_priority = each.value.bgp_peer.route_priority
@@ -136,7 +133,8 @@ resource "google_compute_router_peer" "bgp_peer" {
       description = range.value
     }
   }
-  interface = google_compute_router_interface.router_interface[each.key].name
+  interface  = google_compute_router_interface.router_interface[each.key].name
+  depends_on = [google_compute_router_route_policy.default]
 }
 
 resource "google_compute_router_interface" "router_interface" {
@@ -203,11 +201,11 @@ resource "google_compute_router_route_policy" "default" {
   project  = var.project_id
   region   = var.region
   router   = local.router
-  name     = local.policy_names[each.key]
+  name     = each.key
   type     = each.value.type == "IMPORT" ? "ROUTE_POLICY_TYPE_IMPORT" : each.value.type == "EXPORT" ? "ROUTE_POLICY_TYPE_EXPORT" : null
 
   dynamic "terms" {
-    for_each = try(each.value.terms, [])
+    for_each = each.value.terms
     content {
       priority = terms.value.priority
       match {
@@ -226,10 +224,6 @@ resource "google_compute_router_route_policy" "default" {
         }
       }
     }
-  }
-
-  lifecycle {
-    create_before_destroy = true
   }
 
   depends_on = [google_compute_router.router]

@@ -60,14 +60,7 @@ locals {
       router_config = try(v.router_config, {})
       region        = try(v.region, local.defaults.vpcs.region)
       peer_gateways = try(v.peer_gateways, {})
-      tunnels = {
-        for tk, tv in try(v.tunnels, {}) : tk => merge(tv, {
-          bgp_peer = merge(try(tv.bgp_peer, {}), {
-            export_policies = try(tv.bgp_peer.export_policies, null) == null ? null : [for p in tv.bgp_peer.export_policies : lookup(local.policy_names, "${try(replace(v.router_config.name, "$routers:", ""), "")}/${p}", p)]
-            import_policies = try(tv.bgp_peer.import_policies, null) == null ? null : [for p in tv.bgp_peer.import_policies : lookup(local.policy_names, "${try(replace(v.router_config.name, "$routers:", ""), "")}/${p}", p)]
-          })
-        })
-      }
+      tunnels       = try(v.tunnels, {})
     })
   }
 }
