@@ -385,7 +385,7 @@ discipline as `_meta.split_parity`: read the record, not the key.
   no error and no warning. `terraform validate` returns Success. So a
   field you believe you have set may never reach the resource, and from
   the plan alone that looks identical to a provider artifact. Verified
-  against `modules/certificate-authority-service` before #4106: passing
+  against `modules/certificate-authority-service` before #4107: passing
   `publishing_options` produced a clean validate and the destructive
   removal diff regardless.
 
@@ -602,8 +602,9 @@ let plan tell you: it errors loudly and safely on a wrong ID.
   `factories_config = { custom_roles = "<path>" }`.
 - Factory YAML schema: `includedPermissions: [...]` (matching the IAM
   API attribute), `title`, `description`, `stage` (verified r5).
-- Title/description/stage need a Fabric ref containing PR #4102; on
-  v57.0.0 they plan as in-place updates (D-01).
+- Title/description/stage need a Fabric ref containing PR #4102
+  (released in `v58.0.0`); on `v57.0.0` and earlier they plan as
+  in-place updates (D-01).
 
 ### Organization and containers: IAM
 
@@ -928,12 +929,13 @@ let plan tell you: it errors loudly and safely on a wrong ID.
   * Certificate Authority: `module.<instance>.google_privateca_certificate_authority.default["<ca_id>"]` (unverified)
 - **Pool-only mapping trap**: The module `ca_configs` variable defaults to `{ test-ca = {} }`. When importing a pool without CAs, pass `ca_configs = {}` to avoid unwanted default CA creation.
 - **ForceNew alignment**: `name`, `project_id`, `location`, `tier` (`enterprise_tier = false` for DevOps tier, `true` for Enterprise) must mirror live values.
-- **Publishing options — verified r16 with Fabric ref ≥ `a153861aae` (upstream PR #4106 / issue #4106)**:
+- **Publishing options — verified r16 with Fabric ref ≥ `a153861aae` (upstream PR #4107 / issue #4106)**:
   GCP populates `publishing_options` on every pool (DevOps tier
   defaults: `encoding_format = "PEM"`, `publish_ca_cert = true`,
   `publish_crl = false`). **Minimum ref required**: support for
-  `publishing_options` landed in #4106 and is NOT in any released tag as
-  of r16 — verified against `a153861aae` (see D-07). On any earlier ref,
+  `publishing_options` landed in #4107 and is released in `v58.0.0`
+  (at r16 it was verified against the pre-release commit `a153861aae`,
+  see D-07). On any earlier ref,
   including `v57.0.0`, adopting a live pool plans a **destructive
   removal** of the block: a capability gap, never benign drift, since an
   apply would reset live CA-certificate/CRL publication (D-07, D-08).

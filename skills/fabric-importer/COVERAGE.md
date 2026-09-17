@@ -36,7 +36,7 @@ Fabric ref it was verified against; re-verify on bumps (see
 | Firewall policies | net-firewall-policy | **C** | Mapping rules documented in cookbook (Hierarchical, Global, and Regional Network policies) |
 | VPN / Interconnect attachments | net-vpn-*, net-vlan-attachment | **C** | Mapping rules documented in cookbook |
 | KMS keyrings / keys + key IAM | kms | **V** | Seeded keyring, key, leaf-IAM on CryptoKey verified; permanent residue documented |
-| Certificate Authority Service | certificate-authority-service | **V** | CA pools: CAI type, import ID, pool address (`google_privateca_ca_pool.default[0]`), `ca_configs = {}` default-CA trap, and `publishing_options` support verified on Fabric ref containing PR #4106 (commit `a153861aae`). Note: on releases lacking #4106, CAS reverts to capability gap |
+| Certificate Authority Service | certificate-authority-service | **V** | CA pools: CAI type, import ID, pool address (`google_privateca_ca_pool.default[0]`), `ca_configs = {}` default-CA trap, and `publishing_options` support verified on Fabric ref containing PR #4107 (commit `a153861aae`, released in `v58.0.0`). Note: on releases lacking #4107 (`v57.0.0` and earlier), CAS reverts to capability gap |
 | VPC-SC policy / perimeters | vpc-sc | **V** | Live AccessPolicy adopted, AccessLevel, dry-run ServicePerimeter; bare-numeric policy import ID verified; `unknown`-level classification handled in `inventory.py`. Enforced perimeters (`status` block) unverified |
 | Tags (keys/values/bindings) | organization / folder / project tags | **V** | TagKey, TagValue, TagBinding, import IDs, address shapes, verified at organization, folder and project level. The `templatestring` escaping matrix (`$$${`) is DERIVED FROM MODULE SOURCE, not exercised — no seeded value contained `${` (tag IAM unverified) |
 | Billing account IAM | billing-account | **N** | — |
@@ -62,7 +62,7 @@ Fabric ref it was verified against; re-verify on bumps (see
   module source in-repo, no live import exercised yet. First verified
   run graduates the exercised carrier and stamps it here.
 
-- **CAS & Custom Roles**: CAS `publishing_options` requires Fabric PR #4106 (`a153861aae`). Custom roles title/description convergence requires Fabric PR #4102.
+- **CAS & Custom Roles**: CAS `publishing_options` requires Fabric PR #4107 (`a153861aae`). Custom roles title/description convergence requires Fabric PR #4102. Both are released in `v58.0.0`.
 - **Non-CAI types**: CAI is the default source of the denominator, not its boundary. Types it does not model are enumerated with `gcloud` — automatically where `inventory.py` ships a built-in enumerator, otherwise via a manifest `enumerate:` block — or, where gcloud has no container-scoped surface, out of band against the REST API. All of it merges into the same denominator, and `inventory.py` stops the run rather than proceeding without a type it cannot enumerate. See `references/cai-blind-spots.md`.
 - **Provider Label Inheritance**: Provider v5/v6/v7 generates computed `terraform_labels: {} -> {...}` diffs for resources with inherited provider labels. These are accounted for via scoped rules in `scripts/benign-drift.yaml`.
 
