@@ -17,4 +17,5 @@ module: modules/artifact-registry
 tests:
   context:
   universe:
+  remote_go_common:
   remote_maven_common:

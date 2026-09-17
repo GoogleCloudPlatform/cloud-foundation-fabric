@@ -88,9 +88,13 @@ resource "google_project_iam_audit_config" "default" {
 }
 
 resource "google_logging_project_sink" "sink" {
-  for_each               = local.logging_sinks
-  name                   = each.key
-  description            = coalesce(each.value.description, "${each.key} (Terraform-managed).")
+  for_each = local.logging_sinks
+  name     = each.key
+  description = (
+    each.value.description == null
+    ? "${each.key} (Terraform-managed)."
+    : each.value.description
+  )
   project                = local.project.project_id
   destination            = "${lookup(each.value, "api", each.value.type)}.googleapis.com/${each.value.destination}"
   filter                 = each.value.filter

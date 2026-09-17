@@ -128,7 +128,13 @@ module "service-accounts-iam" {
   for_each = {
     for k in local.projects_service_accounts :
     "${k.project_key}/${k.name}" => k
-    if k.iam_sa_roles != {} || k.iam_sa_bindings != {} || k.iam != {}
+    if(
+      k.iam != {} ||
+      k.iam_bindings != {} ||
+      k.iam_bindings_additive != {} ||
+      k.iam_sa_bindings != {} ||
+      k.iam_sa_roles != {}
+    )
   }
   project_id = (
     module.service-accounts[each.key].service_account.project

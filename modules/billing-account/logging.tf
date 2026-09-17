@@ -49,9 +49,13 @@ locals {
 }
 
 resource "google_logging_billing_account_sink" "sink" {
-  for_each        = local.logging_sinks
-  name            = each.key
-  description     = coalesce(each.value.description, "${each.key} (Terraform-managed).")
+  for_each = local.logging_sinks
+  name     = each.key
+  description = (
+    each.value.description == null
+    ? "${each.key} (Terraform-managed)."
+    : each.value.description
+  )
   billing_account = var.id
   destination     = "${each.value.type}.googleapis.com/${each.value.destination}"
   filter          = each.value.filter

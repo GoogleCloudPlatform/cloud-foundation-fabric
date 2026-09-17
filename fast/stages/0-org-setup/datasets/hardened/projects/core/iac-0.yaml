@@ -132,7 +132,6 @@ org_policies:
 buckets:
   # Terraform state bucket for this stage
   iac-org-state:
-    description: Terraform state for the org-level automation.
     versioning: true
     encryption_key: $kms_keys:iac-0/ew1/storage
     lifecycle_rules:
@@ -167,7 +166,6 @@ buckets:
         - $iam_principals:service_accounts/iac-0/iac-org-ro
   # Terraform state bucket for additional FAST stages
   iac-stage-state:
-    description: Terraform state for stage automation.
     versioning: true
     encryption_key: $kms_keys:iac-0/ew1/storage
     lifecycle_rules:
@@ -222,7 +220,6 @@ buckets:
             - $iam_principals:service_accounts/iac-0/iac-pf-ro
   # Terraform state bucket for FAST outputs
   iac-outputs:
-    description: Terraform state for the org-level automation.
     versioning: true
     encryption_key: $kms_keys:iac-0/ew1/storage
     lifecycle_rules:

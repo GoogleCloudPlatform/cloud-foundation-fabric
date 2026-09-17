@@ -20,3 +20,5 @@ tests:
   vpcconnector:
   multiregion:
   traffic:
+  security:
+

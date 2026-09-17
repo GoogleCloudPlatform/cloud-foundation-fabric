@@ -84,10 +84,10 @@ locals {
   project_ids = {
     for k, v in module.projects : k => v.project_id
   }
+  projects_input = merge(var.projects, local._projects_output)
   project_numbers = {
     for k, v in module.projects : k => v.number
   }
-  projects_input = merge(var.projects, local._projects_output)
   projects_service_agents = merge([
     for k, v in module.projects : {
       for kk, vv in v.service_agents : "service_agents/${k}/${kk}" => vv.iam_email
@@ -139,6 +139,7 @@ module "projects" {
     })
     folder_ids = local.ctx_folder_ids
   })
+  custom_roles            = each.value.custom_roles
   default_service_account = try(each.value.default_service_account, "keep")
   # Exclude factories that are either:
   # a) Handled in parallel by calling specific modules (e.g., aspect_types, data_catalog_taxonomy)
@@ -261,6 +262,12 @@ module "projects-iam" {
     grant_default_roles        = false
     grant_service_agent_editor = each.value.service_agents_config.grant_service_agent_editor
   }
+  service_agents_folder_bindings = try(
+    each.value.service_agents_folder_bindings, {}
+  )
+  service_agents_project_bindings = try(
+    each.value.service_agents_project_bindings, {}
+  )
   service_encryption_key_ids = merge(
     each.value.service_encryption_key_ids,
     var.data_merges.service_encryption_key_ids

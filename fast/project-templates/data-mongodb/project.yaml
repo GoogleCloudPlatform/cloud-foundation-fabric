@@ -38,7 +38,6 @@ automation:
     rw:
       description: Read/write automation service account for MongoDB.
   bucket:
-    description: Terraform state bucket for apt registries.
     # this reuses the existing stage state bucket and creates a folder in it
     name: iac-stage-state
     create: false

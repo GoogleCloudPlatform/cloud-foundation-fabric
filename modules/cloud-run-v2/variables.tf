@@ -14,6 +14,16 @@
  * limitations under the License.
  */
 
+variable "binary_authorization" {
+  description = "Binary Authorization configuration."
+  type = object({
+    breakglass_justification = optional(string)
+    policy                   = optional(string)
+    use_default              = optional(bool)
+  })
+  default = null
+}
+
 variable "containers" {
   description = "Containers in name => attributes format."
   type = map(object({
@@ -264,7 +274,8 @@ variable "revision" {
 variable "service_config" {
   description = "Cloud Run service specific configuration options."
   type = object({
-    custom_audiences = optional(list(string), null)
+    custom_audiences     = optional(list(string), null)
+    default_uri_disabled = optional(bool)
     eventarc_triggers = optional(
       object({
         audit_log = optional(map(object({

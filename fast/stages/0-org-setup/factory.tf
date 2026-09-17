@@ -50,10 +50,12 @@ module "factory" {
         default = try(module.organization[0].id, null)
       }
     )
+    # no null filter here: values are non-null by construction, and filtering
+    # on them would make this map unknown at plan time (cf. organization.tf)
     iam_principals = merge(
       {
         for k, v in local.org_logging_identities :
-        k => "serviceAccount:${v}" if v != null
+        k => "serviceAccount:${v}"
       },
       local.iam_principals
     )

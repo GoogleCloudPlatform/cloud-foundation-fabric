@@ -119,7 +119,7 @@ values:
     kms_key_name: projects/test-kms-0/locations/europe-west8/keyRings/test/cryptoKeys/test
     timeouts: null
   google_logging_folder_sink.sink["test-pubsub"]:
-    description: test-pubsub (Terraform-managed).
+    description: ''
     destination: pubsub.googleapis.com/projects/test-prod-audit-logs-0/topics/audit-logs
     disabled: false
     exclusions: []

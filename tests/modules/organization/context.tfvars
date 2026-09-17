@@ -132,6 +132,7 @@ logging_sinks = {
     type        = "project"
   }
   test-pubsub = {
+    description = ""
     destination = "$pubsub_topics:test"
     filter      = "log_id('cloudaudit.googleapis.com/activity')"
     type        = "pubsub"

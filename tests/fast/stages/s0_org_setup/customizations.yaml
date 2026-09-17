@@ -256,28 +256,46 @@ values:
     deletion_policy: DELETE
     project: ft0-dev-net-shared-0
     timeouts: null
+  # NOTE: the `members` assertions below are regression coverage: this dataset
+  # defines org-level `logging.sinks`, and deriving the logging identity map
+  # keys from computed attributes used to make the whole factory
+  # `iam_principals` context unknown at plan time, turning every principal here
+  # into "(known after apply)".
   module.factory.module.projects-iam["iac-0"].google_project_iam_binding.authoritative["roles/cloudbuild.builds.editor"]:
     condition: []
+    members:
+    - serviceAccount:iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
     project: ft0-prod-iac-core-0
     role: roles/cloudbuild.builds.editor
   module.factory.module.projects-iam["iac-0"].google_project_iam_binding.authoritative["roles/iam.serviceAccountAdmin"]:
     condition: []
+    members:
+    - serviceAccount:iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
     project: ft0-prod-iac-core-0
     role: roles/iam.serviceAccountAdmin
   ? module.factory.module.projects-iam["iac-0"].google_project_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"]
   : condition: []
+    members:
+    - group:fabric-fast-owners@google.com
     project: ft0-prod-iac-core-0
     role: roles/iam.serviceAccountTokenCreator
   ? module.factory.module.projects-iam["iac-0"].google_project_iam_binding.authoritative["roles/iam.workloadIdentityPoolAdmin"]
   : condition: []
+    members:
+    - group:fabric-fast-owners@google.com
+    - serviceAccount:iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
     project: ft0-prod-iac-core-0
     role: roles/iam.workloadIdentityPoolAdmin
   module.factory.module.projects-iam["iac-0"].google_project_iam_binding.authoritative["roles/owner"]:
     condition: []
+    members:
+    - serviceAccount:iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
     project: ft0-prod-iac-core-0
     role: roles/owner
   module.factory.module.projects-iam["iac-0"].google_project_iam_binding.authoritative["roles/storage.admin"]:
     condition: []
+    members:
+    - serviceAccount:iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
     project: ft0-prod-iac-core-0
     role: roles/storage.admin
   module.factory.module.projects-iam["prod-app-0"].google_compute_shared_vpc_service_project.shared_vpc_service[0]:

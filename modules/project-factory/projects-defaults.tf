@@ -40,6 +40,7 @@ locals {
         try(v.billing_account, null),
         local.data_defaults.defaults.billing_account
       ), null)
+      custom_roles = try(v.custom_roles, {})
       deletion_policy = try(coalesce( # type: string
         local.data_defaults.overrides.deletion_policy,
         try(v.deletion_policy, null),
