@@ -75,6 +75,11 @@ _LEVEL_BY_TYPE = {
     'cloudresourcemanager.googleapis.com/Folder': 'folder',
     'cloudresourcemanager.googleapis.com/Project': 'project',
 }
+# CAI full resource name of a PAM grant, e.g.
+# //privilegedaccessmanager.googleapis.com/organizations/1/locations/
+#   global/entitlements/<entitlement>/grants/<grant>
+_PAM_GRANT_NAME_RE = re.compile(
+    r'^//privilegedaccessmanager\.googleapis\.com/.+/grants/')
 
 # Enumeration failures tolerated mid-run are recorded here and turned
 # into a HARD failure at the end of collect(): a silently shrunken
@@ -423,10 +428,7 @@ def _is_pam_grant_asset(asset):
     return True
   name = asset.get('name', '') or asset.get('key', '')
   # CAI full resource names always start with `//<service>/`.
-  if (name.startswith('//privilegedaccessmanager.googleapis.com/') and
-      '/grants/' in name):
-    return True
-  return False
+  return _PAM_GRANT_NAME_RE.match(name) is not None
 
 
 def _is_auto_generated_route_asset(asset):
