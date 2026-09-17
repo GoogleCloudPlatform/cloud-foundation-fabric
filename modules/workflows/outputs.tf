@@ -26,8 +26,7 @@ output "id" {
   description = "The workflow ID."
   value       = google_workflows_workflow.default.id
   depends_on = [
-    google_project_iam_member.service_account,
-    google_project_iam_member.default
+    google_project_iam_member.service_account
   ]
 }
 
@@ -52,13 +51,22 @@ output "scheduler_jobs" {
 }
 
 output "service_account" {
-  description = "The service account email used for execution."
-  value       = local.service_account
+  description = "Service account resource."
+  value       = try(google_service_account.service_account[0], null)
 }
 
 output "service_account_email" {
-  description = "The email of the created service account."
-  value       = try(google_service_account.service_account[0].email, null)
+  description = "Service account email."
+  value       = local.service_account
+}
+
+output "service_account_iam_email" {
+  description = "Service account IAM-format email."
+  value = (
+    local.service_account == null
+    ? null
+    : "serviceAccount:${local.service_account}"
+  )
 }
 
 output "task_queue_ids" {

@@ -22,46 +22,49 @@ locals {
   crypto_key_name = (
     var.crypto_key_name == null
     ? null
-    : lookup(local.ctx.crypto_keys, var.crypto_key_name, var.crypto_key_name)
+    : lookup(local.ctx.kms_keys, var.crypto_key_name, var.crypto_key_name)
   )
-  prefix     = var.prefix == null ? "" : "${var.prefix}-"
-  project_id = lookup(local.ctx.project_ids, var.project_id, var.project_id)
-  region     = lookup(local.ctx.locations, var.region, var.region)
+  prefix = var.prefix == null ? "" : "${var.prefix}-"
+  project_id = lookup(
+    local.ctx.project_ids, var.project_id, var.project_id
+  )
+  region                 = lookup(local.ctx.locations, var.region, var.region)
+  service_account_create = try(var.service_account.create, false) == true
   service_account = (
-    var.service_account_create
+    local.service_account_create
     ? google_service_account.service_account[0].email
     : (
-      var.service_account == null
+      try(var.service_account.email, null) == null
       ? null
       : lookup(
         local.ctx.service_accounts,
-        var.service_account,
-        var.service_account
+        var.service_account.email,
+        var.service_account.email
       )
     )
   )
 }
 
 resource "google_service_account" "service_account" {
-  count      = var.service_account_create ? 1 : 0
-  provider   = google
-  project    = local.project_id
-  account_id = "${local.prefix}${var.name}"
-  display_name = (
-    "Workflows execution service account for ${local.prefix}${var.name}."
+  count    = local.service_account_create ? 1 : 0
+  provider = google
+  project  = local.project_id
+  account_id = coalesce(
+    try(var.service_account.name, null), "${local.prefix}${var.name}"
   )
+  display_name = try(var.service_account.display_name, null)
 }
 
 resource "google_project_iam_member" "service_account" {
   for_each = (
-    var.service_account_create ? toset(var.service_account_roles) : toset([])
+    local.service_account_create
+    ? toset(coalesce(var.service_account.roles, []))
+    : toset([])
   )
   provider = google
   project  = local.project_id
   role     = each.value
-  member = (
-    "serviceAccount:${google_service_account.service_account[0].email}"
-  )
+  member   = google_service_account.service_account[0].member
 }
 
 resource "google_workflows_workflow" "default" {
@@ -76,6 +79,7 @@ resource "google_workflows_workflow" "default" {
   call_log_level          = var.call_log_level
   execution_history_level = var.execution_history_level
   crypto_key_name         = local.crypto_key_name
-  user_env_vars           = var.user_env_vars
+  user_env_vars           = var.env_vars
   deletion_protection     = var.deletion_protection
+  tags                    = var.tags
 }

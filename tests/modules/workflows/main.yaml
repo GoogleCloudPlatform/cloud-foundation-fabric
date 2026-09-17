@@ -17,7 +17,7 @@ values:
     app_engine_http_target: []
     attempt_deadline: 300s
     deletion_policy: DELETE
-    description: Scheduled execution for workflow foo-test-workflow.
+    description: null
     http_target:
     - body: eyJhcmd1bWVudCI6IntcImJhdGNoX3NpemVcIjogMTAwfSJ9
       headers:
@@ -87,11 +87,6 @@ values:
     transport:
     - pubsub:
       - topic: projects/test-project/topics/workflow-events
-  google_project_iam_member.default["roles/workflows.invoker:group:devops@example.com"]:
-    condition: []
-    member: group:devops@example.com
-    project: test-project
-    role: roles/workflows.invoker
   google_project_iam_member.service_account["roles/logging.logWriter"]:
     condition: []
     member: serviceAccount:foo-test-workflow@test-project.iam.gserviceaccount.com
@@ -103,7 +98,7 @@ values:
     deletion_policy: DELETE
     description: null
     disabled: false
-    display_name: Workflows execution service account for foo-test-workflow.
+    display_name: null
     email: foo-test-workflow@test-project.iam.gserviceaccount.com
     member: serviceAccount:foo-test-workflow@test-project.iam.gserviceaccount.com
     project: test-project
@@ -135,11 +130,11 @@ counts:
   google_cloud_scheduler_job: 1
   google_cloud_tasks_queue: 1
   google_eventarc_trigger: 1
-  google_project_iam_member: 2
+  google_project_iam_member: 1
   google_service_account: 1
   google_workflows_workflow: 1
   modules: 0
-  resources: 7
+  resources: 6
 
 outputs:
   eventarc_trigger_ids: __missing__
@@ -149,8 +144,9 @@ outputs:
   revision_id: __missing__
   scheduler_job_ids: __missing__
   scheduler_jobs: __missing__
-  service_account: foo-test-workflow@test-project.iam.gserviceaccount.com
+  service_account: __missing__
   service_account_email: foo-test-workflow@test-project.iam.gserviceaccount.com
+  service_account_iam_email: serviceAccount:foo-test-workflow@test-project.iam.gserviceaccount.com
   task_queue_ids: __missing__
   task_queues: __missing__
   workflow: __missing__

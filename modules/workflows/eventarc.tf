@@ -22,7 +22,7 @@ resource "google_eventarc_trigger" "default" {
     ? local.region
     : lookup(local.ctx.locations, each.value.location, each.value.location)
   )
-  labels                  = merge(var.labels, coalesce(each.value.labels, {}))
+  labels                  = merge(var.labels, each.value.labels)
   event_data_content_type = each.value.event_data_content_type
   service_account = (
     each.value.service_account == null

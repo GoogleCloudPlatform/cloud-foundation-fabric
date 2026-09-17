@@ -15,11 +15,14 @@
 variable "call_log_level" {
   description = "Describes the level of platform logging to apply to calls and call responses during executions of this workflow."
   type        = string
-  default     = "LOG_ALL_CALLS"
+  default     = null
   validation {
-    condition = contains(
-      ["LOG_ALL_CALLS", "LOG_ERRORS_ONLY", "LOG_NONE"],
-      var.call_log_level
+    condition = (
+      var.call_log_level == null ||
+      contains(
+        ["LOG_ALL_CALLS", "LOG_ERRORS_ONLY", "LOG_NONE"],
+        var.call_log_level
+      )
     )
     error_message = "call_log_level must be one of LOG_ALL_CALLS, LOG_ERRORS_ONLY, or LOG_NONE."
   }
@@ -28,7 +31,7 @@ variable "call_log_level" {
 variable "context" {
   description = "Context-specific interpolations."
   type = object({
-    crypto_keys      = optional(map(string), {})
+    kms_keys         = optional(map(string), {})
     locations        = optional(map(string), {})
     project_ids      = optional(map(string), {})
     pubsub_topics    = optional(map(string), {})
@@ -53,7 +56,13 @@ variable "deletion_protection" {
 variable "description" {
   description = "Description of the workflow."
   type        = string
-  default     = "Managed by Terraform."
+  default     = null
+}
+
+variable "env_vars" {
+  description = "User-defined environment variables associated with this workflow revision."
+  type        = map(string)
+  default     = {}
 }
 
 variable "eventarc_triggers" {
@@ -61,7 +70,7 @@ variable "eventarc_triggers" {
   type = map(object({
     location                = optional(string)
     service_account         = optional(string)
-    labels                  = optional(map(string))
+    labels                  = optional(map(string), {})
     event_data_content_type = optional(string)
     matching_criteria = optional(list(object({
       attribute = string
@@ -86,29 +95,14 @@ variable "execution_history_level" {
       var.execution_history_level == null ||
       contains(
         [
-          "EXECUTION_HISTORY_LEVEL_UNSPECIFIED",
           "EXECUTION_HISTORY_BASIC",
           "EXECUTION_HISTORY_DETAILED"
         ],
         var.execution_history_level
       )
     )
-    error_message = "execution_history_level must be one of EXECUTION_HISTORY_LEVEL_UNSPECIFIED, EXECUTION_HISTORY_BASIC, or EXECUTION_HISTORY_DETAILED."
+    error_message = "execution_history_level must be one of EXECUTION_HISTORY_BASIC or EXECUTION_HISTORY_DETAILED."
   }
-}
-
-variable "iam" {
-  description = "IAM bindings for this workflow in {ROLE => [MEMBERS]} format."
-  type        = map(list(string))
-  default     = {}
-  nullable    = false
-}
-
-variable "iam_by_principals" {
-  description = "Authoritative IAM binding for this workflow in {PRINCIPAL => [ROLES]} format."
-  type        = map(list(string))
-  default     = {}
-  nullable    = false
 }
 
 variable "labels" {
@@ -140,7 +134,6 @@ variable "project_id" {
 variable "region" {
   description = "The region of the workflow."
   type        = string
-  default     = "us-central1"
 }
 
 variable "scheduler_jobs" {
@@ -153,7 +146,7 @@ variable "scheduler_jobs" {
     attempt_deadline = optional(string)
     argument         = optional(string)
     call_log_level   = optional(string)
-    headers          = optional(map(string))
+    headers          = optional(map(string), {})
     region           = optional(string)
     service_account  = optional(string)
     uri              = optional(string)
@@ -180,21 +173,15 @@ variable "scheduler_jobs" {
 }
 
 variable "service_account" {
-  description = "The service account email to run the workflow as. Ignored if service_account_create is true."
-  type        = string
-  default     = null
-}
-
-variable "service_account_create" {
-  description = "Whether to create a dedicated service account for this workflow."
-  type        = bool
-  default     = false
-}
-
-variable "service_account_roles" {
-  description = "List of IAM roles to grant to the created service account."
-  type        = list(string)
-  default     = []
+  description = "Service account configuration. If create is true, a dedicated service account is created and granted roles on the workflow's project (project_id)."
+  type = object({
+    create       = optional(bool, false)
+    display_name = optional(string)
+    email        = optional(string)
+    name         = optional(string)
+    roles        = optional(list(string), [])
+  })
+  default = null
 }
 
 variable "source_contents" {
@@ -207,6 +194,12 @@ variable "source_contents" {
         - step1:
             return: OK
   EOT
+}
+
+variable "tags" {
+  description = "Resource management tags."
+  type        = map(string)
+  default     = null
 }
 
 variable "task_queues" {
@@ -230,7 +223,7 @@ variable "task_queues" {
     }))
     http_target = optional(object({
       http_method      = optional(string)
-      header_overrides = optional(map(string))
+      header_overrides = optional(map(string), {})
       oauth_token = optional(object({
         service_account_email = string
         scope                 = optional(string)
@@ -251,10 +244,4 @@ variable "task_queues" {
   }))
   default  = {}
   nullable = false
-}
-
-variable "user_env_vars" {
-  description = "User-defined environment variables associated with this workflow revision."
-  type        = map(string)
-  default     = {}
 }

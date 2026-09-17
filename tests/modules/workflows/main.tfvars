@@ -12,15 +12,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-project_id             = "test-project"
-prefix                 = "foo"
-name                   = "test-workflow"
-description            = "Test workflow"
-region                 = "europe-west1"
-call_log_level         = "LOG_ALL_CALLS"
-service_account_create = true
-service_account_roles  = ["roles/logging.logWriter"]
-user_env_vars = {
+project_id     = "test-project"
+prefix         = "foo"
+name           = "test-workflow"
+description    = "Test workflow"
+region         = "europe-west1"
+call_log_level = "LOG_ALL_CALLS"
+service_account = {
+  create = true
+  roles  = ["roles/logging.logWriter"]
+}
+env_vars = {
   TEST_KEY = "test_value"
 }
 source_contents = <<-EOT
@@ -30,12 +32,6 @@ source_contents = <<-EOT
       - step1:
           return: "OK"
 EOT
-
-iam = {
-  "roles/workflows.invoker" = [
-    "group:devops@example.com"
-  ]
-}
 
 task_queues = {
   batch-tasks = {

@@ -64,7 +64,7 @@ resource "google_cloud_tasks_queue" "default" {
       http_method = http_target.value.http_method
 
       dynamic "header_overrides" {
-        for_each = coalesce(http_target.value.header_overrides, {})
+        for_each = http_target.value.header_overrides
         content {
           header {
             key   = header_overrides.key

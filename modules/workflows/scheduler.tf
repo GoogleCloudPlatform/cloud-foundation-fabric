@@ -46,12 +46,9 @@ resource "google_cloud_scheduler_job" "default" {
     ? local.region
     : lookup(local.ctx.locations, each.value.region, each.value.region)
   )
-  schedule  = each.value.schedule
-  time_zone = each.value.time_zone
-  description = coalesce(
-    each.value.description,
-    "Scheduled execution for workflow ${local.prefix}${var.name}."
-  )
+  schedule         = each.value.schedule
+  time_zone        = each.value.time_zone
+  description      = each.value.description
   paused           = each.value.paused
   attempt_deadline = each.value.attempt_deadline
 
@@ -71,7 +68,7 @@ resource "google_cloud_scheduler_job" "default" {
     uri         = each.value.uri
     headers = merge(
       { "Content-Type" = "application/json" },
-      coalesce(each.value.headers, {})
+      each.value.headers
     )
     body = base64encode(jsonencode(
       merge(
