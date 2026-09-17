@@ -1994,7 +1994,7 @@ class TestNonCaiEnumeration(unittest.TestCase):
               }]
           }, handler)
     self.assertEqual(len(entries), 1)
-    self.assertTrue(entries[0]['key'].startswith('//iam.googleapis.com/'))
+    self.assertRegex(entries[0]['key'], r'^//iam\.googleapis\.com/')
     self.assertFalse([c for c in calls if 'asset' in c and 'DenyPolicy' in c])
     self.assertIn('built-in gcloud', buf.getvalue())
     self.assertEqual(inventory.NATIVE_SWEEPS[0]['source'], 'builtin')
@@ -4248,9 +4248,9 @@ class TestManifestFromState(unittest.TestCase):
                     'google_access_context_manager_access_level',
                     'google_access_context_manager_service_perimeter'):
       cai_type = manifest_from_state.TF_TYPE_MAP[tf_type][0]
-      self.assertTrue(
-          cai_type.startswith('identity.accesscontextmanager.googleapis.com/'),
-          f'{tf_type} maps to {cai_type}')
+      self.assertRegex(cai_type,
+                       r'^identity\.accesscontextmanager\.googleapis\.com/',
+                       f'{tf_type} maps to {cai_type}')
 
   def test_unmapped_google_types_are_reported(self):
     err = io.StringIO()
@@ -4775,7 +4775,7 @@ class TestAddressMap(unittest.TestCase):
     self.assertTrue(any('import_id' in e for e in errors), errors)
 
   def test_unknown_key_is_rejected(self):
-    errors = address_map.validate({'a': self._entry(verifed='r1')})
+    errors = address_map.validate({'a': self._entry(verified_round='r1')})
     self.assertTrue(any('unknown keys' in e for e in errors), errors)
 
   def test_cookbook_lint_flags_a_repeated_module_section(self):

@@ -422,7 +422,9 @@ def _is_pam_grant_asset(asset):
   if t == 'privilegedaccessmanager.googleapis.com/Grant':
     return True
   name = asset.get('name', '') or asset.get('key', '')
-  if '//privilegedaccessmanager.googleapis.com/' in name and '/grants/' in name:
+  # CAI full resource names always start with `//<service>/`.
+  if (name.startswith('//privilegedaccessmanager.googleapis.com/') and
+      '/grants/' in name):
     return True
   return False
 
