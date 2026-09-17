@@ -375,6 +375,9 @@
         "org_policies": {
           "type": "string"
         },
+        "pam_entitlements": {
+          "type": "string"
+        },
         "quotas": {
           "type": "string"
         },
