@@ -47,7 +47,7 @@ resource "google_container_cluster" "cluster" {
   datapath_provider = (
     var.enable_features.dataplane_v2
     ? "ADVANCED_DATAPATH"
-    : "LEGACY_DATAPATH"
+    : "DATAPATH_PROVIDER_UNSPECIFIED"
   )
 
   dynamic "default_snat_status" {
