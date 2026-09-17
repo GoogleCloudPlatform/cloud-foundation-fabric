@@ -166,7 +166,7 @@ values:
     project: foo-test-0
     protocol: HTTP
     region: europe-west8
-    security_policy: null
+    security_policy: projects/foo-test-0/regions/europe-west8/securityPolicies/waf
     strong_session_affinity_cookie: []
     subsetting: []
     timeouts: null
