@@ -546,8 +546,25 @@
                                   "description": "The client ID."
                                 },
                                 "client_secret": {
-                                  "type": "string",
-                                  "description": "The client secret (optional)."
+                                  "type": "object",
+                                  "oneOf": [
+                                    {
+                                      "properties": {
+                                        "value": {
+                                          "type": "string",
+                                          "description": "The client secret (optional)."
+                                        }
+                                      }
+                                    },
+                                    {
+                                      "properties": {
+                                        "file": {
+                                          "type": "string",
+                                          "description": "Path to a file containing the client secret (optional)."
+                                        }
+                                      }
+                                    }
+                                  ]
                                 },
                                 "jwks_json": {
                                   "type": "string",
