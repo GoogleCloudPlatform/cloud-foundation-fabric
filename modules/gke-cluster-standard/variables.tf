@@ -224,6 +224,7 @@ variable "enable_features" {
     fqdn_network_policy  = optional(bool, true)
     gateway_api          = optional(bool, false)
     groups_for_rbac      = optional(string)
+    identity_service     = optional(bool, false)
     image_streaming      = optional(bool, false)
     intranode_visibility = optional(bool, false)
     l4_ilb_subsetting    = optional(bool, false)

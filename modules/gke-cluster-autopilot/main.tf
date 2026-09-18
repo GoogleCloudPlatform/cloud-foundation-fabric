@@ -134,6 +134,12 @@ resource "google_container_cluster" "cluster" {
       channel = "CHANNEL_STANDARD"
     }
   }
+  dynamic "identity_service_config" {
+    for_each = var.enable_features.identity_service ? [""] : []
+    content {
+      enabled = true
+    }
+  }
   dynamic "ip_allocation_policy" {
     for_each = var.vpc_config.secondary_range_blocks != null ? [""] : []
     content {
