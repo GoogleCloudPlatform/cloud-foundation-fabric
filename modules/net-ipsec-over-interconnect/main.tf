@@ -97,6 +97,8 @@ resource "google_compute_router_peer" "default" {
   router                    = local.router
   peer_ip_address           = each.value.bgp_peer.address
   peer_asn                  = each.value.bgp_peer.asn
+  export_policies           = each.value.bgp_peer.export_policies
+  import_policies           = each.value.bgp_peer.import_policies
   advertised_route_priority = each.value.bgp_peer.route_priority
   advertise_mode = (
     try(each.value.bgp_peer.custom_advertise, null) != null
@@ -125,7 +127,8 @@ resource "google_compute_router_peer" "default" {
     }
   }
 
-  interface = google_compute_router_interface.default[each.key].name
+  interface  = google_compute_router_interface.default[each.key].name
+  depends_on = [google_compute_router_route_policy.default]
 }
 
 resource "google_compute_router_interface" "default" {
@@ -154,4 +157,37 @@ resource "google_compute_vpn_tunnel" "default" {
 
 resource "random_id" "default" {
   byte_length = 8
+}
+
+resource "google_compute_router_route_policy" "default" {
+  for_each = var.router_config.route_policies
+  project  = var.project_id
+  region   = var.region
+  router   = local.router
+  name     = each.key
+  type     = each.value.type == "IMPORT" ? "ROUTE_POLICY_TYPE_IMPORT" : each.value.type == "EXPORT" ? "ROUTE_POLICY_TYPE_EXPORT" : null
+
+  dynamic "terms" {
+    for_each = each.value.terms
+    content {
+      priority = terms.value.priority
+      match {
+        expression  = terms.value.match.expression
+        title       = terms.value.match.title
+        description = terms.value.match.description
+        location    = terms.value.match.location
+      }
+      dynamic "actions" {
+        for_each = terms.value.actions
+        content {
+          expression  = actions.value.expression
+          title       = actions.value.title
+          description = actions.value.description
+          location    = actions.value.location
+        }
+      }
+    }
+  }
+
+  depends_on = [google_compute_router.default]
 }
