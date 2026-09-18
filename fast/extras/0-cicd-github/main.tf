@@ -72,7 +72,9 @@ resource "github_repository" "default" {
   has_wiki           = try(each.value.create_options.features.wiki, null)
   gitignore_template = try(each.value.create_options.templates.gitignore, null)
   license_template   = try(each.value.create_options.templates.license, null)
-  topics             = ["terraform", "gcp", "google-cloud", "fabric"]
+  topics             = ["terraform", "gcp", "google-cloud", "gcp-fabric"]
+
+  delete_branch_on_merge = true
 
   dynamic "template" {
     for_each = (
