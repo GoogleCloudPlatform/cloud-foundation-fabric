@@ -20,6 +20,7 @@ variable "clusters" {
     id                = string
     configmanagement  = optional(string)
     policycontroller  = optional(string)
+    scope             = optional(string)
     servicemesh       = optional(string)
     workload_identity = optional(bool, false)
   }))
@@ -207,6 +208,45 @@ variable "policycontroller_templates" {
 variable "project_id" {
   description = "GKE hub project ID."
   type        = string
+}
+
+variable "scopes" {
+  description = "Fleet scopes with optional namespaces and RBAC bindings."
+  type = map(object({
+    cluster_memberships = optional(list(string), [])
+    labels              = optional(map(string))
+    namespace_labels    = optional(map(string))
+    namespaces = optional(map(object({
+      labels           = optional(map(string))
+      namespace_labels = optional(map(string))
+    })), {})
+    rbac_role_bindings = optional(map(object({
+      custom_role = optional(string)
+      group       = optional(string)
+      labels      = optional(map(string))
+      role        = optional(string)
+      user        = optional(string)
+    })), {})
+  }))
+  default  = {}
+  nullable = false
+  validation {
+    condition = alltrue(flatten([
+      for k, v in var.scopes : [
+        for rk, rv in v.rbac_role_bindings : (
+          (rv.user != null || rv.group != null) &&
+          !(rv.user != null && rv.group != null) &&
+          (rv.role != null || rv.custom_role != null) &&
+          !(rv.role != null && rv.custom_role != null) &&
+          (
+            rv.role == null ||
+            contains(["ADMIN", "EDIT", "VIEW"], coalesce(rv.role, "ADMIN"))
+          )
+        )
+      ]
+    ]))
+    error_message = "Invalid RBAC role binding configuration."
+  }
 }
 
 variable "servicemesh_templates" {
