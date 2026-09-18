@@ -116,6 +116,7 @@ variable "enable_features" {
     fqdn_network_policy = optional(bool, false)
     gateway_api         = optional(bool, false)
     groups_for_rbac     = optional(string)
+    identity_service    = optional(bool, false)
     l4_ilb_subsetting   = optional(bool, false)
     mesh_certificates   = optional(bool)
     pod_security_policy = optional(bool, false)
