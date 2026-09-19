@@ -16,6 +16,7 @@ To use this module you must ensure the following APIs are enabled in the target 
 - [Multi-cluster service mesh on GKE](#multi-cluster-service-mesh-on-gke)
 - [Fleet Default Member Configuration Example](#fleet-default-member-configuration-example)
 - [Policy Controller with Custom Configurations](#policy-controller-with-custom-configurations)
+- [Fleet Scopes and Namespaces with RBAC](#fleet-scopes-and-namespaces-with-rbac)
 - [Variables](#variables)
 - [Outputs](#outputs)
 <!-- END TOC -->
@@ -800,23 +801,79 @@ module "hub" {
 }
 # tftest modules=8 resources=47 inventory=policycontroller.yaml
 ```
+
+## Fleet Scopes and Namespaces with RBAC
+
+This example shows how to configure Fleet scopes, team namespaces, and RBAC
+role bindings for multi-tenant cluster management.
+
+```hcl
+module "hub" {
+  source     = "./fabric/modules/gke-hub"
+  project_id = "my-project"
+  scopes = {
+    team-payments = {
+      labels = {
+        environment = "production"
+      }
+      namespace_labels = {
+        team = "payments"
+      }
+      namespaces = {
+        payments-prod = {
+          labels = { tier = "frontend" }
+        }
+        payments-backend = {}
+      }
+      rbac_role_bindings = {
+        admins = {
+          group = "payments-admins@example.com"
+          role  = "ADMIN"
+        }
+        viewers = {
+          group = "payments-viewers@example.com"
+          role  = "VIEW"
+        }
+        devs = {
+          custom_role = "payments-developer"
+          group = join("", [
+            "principalSet://iam.googleapis.com/projects/12345/",
+            "locations/global/workloadIdentityPools/my-pool/",
+            "attribute.department/dev"
+          ])
+        }
+      }
+    }
+  }
+}
+# tftest modules=1 resources=6 inventory=scopes.yaml
+```
 <!-- BEGIN TFDOC -->
 ## Variables
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [project_id](variables.tf#L207) | GKE hub project ID. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L208) | GKE hub project ID. | <code>string</code> | ✓ |  |
 | [clusters](variables.tf#L17) | A map of GKE clusters to register with GKE Hub and their associated feature configurations. The key is a logical name for the cluster, and the value is an object describing the cluster and its features. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [configmanagement_templates](variables.tf#L30) | Sets of config management configurations that can be applied to member clusters, in config name => {options} format. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [features](variables.tf#L64) | Enable and configure fleet features. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [fleet_default_member_config](variables.tf#L79) | Fleet default member config. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [location](variables.tf#L151) | GKE hub location, will also be used for the membership location. | <code>string</code> |  | <code>null</code> |
-| [policycontroller_templates](variables.tf#L158) | Sets of Policy Controller configurations that can be applied to member clusters, in config name => {options} format. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [servicemesh_templates](variables.tf#L212) | Sets of Service Mesh configurations that can be applied to member clusters, in config name => {options} format. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [configmanagement_templates](variables.tf#L31) | Sets of config management configurations that can be applied to member clusters, in config name => {options} format. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [features](variables.tf#L65) | Enable and configure fleet features. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [fleet_default_member_config](variables.tf#L80) | Fleet default member config. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [location](variables.tf#L152) | GKE hub location, will also be used for the membership location. | <code>string</code> |  | <code>null</code> |
+| [policycontroller_templates](variables.tf#L159) | Sets of Policy Controller configurations that can be applied to member clusters, in config name => {options} format. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [scopes](variables.tf#L213) | Fleet scopes with optional namespaces and RBAC bindings. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [servicemesh_templates](variables.tf#L252) | Sets of Service Mesh configurations that can be applied to member clusters, in config name => {options} format. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
 
 | name | description | sensitive |
 |---|---|:---:|
 | [cluster_ids](outputs.tf#L17) | Fully qualified ids of all clusters. |  |
+| [membership_binding_ids](outputs.tf#L31) | Membership binding IDs. |  |
+| [membership_bindings](outputs.tf#L38) | Fleet membership bindings. |  |
+| [namespace_ids](outputs.tf#L43) | Namespace IDs. |  |
+| [namespaces](outputs.tf#L50) | Fleet namespaces. |  |
+| [scope_ids](outputs.tf#L55) | Scope IDs. |  |
+| [scope_rbac_role_binding_ids](outputs.tf#L67) | Scope RBAC role binding IDs. |  |
+| [scope_rbac_role_bindings](outputs.tf#L74) | Fleet scope RBAC role bindings. |  |
+| [scopes](outputs.tf#L79) | Fleet scopes. |  |
 <!-- END TFDOC -->
