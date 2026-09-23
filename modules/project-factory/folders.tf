@@ -26,7 +26,9 @@ locals {
   _folders_raw = merge(
     var.folders,
     {
-      for f in local._folders_files : dirname(f) => yamldecode(file(
+      # dirname uses OS-native separators, normalize for Windows
+      for f in local._folders_files :
+      replace(dirname(f), "\\", "/") => yamldecode(file(
         "${coalesce(local.paths.folders, "-")}/${f}"
       ))
     }
@@ -42,7 +44,7 @@ locals {
     for key, data in local._folders_raw : key => merge(data, {
       key        = key
       level      = length(split("/", key))
-      parent_key = dirname(key)
+      parent_key = replace(dirname(key), "\\", "/")
       # do not enforce overrides / defaults on folders
       parent = lookup(data, "parent", null)
     })

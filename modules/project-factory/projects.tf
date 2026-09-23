@@ -18,10 +18,24 @@
 
 locals {
   # project data from folders tree
+  # dirname uses OS-native separators, normalize for Windows
+  _folder_projects_dirs = {
+    for f in local._folder_projects_files :
+    f => replace(dirname(f), "\\", "/")
+  }
+  _folder_projects_files = try(
+    fileset(local.paths.folders, "**/*.yaml"), []
+  )
   _folder_projects_raw = {
-    for f in try(fileset(local.paths.folders, "**/*.yaml"), []) :
+    for f in local._folder_projects_files :
     trimsuffix(f, ".yaml") => merge(
-      { parent = dirname(f) == "." ? null : "$folder_ids:${dirname(f)}" },
+      {
+        parent = (
+          local._folder_projects_dirs[f] == "."
+          ? null
+          : "$folder_ids:${local._folder_projects_dirs[f]}"
+        )
+      },
       yamldecode(file("${local.paths.folders}/${f}"))
     ) if !endswith(f, "/.config.yaml")
   }

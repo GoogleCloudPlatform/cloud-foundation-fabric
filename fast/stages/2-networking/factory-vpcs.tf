@@ -21,13 +21,17 @@ locals {
     fileset(local.paths.vpcs, "**/.config.yaml"),
     []
   )
+  # dirname uses OS-native separators, normalize for Windows
+  _vpcs_dirs = {
+    for f in local._vpcs_files : f => replace(dirname(f), "\\", "/")
+  }
   _vpcs_preprocess = [
     for f in local._vpcs_files : merge(
       yamldecode(file("${coalesce(local.paths.vpcs, "-")}/${f}")),
       {
-        factory_dirname  = dirname(f)
-        factory_basepath = "${local.paths.vpcs}/${dirname(f)}"
-        addresses        = try(yamldecode(file("${local.paths.vpcs}/${dirname(f)}/addresses.yaml")), {})
+        factory_dirname  = local._vpcs_dirs[f]
+        factory_basepath = "${local.paths.vpcs}/${local._vpcs_dirs[f]}"
+        addresses        = try(yamldecode(file("${local.paths.vpcs}/${local._vpcs_dirs[f]}/addresses.yaml")), {})
       }
     )
   ]
