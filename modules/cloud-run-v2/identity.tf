@@ -15,11 +15,23 @@
  */
 
 locals {
-  service_account_email = (
+  # workload and agent identities are managed by Cloud Run, so no service
+  # account is created or referenced when either of them is in use
+  identity_type = try(
+    var.service_config.workload_identity_config.identity_type,
+    "IDENTITY_TYPE_SERVICE_ACCOUNT"
+  )
+  service_account_create = (
     var.service_account_config.create
-    ? google_service_account.service_account[0].email  # use managed SA, when creating
-    : (var.service_account_config.email == null ? null # set to null, if no email provided
-      : lookup(                                        # lookup SA in context
+    && local.identity_type == "IDENTITY_TYPE_SERVICE_ACCOUNT"
+  )
+  service_account_email = (
+    local.service_account_create
+    ? google_service_account.service_account[0].email # use managed SA, when creating
+    : (
+      local.identity_type != "IDENTITY_TYPE_SERVICE_ACCOUNT"
+      || var.service_account_config.email == null ? null # set to null, if no email provided
+      : lookup(                                          # lookup SA in context
         local.ctx.iam_principals,
         var.service_account_config.email,
         var.service_account_config.email
@@ -30,10 +42,21 @@ locals {
     for role in var.service_account_config.roles
     : lookup(local.ctx.custom_roles, role, role)
   ]
+  workload_identity = (
+    var.service_config.workload_identity_config == null
+    ? null
+    : var.service_config.workload_identity_config.identity == null
+    ? null
+    : lookup(
+      local.ctx.iam_principals,
+      var.service_config.workload_identity_config.identity,
+      var.service_config.workload_identity_config.identity
+    )
+  )
 }
 
 resource "google_service_account" "service_account" {
-  count      = var.service_account_config.create ? 1 : 0
+  count      = local.service_account_create ? 1 : 0
   project    = local.project_id
   account_id = coalesce(var.service_account_config.name, var.name)
   display_name = coalesce(
@@ -45,7 +68,7 @@ resource "google_service_account" "service_account" {
 
 resource "google_project_iam_member" "default" {
   for_each = (
-    var.service_account_config.create
+    local.service_account_create
     ? toset(local.service_account_roles)
     : toset([])
   )

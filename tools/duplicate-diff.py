@@ -131,9 +131,10 @@ duplicates = [
         "modules/cloud-function-v2/bundle.tf",
     ],
     [
+        # cloud-run-v2 forked this into identity.tf, as it also supports
+        # Cloud Run managed workload and agent identities
         "modules/cloud-function-v1/serviceaccount.tf",
         "modules/cloud-function-v2/serviceaccount.tf",
-        "modules/cloud-run-v2/serviceaccount.tf",
     ],
     [
         "modules/cloud-function-v1/variables-serviceaccount.tf",
