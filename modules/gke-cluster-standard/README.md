@@ -21,6 +21,7 @@ This module offers a way to create and manage Google Kubernetes Engine (GKE) [St
 - [Automatic creation of new secondary ranges](#automatic-creation-of-new-secondary-ranges)
 - [Node auto-provisioning with GPUs and TPUs](#node-auto-provisioning-with-gpus-and-tpus)
   - [Disable PSC endpoint creation](#disable-psc-endpoint-creation)
+- [GKE Identity Service](#gke-identity-service)
 - [Variables](#variables)
 - [Outputs](#outputs)
 <!-- END TOC -->
@@ -510,15 +511,38 @@ module "cluster-1" {
 }
 # tftest modules=1 resources=1 inventory=no-ip-access.yaml
 ```
+## GKE Identity Service
+
+This example shows how to enable the GKE Identity Service component on a
+cluster.
+
+```hcl
+module "cluster-1" {
+  source     = "./fabric/modules/gke-cluster-standard"
+  project_id = var.project_id
+  name       = "cluster-1"
+  location   = "europe-west1"
+  vpc_config = {
+    network               = var.vpc.self_link
+    subnetwork            = var.subnet.self_link
+    secondary_range_names = {}
+  }
+  enable_features = {
+    identity_service = true
+  }
+}
+# tftest modules=1 resources=1 inventory=identity-service.yaml
+```
+
 <!-- BEGIN TFDOC -->
 ## Variables
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [location](variables.tf#L303) | Cluster zone or region. | <code>string</code> | ✓ |  |
-| [name](variables.tf#L418) | Cluster name. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L470) | Cluster project id. | <code>string</code> | ✓ |  |
-| [vpc_config](variables.tf#L481) | VPC-level configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| [location](variables.tf#L304) | Cluster zone or region. | <code>string</code> | ✓ |  |
+| [name](variables.tf#L419) | Cluster name. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L471) | Cluster project id. | <code>string</code> | ✓ |  |
+| [vpc_config](variables.tf#L482) | VPC-level configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
 | [access_config](variables.tf#L17) | Control plane endpoint and nodes access configurations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [backup_configs](variables.tf#L49) | Configuration for Backup for GKE. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [cluster_autoscaling](variables.tf#L72) | Enable and configure limits for Node Auto-Provisioning with Cluster Autoscaler. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
@@ -527,18 +551,18 @@ module "cluster-1" {
 | [description](variables.tf#L177) | Cluster description. | <code>string</code> |  | <code>null</code> |
 | [enable_addons](variables.tf#L183) | Addons enabled in the cluster (true means enabled). | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [enable_features](variables.tf#L205) | Enable cluster-level features. Certain features allow configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [fleet_project](variables.tf#L284) | The name of the fleet host project where this cluster will be registered. | <code>string</code> |  | <code>null</code> |
-| [issue_client_certificate](variables.tf#L290) | Enable issuing client certificate. | <code>bool</code> |  | <code>false</code> |
-| [labels](variables.tf#L296) | Cluster resource labels. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [logging_config](variables.tf#L308) | Logging configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [maintenance_config](variables.tf#L329) | Maintenance window configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#8230;&#125;</code> |
-| [max_pods_per_node](variables.tf#L352) | Maximum number of pods per node in this cluster. | <code>number</code> |  | <code>110</code> |
-| [min_master_version](variables.tf#L358) | Minimum version of the master, defaults to the version of the most recent official release. | <code>string</code> |  | <code>null</code> |
-| [monitoring_config](variables.tf#L364) | Monitoring configuration. Google Cloud Managed Service for Prometheus is enabled by default. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [node_config](variables.tf#L423) | Node-level configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [node_locations](variables.tf#L446) | Zones in which the cluster's nodes are located. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
-| [node_pool_auto_config](variables.tf#L453) | Node pool configs that apply to auto-provisioned node pools in autopilot clusters and node auto-provisioning-enabled clusters. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [release_channel](variables.tf#L475) | Release channel for GKE upgrades. | <code>string</code> |  | <code>null</code> |
+| [fleet_project](variables.tf#L285) | The name of the fleet host project where this cluster will be registered. | <code>string</code> |  | <code>null</code> |
+| [issue_client_certificate](variables.tf#L291) | Enable issuing client certificate. | <code>bool</code> |  | <code>false</code> |
+| [labels](variables.tf#L297) | Cluster resource labels. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [logging_config](variables.tf#L309) | Logging configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [maintenance_config](variables.tf#L330) | Maintenance window configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#8230;&#125;</code> |
+| [max_pods_per_node](variables.tf#L353) | Maximum number of pods per node in this cluster. | <code>number</code> |  | <code>110</code> |
+| [min_master_version](variables.tf#L359) | Minimum version of the master, defaults to the version of the most recent official release. | <code>string</code> |  | <code>null</code> |
+| [monitoring_config](variables.tf#L365) | Monitoring configuration. Google Cloud Managed Service for Prometheus is enabled by default. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [node_config](variables.tf#L424) | Node-level configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [node_locations](variables.tf#L447) | Zones in which the cluster's nodes are located. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
+| [node_pool_auto_config](variables.tf#L454) | Node pool configs that apply to auto-provisioned node pools in autopilot clusters and node auto-provisioning-enabled clusters. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [release_channel](variables.tf#L476) | Release channel for GKE upgrades. | <code>string</code> |  | <code>null</code> |
 
 ## Outputs
 
