@@ -1,0 +1,45 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.test.module.waf.google_compute_region_security_policy_rule.regional["allow-trusted-0"]:
+    action: allow
+    match:
+    - config:
+      - src_ip_ranges:
+        - 192.0.2.0/24
+        - 198.51.100.0/28
+        - 198.51.100.16/28
+        - 198.51.100.32/28
+        - 198.51.100.48/28
+        - 198.51.100.64/28
+        - 198.51.100.80/28
+        - 198.51.100.96/28
+        - 198.51.100.112/28
+        - 198.51.100.128/28
+      expr: []
+      versioned_expr: SRC_IPS_V1
+    priority: 100
+  module.test.module.waf.google_compute_region_security_policy_rule.regional["allow-trusted-1"]:
+    action: allow
+    match:
+    - config:
+      - src_ip_ranges:
+        - 198.51.100.144/28
+      expr: []
+      versioned_expr: SRC_IPS_V1
+    priority: 101
+
+counts:
+  google_compute_region_security_policy_rule: 5
