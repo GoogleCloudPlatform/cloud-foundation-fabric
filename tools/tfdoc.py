@@ -464,6 +464,8 @@ def parse_outputs(basepath, exclude_files=None):
 def parse_recipes(module_path, module_url):
   'Find and return module recipes.'
   for dirpath, dirnames, filenames in os.walk(module_path):
+    # sort in place so recipe order does not depend on the filesystem
+    dirnames.sort()
     name = os.path.basename(dirpath)
     if name.startswith('recipe-') and 'README.md' in filenames:
       try:
