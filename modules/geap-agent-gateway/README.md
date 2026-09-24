@@ -1,6 +1,6 @@
-# Agent Gateway
+# GEAP Agent Gateway
 
-The module facilitates the deployments of Agent Gateways.
+The module facilitates the deployments of Gemini Enterprise Agent Platform (GEAP) - Agent Gateways.
 
 <!-- BEGIN TOC -->
 - [API](#api)
@@ -29,7 +29,7 @@ In order to deploy a gateway, you need to specify a name, a region and the direc
 
 ```hcl
 module "agent-gateway" {
-  source      = "./fabric/modules/agent-gateway"
+  source      = "./fabric/modules/geap-agent-gateway"
   name        = "my-gateway"
   project_id  = "my-project-id"
   region      = "europe-west1"
@@ -44,7 +44,7 @@ If it's a egress (or AGENT_TO_ANYWHERE) agent, you can attach with a PSC interfa
 
 ```hcl
 module "agent-gateway" {
-  source      = "./fabric/modules/agent-gateway"
+  source      = "./fabric/modules/geap-agent-gateway"
   name        = "my-gateway"
   project_id  = "my-project-id"
   region      = "europe-west1"
@@ -62,7 +62,7 @@ You can configure DNS peering to forward DNS queries for specific domains to a t
 
 ```hcl
 module "agent-gateway" {
-  source      = "./fabric/modules/agent-gateway"
+  source      = "./fabric/modules/geap-agent-gateway"
   name        = "my-gateway"
   project_id  = "my-project-id"
   region      = "europe-west1"
@@ -85,7 +85,7 @@ You can connect to compatible proxies you manage, by specifying the proxy uri.
 
 ```hcl
 module "agent-gateway" {
-  source            = "./fabric/modules/agent-gateway"
+  source            = "./fabric/modules/geap-agent-gateway"
   name              = "my-gateway"
   project_id        = "my-project-id"
   region            = "europe-west1"
@@ -130,7 +130,7 @@ Conditions let you narrow a grant further. On an MCP server, filtering on the `i
 
 ```hcl
 module "agent-gateway" {
-  source      = "./fabric/modules/agent-gateway"
+  source      = "./fabric/modules/geap-agent-gateway"
   name        = "my-gateway"
   project_id  = "my-project-id"
   region      = "europe-west1"
@@ -174,7 +174,7 @@ module "agent-gateway" {
 
 ```hcl
 module "agent-gateway" {
-  source      = "./fabric/modules/agent-gateway"
+  source      = "./fabric/modules/geap-agent-gateway"
   name        = "my-gateway"
   project_id  = "my-project-id"
   region      = "europe-west1"
@@ -208,7 +208,7 @@ By default IAP enforces the policies (`iam_enforcement_mode` set to `null`) but 
 
 ```hcl
 module "agent-gateway" {
-  source      = "./fabric/modules/agent-gateway"
+  source      = "./fabric/modules/geap-agent-gateway"
   name        = "my-gateway"
   project_id  = "my-project-id"
   region      = "europe-west1"
@@ -232,7 +232,7 @@ The gateway service agent (`service-PROJECT_NUMBER@gcp-sa-dep.iam.gserviceaccoun
 
 ```hcl
 module "agent-gateway" {
-  source      = "./fabric/modules/agent-gateway"
+  source      = "./fabric/modules/geap-agent-gateway"
   name        = "my-gateway"
   project_id  = "my-project-id"
   region      = "europe-west1"
@@ -252,7 +252,7 @@ The module supports the contexts interpolation. For example:
 
 ```hcl
 module "agent-gateway" {
-  source      = "./fabric/modules/agent-gateway"
+  source      = "./fabric/modules/geap-agent-gateway"
   name        = "my-gateway"
   project_id  = "$project_ids:main"
   region      = "$locations:primary"
