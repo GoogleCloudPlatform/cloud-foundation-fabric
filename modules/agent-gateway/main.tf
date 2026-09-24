@@ -16,10 +16,16 @@
 
 locals {
   _ctx_p = "$"
+  # Registry ids end with the '/locations/{location}' segment, which
+  # identifies the individual registry governed by the gateway.
+  _registry_locations = compact([
+    for v in coalesce(var.registries, []) :
+    try(regex("/locations/([^/]+)/?$", v)[0], "")
+  ])
   ctx = {
     for k, v in var.context : k => {
       for kk, vv in v : "${local._ctx_p}${k}:${kk}" => vv
-    } if k != "condition_vars"
+    } if !endswith(k, "_vars")
   }
   location = lookup(
     local.ctx.locations, var.region, var.region
@@ -31,6 +37,13 @@ locals {
   ), null)
   project_id = lookup(
     local.ctx.project_ids, var.project_id, var.project_id
+  )
+  # Registry-wide bindings apply to every governed registry, and fall
+  # back to the gateway region when the gateway governs none.
+  registry_locations = (
+    length(local._registry_locations) == 0
+    ? [local.location]
+    : distinct(local._registry_locations)
   )
 }
 

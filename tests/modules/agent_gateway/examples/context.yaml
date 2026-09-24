@@ -34,10 +34,26 @@ values:
     terraform_labels:
       goog-terraform-provisioned: 'true'
     timeouts: null
+  module.agent-gateway.google_iap_agent_registry_iam_binding.authoritative["europe-west1/roles/iap.egressor"]:
+    location: europe-west1
+    members:
+    - group:agents@example.com
+    project: my-prj-id
+    role: roles/iap.egressor
+  module.agent-gateway.google_network_services_authz_extension.model_armor[0]:
+    location: europe-west1
+    metadata:
+      model_armor_settings: '[{"request_template_id":"projects/my-prj-id/locations/europe-west1/templates/request","response_template_id":"projects/my-prj-id/locations/europe-west1/templates/response"}]'
+    name: my-gateway-ma
+    project: my-prj-id
+    service: modelarmor.europe-west1.rep.googleapis.com
 
 counts:
+  google_iap_agent_registry_iam_binding: 1
+  google_network_security_authz_policy: 2
   google_network_services_agent_gateway: 1
+  google_network_services_authz_extension: 2
   modules: 1
-  resources: 1
+  resources: 6
 
 outputs: {}

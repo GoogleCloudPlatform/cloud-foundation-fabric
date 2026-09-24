@@ -1,0 +1,51 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.agent-gateway.google_network_security_authz_policy.model_armor[0]:
+    action: CUSTOM
+    http_rules:
+    - from: []
+      to:
+      - not_operations: []
+        operations:
+        - header_set: []
+          hosts:
+          - exact: api.example.com
+          mcp: []
+          methods: null
+          paths: []
+      when: null
+    location: europe-west1
+    name: my-gateway-ma
+    policy_profile: CONTENT_AUTHZ
+    project: my-project-id
+  module.agent-gateway.google_network_services_authz_extension.model_armor[0]:
+    fail_open: false
+    location: europe-west1
+    metadata:
+      model_armor_settings: '[{"request_template_id":"projects/my-project-id/locations/europe-west1/templates/agw-request-template","response_template_id":"projects/my-project-id/locations/europe-west1/templates/agw-response-template"}]'
+    name: my-gateway-ma
+    project: my-project-id
+    service: modelarmor.europe-west1.rep.googleapis.com
+    timeout: 2s
+
+counts:
+  google_network_security_authz_policy: 2
+  google_network_services_agent_gateway: 1
+  google_network_services_authz_extension: 2
+  modules: 1
+  resources: 5
+
+outputs: {}

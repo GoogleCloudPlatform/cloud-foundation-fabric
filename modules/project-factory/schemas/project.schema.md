@@ -734,6 +734,8 @@
     - **`^[a-zA-Z0-9_-]+$`**: *object*
       <br>*additional properties: false*
       - **ack_deadline_seconds**: *number*
+      - **deletion_policy**: *string*
+        <br>*enum: ['ABANDON', 'DELETE', 'PREVENT']*
       - **enable_exactly_once_delivery**: *boolean*
       - **enable_message_ordering**: *boolean*
       - **expiration_policy_ttl**: *string*

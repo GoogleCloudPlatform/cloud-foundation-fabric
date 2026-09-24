@@ -20,28 +20,31 @@ values:
         load_balancer_type: null
       config_connector_config:
       - enabled: false
+      dns_cache_config:
+      - enabled: true
+      gce_persistent_disk_csi_driver_config:
+      - enabled: true
+      gcp_filestore_csi_driver_config:
+      - enabled: true
+      gcs_fuse_csi_driver_config:
+      - enabled: true
       gke_backup_agent_config:
       - enabled: false
       horizontal_pod_autoscaling:
       - disabled: false
       http_load_balancing:
       - disabled: false
+      istio_config:
+      - auth: null
+        disabled: true
       kalm_config:
       - enabled: false
-    allow_net_admin: false
+      network_policy_config:
+      - disabled: true
+      stateful_ha_config:
+      - enabled: false
+    allow_net_admin: null
     binary_authorization: []
-    cluster_autoscaling:
-    - auto_provisioning_defaults:
-      - boot_disk_kms_key: null
-        disk_size: null
-        disk_type: null
-        image_type: null
-        min_cpu_platform: null
-        service_account: default
-        shielded_instance_config: []
-      autoscaling_profile: null
-      default_compute_class_enabled: null
-      resource_limits: []
     control_plane_endpoints_config:
     - dns_endpoint_config:
       - allow_external_traffic: true
@@ -51,26 +54,31 @@ values:
       - enabled: false
     cost_management_config:
     - enabled: true
+    datapath_provider: ADVANCED_DATAPATH
+    dataplane_optimization_mode: null
+    default_max_pods_per_node: 110
     deletion_policy: DELETE
     deletion_protection: true
     description: null
+    desired_emulated_version: null
     disable_l4_lb_firewall_reconciliation: false
     dns_config: []
     effective_labels:
       environment: dev
       goog-terraform-provisioned: 'true'
-    enable_autopilot: true
+    enable_autopilot: null
     enable_cilium_clusterwide_network_policy: false
-    enable_fqdn_network_policy: false
-    enable_intranode_visibility: true
+    enable_fqdn_network_policy: true
+    enable_intranode_visibility: false
     enable_k8s_beta_apis: []
     enable_kubernetes_alpha: false
     enable_l4_ilb_subsetting: false
     enable_legacy_abac: false
     enable_multi_networking: false
-    enable_shielded_nodes: true
+    enable_shielded_nodes: false
     enable_tpu: false
     fleet: []
+    ignore_node_count_changes: null
     in_transit_encryption_config: null
     initial_node_count: 1
     ip_allocation_policy:
@@ -83,12 +91,12 @@ values:
     logging_config:
     - enable_components:
       - SYSTEM_COMPONENTS
-      - WORKLOADS
     maintenance_policy:
     - daily_maintenance_window:
       - start_time: 03:00
       disruption_budget: []
       maintenance_exclusion: []
+      recurring_maintenance_window: []
       recurring_window: []
     master_auth:
     - client_certificate_config:
@@ -103,33 +111,58 @@ values:
     network: https://www.googleapis.com/compute/v1/projects/xxx/global/networks/aaa
     network_performance_config: []
     network_policy: []
-    networking_mode: VPC_NATIVE
-    node_pool_auto_config:
-    - linux_node_config: []
-      network_tags: []
-      node_kubelet_config:
-      - {}
+    node_config:
+    - advanced_machine_features: []
+      boot_disk_kms_key: null
+      enable_confidential_storage: null
+      ephemeral_storage_config: []
+      ephemeral_storage_local_ssd_config: []
+      fast_socket: []
+      flex_start: null
+      gvnic: []
+      host_maintenance_policy: []
+      local_nvme_ssd_block_config: []
+      local_ssd_encryption_mode: null
+      max_run_duration: null
+      node_group: null
+      preemptible: false
+      reservation_affinity: []
+      resource_labels: null
       resource_manager_tags: null
+      sandbox_config: []
+      secondary_boot_disks: []
+      sole_tenant_config: []
+      spot: false
+      storage_pools: null
+      tags: null
+      taint: []
+      taint_config: []
+    node_pool_defaults:
+    - node_config_defaults:
+      - gcfs_config:
+        - enabled: false
     pod_security_policy_config: []
     private_cluster_config:
-    - enable_private_endpoint: true
+    - enable_private_endpoint: null
       enable_private_nodes: true
       private_endpoint_subnetwork: null
     project: myproject
-    release_channel:
-    - channel: REGULAR
-    remove_default_node_pool: null
+    remove_default_node_pool: true
     resource_labels:
       environment: dev
     resource_usage_export_config: []
+    rollback_safe_upgrade: []
     secret_manager_config: []
     secret_sync_config: []
+    skip_node_pool_refresh: null
     subnetwork: subnet_self_link
     terraform_labels:
       environment: dev
       goog-terraform-provisioned: 'true'
     timeouts: null
     user_managed_keys_config: []
+    workload_identity_config:
+    - workload_pool: myproject.svc.id.goog
 
 counts:
   google_container_cluster: 1

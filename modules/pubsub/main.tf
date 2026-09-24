@@ -73,6 +73,7 @@ resource "google_pubsub_subscription" "default" {
   filter                       = each.value.filter
   enable_message_ordering      = each.value.enable_message_ordering
   enable_exactly_once_delivery = each.value.enable_exactly_once_delivery
+  deletion_policy              = each.value.deletion_policy
   dynamic "bigquery_config" {
     for_each = each.value.bigquery == null ? [] : [""]
     content {
