@@ -35,13 +35,21 @@ locals {
 }
 
 resource "google_cloud_quotas_quota_preference" "default" {
-  for_each      = local.quotas
-  parent        = "projects/${local.project.project_id}"
-  name          = each.key
-  service       = each.value.service
-  dimensions    = each.value.dimensions
-  quota_id      = each.value.quota_id
-  contact_email = try(local.ctx.email_addresses[each.value.contact_email], each.value.contact_email)
+  for_each   = local.quotas
+  parent     = "projects/${local.project.project_id}"
+  name       = each.key
+  service    = each.value.service
+  dimensions = each.value.dimensions
+  quota_id   = each.value.quota_id
+  contact_email = (
+    each.value.contact_email == null
+    ? null
+    : lookup(
+      local.ctx.email_addresses,
+      each.value.contact_email,
+      each.value.contact_email
+    )
+  )
   justification = each.value.justification
   quota_config {
     preferred_value = each.value.preferred_value

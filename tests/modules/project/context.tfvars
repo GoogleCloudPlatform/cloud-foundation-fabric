@@ -177,6 +177,17 @@ service_encryption_key_ids = {
     "$kms_keys:compute-prod-ew1"
   ]
 }
+quotas = {
+  cpus-ew8 = {
+    service         = "compute.googleapis.com"
+    quota_id        = "CPUS-per-project-region"
+    contact_email   = "$email_addresses:default"
+    preferred_value = 751
+    dimensions = {
+      region = "europe-west8"
+    }
+  }
+}
 shared_vpc_service_config = {
   host_project = "$project_ids:vpc-host"
   iam_bindings_additive = {
