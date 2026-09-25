@@ -45,6 +45,13 @@ output "pairing_key" {
   value       = google_compute_interconnect_attachment.default.pairing_key
 }
 
+output "route_policies" {
+  description = "BGP route policy ids, keyed by route policy key."
+  value = {
+    for k, v in google_compute_router_route_policy.default : k => v.id
+  }
+}
+
 output "router" {
   description = "Router resource (only if auto-created)."
   value       = local.ipsec_enabled ? one(google_compute_router.encrypted[*]) : one(google_compute_router.unencrypted[*])

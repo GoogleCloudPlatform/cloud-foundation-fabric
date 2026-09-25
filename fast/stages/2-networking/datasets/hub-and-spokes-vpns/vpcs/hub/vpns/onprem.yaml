@@ -43,6 +43,11 @@ tunnels:
       #     "199.36.153.8/30": "private-googleapis-com"
       #     # Uncomment to advertise the Private Google Access routes that support VPC Service Controls. (see https://docs.cloud.google.com/vpc/docs/private-google-access-hybrid)
       #     "199.36.153.4/30": "restricted-googleapis-com"
+      # Uncomment to apply BGP route policies defined on the router above. Each
+      # entry is the key of a route_policies entry in the router configuration.
+      # import_policies:
+      #   - import-rfc1918
+      #   - import-drop-all
     bgp_session_range: "169.254.128.2/30"
     peer_external_gateway_interface: 0
     shared_secret: "mySecret"
