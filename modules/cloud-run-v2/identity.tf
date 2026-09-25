@@ -15,37 +15,42 @@
  */
 
 locals {
-  # workload and agent identities are managed by Cloud Run, so no service
-  # account is created or referenced when either of them is in use
+  # effective identity type, defaulting to service account when the service
+  # does not opt into a Cloud Run managed identity
   identity_type = try(
     var.service_config.workload_identity_config.identity_type,
     "IDENTITY_TYPE_SERVICE_ACCOUNT"
   )
+  # workload and agent identities are managed by Cloud Run, so no service
+  # account is created and no roles are bound when either of them is in use
   service_account_create = (
     var.service_account_config.create
     && local.identity_type == "IDENTITY_TYPE_SERVICE_ACCOUNT"
   )
+  # the module-managed service account when we create one, the externally
+  # managed one resolved via context when its email is passed in, null
+  # otherwise: either a managed identity is in use, or the service falls back
+  # to the Compute default service account. Variable validation guarantees
+  # the email is unset for the non service account identity types
   service_account_email = (
     local.service_account_create
-    ? google_service_account.service_account[0].email # use managed SA, when creating
-    : (
-      local.identity_type != "IDENTITY_TYPE_SERVICE_ACCOUNT"
-      || var.service_account_config.email == null ? null # set to null, if no email provided
-      : lookup(                                          # lookup SA in context
-        local.ctx.iam_principals,
-        var.service_account_config.email,
-        var.service_account_config.email
-      )
+    ? google_service_account.service_account[0].email
+    : var.service_account_config.email == null
+    ? null
+    : lookup(
+      local.ctx.iam_principals,
+      var.service_account_config.email,
+      var.service_account_config.email
     )
   )
   service_account_roles = [
     for role in var.service_account_config.roles
     : lookup(local.ctx.custom_roles, role, role)
   ]
+  # principal backing a workload identity, resolved via context; agent
+  # identities leave it unset as Cloud Run assigns the identity itself
   workload_identity = (
-    var.service_config.workload_identity_config == null
-    ? null
-    : var.service_config.workload_identity_config.identity == null
+    try(var.service_config.workload_identity_config.identity, null) == null
     ? null
     : lookup(
       local.ctx.iam_principals,
