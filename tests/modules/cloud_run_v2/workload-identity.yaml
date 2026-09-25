@@ -1,0 +1,33 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  google_cloud_run_v2_service.service[0]:
+    location: europe-west8
+    name: test-run-agent
+    project: test-project
+    template:
+    - workload_identity_config:
+      - identity: principal://agents.global.org-1234567890.system.id.goog/resources/run/projects/1234567890/locations/europe-west8/services/test-run-agent
+        identity_certificate_enabled: true
+        identity_type: IDENTITY_TYPE_AGENT_IDENTITY
+
+counts:
+  google_cloud_run_v2_service: 1
+  modules: 0
+  resources: 1
+
+outputs:
+  service_account: null
+  service_account_email: null

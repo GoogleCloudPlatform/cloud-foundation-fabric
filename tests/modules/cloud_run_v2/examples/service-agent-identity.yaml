@@ -1,4 +1,4 @@
-# Copyright 2025 Google LLC
+# Copyright 2026 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,13 +12,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-module: modules/cloud-run-v2
-tests:
-  context:
-  context-subnet:
-  context-subnet-project:
-  vpcconnector:
-  multiregion:
-  traffic:
-  security:
-  workload-identity:
+values:
+  module.cloud_run.google_cloud_run_v2_service.service[0]:
+    location: europe-west8
+    name: example-agent
+    project: project-id
+    template:
+    - workload_identity_config:
+      - identity: null
+        identity_certificate_enabled: true
+        identity_type: IDENTITY_TYPE_AGENT_IDENTITY
+
+counts:
+  google_cloud_run_v2_service: 1
+  modules: 1
+  resources: 1
