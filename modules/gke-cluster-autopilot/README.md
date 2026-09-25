@@ -4,6 +4,7 @@ This module offers a way to create and manage Google Kubernetes Engine (GKE) [Au
 
 <!-- BEGIN TOC -->
 - [GKE Autopilot cluster](#gke-autopilot-cluster)
+- [Restrict anonymous authentication](#restrict-anonymous-authentication)
 - [Cloud DNS](#cloud-dns)
 - [Logging configuration](#logging-configuration)
 - [Monitoring configuration](#monitoring-configuration)
@@ -47,6 +48,28 @@ module "cluster-1" {
   }
 }
 # tftest modules=1 resources=1 inventory=basic.yaml
+```
+
+## Restrict anonymous authentication
+
+Set `anonymous_authentication_config.mode` to `LIMITED` to allow anonymous requests only to the Kubernetes API server health check endpoints (`/healthz`, `/livez`, and `/readyz`). If the variable is omitted, GKE applies its default behavior for the cluster version.
+
+```hcl
+module "cluster-1" {
+  source     = "./fabric/modules/gke-cluster-autopilot"
+  project_id = var.project_id
+  name       = "cluster-1"
+  location   = "europe-west1"
+  anonymous_authentication_config = {
+    mode = "LIMITED"
+  }
+  vpc_config = {
+    network               = var.vpc.self_link
+    subnetwork            = var.subnet.self_link
+    secondary_range_names = {}
+  }
+}
+# tftest modules=1 resources=1
 ```
 
 ## Cloud DNS
@@ -291,26 +314,27 @@ module "cluster-1" {
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [location](variables.tf#L185) | Autopilot clusters are always regional. | <code>string</code> | ✓ |  |
-| [name](variables.tf#L268) | Cluster name. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L301) | Cluster project ID. | <code>string</code> | ✓ |  |
-| [vpc_config](variables.tf#L317) | VPC-level configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| [location](variables.tf#L203) | Autopilot clusters are always regional. | <code>string</code> | ✓ |  |
+| [name](variables.tf#L286) | Cluster name. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L319) | Cluster project ID. | <code>string</code> | ✓ |  |
+| [vpc_config](variables.tf#L335) | VPC-level configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
 | [access_config](variables.tf#L17) | Control plane endpoint and nodes access configurations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [backup_configs](variables.tf#L49) | Configuration for Backup for GKE. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [deletion_protection](variables.tf#L71) | Whether or not to allow Terraform to destroy the cluster. Unless this field is set to false in Terraform state, a terraform destroy or terraform apply that would delete the cluster will fail. | <code>bool</code> |  | <code>true</code> |
-| [description](variables.tf#L78) | Cluster description. | <code>string</code> |  | <code>null</code> |
-| [enable_addons](variables.tf#L84) | Addons enabled in the cluster (true means enabled). | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [enable_features](variables.tf#L98) | Enable cluster-level features. Certain features allow configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [fleet_project](variables.tf#L167) | The name of the fleet host project where this cluster will be registered. | <code>string</code> |  | <code>null</code> |
-| [issue_client_certificate](variables.tf#L173) | Enable issuing client certificate. | <code>bool</code> |  | <code>false</code> |
-| [labels](variables.tf#L179) | Cluster resource labels. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
-| [logging_config](variables.tf#L190) | Logging configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [maintenance_config](variables.tf#L201) | Maintenance window configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#8230;&#125;</code> |
-| [min_master_version](variables.tf#L224) | Minimum version of the master, defaults to the version of the most recent official release. | <code>string</code> |  | <code>null</code> |
-| [monitoring_config](variables.tf#L230) | Monitoring configuration. System metrics collection cannot be disabled. Control plane metrics are optional. Kube state metrics are optional. Google Cloud Managed Service for Prometheus is enabled by default. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [node_config](variables.tf#L273) | Configuration for nodes and nodepools. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [node_locations](variables.tf#L294) | Zones in which the cluster's nodes are located. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
-| [release_channel](variables.tf#L306) | Release channel for GKE upgrades. Clusters created in the Autopilot mode must use a release channel. Choose between \"RAPID\", \"REGULAR\", and \"STABLE\". | <code>string</code> |  | <code>&#34;REGULAR&#34;</code> |
+| [anonymous_authentication_config](variables.tf#L49) | Anonymous authentication restrictions. `LIMITED` allows anonymous access only to health check endpoints; `ENABLED` allows it for all endpoints. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [backup_configs](variables.tf#L67) | Configuration for Backup for GKE. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [deletion_protection](variables.tf#L89) | Whether or not to allow Terraform to destroy the cluster. Unless this field is set to false in Terraform state, a terraform destroy or terraform apply that would delete the cluster will fail. | <code>bool</code> |  | <code>true</code> |
+| [description](variables.tf#L96) | Cluster description. | <code>string</code> |  | <code>null</code> |
+| [enable_addons](variables.tf#L102) | Addons enabled in the cluster (true means enabled). | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [enable_features](variables.tf#L116) | Enable cluster-level features. Certain features allow configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [fleet_project](variables.tf#L185) | The name of the fleet host project where this cluster will be registered. | <code>string</code> |  | <code>null</code> |
+| [issue_client_certificate](variables.tf#L191) | Enable issuing client certificate. | <code>bool</code> |  | <code>false</code> |
+| [labels](variables.tf#L197) | Cluster resource labels. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
+| [logging_config](variables.tf#L208) | Logging configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [maintenance_config](variables.tf#L219) | Maintenance window configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#8230;&#125;</code> |
+| [min_master_version](variables.tf#L242) | Minimum version of the master, defaults to the version of the most recent official release. | <code>string</code> |  | <code>null</code> |
+| [monitoring_config](variables.tf#L248) | Monitoring configuration. System metrics collection cannot be disabled. Control plane metrics are optional. Kube state metrics are optional. Google Cloud Managed Service for Prometheus is enabled by default. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [node_config](variables.tf#L291) | Configuration for nodes and nodepools. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [node_locations](variables.tf#L312) | Zones in which the cluster's nodes are located. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
+| [release_channel](variables.tf#L324) | Release channel for GKE upgrades. Clusters created in the Autopilot mode must use a release channel. Choose between \"RAPID\", \"REGULAR\", and \"STABLE\". | <code>string</code> |  | <code>&#34;REGULAR&#34;</code> |
 
 ## Outputs
 

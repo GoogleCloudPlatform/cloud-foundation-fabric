@@ -46,6 +46,24 @@ variable "access_config" {
   }
 }
 
+variable "anonymous_authentication_config" {
+  description = "Anonymous authentication restrictions. `LIMITED` allows anonymous access only to health check endpoints; `ENABLED` allows it for all endpoints."
+  type = object({
+    mode = string
+  })
+  default = null
+  validation {
+    condition = (
+      var.anonymous_authentication_config == null ||
+      contains(
+        ["ENABLED", "LIMITED"],
+        try(var.anonymous_authentication_config.mode, "")
+      )
+    )
+    error_message = "anonymous_authentication_config.mode must be ENABLED or LIMITED."
+  }
+}
+
 variable "backup_configs" {
   description = "Configuration for Backup for GKE."
   type = object({
