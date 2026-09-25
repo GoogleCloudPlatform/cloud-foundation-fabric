@@ -1,4 +1,4 @@
-# Copyright 2025 Google LLC
+# Copyright 2026 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,24 +12,26 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Fabric release: v58.0.0
+name       = "test-run-agent"
+project_id = "test-project"
+region     = "europe-west8"
 
-terraform {
-  required_version = ">= 1.12.2"
-  required_providers {
-    google = {
-      source  = "hashicorp/google"
-      version = ">= 8.4.0, < 9.0.0" # tftest
-    }
-    google-beta = {
-      source  = "hashicorp/google-beta"
-      version = ">= 8.4.0, < 9.0.0" # tftest
-    }
+containers = {
+  first = {
+    image = "gcr.io/cloudrun/hello"
   }
-  provider_meta "google" {
-    module_name = "google-pso-tool/cloud-foundation-fabric/modules/kms:v58.0.0-tf"
+}
+
+service_config = {
+  workload_identity_config = {
+    certificate_enabled = true
+    identity            = "$iam_principals:agent"
+    identity_type       = "IDENTITY_TYPE_AGENT_IDENTITY"
   }
-  provider_meta "google-beta" {
-    module_name = "google-pso-tool/cloud-foundation-fabric/modules/kms:v58.0.0-tf"
+}
+
+context = {
+  iam_principals = {
+    agent = "principal://agents.global.org-1234567890.system.id.goog/resources/run/projects/1234567890/locations/europe-west8/services/test-run-agent"
   }
 }
