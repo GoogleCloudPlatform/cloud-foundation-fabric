@@ -14,26 +14,16 @@
 
 values:
   module.agent-gateway.google_network_services_agent_gateway.default:
-    deletion_policy: DELETE
+    agent_connectivity_template: projects/1234567890/locations/europe-west1/agentConnectivityTemplates/shared-egress
     description: Terraform managed.
-    effective_labels:
-      goog-terraform-provisioned: 'true'
     google_managed:
     - governed_access_path: AGENT_TO_ANYWHERE
-    labels: null
     location: europe-west1
     name: my-gateway
-    network_config:
-    - dns_peering_config: []
-      egress:
-      - network_attachment: projects/my-project-id/regions/europe-west1/serviceAttachments/my-sa
+    network_config: []
     project: my-project-id
-    protocols: null
     registries: null
     self_managed: []
-    terraform_labels:
-      goog-terraform-provisioned: 'true'
-    timeouts: null
 
 counts:
   google_network_security_authz_policy: 1
