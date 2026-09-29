@@ -1,0 +1,43 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# yaml-language-server: $schema=../../playbook.schema.json
+# The workspace is a copy of a current Fabric checkout, so `detect` finds a
+# release newer than v50.0.0 and the requested target is a downgrade.
+name: "FAST Upgrade - Base Gate and Downgrade Refusal"
+timeout: 300
+tmpdir:
+  link_paths:
+    - fast
+    - modules
+    - skills
+    - CHANGELOG.md
+    - default-versions.tf
+steps:
+  - user_input: "Please use the fast-upgrade skill to upgrade the FAST repository in this workspace to v50.0.0."
+    expected_outcome: >-
+      The agent starts its response with the FAST Upgrade progress block,
+      with Phase 1 in progress. It runs the fast_upgrade.py detect command on
+      the workspace and reports the release it detected, with its confidence
+      and the stages it found. It asks the user to confirm the detected
+      release as the base release and stops to wait for the answer. It does
+      not modify any file.
+
+  - user_input: "Yes, that is the release we are on."
+    expected_outcome: >-
+      The agent starts with the updated progress block and refuses the
+      requested target: v50.0.0 is older than the confirmed base release, and
+      downgrades are not supported. It stops without running the plan or
+      apply commands and without modifying any file, and it may offer to
+      upgrade to a newer release instead.
