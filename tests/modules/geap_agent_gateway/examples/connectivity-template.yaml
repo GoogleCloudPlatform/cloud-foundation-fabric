@@ -13,37 +13,39 @@
 # limitations under the License.
 
 values:
-  module.agent-gateway.google_network_services_agent_gateway.default:
-    deletion_policy: DELETE
+  module.agent-gateway.google_network_services_agent_connectivity_template.default[0]:
+    access_path: AGENT_TO_ANYWHERE
+    access_types:
+    - PRIVATE
+    agent_connectivity_template_id: my-gateway
     description: Terraform managed.
-    effective_labels:
-      goog-terraform-provisioned: 'true'
-    google_managed:
-    - governed_access_path: AGENT_TO_ANYWHERE
+    egress_network_config:
+    - dns_peering_config:
+      - domain: corp.internal.
+        target_network: projects/my-host-project/global/networks/my-vpc
+      network_attachment: projects/my-host-project/regions/europe-west1/networkAttachments/my-na
+      vpc_egress: ALL_TRAFFIC
     labels: null
     location: europe-west1
-    name: my-gateway
-    network_config:
-    - dns_peering_config:
-      - domains:
-        - agents.internal.
-        target_network: projects/my-host-project/global/networks/my-vpc
-        target_project: my-host-project
-      egress:
-      - network_attachment: projects/my-project-id/regions/europe-west1/serviceAttachments/my-sa
     project: my-project-id
-    protocols: null
+  module.agent-gateway.google_network_services_agent_gateway.default:
+    agent_connectivity_template: projects/1234567890/locations/europe-west1/agentConnectivityTemplates/my-gateway
+    description: Terraform managed.
+    google_managed:
+    - governed_access_path: AGENT_TO_ANYWHERE
+    location: europe-west1
+    name: my-gateway
+    network_config: []
+    project: my-project-id
     registries: null
     self_managed: []
-    terraform_labels:
-      goog-terraform-provisioned: 'true'
-    timeouts: null
 
 counts:
   google_network_security_authz_policy: 1
+  google_network_services_agent_connectivity_template: 1
   google_network_services_agent_gateway: 1
   google_network_services_authz_extension: 1
   modules: 1
-  resources: 3
+  resources: 4
 
 outputs: {}

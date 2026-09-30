@@ -311,6 +311,11 @@ variable "service_config" {
       tag      = optional(string)
       type     = optional(string)
     })))
+    workload_identity_config = optional(object({
+      certificate_enabled = optional(bool)
+      identity            = optional(string)
+      identity_type       = optional(string)
+    }), null)
   })
   default  = {}
   nullable = false
@@ -367,6 +372,34 @@ variable "service_config" {
       t.tag == null ? true : (length(t.tag) >= 3 && length(t.tag) <= 47)
     ])
     error_message = "Traffic tag length must be between 3 and 47 characters."
+  }
+
+  validation {
+    condition = (
+      try(var.service_config.workload_identity_config.identity_type, null) == null
+      ? true : contains([
+        "IDENTITY_TYPE_SERVICE_ACCOUNT", "IDENTITY_TYPE_WORKLOAD_IDENTITY",
+      "IDENTITY_TYPE_AGENT_IDENTITY"], var.service_config.workload_identity_config.identity_type)
+    )
+    error_message = <<EOF
+    Identity type should be one of IDENTITY_TYPE_SERVICE_ACCOUNT,
+    IDENTITY_TYPE_WORKLOAD_IDENTITY, IDENTITY_TYPE_AGENT_IDENTITY.
+    EOF
+  }
+
+  validation {
+    condition = (
+      var.service_config.workload_identity_config == null || var.type == "SERVICE"
+    )
+    error_message = "Field workload_identity_config is only supported when type is SERVICE."
+  }
+
+  validation {
+    condition = (
+      try(var.service_config.workload_identity_config.identity_type, "IDENTITY_TYPE_SERVICE_ACCOUNT") == "IDENTITY_TYPE_SERVICE_ACCOUNT"
+      || var.service_account_config.email == null
+    )
+    error_message = "Field service_account_config.email cannot be set when identity type is not IDENTITY_TYPE_SERVICE_ACCOUNT."
   }
 }
 

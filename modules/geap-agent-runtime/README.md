@@ -249,7 +249,7 @@ module "agent_runtime" {
 
 ## Attach to Agent Gateways
 
-The runtime can be governed by an [Agent Gateway](../agent-gateway/README.md) for inbound traffic (ingress), for outbound traffic (egress), or both. Each value is the resource name of an existing gateway, which in real usage comes from the `id` output of the `agent-gateway` module.
+The runtime can be governed by an [Agent Gateway](../geap-agent-gateway/README.md) for inbound traffic (ingress), for outbound traffic (egress), or both. Each value is the resource name of an existing gateway, which in real usage comes from the `id` output of the `geap-agent-gateway` module.
 
 ```hcl
 module "agent_runtime" {

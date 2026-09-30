@@ -22,6 +22,12 @@ locals {
     for v in coalesce(var.registries, []) :
     try(regex("/locations/([^/]+)/?$", v)[0], "")
   ])
+  access_path = (
+    try(lower(var.access_path), "") == "ingress"
+    || var.access_path == "CLIENT_TO_AGENT"
+    ? "CLIENT_TO_AGENT"
+    : "AGENT_TO_ANYWHERE"
+  )
   ctx = {
     for k, v in var.context : k => {
       for kk, vv in v : "${local._ctx_p}${k}:${kk}" => vv
@@ -30,11 +36,6 @@ locals {
   location = lookup(
     local.ctx.locations, var.region, var.region
   )
-  network_attachment_id = try(lookup(
-    local.ctx.psc_network_attachments,
-    var.networking_config.psc_i_network_attachment_id,
-    var.networking_config.psc_i_network_attachment_id
-  ), null)
   project_id = lookup(
     local.ctx.project_ids, var.project_id, var.project_id
   )
@@ -48,58 +49,23 @@ locals {
 }
 
 resource "google_network_services_agent_gateway" "default" {
-  provider    = google-beta
-  project     = local.project_id
-  location    = local.location
-  name        = var.name
-  description = var.description
-  labels      = var.labels
-  registries  = var.registries
+  provider                    = google-beta
+  project                     = local.project_id
+  location                    = local.location
+  name                        = var.name
+  agent_connectivity_template = local.connectivity_template_id
+  description                 = var.description
+  labels                      = var.labels
+  registries                  = var.registries
 
 
   dynamic "google_managed" {
     for_each = var.is_google_managed ? [""] : []
 
     content {
-      governed_access_path = (
-        try(lower(var.access_path), "") == "ingress"
-        || var.access_path == "CLIENT_TO_AGENT"
-        ? "CLIENT_TO_AGENT"
-        : "AGENT_TO_ANYWHERE"
-      )
+      governed_access_path = local.access_path
     }
   }
-
-  dynamic "network_config" {
-    for_each = local.network_attachment_id != null || var.networking_config.dns_peering_config != null ? [""] : []
-
-    content {
-      dynamic "egress" {
-        for_each = local.network_attachment_id != null ? [""] : []
-        content {
-          network_attachment = local.network_attachment_id
-        }
-      }
-
-      dynamic "dns_peering_config" {
-        for_each = var.networking_config.dns_peering_config != null ? [""] : []
-        content {
-          domains = var.networking_config.dns_peering_config.domains
-          target_network = lookup(
-            local.ctx.networks,
-            var.networking_config.dns_peering_config.target_network,
-            var.networking_config.dns_peering_config.target_network
-          )
-          target_project = lookup(
-            local.ctx.project_ids,
-            var.networking_config.dns_peering_config.target_project,
-            var.networking_config.dns_peering_config.target_project
-          )
-        }
-      }
-    }
-  }
-
 
   dynamic "self_managed" {
     for_each = var.is_google_managed ? [] : [""]

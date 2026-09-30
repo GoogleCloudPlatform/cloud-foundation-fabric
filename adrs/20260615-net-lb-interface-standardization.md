@@ -13,14 +13,14 @@ The `net-lb` family in Cloud Foundation Fabric (CFF) consists of 8 modules cover
 
 | Module | LB Type | Scope | Protocol |
 | :--- | :--- | :--- | :--- |
-| [`net-lb-int`](file:///home/ludomagno/dev/tf-playground/cloud-foundation-fabric/modules/net-lb-int) | Internal Passthrough NLB | Regional | L4 (TCP/UDP) |
-| [`net-lb-ext`](file:///home/ludomagno/dev/tf-playground/cloud-foundation-fabric/modules/net-lb-ext) | External Passthrough NLB | Regional | L4 (TCP/UDP) |
-| [`net-lb-proxy-int`](file:///home/ludomagno/dev/tf-playground/cloud-foundation-fabric/modules/net-lb-proxy-int) | Internal Proxy LB | Regional | L4 (TCP) |
-| [`net-lb-proxy-int-cross-region`](file:///home/ludomagno/dev/tf-playground/cloud-foundation-fabric/modules/net-lb-proxy-int-cross-region) | Internal Proxy LB | Cross-Region | L4 (TCP) |
-| [`net-lb-app-int`](file:///home/ludomagno/dev/tf-playground/cloud-foundation-fabric/modules/net-lb-app-int) | Internal Application LB | Regional | L7 (HTTP/S) |
-| [`net-lb-app-int-cross-region`](file:///home/ludomagno/dev/tf-playground/cloud-foundation-fabric/modules/net-lb-app-int-cross-region) | Internal Application LB | Cross-Region | L7 (HTTP/S) |
-| [`net-lb-app-ext`](file:///home/ludomagno/dev/tf-playground/cloud-foundation-fabric/modules/net-lb-app-ext) | External Application LB | Global | L7 (HTTP/S) |
-| [`net-lb-app-ext-regional`](file:///home/ludomagno/dev/tf-playground/cloud-foundation-fabric/modules/net-lb-app-ext-regional) | External Application LB | Regional | L7 (HTTP/S) |
+| [`net-lb-int`](../modules/net-lb-int) | Internal Passthrough NLB | Regional | L4 (TCP/UDP) |
+| [`net-lb-ext`](../modules/net-lb-ext) | External Passthrough NLB | Regional | L4 (TCP/UDP) |
+| [`net-lb-proxy-int`](../modules/net-lb-proxy-int) | Internal Proxy LB | Regional | L4 (TCP) |
+| [`net-lb-proxy-int-cross-region`](../modules/net-lb-proxy-int-cross-region) | Internal Proxy LB | Cross-Region | L4 (TCP) |
+| [`net-lb-app-int`](../modules/net-lb-app-int) | Internal Application LB | Regional | L7 (HTTP/S) |
+| [`net-lb-app-int-cross-region`](../modules/net-lb-app-int-cross-region) | Internal Application LB | Cross-Region | L7 (HTTP/S) |
+| [`net-lb-app-ext`](../modules/net-lb-app-ext) | External Application LB | Global | L7 (HTTP/S) |
+| [`net-lb-app-ext-regional`](../modules/net-lb-app-ext-regional) | External Application LB | Regional | L7 (HTTP/S) |
 
 These modules currently exhibit several interface inconsistencies (e.g. backend naming `group` vs `backend`, different styles for VPC config, missing context support) and, in some cases, implement invalid or unsupported features (e.g. failover and connection tracking in proxy/application load balancers) or have gaps in feature parity (e.g. URL map capabilities).
 
