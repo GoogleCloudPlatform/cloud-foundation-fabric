@@ -15,6 +15,8 @@
  */
 
 locals {
+  project_id = var.project_id
+  region     = var.region
   gateway_address = (
     var.gateway_address_create
     ? google_compute_address.gateway[0].address
@@ -194,37 +196,4 @@ resource "google_compute_vpn_tunnel" "tunnels" {
 
 resource "random_id" "secret" {
   byte_length = 8
-}
-
-resource "google_compute_router_route_policy" "default" {
-  for_each = var.router_config.route_policies
-  project  = var.project_id
-  region   = var.region
-  router   = local.router
-  name     = each.key
-  type     = each.value.type == "IMPORT" ? "ROUTE_POLICY_TYPE_IMPORT" : each.value.type == "EXPORT" ? "ROUTE_POLICY_TYPE_EXPORT" : null
-
-  dynamic "terms" {
-    for_each = each.value.terms
-    content {
-      priority = terms.value.priority
-      match {
-        expression  = terms.value.match.expression
-        title       = terms.value.match.title
-        description = terms.value.match.description
-        location    = terms.value.match.location
-      }
-      dynamic "actions" {
-        for_each = terms.value.actions
-        content {
-          expression  = actions.value.expression
-          title       = actions.value.title
-          description = actions.value.description
-          location    = actions.value.location
-        }
-      }
-    }
-  }
-
-  depends_on = [google_compute_router.router]
 }

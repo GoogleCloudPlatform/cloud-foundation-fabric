@@ -15,6 +15,8 @@
  */
 
 locals {
+  project_id = var.project_id
+  region     = var.region
   peer_gateway_id = (
     var.peer_gateway_config.create
     ? try(google_compute_external_vpn_gateway.default[0].id, null)
@@ -157,37 +159,4 @@ resource "google_compute_vpn_tunnel" "default" {
 
 resource "random_id" "default" {
   byte_length = 8
-}
-
-resource "google_compute_router_route_policy" "default" {
-  for_each = var.router_config.route_policies
-  project  = var.project_id
-  region   = var.region
-  router   = local.router
-  name     = each.key
-  type     = each.value.type == "IMPORT" ? "ROUTE_POLICY_TYPE_IMPORT" : each.value.type == "EXPORT" ? "ROUTE_POLICY_TYPE_EXPORT" : null
-
-  dynamic "terms" {
-    for_each = each.value.terms
-    content {
-      priority = terms.value.priority
-      match {
-        expression  = terms.value.match.expression
-        title       = terms.value.match.title
-        description = terms.value.match.description
-        location    = terms.value.match.location
-      }
-      dynamic "actions" {
-        for_each = terms.value.actions
-        content {
-          expression  = actions.value.expression
-          title       = actions.value.title
-          description = actions.value.description
-          location    = actions.value.location
-        }
-      }
-    }
-  }
-
-  depends_on = [google_compute_router.default]
 }

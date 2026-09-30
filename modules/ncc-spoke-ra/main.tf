@@ -15,6 +15,9 @@
  */
 
 locals {
+  project_id = var.project_id
+  region     = var.region
+  router     = google_compute_router.cr.name
   spoke_vms = [
     for ras in var.router_appliances : {
       ip = ras.internal_ip
@@ -143,38 +146,4 @@ resource "google_compute_router_peer" "peer_1" {
     google_network_connectivity_spoke.spoke_ra,
     google_compute_router_route_policy.default
   ]
-}
-
-
-resource "google_compute_router_route_policy" "default" {
-  for_each = var.router_config.route_policies
-  project  = var.project_id
-  region   = var.region
-  router   = google_compute_router.cr.name
-  name     = each.key
-  type     = each.value.type == "IMPORT" ? "ROUTE_POLICY_TYPE_IMPORT" : each.value.type == "EXPORT" ? "ROUTE_POLICY_TYPE_EXPORT" : null
-
-  dynamic "terms" {
-    for_each = each.value.terms
-    content {
-      priority = terms.value.priority
-      match {
-        expression  = terms.value.match.expression
-        title       = terms.value.match.title
-        description = terms.value.match.description
-        location    = terms.value.match.location
-      }
-      dynamic "actions" {
-        for_each = terms.value.actions
-        content {
-          expression  = actions.value.expression
-          title       = actions.value.title
-          description = actions.value.description
-          location    = actions.value.location
-        }
-      }
-    }
-  }
-
-  depends_on = [google_compute_router.cr]
 }
