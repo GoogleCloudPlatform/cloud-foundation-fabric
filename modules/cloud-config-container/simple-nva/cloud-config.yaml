@@ -24,7 +24,7 @@ write_files:
 %{ endfor }
 
   - path: /etc/systemd/system/routing.service
-    permissions: 0644
+    permissions: "0644"
     owner: root
     content: |
       [Install]
@@ -37,7 +37,7 @@ write_files:
       RemainAfterExit=true
       ExecStart=/bin/sh -c "/var/run/nva/start-routing.sh"
   - path: /var/run/nva/start-routing.sh
-    permissions: 0744
+    permissions: "0744"
     owner: root
     content: |
       iptables --policy FORWARD ACCEPT
