@@ -27,7 +27,7 @@ users:
 
 write_files:
   - path: /var/lib/docker/daemon.json
-    permissions: 0644
+    permissions: "0644"
     owner: root
     content: |
       {
@@ -40,7 +40,7 @@ write_files:
 
   %{~ if nginx_config != null ~}
   - path: /etc/nginx/conf.d/nginx.conf
-    permissions: 0644
+    permissions: "0644"
     owner: root
     content: |
       ${indent(6, nginx_config)}
@@ -48,7 +48,7 @@ write_files:
 
   # nginx container service
   - path: /etc/systemd/system/nginx.service
-    permissions: 0644
+    permissions: "0644"
     owner: root
     content: |
       [Unit]
