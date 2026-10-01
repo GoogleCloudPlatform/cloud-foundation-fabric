@@ -91,20 +91,21 @@ resource "mongodbatlas_privatelink_endpoint_service" "default" {
 }
 
 resource "mongodbatlas_database_user" "database_user" {
-  username            = var.database_user.username
-  password            = var.database_user.password
-  password_wo         = var.database_user.password_wo
-  password_wo_version = var.database_user.password_wo_version
+  for_each            = var.database_users
+  username            = each.key
+  password            = each.value.password
+  password_wo         = each.value.password_wo
+  password_wo_version = each.value.password_wo_version
   project_id          = mongodbatlas_project.default.id
-  auth_database_name  = var.database_user.auth_database_name
-  aws_iam_type        = var.database_user.aws_iam_type
-  description         = var.database_user.description
-  ldap_auth_type      = var.database_user.ldap_auth_type
-  oidc_auth_type      = var.database_user.oidc_auth_type
-  x509_type           = var.database_user.x509_type
+  auth_database_name  = each.value.auth_database_name
+  aws_iam_type        = each.value.aws_iam_type
+  description         = each.value.description
+  ldap_auth_type      = each.value.ldap_auth_type
+  oidc_auth_type      = each.value.oidc_auth_type
+  x509_type           = each.value.x509_type
 
   dynamic "labels" {
-    for_each = var.database_user.labels
+    for_each = each.value.labels
 
     content {
       key   = labels.key
@@ -113,7 +114,7 @@ resource "mongodbatlas_database_user" "database_user" {
   }
 
   dynamic "roles" {
-    for_each = var.database_user.roles
+    for_each = each.value.roles
 
     content {
       role_name       = roles.value.role_name
@@ -123,7 +124,7 @@ resource "mongodbatlas_database_user" "database_user" {
   }
 
   dynamic "scopes" {
-    for_each = var.database_user.scopes
+    for_each = each.value.scopes
 
     content {
       name = scopes.key

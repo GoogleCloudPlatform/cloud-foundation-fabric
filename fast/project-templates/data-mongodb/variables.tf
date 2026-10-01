@@ -30,9 +30,9 @@ variable "atlas_config" {
   })
 }
 
-variable "database_user" {
-  description = "MongoDB Atlas database user configuration."
-  type = object({
+variable "database_users" {
+  description = "MongoDB Atlas database users configuration. The map key is used as the username."
+  type = map(object({
     auth_database_name  = optional(string, "admin")
     aws_iam_type        = optional(string)
     description         = optional(string)
@@ -53,23 +53,23 @@ variable "database_user" {
     scopes = optional(map(object({
       type = string
     })), {})
-    username  = string
     x509_type = optional(string)
-  })
+  }))
+  default = {}
 
   validation {
-    condition = !(
-      var.database_user.password != null &&
-      var.database_user.password_wo != null
-    )
+    condition = alltrue([
+      for k, v in var.database_users :
+      !(v.password != null && v.password_wo != null)
+    ])
     error_message = "Only one of password or password_wo can be set."
   }
 
   validation {
-    condition = (
-      var.database_user.password_wo == null ||
-      var.database_user.password_wo_version != null
-    )
+    condition = alltrue([
+      for k, v in var.database_users :
+      v.password_wo == null || v.password_wo_version != null
+    ])
     error_message = "password_wo_version must be set when password_wo is set."
   }
 }

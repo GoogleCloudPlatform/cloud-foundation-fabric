@@ -15,7 +15,7 @@ This Terraform can of course be deployed using any pre-existing project. In that
 
 ## Variable Configuration
 
-Configuration is mostly done via the `atlas_config`, `database_user`, and `vpc_config` variables. Note that:
+Configuration is mostly done via the `atlas_config`, `database_users`, and `vpc_config` variables. Note that:
 
 - VPC configuration can be set to reference a Shared VPC Host network like shown below, or an in-project network if that is preferred
 - the PSC CIDR block is used to allocate the required 50 endpoint addresses in the VPC, so it needs to be large enough to accommodate them
@@ -36,22 +36,23 @@ atlas_config = {
     private_key = "xxxxx-xxxx-xxxx-xxxx-xxxxxxxx"
   }
 }
-database_user = {
-  username            = "my-db-user"
-  password_wo         = "s3cr3t-p4ssw0rd"
-  password_wo_version = 1
-  labels = {
-    environment = "test"
-  }
-  roles = {
-    app = {
-      database_name = "app"
-      role_name     = "readWrite"
+database_users = {
+  my-db-user = {
+    password_wo         = "s3cr3t-p4ssw0rd"
+    password_wo_version = 1
+    labels = {
+      environment = "test"
     }
-  }
-  scopes = {
-    test-0 = {
-      type = "CLUSTER"
+    roles = {
+      app = {
+        database_name = "app"
+        role_name     = "readWrite"
+      }
+    }
+    scopes = {
+      test-0 = {
+        type = "CLUSTER"
+      }
     }
   }
 }
@@ -69,10 +70,10 @@ vpc_config = {
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
 | [atlas_config](variables.tf#L17) | MongoDB Atlas configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
-| [database_user](variables.tf#L33) | MongoDB Atlas database user configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
-| [project_id](variables.tf#L89) | Project id where the registries will be created. | <code>string</code> | ✓ |  |
-| [vpc_config](variables.tf#L94) | VPC configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
-| [name](variables.tf#L82) | Prefix used for all resource names. | <code>string</code> |  | <code>&#34;mongodb&#34;</code> |
+| [project_id](variables.tf#L84) | Project id where the registries will be created. | <code>string</code> | ✓ |  |
+| [vpc_config](variables.tf#L89) | VPC configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| [database_users](variables.tf#L33) | MongoDB Atlas database users configuration. The map key is used as the username. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [name](variables.tf#L77) | Prefix used for all resource names. | <code>string</code> |  | <code>&#34;mongodb&#34;</code> |
 
 ## Outputs
 
@@ -99,22 +100,23 @@ module "test" {
       private_key = "xxxxx-xxxx-xxxx-xxxx-xxxxxxxx"
     }
   }
-  database_user = {
-    username            = "my-db-user"
-    password_wo         = "s3cr3t-p4ssw0rd"
-    password_wo_version = 1
-    labels = {
-      environment = "test"
-    }
-    roles = {
-      app = {
-        database_name = "app"
-        role_name     = "readWrite"
+  database_users = {
+    my-db-user = {
+      password_wo         = "s3cr3t-p4ssw0rd"
+      password_wo_version = 1
+      labels = {
+        environment = "test"
       }
-    }
-    scopes = {
-      test-0 = {
-        type = "CLUSTER"
+      roles = {
+        app = {
+          database_name = "app"
+          role_name     = "readWrite"
+        }
+      }
+      scopes = {
+        test-0 = {
+          type = "CLUSTER"
+        }
       }
     }
   }
