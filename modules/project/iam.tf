@@ -90,17 +90,17 @@ locals {
     )
   }
   iam_bindings_additive = merge(
-    var.iam_bindings_additive,
-    [
+    merge([
       for principal, roles in var.iam_by_principals_additive : {
         for role in roles :
-        "iam-bpa:${principal}-${role}" => {
+        "iam-bpa:${principal}//${role}" => {
           member    = principal
           role      = role
           condition = null
         }
       }
-    ]...
+    ]...),
+    var.iam_bindings_additive
   )
   _iam_bindings_conditional = flatten([
     for principal, config in var.iam_by_principals_conditional : [

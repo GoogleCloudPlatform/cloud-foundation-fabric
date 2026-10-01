@@ -16,7 +16,7 @@
 
 locals {
   _quota_factory_path = pathexpand(coalesce(var.factories_config.quotas, "-"))
-  _quota_factory_data_raw = merge([
+  _quota_factory_data_raw = merge({}, [
     for f in try(fileset(local._quota_factory_path, "*.yaml"), []) :
     yamldecode(file("${local._quota_factory_path}/${f}"))
   ]...)
