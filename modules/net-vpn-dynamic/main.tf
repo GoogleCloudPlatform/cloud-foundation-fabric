@@ -15,6 +15,8 @@
  */
 
 locals {
+  project_id = var.project_id
+  region     = var.region
   gateway_address = (
     var.gateway_address_create
     ? google_compute_address.gateway[0].address
@@ -110,6 +112,8 @@ resource "google_compute_router_peer" "bgp_peer" {
   project                   = var.project_id
   name                      = "${var.name}-${each.key}"
   router                    = coalesce(each.value.router, local.router)
+  export_policies           = each.value.bgp_peer.export_policies
+  import_policies           = each.value.bgp_peer.import_policies
   peer_ip_address           = each.value.bgp_peer.address
   peer_asn                  = each.value.bgp_peer.asn
   advertised_route_priority = each.value.bgp_peer.route_priority
@@ -131,7 +135,8 @@ resource "google_compute_router_peer" "bgp_peer" {
       description = range.value
     }
   }
-  interface = google_compute_router_interface.router_interface[each.key].name
+  interface  = google_compute_router_interface.router_interface[each.key].name
+  depends_on = [google_compute_router_route_policy.default]
 }
 
 resource "google_compute_router_interface" "router_interface" {
