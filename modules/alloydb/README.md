@@ -528,17 +528,19 @@ module "alloydb" {
 | [psc_dns_name](outputs.tf#L83) | AlloyDB Primary instance PSC DNS name. |  |
 | [psc_dns_names](outputs.tf#L88) | AlloyDB instances PSC DNS names. |  |
 | [public_ip](outputs.tf#L95) | Public IP address of the primary instance. |  |
-| [read_pool_ids](outputs.tf#L100) | Fully qualified ids of all primary read poll instances. |  |
-| [read_pool_ips](outputs.tf#L108) | IP addresses of all primary read poll instances. |  |
-| [secondary_cluster_id](outputs.tf#L116) | Fully qualified secondary cluster id. |  |
-| [secondary_cluster_name](outputs.tf#L121) | Name of the secondary cluster. |  |
-| [secondary_id](outputs.tf#L126) | Fully qualified secondary instance id. |  |
-| [secondary_ip](outputs.tf#L131) | IP address of the secondary instance. |  |
-| [secondary_outbound_public_ips](outputs.tf#L136) | Public IP addresses of the primary instance. |  |
-| [secondary_public_ip](outputs.tf#L141) | Public IP address of the secondary instance. |  |
-| [secondary_read_pool_ids](outputs.tf#L146) | Fully qualified ids of all secondary read poll instances. |  |
-| [secondary_read_pool_ips](outputs.tf#L154) | IP addresses of all secondary read poll instances. |  |
-| [service_attachment](outputs.tf#L162) | AlloyDB Primary instance service attachment. |  |
-| [service_attachments](outputs.tf#L167) | AlloyDB instances service attachment. |  |
-| [user_passwords](outputs.tf#L174) | Map of containing the password of all users created through terraform. | ✓ |
+| [read_pool_ids](outputs.tf#L109) | Fully qualified ids of all primary read pool instances. |  |
+| [read_pool_ips](outputs.tf#L117) | IP addresses of all primary read pool instances. |  |
+| [read_pools](outputs.tf#L100) | Primary read pool resources. | ✓ |
+| [secondary_cluster_id](outputs.tf#L125) | Fully qualified secondary cluster id. |  |
+| [secondary_cluster_name](outputs.tf#L130) | Name of the secondary cluster. |  |
+| [secondary_id](outputs.tf#L135) | Fully qualified secondary instance id. |  |
+| [secondary_ip](outputs.tf#L140) | IP address of the secondary instance. |  |
+| [secondary_outbound_public_ips](outputs.tf#L145) | Public IP addresses of the primary instance. |  |
+| [secondary_public_ip](outputs.tf#L150) | Public IP address of the secondary instance. |  |
+| [secondary_read_pool_ids](outputs.tf#L164) | Fully qualified ids of all secondary read pool instances. |  |
+| [secondary_read_pool_ips](outputs.tf#L172) | IP addresses of all secondary read poll instances. |  |
+| [secondary_read_pools](outputs.tf#L155) | Secondary read pool resources. | ✓ |
+| [service_attachment](outputs.tf#L180) | AlloyDB Primary instance service attachment. |  |
+| [service_attachments](outputs.tf#L185) | AlloyDB instances service attachment. |  |
+| [user_passwords](outputs.tf#L192) | Map of containing the password of all users created through terraform. | ✓ |
 <!-- END TFDOC -->
