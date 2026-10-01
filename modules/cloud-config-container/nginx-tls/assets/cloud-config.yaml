@@ -42,7 +42,7 @@ write_files:
       [Service]
       Environment="HOME=/home/nginx"
       ExecStart=/usr/bin/docker run --rm --name=nginx \
-        --network host --pid host \
+        --network host \
         -v /etc/nginx/conf.d:/etc/nginx/conf.d \
         -v /etc/ssl:/etc/ssl \
         ${image}
