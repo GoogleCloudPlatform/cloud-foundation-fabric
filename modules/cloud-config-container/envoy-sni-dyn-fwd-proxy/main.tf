@@ -22,7 +22,7 @@ module "cos-envoy" {
   container_volumes = [
     { host = "/etc/envoy/", container = "/etc/envoy/" }
   ]
-  docker_args = "--network host --pid host"
+  docker_args = "--network host"
   files = {
     "/etc/envoy/envoy.yaml" = {
       content     = file("${path.module}/files/envoy.yaml")
