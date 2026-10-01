@@ -308,6 +308,50 @@ routers:
 # [...]
 ```
 
+Routers can also declare BGP route policies, which VPN tunnels and VLAN attachments then reference by key from their `bgp_peer` configuration.
+
+```yaml
+# [...]
+routers:
+  vpn-router:
+    region: $locations:primary
+    asn: 64514
+    route_policies:
+      import-rfc1918:
+        type: IMPORT
+        terms:
+          - priority: 1
+            match:
+              expression: "destination == '10.0.0.0/8'"
+            actions:
+              - expression: med.set(1000)
+              - expression: accept()
+# [...]
+```
+
+Each term requires at least one action, and takes a list of them applied in the order they are declared.
+
+```yaml
+# in vpcs/[vpc-name]/vpns/[vpn-name].yaml
+router_config:
+  name: $routers:my-vpc/vpn-router
+tunnels:
+  remote-0:
+    bgp_peer:
+      address: 169.254.1.1
+      asn: 64513
+      import_policies:
+        - import-rfc1918
+# [...]
+```
+
+Each policy is created on its router using the map key as name, which is also the name peers use to reference it. Terms are patched in place, so editing a policy does not recreate it or detach it from its peers.
+
+Policies can equally be declared under a VPN's or VLAN attachment's own `router_config` when the router is created by the module rather than by the stage, in which case peers reference them by key in exactly the same way.
+
+> [!NOTE]
+> Cloud Router serializes configuration changes. Updating or deleting several route policies on the same router in a single apply may fail with `Error 400: [...] is not ready, resourceNotReady`. Re-running the apply converges, and `-parallelism=1` avoids the error entirely.
+
 ### VPC Connectivity
 
 This stage supports multiple ways to connect VPCs to other VPCs or other networks:
@@ -380,7 +424,7 @@ Internally created resources are mapped to context namespaces, and use specific 
 | [factory-nva.tf](./factory-nva.tf) | NVA factory | <code>compute-vm</code> · <code>net-lb-int</code> | <code>google_compute_instance_group</code> |
 | [factory-peering.tf](./factory-peering.tf) | VPC Peering factory. |  | <code>google_compute_network_peering</code> |
 | [factory-projects.tf](./factory-projects.tf) | Projects factory. | <code>project-factory</code> |  |
-| [factory-routers.tf](./factory-routers.tf) | Routers factory. |  | <code>google_compute_router</code> |
+| [factory-routers.tf](./factory-routers.tf) | Routers factory. |  | <code>google_compute_router</code> · <code>google_compute_router_route_policy</code> |
 | [factory-vlan-attachments.tf](./factory-vlan-attachments.tf) | VLAN attachments factory. | <code>net-vlan-attachment</code> | <code>google_compute_interconnect_attachment_group</code> |
 | [factory-vpcs.tf](./factory-vpcs.tf) | VPC and firewall rules factory. | <code>net-vpc</code> · <code>net-vpc-factory</code> |  |
 | [factory-vpns.tf](./factory-vpns.tf) | VPNs factory. | <code>net-vpn-ha</code> | <code>google_compute_ha_vpn_gateway</code> |
