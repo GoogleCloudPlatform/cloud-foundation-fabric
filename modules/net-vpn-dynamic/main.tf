@@ -195,5 +195,5 @@ resource "google_compute_vpn_tunnel" "tunnels" {
 }
 
 resource "random_id" "secret" {
-  byte_length = 8
+  byte_length = 16
 }
