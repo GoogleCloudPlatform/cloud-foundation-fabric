@@ -6,6 +6,11 @@ context = {
     ext-test-0 = "35.10.10.10"
     int-test-0 = "10.0.0.10"
   }
+  condition_vars = {
+    ports = {
+      ssh = "22"
+    }
+  }
   custom_roles = {
     myrole_one = "organizations/366118655033/roles/myRoleOne"
   }
@@ -46,6 +51,31 @@ iam = {
   "$custom_roles:myrole_one" = [
     "$iam_principals:mygroup"
   ]
+}
+iap_tunnel_iam = {
+  "$custom_roles:myrole_one" = [
+    "$iam_principals:mygroup"
+  ]
+}
+iap_tunnel_iam_bindings = {
+  tunnel-conditional = {
+    role    = "$custom_roles:myrole_one"
+    members = ["$iam_principals:mygroup"]
+    condition = {
+      title      = "ssh-only"
+      expression = "destination.port == $${ports.ssh}"
+    }
+  }
+}
+iap_tunnel_iam_bindings_additive = {
+  tunnel-additive = {
+    role   = "$custom_roles:myrole_one"
+    member = "$iam_principals:mygroup"
+    condition = {
+      title      = "ssh-only-additive"
+      expression = "destination.port == $${ports.ssh}"
+    }
+  }
 }
 name = "test"
 network_interfaces = [{

@@ -666,9 +666,6 @@
         "name": {
           "type": "string"
         },
-        "description": {
-          "type": "string"
-        },
         "iam": {
           "$ref": "#/$defs/iam"
         },
@@ -713,6 +710,13 @@
         },
         "prefix": {
           "type": "string"
+        },
+        "public_access_prevention": {
+          "type": "string",
+          "enum": [
+            "enforced",
+            "inherited"
+          ]
         },
         "storage_class": {
           "type": "string"

@@ -19,6 +19,9 @@ backends = [{
   group    = "foo"
   failover = false
 }]
+backend_service_config = {
+  security_policy = "$security_policies:network-edge"
+}
 
 context = {
   project_ids = {
@@ -29,6 +32,9 @@ context = {
   }
   addresses = {
     my-address = "1.2.3.4"
+  }
+  security_policies = {
+    network-edge = "projects/resolved-project/regions/resolved-region/securityPolicies/network-edge"
   }
   subnets = {
     my-subnet = "https://www.googleapis.com/compute/v1/projects/resolved-project/regions/resolved-region/subnetworks/resolved-subnet"

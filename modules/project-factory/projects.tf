@@ -262,6 +262,12 @@ module "projects-iam" {
     grant_default_roles        = false
     grant_service_agent_editor = each.value.service_agents_config.grant_service_agent_editor
   }
+  service_agents_folder_bindings = try(
+    each.value.service_agents_folder_bindings, {}
+  )
+  service_agents_project_bindings = try(
+    each.value.service_agents_project_bindings, {}
+  )
   service_encryption_key_ids = merge(
     each.value.service_encryption_key_ids,
     var.data_merges.service_encryption_key_ids

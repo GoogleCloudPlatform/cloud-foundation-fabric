@@ -147,7 +147,7 @@
   role: roles/agentgateway.serviceAgent
   is_primary: false
   aliases: []
-  skip_iam: true
+  skip_iam: false
 - name: alloydb
   display_name: AlloyDB Service Account
   api: alloydb.googleapis.com
@@ -1453,7 +1453,7 @@
   api: networkservices.googleapis.com
   identity: service-${project_number}@gcp-sa-dep.${universe_domain}iam.gserviceaccount.com
   role: null
-  is_primary: false
+  is_primary: true
   aliases: []
   skip_iam: false
 - name: containerregistry
@@ -1675,7 +1675,7 @@
   role: roles/networkactions.serviceAgent
   is_primary: false
   aliases: []
-  skip_iam: true
+  skip_iam: false
 - name: networkconnectivity
   display_name: Network Connectivity Service Account
   api: networkconnectivity.googleapis.com

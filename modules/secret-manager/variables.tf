@@ -100,13 +100,20 @@ variable "secrets" {
         write_only_version = optional(number)
       }))
     })), {})
-    # rotation_config = optional(object({
-    #   next_time = string
-    #   period    = number
-    # }))
-    # topics
+    rotation_config = optional(object({
+      next_time = optional(string)
+      period    = string
+    }))
+    topics = optional(list(string))
   }))
   default = {}
+  validation {
+    condition = alltrue([
+      for k, v in var.secrets :
+      try(v.rotation_config, null) == null || (try(length(v.topics), 0) > 0)
+    ])
+    error_message = "At least one topic must be configured when rotation_config is set."
+  }
   validation {
     condition = alltrue([
       for k, v in var.secrets :

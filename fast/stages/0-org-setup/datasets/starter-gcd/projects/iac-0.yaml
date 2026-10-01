@@ -47,13 +47,11 @@ services:
   - sts.googleapis.com
 buckets:
   iac-org-state:
-    description: Terraform state for the org-level automation.
     versioning: true
     iam:
       roles/storage.admin:
         - $iam_principals:service_accounts/iac-0/iac-org-rw
   iac-outputs:
-    description: Terraform state for the org-level automation.
     versioning: true
     iam:
       roles/storage.admin:

@@ -30,6 +30,15 @@ locals {
   ctx_p      = "$"
   project_id = lookup(local.ctx.project_ids, var.project_id, var.project_id)
   region     = lookup(local.ctx.locations, var.region, var.region)
+  security_policy = (
+    var.backend_service_config.security_policy == null
+    ? null
+    : lookup(
+      local.ctx.security_policies,
+      var.backend_service_config.security_policy,
+      var.backend_service_config.security_policy
+    )
+  )
 }
 
 moved {
@@ -78,6 +87,7 @@ resource "google_compute_region_backend_service" "default" {
   connection_draining_timeout_sec = var.backend_service_config.connection_draining_timeout_sec
   locality_lb_policy              = var.backend_service_config.locality_lb_policy
   port_name                       = var.backend_service_config.port_name
+  security_policy                 = local.security_policy
   session_affinity                = var.backend_service_config.session_affinity
   timeout_sec                     = var.backend_service_config.timeout_sec
 
