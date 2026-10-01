@@ -27,7 +27,7 @@ locals {
   view_iam_bindings = merge([
     for k, v in var.views : {
       for binding_key, data in v.iam_bindings :
-      binding_key => {
+      "${k}.${binding_key}" => {
         view      = k
         role      = data.role
         members   = data.members
@@ -38,7 +38,7 @@ locals {
   view_iam_bindings_additive = merge([
     for k, v in var.views : {
       for binding_key, data in v.iam_bindings_additive :
-      binding_key => {
+      "${k}.${binding_key}" => {
         view      = k
         role      = data.role
         member    = data.member

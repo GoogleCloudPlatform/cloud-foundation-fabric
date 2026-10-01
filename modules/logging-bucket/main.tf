@@ -70,6 +70,12 @@ resource "google_logging_folder_bucket_config" "bucket" {
   retention_days = var.retention
   bucket_id      = var.name
   description    = var.description
+  dynamic "cmek_settings" {
+    for_each = var.kms_key_name == null ? [] : [""]
+    content {
+      kms_key_name = lookup(local.ctx.kms_keys, var.kms_key_name, var.kms_key_name)
+    }
+  }
 }
 
 resource "google_logging_linked_dataset" "dataset" {
@@ -88,6 +94,12 @@ resource "google_logging_organization_bucket_config" "bucket" {
   retention_days = var.retention
   bucket_id      = var.name
   description    = var.description
+  dynamic "cmek_settings" {
+    for_each = var.kms_key_name == null ? [] : [""]
+    content {
+      kms_key_name = lookup(local.ctx.kms_keys, var.kms_key_name, var.kms_key_name)
+    }
+  }
 }
 
 resource "google_logging_billing_account_bucket_config" "bucket" {
@@ -97,6 +109,12 @@ resource "google_logging_billing_account_bucket_config" "bucket" {
   retention_days  = var.retention
   bucket_id       = var.name
   description     = var.description
+  dynamic "cmek_settings" {
+    for_each = var.kms_key_name == null ? [] : [""]
+    content {
+      kms_key_name = lookup(local.ctx.kms_keys, var.kms_key_name, var.kms_key_name)
+    }
+  }
 }
 
 resource "google_logging_log_view" "views" {
