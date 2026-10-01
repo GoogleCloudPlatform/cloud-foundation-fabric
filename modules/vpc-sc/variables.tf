@@ -57,7 +57,7 @@ variable "access_levels" {
     condition = alltrue([
       for k, v in var.access_levels : alltrue([
         for condition in v.conditions : alltrue([
-          for member in condition.members : can(regex("^(?:serviceAccount:|user:)", member))
+          for member in condition.members : can(regex("^(?:serviceAccount:|user:|group:)", member))
         ])
       ])
     ])

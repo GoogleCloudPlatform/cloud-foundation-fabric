@@ -53,7 +53,7 @@ resource "google_access_context_manager_access_level" "basic" {
         ])
         negate                 = c.value.negate
         regions                = c.value.regions
-        required_access_levels = coalesce(c.value.required_access_levels, [])
+        required_access_levels = c.value.required_access_levels
 
         dynamic "device_policy" {
           for_each = c.value.device_policy == null ? [] : [c.value.device_policy]
