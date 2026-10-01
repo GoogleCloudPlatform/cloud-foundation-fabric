@@ -19,7 +19,7 @@
 locals {
   _factory_data_raw = {
     for f in try(fileset(local._factory_path, "**/*.yaml"), []) :
-    trimsuffix(basename(f), ".yaml") => yamldecode(file("${local._factory_path}/${f}"))
+    trimsuffix(f, ".yaml") => yamldecode(file("${local._factory_path}/${f}"))
   }
   _factory_data = {
     for k, v in local._factory_data_raw : k => merge(v, {
@@ -110,7 +110,7 @@ locals {
   subnet_iam_bindings = merge([
     for s in local._iam_subnets : {
       for key, data in s.iam_bindings :
-      key => {
+      "${s.region}/${s.name}.${key}" => {
         role      = lookup(local.ctx.custom_roles, data.role, data.role)
         subnet    = "${lookup(local.ctx.locations, s.region, s.region)}/${s.name}"
         members   = data.members
@@ -124,7 +124,7 @@ locals {
   subnet_iam_bindings_additive = merge([
     for s in local._iam_subnets : {
       for key, data in s.iam_bindings_additive :
-      key => {
+      "${s.region}/${s.name}.${key}" => {
         role      = lookup(local.ctx.custom_roles, data.role, data.role)
         subnet    = "${lookup(local.ctx.locations, s.region, s.region)}/${s.name}"
         member    = data.member
