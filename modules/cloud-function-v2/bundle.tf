@@ -19,7 +19,7 @@ locals {
     startswith(var.bundle_config.path, "gs://")
     ? "gcs"
     : (
-      try(fileexists(pathexpand(var.bundle_config.path)), null) != null &&
+      try(fileexists(pathexpand(var.bundle_config.path)), false) &&
       endswith(var.bundle_config.path, ".zip")
       ? "local-file"
       : "local-folder"
@@ -32,6 +32,7 @@ resource "google_storage_bucket" "bucket" {
   project                     = local.project_id
   name                        = "${local.prefix}${var.bucket_name}"
   uniform_bucket_level_access = true
+  public_access_prevention    = "enforced"
   location = (
     var.bucket_config.location == null
     ? local.location
@@ -68,7 +69,7 @@ data "archive_file" "bundle" {
     ? pathexpand(var.bundle_config.folder_options.archive_path)
     : "/tmp/bundle-${local.project_id}-${var.name}.zip"
   )
-  output_file_mode = "0644"
+  output_file_mode = "0600"
   excludes         = var.bundle_config.folder_options.excludes
 }
 
