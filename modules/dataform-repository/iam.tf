@@ -19,6 +19,8 @@ resource "google_dataform_repository_iam_binding" "authoritative" {
   for_each   = var.iam
   role       = each.key
   members    = each.value
+  project    = google_dataform_repository.default.project
+  region     = google_dataform_repository.default.region
   repository = google_dataform_repository.default.name
 }
 
@@ -27,6 +29,8 @@ resource "google_dataform_repository_iam_binding" "bindings" {
   for_each   = var.iam_bindings
   role       = each.value.role
   members    = each.value.members
+  project    = google_dataform_repository.default.project
+  region     = google_dataform_repository.default.region
   repository = google_dataform_repository.default.name
 
   dynamic "condition" {
@@ -44,6 +48,8 @@ resource "google_dataform_repository_iam_member" "bindings" {
   for_each   = var.iam_bindings_additive
   role       = each.value.role
   member     = each.value.member
+  project    = google_dataform_repository.default.project
+  region     = google_dataform_repository.default.region
   repository = google_dataform_repository.default.name
 
   dynamic "condition" {

@@ -28,7 +28,9 @@ resource "google_tags_location_tag_binding" "binding" {
   )
   location = lookup(local.ctx.locations, var.location, var.location)
   depends_on = [
-    google_storage_bucket.bucket,
-    google_storage_bucket_iam_binding.bindings
+    google_storage_bucket.bucket
   ]
+  lifecycle {
+    replace_triggered_by = [google_storage_bucket.bucket]
+  }
 }
