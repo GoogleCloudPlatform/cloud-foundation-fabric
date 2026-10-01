@@ -27,7 +27,7 @@ users:
 
 write_files:
   - path: /var/lib/docker/daemon.json
-    permissions: 0644
+    permissions: "0644"
     owner: root
     content: |
       {
@@ -39,7 +39,7 @@ write_files:
       }
 
   - path: /run/bindplane/docker-compose.yml
-    permissions: 0644
+    permissions: "0644"
     owner: root
     content: |
       version: "3"
@@ -93,7 +93,7 @@ write_files:
 
   # bindplane container service
   - path: /etc/systemd/system/bindplane.service
-    permissions: 0644
+    permissions: "0644"
     owner: root
     content: |
       [Unit]
