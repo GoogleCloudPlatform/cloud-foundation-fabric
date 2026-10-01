@@ -39,18 +39,19 @@ Subcommands:
   fetch       materialize an upstream release into a local cache
   detect      describe a FAST repository: stages, modules, sources, version
   changelog   breaking changes, FAST changes and upgrade notes in (B, T]
-  plan        the upgrade report: file actions, conflicts, breaking changes,
-              variables, module interfaces, schema and factory data impact
-  apply       apply the plan on a clean git tree: take upstream-only
-              changes, 3-way merge conflicts; deletions, ref bumps and
-              moved-block copies only when asked
+  analyze     the upgrade report (alias `plan`): file actions, conflicts,
+              breaking changes, variables, module interfaces, schema and
+              factory data impact
+  migrate     update repository files on a clean git tree (alias `apply`):
+              take upstream-only changes, 3-way merge conflicts; deletions,
+              ref bumps and moved-block copies only when asked
   check-data  validate factory YAML files against their modeline schemas
 
 Nothing here runs terraform, commits, or pushes.
 
 Exit codes: 0 = success; 1 = error, or refused by a safety check (for
-example a dirty working tree); 2 = attention needed (`apply`: conflict
-markers or manual items remain; `check-data`: invalid files found).
+example a dirty working tree); 2 = attention needed (`migrate`/`apply`:
+conflict markers or manual items remain; `check-data`: invalid files found).
 """
 
 import argparse
@@ -59,6 +60,7 @@ import dataclasses
 import difflib
 import hashlib
 import io
+import itertools
 import json
 import os
 import posixpath
@@ -73,6 +75,7 @@ import factory_data
 import hcl_lite
 import provenance
 import release_notes
+import report
 
 UPSTREAM_URL = 'https://github.com/GoogleCloudPlatform/cloud-foundation-fabric.git'
 DEFAULT_FABRIC_SOURCE = 'cloud-foundation-fabric'
@@ -97,6 +100,18 @@ GENERIC_TF = frozenset(('main.tf', 'variables.tf', 'outputs.tf', 'versions.tf',
                         'providers.tf', 'backend.tf', 'locals.tf', 'data.tf'))
 STAGE_MATCH_THRESHOLD = 0.5
 PREFIX_MATCH_THRESHOLD = 0.3
+# A stage-like folder below STAGE_MATCH_THRESHOLD but at least this similar
+# to an upstream stage is a candidate: the user is asked which stage it is.
+CANDIDATE_MIN_SCORE = 0.2
+CANDIDATE_GUESSES = 3
+# Variables of FAST's stage interface (variables-fast.tf): a folder that
+# declares several of them is built like a stage.
+FAST_INTERFACE_VARS = frozenset(
+    ('automation', 'billing_account', 'custom_roles', 'folder_ids',
+     'iam_principals', 'kms_keys', 'organization', 'perimeters', 'prefix',
+     'project_ids', 'service_accounts', 'storage_buckets', 'tag_values',
+     'universe'))
+FAST_INTERFACE_MIN = 3
 MODULE_MATCH_THRESHOLD = 0.6
 RENAME_SIMILARITY = 0.75
 FULL_VENDOR_RATIO = 0.9
@@ -122,6 +137,26 @@ MANUAL_CATEGORIES = ('conflict-added', 'conflict-deleted',
                      'conflict-customer-deleted')
 UPSTREAM_CONTENT = ('upstream-changed', 'upstream-added', 'upstream-deleted',
                     'unchanged', 'already-updated')
+# Categories whose content the customer owns after apply.
+CUSTOMER_OWNED = ('customer-added', 'customer-changed', 'conflict',
+                  'conflict-added')
+DATA_ORDER = ('breaks', 'schema-removed', 'still-invalid', 'validator-error',
+              'unresolved', 'fixed')
+# Files written by fast/stages/fast-links.sh or the CI/CD setup: generated
+# per environment, so committing them (or symlinks to them) is a smell.
+GENERATED_RE = re.compile(r'(^|/)(\d+-[a-z0-9-]+-providers(-ro)?\.tf|'
+                          r'\d+-[a-z0-9-]+\.auto\.tfvars\.json|'
+                          r'([a-z0-9]+[-_])*wif([-_][a-z0-9]+)*\.json)$')
+# Files at the top of an upstream release, next to fast/ and modules/.
+RELEASE_ROOT_FILES = ('CHANGELOG.md', 'default-versions.tf')
+# Top-level blocks that make a folder a Terraform configuration, as opposed
+# to a file holding only a `terraform {}` block.
+CONFIG_BLOCK_RE = re.compile(
+    r'^[ \t]*(resource|data|module|variable|output|locals|provider|moved|'
+    r'import|check|removed)\b', re.M)
+PIN_RE = re.compile(r'^\s*(>=|<=|!=|~>|>|<|=)?\s*v?(\d+(?:\.\d+){0,2})\s*$')
+ADDON_MATCH = 0.8
+SEVERITIES = ('blocker', 'high', 'medium', 'low', 'info')
 
 
 class UpgradeError(Exception):
@@ -376,6 +411,10 @@ class Scan:
   tfvars_files: list
   lock_files: list
   module_dirs: set
+  links: list = dataclasses.field(default_factory=list)
+  version_files: list = dataclasses.field(default_factory=list)
+  # Folders below the root that are git repositories of their own.
+  nested_repos: list = dataclasses.field(default_factory=list)
 
 
 def _call_info(file_rel, call, root, fabric_re):
@@ -406,6 +445,49 @@ def _call_info(file_rel, call, root, fabric_re):
   return info
 
 
+def _link_info(full, rel_path, root):
+  """Describes a symlink: where it points and whether that is a problem."""
+  target = os.readlink(full)
+  resolved = os.path.realpath(full)
+  real_root = os.path.realpath(root)
+  return {
+      'path':
+          rel_path,
+      'target':
+          target,
+      'dir':
+          os.path.isdir(full),
+      'broken':
+          not os.path.exists(full),
+      'absolute':
+          os.path.isabs(target),
+      'outside':
+          not (resolved == real_root or
+               resolved.startswith(real_root + os.sep)),
+      'generated':
+          bool(GENERATED_RE.search(rel_path)),
+  }
+
+
+def version_pins(text):
+  """Returns the Terraform and provider version constraints in text."""
+  pins = {}
+  masked = hcl_lite.mask(text)
+  for key, pattern in (
+      ('terraform', r'required_version\s*=\s*"([^"]+)"'),
+      ('google', r'(?<![\w-])google\s*=\s*\{[^}]*?version\s*=\s*"([^"]+)"'),
+      ('google-beta', r'google-beta\s*=\s*\{[^}]*?version\s*=\s*"([^"]+)"'),
+  ):
+    for m in re.finditer(pattern, text, re.S):
+      # Skip matches inside comments: masking keeps offsets, so a match
+      # whose first character is blanked out was commented.
+      if masked[m.start()].isspace() and not text[m.start()].isspace():
+        continue
+      pins[key] = m.group(1)
+      break
+  return pins
+
+
 def scan_repo(root, fabric_re):
   root = os.path.abspath(root)
   if not os.path.isdir(root):
@@ -418,12 +500,24 @@ def scan_repo(root, fabric_re):
   yamls = []
   tfvars = []
   locks = []
+  links = []
+  version_files = []
+  nested_repos = []
   for dirpath, dirnames, filenames in os.walk(root):
+    if dirpath != root and ('.git' in dirnames or '.git' in filenames):
+      nested_repos.append(_rel(dirpath, root))
     dirnames[:] = sorted(d for d in dirnames if d not in IGNORED_DIRS)
     reldir = '' if dirpath == root else _rel(dirpath, root)
+    for name in dirnames:
+      full = os.path.join(dirpath, name)
+      if os.path.islink(full):
+        links.append(
+            _link_info(full, f'{reldir}/{name}' if reldir else name, root))
     for name in sorted(filenames):
       full = os.path.join(dirpath, name)
       rel_path = f'{reldir}/{name}' if reldir else name
+      if os.path.islink(full):
+        links.append(_link_info(full, rel_path, root))
       if name == '.terraform.lock.hcl':
         locks.append(rel_path)
         continue
@@ -432,15 +526,28 @@ def scan_repo(root, fabric_re):
         continue
       if IGNORED_FILE_RE.search(name) or os.path.islink(full):
         continue
-      if name.endswith('.tf'):
-        tf_dirs.add(reldir)
+      if _is_terraform(name):
         text = _read_text(full)
+        pins = version_pins(text)
+        m = FABRIC_MARKER_RE.search(text) or MODULE_META_RE.search(text)
+        if pins:
+          version_files.append({
+              'path': rel_path,
+              'pins': pins,
+              'marker': m.group(1) if m else None,
+          })
+        if not name.endswith('.tf'):
+          continue
+        tf_dirs.add(reldir)
         for call in hcl_lite.module_calls(text):
           calls.append(_call_info(rel_path, call, root, fabric_re))
-        if name in ('versions.tf', 'default-versions.tf'):
-          m = FABRIC_MARKER_RE.search(text) or MODULE_META_RE.search(text)
-          if m:
-            markers.append((rel_path, 'module', m.group(1)))
+        if m and name in ('versions.tf', 'default-versions.tf'):
+          markers.append((rel_path, 'module', m.group(1)))
+        elif m and pins:
+          # A copy of default-versions.tf under another name (for example
+          # terraform.tf in each stage) still records the release it came
+          # from, and pins providers to it.
+          markers.append((rel_path, 'pin', m.group(1)))
       elif name == 'fast_version.txt':
         m = FAST_MARKER_RE.search(_read_text(full))
         markers.append((rel_path, 'stage', m.group(1) if m else None))
@@ -455,6 +562,10 @@ def scan_repo(root, fabric_re):
   for d in tf_dirs:
     if d not in stage_dirs and STAGE_NAME_RE.match(posixpath.basename(d)):
       stage_dirs[d] = {'marker': None, 'reason': 'name'}
+  # One stage per repository: the repository folder carries the stage name.
+  if ('' in tf_dirs and not stage_dirs and
+      STAGE_NAME_RE.match(os.path.basename(root))):
+    stage_dirs[''] = {'marker': None, 'reason': 'repository name'}
   module_dirs = {c['resolved'] for c in calls if c.get('resolved')}
   for d in list(stage_dirs):
     nested = any(o != d and _inside(d, o) for o in stage_dirs)
@@ -464,13 +575,14 @@ def scan_repo(root, fabric_re):
     if call['kind'] == 'git' and call.get('fabric') and _version(call['ref']):
       markers.append((call['file'], 'git-ref', call['ref']))
   return Scan(root, tf_dirs, stage_dirs, calls, [m for m in markers if m[2]],
-              schemas, yamls, tfvars, locks, module_dirs - set(stage_dirs))
+              schemas, yamls, tfvars, locks, module_dirs - set(stage_dirs),
+              links, version_files, nested_repos)
 
 
 def version_consensus(markers):
   """Returns (version, confidence, {kind: {version: count}})."""
   by_kind = collections.OrderedDict(
-      (k, collections.Counter()) for k in ('stage', 'module', 'git-ref'))
+      (k, collections.Counter()) for k in ('stage', 'module', 'git-ref', 'pin'))
   for _, kind, version in markers:
     by_kind[kind][version] += 1
   breakdown = {k: dict(v) for k, v in by_kind.items() if v}
@@ -533,6 +645,24 @@ def _tf_subdirs(path):
   return [n for n in _subdirs(path) if _has_tf(os.path.join(path, n))]
 
 
+def _module_leaves(path, depth=2):
+  """Returns folders holding .tf files below a module group folder.
+
+  Groups can nest: `modules/cloud-config-container/__need_fixing/onprem`
+  is a module two levels below its group. The first folder with .tf files
+  on each branch is the module; its own subfolders (recipes, examples)
+  belong to it.
+  """
+  found = []
+  for name in _subdirs(path):
+    full = os.path.join(path, name)
+    if _has_tf(full):
+      found.append(name)
+    elif depth > 1:
+      found += [f'{name}/{sub}' for sub in _module_leaves(full, depth - 1)]
+  return found
+
+
 def catalog(root):
   root = os.path.abspath(root)
   if not _is_fabric_tree(root):
@@ -551,8 +681,9 @@ def catalog(root):
     if _has_tf(full):
       modules[name] = f'modules/{name}'
       continue
-    # A group of modules, e.g. modules/cloud-config-container/<name>.
-    for sub in _tf_subdirs(full):
+    # A group of modules, e.g. modules/cloud-config-container/<name>, or
+    # modules/cloud-config-container/__need_fixing/<name>.
+    for sub in _module_leaves(full):
       modules[f'{name}/{sub}'] = f'modules/{name}/{sub}'
   return {
       'root': root,
@@ -583,8 +714,9 @@ def module_key(rel_dir, module_names):
   `cloud-config-container/coredns` under root `modules`.
   """
   parts = rel_dir.split('/')
-  if len(parts) >= 2 and '/'.join(parts[-2:]) in module_names:
-    return '/'.join(parts[-2:]), '/'.join(parts[:-2])
+  for size in (3, 2):
+    if len(parts) >= size and '/'.join(parts[-size:]) in module_names:
+      return '/'.join(parts[-size:]), '/'.join(parts[:-size])
   name = parts[-1] if parts[-1] in module_names else None
   return name, '/'.join(parts[:-1])
 
@@ -594,7 +726,7 @@ def git_module_name(call):
   if call['kind'] != 'git' or not call.get('fabric'):
     return None
   parts = (call.get('subdir') or '').split('/')
-  if len(parts) in (2, 3) and parts[0] == 'modules' and all(parts):
+  if len(parts) in (2, 3, 4) and parts[0] == 'modules' and all(parts):
     return '/'.join(parts[1:])
   return None
 
@@ -646,6 +778,14 @@ class Mapping:
   target: str
   match: str
   recursive: bool = True
+  # For non-recursive mappings: the only top-level file names compared
+  # (None compares every top-level file upstream has).
+  only: tuple = None
+
+
+def _under(prefix, rel_path):
+  """rel_path below prefix, where '' is the root of the tree."""
+  return f'{prefix}/{rel_path}' if prefix else rel_path
 
 
 def module_closure(root, start_dirs, modules):
@@ -752,35 +892,267 @@ def _fast_folder_mappings(repo, mappings, base_cat, target_cat):
   return result
 
 
-def map_repo(scan, base_cat, target_cat, renames):
-  """Maps customer folders to upstream stages and modules."""
+def _same_content(path_a, path_b):
+  try:
+    return (_read_bytes(path_a).replace(b'\r\n',
+                                        b'\n') == _read_bytes(path_b).replace(
+                                            b'\r\n', b'\n'))
+  except OSError:
+    return False
+
+
+def _release_root_mappings(repo, mappings, base_cat, target_cat, primary_root,
+                           full_vendor):
+  """Maps upstream files that belong to no stage or module, by path.
+
+  A fork keeps upstream's top-level module files (modules/README.md) and,
+  next to its copy of fast/, upstream's CHANGELOG.md and
+  default-versions.tf, whose release stamp `detect` reads. Without a
+  mapping apply leaves them at the base release. They are mapped only
+  where the layout shows they are upstream's copies:
+
+  - the module root, when it vendors (nearly) every upstream module: the
+    top-level files upstream also has there;
+  - the folder that holds the customer's copy of fast/ (the parent of a
+    `stages` folder with two or more upstream stages): each release file
+    it has that is still upstream's, identical to the base or the target,
+    or a default-versions.tf with a Fabric release stamp. A CHANGELOG the
+    customer rewrote is theirs and is left alone.
+  """
+  claimed = {m.customer for m in mappings}
+  result = []
+  if primary_root and full_vendor and primary_root not in claimed:
+    upstream_files = set(
+        walk_tree(_join(base_cat['root'], 'modules'),
+                  top_level_only=True)) | set(
+                      walk_tree(_join(target_cat['root'], 'modules'),
+                                top_level_only=True))
+    customer_files = set(
+        walk_tree(_join(repo, primary_root), top_level_only=True))
+    if upstream_files & customer_files:
+      result.append(
+          Mapping('files', 'modules', primary_root, 'modules', 'modules',
+                  'parent of the vendored modules', recursive=False))
+  parents = collections.Counter(
+      posixpath.dirname(m.customer)
+      for m in mappings
+      if m.kind == 'stage' and m.match in (
+          'name', 'prefix') and m.base and m.base.startswith('fast/stages/'))
+  roots = sorted({
+      posixpath.dirname(posixpath.dirname(p))
+      for p, n in parents.items()
+      if n >= 2 and posixpath.basename(p) == 'stages' and posixpath.dirname(p)
+  })
+  for root in roots:
+    if root in claimed:
+      continue
+    only = []
+    for name in RELEASE_ROOT_FILES:
+      customer = _join(repo, _under(root, name))
+      if not os.path.isfile(customer) or os.path.islink(customer):
+        continue
+      upstream = [
+          _join(cat['root'], name)
+          for cat in (base_cat, target_cat)
+          if os.path.isfile(_join(cat['root'], name))
+      ]
+      stamped = name == 'default-versions.tf' and FABRIC_MARKER_RE.search(
+          _read_text(customer))
+      if stamped or any(_same_content(customer, u) for u in upstream):
+        only.append(name)
+    if only:
+      result.append(
+          Mapping('files', 'release files', root, '', '',
+                  'release files next to fast/', recursive=False,
+                  only=tuple(only)))
+  return result
+
+
+def _stage_from_name(name, stage_names, words=False):
+  """Returns (upstream stage, how) for a folder name, or (None, None).
+
+  `2-networking` matches by name, `2-networking-prod` by prefix. With
+  `words`, used for a repository that is one stage, a name without the
+  number matches when it contains the stage name as whole words
+  (`gcp-networking`, `fast-org-setup-prod`).
+  """
+  name = name.lower().replace('_', '-')
+  if name in stage_names:
+    return name, 'name'
+  prefixed = [n for n in stage_names if name.startswith(n + '-')]
+  if prefixed:
+    return max(prefixed, key=len), 'prefix'
+  if words:
+    padded = f'-{name}-'
+    found = [
+        n for n in stage_names
+        if '-' in n and f'-{n.split("-", 1)[1]}-' in padded
+    ]
+    if found:
+      return max(found, key=len), 'unnumbered name'
+  return None, None
+
+
+def parse_stage_map(values):
+  """{folder: stage name, path or None} from `--map FOLDER=STAGE` values.
+
+  FOLDER is relative to the repository ('.' is its root). STAGE is an
+  upstream stage name (0-org-setup) or path (fast/stages/0-org-setup), or
+  `none` for a folder that is the customer's own.
+  """
+  result = {}
+  for value in values or ():
+    folder, sep, stage = value.partition('=')
+    folder, stage = folder.strip().replace('\\', '/'), stage.strip()
+    if not sep or not folder or not stage:
+      raise UpgradeError(f'--map {value!r}: use FOLDER=STAGE or FOLDER=none')
+    folder = posixpath.normpath(folder)
+    if folder.startswith('/') or folder == '..' or folder.startswith('../'):
+      raise UpgradeError(f'--map {value!r}: the folder must be inside the '
+                         'repository')
+    folder = '' if folder == '.' else folder
+    if folder in result:
+      raise UpgradeError(f'--map: {folder or "."} is mapped more than once')
+    result[folder] = None if stage.lower() == 'none' else stage.strip('/')
+  return result
+
+
+def _stage_like(repo, d, scan):
+  """Why a folder looks like a FAST stage, or None."""
+  if d in scan.stage_dirs:
+    return {
+        'marker': 'fast_version.txt',
+        'name': 'stage-style name'
+    }.get(scan.stage_dirs[d]['reason'], 'stage-style name')
+  full = _join(repo, d)
+  if os.path.isfile(os.path.join(full, 'variables-fast.tf')):
+    return 'variables-fast.tf'
+  found = FAST_INTERFACE_VARS & set(_collect_variables(full))
+  if len(found) >= FAST_INTERFACE_MIN:
+    return 'FAST stage variables (' + ', '.join(sorted(found)[:4]) + ')'
+  return None
+
+
+def _stage_similarity(repo, d, base_cat, cache):
+  """{upstream stage: (files, variables)} similarity 0..1 for a folder.
+
+  `files` is the comparison automatic matching uses; `variables` is the
+  overlap of declared variables, since a stage rewritten file by file
+  usually keeps its interface. Guesses rank by the higher of the two;
+  merge risk depends on the files alone.
+  """
+  if 'sigs' not in cache:
+    cache['sigs'] = {
+        n: dir_signature(_join(base_cat['root'], p))
+        for n, p in base_cat['stages'].items()
+    }
+    cache['vars'] = {
+        n: set(_collect_variables(_join(base_cat['root'], p)))
+        for n, p in base_cat['stages'].items()
+    }
+  full = _join(repo, d)
+  sig, names = dir_signature(full), set(_collect_variables(full))
+  scores = {}
+  for name, upstream in cache['sigs'].items():
+    up_vars = cache['vars'][name]
+    by_vars = (len(names & up_vars) /
+               len(names | up_vars) if names and up_vars else 0.0)
+    scores[name] = (match_score(sig, upstream), by_vars)
+  return scores
+
+
+def _stage_guesses(repo, d, base_cat, cache):
+  """The likeliest upstream stages for a folder, best first."""
+  scores = {
+      n: (max(s), s)
+      for n, s in _stage_similarity(repo, d, base_cat, cache).items()
+  }
+  named, _ = _stage_from_name(
+      posixpath.basename(d) or os.path.basename(repo),
+      sorted(base_cat['stages']), words=True)
+  ranked = sorted(scores, key=lambda n: (n != named, -scores[n][0], n))
+  return [{
+      'stage': n,
+      'path': base_cat['stages'][n],
+      'score': round(scores[n][0], 2),
+      'files': round(scores[n][1][0], 2),
+      'variables': round(scores[n][1][1], 2),
+      'by_name': n == named,
+  } for n in ranked if scores[n][0] > 0 or n == named][:CANDIDATE_GUESSES]
+
+
+def _user_mappings(repo, stage_map, base_cat, target_cat):
+  """Validates `--map` and returns (mappings, folders marked none, scores)."""
+  by_path = {p: n for n, p in base_cat['stages'].items()}
+  mappings, mine, scores, cache = [], [], {}, {}
+  for folder, stage in sorted(stage_map.items()):
+    if not os.path.isdir(_join(repo, folder)):
+      raise UpgradeError(f'--map {folder or "."}: no such folder in the '
+                         'repository')
+    if stage is None:
+      mine.append(folder)
+      continue
+    name = by_path.get(stage, stage)
+    if name not in base_cat['stages']:
+      raise UpgradeError(
+          f'--map {folder or "."}={stage}: not a stage of the base release '
+          f'{base_cat["version"]}; use one of: ' +
+          ', '.join(sorted(base_cat['stages'])))
+    if not dir_signature(_join(repo, folder)):
+      raise UpgradeError(f'--map {folder or "."}: the folder has no .tf files')
+    scores[folder] = round(
+        _stage_similarity(repo, folder, base_cat, cache)[name][0], 2)
+    mappings.append(
+        Mapping('stage', name, folder, base_cat['stages'][name],
+                target_cat['stages'].get(name), 'set by user'))
+  return mappings, mine, scores
+
+
+def map_repo(scan, base_cat, target_cat, renames, stage_map=None):
+  """Maps customer folders to upstream stages and modules.
+
+  `stage_map` ({folder: stage or None}, see parse_stage_map) is the user's
+  answer for folders the automatic match cannot settle; it wins over it.
+  Returns (mappings, customer stages, customer modules, module root,
+  {'candidates', 'user'}).
+  """
   repo = scan.root
   stage_names = sorted(set(base_cat['stages']) | set(target_cat['stages']))
   base_stage_sigs = {
       n: dir_signature(_join(base_cat['root'], p))
       for n, p in base_cat['stages'].items()
   }
-  mappings = []
+  repo_name = os.path.basename(os.path.abspath(repo))
+
+  def by_name(d):
+    """Maps a folder by its name (the repository name for the root)."""
+    name, how = _stage_from_name(
+        posixpath.basename(d) if d else repo_name, stage_names, words=not d)
+    if name and how != 'name' and name in base_stage_sigs:
+      score = match_score(dir_signature(_join(repo, d)), base_stage_sigs[name])
+      if score < PREFIX_MATCH_THRESHOLD:
+        name = None
+    if not name:
+      return None
+    return Mapping('stage', name, d, base_cat['stages'].get(name),
+                   target_cat['stages'].get(name),
+                   how if d else f'repository {how}')
+
+  mappings, mine, user_scores = _user_mappings(repo, stage_map or {}, base_cat,
+                                               target_cat)
+  # Folders the user decided on, with everything below them.
+  decided = [m.customer for m in mappings] + mine
+
+  def is_decided(d):
+    return any(_inside(d, x) for x in decided)
+
   unmatched = []
   for d in sorted(scan.stage_dirs):
-    name = posixpath.basename(d)
-    how = 'name'
-    if name not in stage_names:
-      prefixed = [
-          n for n in stage_names
-          if name.startswith(n + '-') or name.startswith(n + '_')
-      ]
-      name = max(prefixed, key=len) if prefixed else None
-      how = 'prefix'
-      if name and name in base_stage_sigs:
-        score = match_score(dir_signature(_join(repo, d)),
-                            base_stage_sigs[name])
-        if score < PREFIX_MATCH_THRESHOLD:
-          name = None
-    if name:
-      mappings.append(
-          Mapping('stage', name, d, base_cat['stages'].get(name),
-                  target_cat['stages'].get(name), how))
+    if is_decided(d):
+      continue
+    mapping = by_name(d)
+    if mapping:
+      mappings.append(mapping)
     else:
       unmatched.append(d)
   mappings += _fast_folder_mappings(repo, mappings, base_cat, target_cat)
@@ -789,20 +1161,50 @@ def map_repo(scan, base_cat, target_cat, renames):
   mapped = {m.customer for m in mappings if m.recursive}
   candidates = list(unmatched)
   for d in sorted(scan.tf_dirs):
-    if d in scan.stage_dirs or d in scan.module_dirs:
+    if d in scan.stage_dirs or d in scan.module_dirs or is_decided(d):
       continue
     if any(_inside(d, x) for x in mapped | scan.module_dirs):
       continue
     candidates.append(d)
-  customer_stages = []
+  customer_stages = [d for d in mine if dir_signature(_join(repo, d))]
+  unmapped = []
   for d in candidates:
+    # A repository that holds one stage at its root, named after it.
+    if d == '' and d not in unmatched and not mapped:
+      mapping = by_name(d)
+      if mapping:
+        mappings.append(mapping)
+        continue
     score, name = _best_match(dir_signature(_join(repo, d)), base_stage_sigs)
     if name and score >= STAGE_MATCH_THRESHOLD:
       mappings.append(
           Mapping('stage', name, d, base_cat['stages'].get(name),
                   target_cat['stages'].get(name), f'content {score:.2f}'))
-    elif d in unmatched:
-      customer_stages.append(d)
+    else:
+      unmapped.append(d)
+      if d in unmatched:
+        customer_stages.append(d)
+  # Stage-like folders that came close: the user is asked which stage each
+  # one is. The outermost folder of a branch speaks for the ones below it.
+  stage_candidates, cache = [], {}
+  for d in sorted(unmapped):
+    if any(_inside(d, m.customer) for m in mappings if m.recursive):
+      continue
+    if any(_inside(d, c['folder']) for c in stage_candidates):
+      continue
+    reason = _stage_like(repo, d, scan)
+    if not reason:
+      continue
+    guesses = _stage_guesses(repo, d, base_cat, cache)
+    if guesses and (guesses[0]['by_name'] or
+                    guesses[0]['score'] >= CANDIDATE_MIN_SCORE):
+      stage_candidates.append({
+          'folder': d,
+          'reason': reason,
+          'guesses': guesses
+      })
+  asked = {c['folder'] for c in stage_candidates}
+  customer_stages = sorted(set(customer_stages) - asked)
   claimed = [m.customer for m in mappings if m.recursive]
 
   module_names = set(base_cat['modules']) | set(target_cat['modules'])
@@ -826,7 +1228,7 @@ def map_repo(scan, base_cat, target_cat, renames):
         customer_modules.add(d)
       else:
         customer_modules.update(
-            f'{d}/{sub}' for sub in _tf_subdirs(os.path.join(full, name)))
+            f'{d}/{sub}' for sub in _module_leaves(os.path.join(full, name)))
   base_module_sigs = None
   roots = collections.Counter()
   module_roots = {}
@@ -853,6 +1255,7 @@ def map_repo(scan, base_cat, target_cat, renames):
     module_roots[d] = root_rel
 
   primary_root = roots.most_common(1)[0][0] if roots else None
+  full_vendor = False
   if primary_root is not None:
     have = {m.name for m in mappings if m.kind == 'module'}
     in_root = {
@@ -880,7 +1283,26 @@ def map_repo(scan, base_cat, target_cat, renames):
       d = f'{primary_root}/{name}' if primary_root else name
       mappings.append(
           Mapping('module', name, d, None, target_cat['modules'][name], how))
-  return mappings, customer_stages, customer_only_modules, primary_root
+  mappings += _release_root_mappings(repo, mappings, base_cat, target_cat,
+                                     primary_root, full_vendor)
+  user = [{
+      'folder': m.customer,
+      'stage': m.name,
+      'score': user_scores[m.customer],
+      'low_similarity': user_scores[m.customer] < STAGE_MATCH_THRESHOLD,
+  } for m in mappings if m.match == 'set by user']
+  user += [{
+      'folder': d,
+      'stage': None,
+      'score': None,
+      'low_similarity': False
+  } for d in mine]
+  matching = {
+      'candidates': stage_candidates,
+      'user': sorted(user, key=lambda u: u['folder']),
+  }
+  return (mappings, customer_stages, customer_only_modules, primary_root,
+          matching)
 
 
 def git_template(calls, fabric_re):
@@ -961,15 +1383,111 @@ class FileResult:
   renamed_to: str = None
   renamed_from: str = None
   blocked: str = None
+  # The customer's copy keeps upstream's module sources although the rest
+  # of the repository uses another module folder: compared and written
+  # without the layout rewrite.
+  upstream_sources: bool = False
+  # A file of an upstream sample dataset (`datasets/<name>/`) that the
+  # customer does not keep: their data lives in another dataset, folder or
+  # repository. apply does not add or restore these.
+  sample_data: bool = False
+
+
+def _git_ignored(repo, rel_path):
+  if not shutil.which('git'):
+    return False
+  proc = git(['-C', repo, 'check-ignore', '-q', rel_path], check=False)
+  return proc.returncode == 0
+
+
+def linked_repos(repo, mappings, scan=None):
+  """Mapped folders that live in another git repository.
+
+  A module folder can be a symlink to a separate checkout, or a nested,
+  git-ignored clone. Either way `git status` of the main repository does
+  not see changes there: apply must check that repository too, and the
+  upgrade needs one commit per repository. The same holds for a folder
+  inside a stage, typically `datasets/` kept in its own repository: a
+  nested clone is written by apply like any other folder, a symlink is
+  compared through the link but never written through (`writes` False).
+  """
+  real_repo = os.path.realpath(repo)
+  found = {}
+
+  def entry(prefix, kind, mapped, writes=True):
+    full = _join(repo, prefix)
+    target = os.path.realpath(full)
+    return {
+        'path':
+            prefix,
+        'kind':
+            kind,
+        'target':
+            target,
+        'outside':
+            not target.startswith(real_repo + os.sep),
+        'ignored':
+            _git_ignored(repo, prefix),
+        'git':
+            git_state(target) if os.path.isdir(target) else {
+                'git': False,
+                'reason': 'missing'
+            },
+        'mappings':
+            mapped,
+        'writes':
+            writes,
+    }
+
+  for m in mappings:
+    if not m.customer:
+      continue
+    parts = m.customer.split('/')
+    for i in range(1, len(parts) + 1):
+      prefix = '/'.join(parts[:i])
+      if prefix in found:
+        found[prefix]['mappings'] += 1
+        break
+      full = _join(repo, prefix)
+      kind = None
+      if os.path.islink(full):
+        kind = 'symlink'
+      elif os.path.exists(os.path.join(full, '.git')):
+        kind = 'nested repository'
+      if kind:
+        found[prefix] = entry(prefix, kind, 1)
+        break
+  if scan is not None:
+    below = [(l['path'], 'symlink')
+             for l in scan.links
+             if l['dir'] and not l['broken']]
+    below += [(p, 'nested repository') for p in scan.nested_repos]
+    for path, kind in sorted(below):
+      if any(_inside(path, p) for p in found):
+        continue
+      owners = [
+          m for m in mappings if m.recursive and m.customer is not None and
+          _inside(path, m.customer) and path != m.customer
+      ]
+      if not owners:
+        continue
+      linked = entry(path, kind, len(owners), writes=kind != 'symlink')
+      # A link to another folder of the same repository is an alias, not
+      # a separate repository.
+      if kind == 'symlink' and not linked['outside']:
+        continue
+      found[path] = linked
+  return sorted(found.values(), key=lambda r: r['path'])
 
 
 class Context:
   """Everything `plan` and `apply` derive from their three inputs."""
 
   def __init__(self, repo, base, target, fabric_source=DEFAULT_FABRIC_SOURCE,
-               data_paths=()):
+               data_paths=(), stage_map=None):
     self.repo = os.path.abspath(repo)
     self.fabric_re = re.compile(fabric_source)
+    self.stage_map = dict(stage_map or {})
     self.data_paths = [os.path.abspath(p) for p in data_paths]
     for path in self.data_paths:
       if not os.path.exists(path):
@@ -1015,8 +1533,9 @@ class Context:
         self.base_cat, self.target_cat,
         release_notes.declared_module_renames(self.releases))
     (self.mappings, self.customer_stages, self.customer_modules,
-     self.modules_root) = map_repo(self.scan, self.base_cat, self.target_cat,
-                                   self.renames)
+     self.modules_root, self.matching) = map_repo(self.scan, self.base_cat,
+                                                  self.target_cat, self.renames,
+                                                  self.stage_map)
     self.template, template_ref = git_template(self.scan.calls, self.fabric_re)
     base_map = {
         m.base: m.customer
@@ -1039,6 +1558,9 @@ class Context:
         'base': self.base_cat['root'],
         'target': self.target_cat['root']
     }
+    self.raw_files = set()
+    self.upstream_schemas = None
+    self.linked_repos = linked_repos(self.repo, self.mappings, self.scan)
 
   def upstream_bytes(self, side, upstream_rel, customer_rel):
     """Returns upstream file content adjusted to the customer layout."""
@@ -1047,19 +1569,19 @@ class Context:
     if b'\0' in data[:8192]:
       return data
     data = data.replace(b'\r\n', b'\n')
-    if _is_terraform(upstream_rel):
+    if _is_terraform(upstream_rel) and customer_rel not in self.raw_files:
       text = data.decode('utf-8', errors='replace')
       new = self.rewriters[side].rewrite(text, upstream_rel, customer_rel)
       if new != text:
         return new.encode('utf-8')
     return data
 
-  def upstream_entry(self, side, upstream_rel, customer_rel):
+  def upstream_entry(self, side, upstream_rel, customer_rel, raw=False):
     if upstream_rel is None:
       return None
     path = _join(self.roots[side], upstream_rel)
     rewrite = None
-    if _is_terraform(upstream_rel):
+    if _is_terraform(upstream_rel) and not raw:
       rewrite = lambda text: self.rewriters[side].rewrite(
           text, upstream_rel, customer_rel)
     return read_entry(path, rewrite)
@@ -1073,36 +1595,97 @@ def _breakdown_text(breakdown):
   return '; '.join(parts)
 
 
+def _dir_names(path):
+  """Names of the folders (or links to them) in path; empty if missing."""
+  try:
+    return {
+        n for n in os.listdir(path) if os.path.isdir(os.path.join(path, n)) or
+        os.path.islink(os.path.join(path, n))
+    }
+  except OSError:
+    return set()
+
+
 def diff_mapping(ctx, mapping, exclude):
   c_root = _join(ctx.repo, mapping.customer)
-  b_root = _join(ctx.base_cat['root'], mapping.base) if mapping.base else None
-  t_root = _join(ctx.target_cat['root'],
-                 mapping.target) if mapping.target else None
+  b_root = (_join(ctx.base_cat['root'], mapping.base)
+            if mapping.base is not None else None)
+  t_root = (_join(ctx.target_cat['root'], mapping.target)
+            if mapping.target is not None else None)
   top = not mapping.recursive
   c_files = walk_tree(c_root, exclude, top)
   b_files = walk_tree(b_root, (), top)
   t_files = walk_tree(t_root, (), top)
+  if mapping.only is not None:
+    keep = set(mapping.only)
+    c_files, b_files, t_files = ({
+        k: v for k, v in files.items() if k in keep
+    } for files in (c_files, b_files, t_files))
   if top:
     c_files = {k: v for k, v in c_files.items() if k in b_files or k in t_files}
   links = {r for r, p in c_files.items() if os.path.islink(p)}
+  # An upstream folder replaced by a link to another checkout (datasets/
+  # kept in its own repository): compare the files through the link, so
+  # they are not all reported as removed. They stay blocked below.
+  real_root = os.path.realpath(c_root)
+  for rel in sorted(links):
+    full = c_files[rel]
+    if top or not os.path.isdir(full):
+      continue
+    points_to = _rel(os.path.realpath(full), real_root)
+    # Links inside the folder (upstream's own datasets/classic alias) are
+    # compared as links, like upstream does.
+    if not (points_to == '..' or points_to.startswith('../')):
+      continue
+    if not any(
+        k.startswith(rel + '/') for k in itertools.chain(b_files, t_files)):
+      continue
+    for sub, path in walk_tree(full).items():
+      c_files.setdefault(f'{rel}/{sub}', path)
+  # Upstream sample datasets (`datasets/<name>/`) the customer does not
+  # keep. A dataset new in the target counts only when the customer already
+  # dropped some of the base datasets: a fork that keeps them all gets the
+  # new one too.
+  base_datasets = set()
+  curated = False
+  if mapping.kind == 'stage' and b_root:
+    base_datasets = _dir_names(os.path.join(b_root, 'datasets'))
+    curated = bool(base_datasets - _dir_names(os.path.join(c_root, 'datasets')))
   results = []
   for rel_path in sorted(set(c_files) | set(b_files) | set(t_files)):
     customer_rel = (f'{mapping.customer}/{rel_path}'
                     if mapping.customer else rel_path)
-    b_rel = f'{mapping.base}/{rel_path}' if rel_path in b_files else None
-    t_rel = f'{mapping.target}/{rel_path}' if rel_path in t_files else None
+    b_rel = _under(mapping.base, rel_path) if rel_path in b_files else None
+    t_rel = _under(mapping.target, rel_path) if rel_path in t_files else None
     c = read_entry(c_files.get(rel_path))
     b = ctx.upstream_entry('base', b_rel, customer_rel)
     t = ctx.upstream_entry('target', t_rel, customer_rel)
+    upstream_sources = False
+    if (b and b.adjusted and c and c.kind == 'file' and c.digest != b.digest):
+      # The rest of the repository uses another module folder, but this
+      # file still has upstream's sources: comparing it with the rewritten
+      # base would report the untouched upstream paths as a customer edit.
+      raw_b = ctx.upstream_entry('base', b_rel, customer_rel, raw=True)
+      if raw_b and raw_b.digest == c.digest:
+        b = raw_b
+        t = ctx.upstream_entry('target', t_rel, customer_rel, raw=True)
+        upstream_sources = True
+        ctx.raw_files.add(customer_rel)
     category = classify(c and c.digest, b and b.digest, t and t.digest)
     entries = [e for e in (c, b, t) if e]
+    parts = rel_path.split('/')
+    sample = (mapping.kind == 'stage' and c is None and len(parts) >= 2 and
+              parts[0] == 'datasets' and
+              not os.path.lexists(_join(c_root, f'datasets/{parts[1]}')) and
+              (parts[1] in base_datasets or curated))
     result = FileResult(
         path=customer_rel, category=category, kind=file_kind(rel_path),
         mapping=mapping.customer, base_path=b_rel, target_path=t_rel,
         layout_adjusted=bool(
             (b and b.adjusted) or
             (t and t.adjusted)), binary=any(e.binary for e in entries),
-        link=any(e.kind == 'link' for e in entries))
+        link=any(e.kind == 'link' for e in entries),
+        upstream_sources=upstream_sources, sample_data=sample)
     parents = rel_path.split('/')[:-1]
     for i in range(len(parents)):
       if '/'.join(parents[:i + 1]) in links:
@@ -1206,6 +1789,14 @@ def _tfvars_keys(path):
   return set(hcl_lite.tfvars_keys(text, path.endswith('.json')))
 
 
+def _unreadable_reason(path, repo):
+  rel = _rel(path, repo)
+  label = path if rel.startswith('../') else rel
+  if os.path.islink(path) and not os.path.exists(path):
+    return f'{label} (broken symlink to {os.readlink(path)})'
+  return f'{label} (cannot be read)'
+
+
 def stage_variables(ctx):
   data_tfvars = []
   for path in ctx.data_paths:
@@ -1235,7 +1826,7 @@ def stage_variables(ctx):
     for path in files:
       found = _tfvars_keys(path)
       if found is None:
-        unreadable.append(path)
+        unreadable.append(_unreadable_reason(path, ctx.repo))
       else:
         keys |= found
     removed = set(diff['removed'])
@@ -1409,8 +2000,100 @@ def schema_changes(ctx, results):
   return changes
 
 
+def _upstream_schema_index(ctx):
+  """{schema file name: [paths relative to the base tree]}, built once."""
+  if ctx.upstream_schemas is None:
+    index = collections.defaultdict(list)
+    root = ctx.base_cat['root']
+    for path in factory_data.find_schema_files(
+        [_join(root, 'fast'), _join(root, 'modules')], IGNORED_DIRS):
+      index[os.path.basename(path)].append(_rel(path, root))
+    ctx.upstream_schemas = index
+  return ctx.upstream_schemas
+
+
+def _upstream_stage_of(rel_path, cat):
+  """The upstream stage whose folder holds rel_path, or None."""
+  for name, path in cat['stages'].items():
+    if _inside(rel_path, path):
+      return name
+  return None
+
+
+def upstream_schema(ctx, hint, ref, stages=()):
+  """Resolves a modeline against the schemas of the base release, by name.
+
+  For data the repository has no schema for: a dataset repository, a
+  data/ folder next to the stages, a wrapper's data. Schema names repeat
+  across stages (project.schema.json), so when copies differ the folders
+  in `hint` (data/2-networking/...) or the stages mapped in the repository
+  pick one. Returns (base path, target path or None, upstream stage or
+  None) and how it was found, or (None, why not).
+  """
+  if ref.startswith(('http://', 'https://')):
+    return None, 'remote schema (not fetched)'
+  root = ctx.base_cat['root']
+  candidates = _upstream_schema_index(ctx).get(posixpath.basename(ref), [])
+
+  def same(paths):
+    return len({_sha(_read_bytes(_join(root, p))) for p in paths}) == 1
+
+  if len(candidates) > 1 and not same(candidates):
+    names = list(ctx.base_cat['stages'])
+    hints = set()
+    for part in hint.split('/')[:-1]:
+      name, _ = _stage_from_name(part, names, words=True)
+      if name:
+        hints.add(name)
+    hints = hints or set(stages)
+    candidates = [
+        p for p in candidates if _upstream_stage_of(p, ctx.base_cat) in hints
+    ]
+    if not candidates or not same(candidates):
+      stages_with = sorted({
+          _upstream_stage_of(p, ctx.base_cat) or 'modules'
+          for p in _upstream_schema_index(ctx)[posixpath.basename(ref)]
+      })
+      return None, (f'{posixpath.basename(ref)} differs between '
+                    f'{", ".join(stages_with)}: keep the data in a folder '
+                    'named after its stage (for example data/2-networking) '
+                    'or plan it together with the stage code (--data)')
+  if not candidates:
+    return None, 'schema not found in the repository or the release'
+  rel = sorted(candidates)[0]
+  stage = _upstream_stage_of(rel, ctx.base_cat)
+  target = _join(ctx.target_cat['root'], rel)
+  if not os.path.isfile(target) and stage in ctx.target_cat['stages']:
+    moved = [
+        p for p in _walk_names(
+            _join(ctx.target_cat['root'], ctx.target_cat['stages'][stage]))
+        if os.path.basename(p) == os.path.basename(rel)
+    ]
+    target = moved[0] if len(moved) == 1 else None
+  return (_join(root,
+                rel), target if target and os.path.isfile(target) else None,
+          stage), 'release schema'
+
+
+def _walk_names(root):
+  return [
+      os.path.join(d, n)
+      for d, _, names in os.walk(root)
+      for n in names
+      if factory_data.is_schema_file(n)
+  ]
+
+
 def data_impact(ctx, results):
-  """Validates customer factory YAML before and after the upgrade."""
+  """Validates customer factory YAML before and after the upgrade.
+
+  Covers YAML in mapped stages, YAML with a schema modeline anywhere else
+  in the repository (a data/ folder, a wrapper's data), YAML behind
+  symlinked folders, and --data paths. Schemas come from the repository;
+  when it has none for a file, from the base and target releases. Also
+  lists mapped stages whose upstream uses datasets but where no data was
+  found, so an empty check is not reported as a clean one.
+  """
   if not factory_data.available():
     return {
         'skipped':
@@ -1419,44 +2102,112 @@ def data_impact(ctx, results):
   by_path = {r.path: r for r in results}
   index = factory_data.SchemaIndex(
       [_join(ctx.repo, s) for s in ctx.scan.schema_files])
-  stage_dirs = [m.customer for m in ctx.mappings if m.kind == 'stage']
+  stage_maps = [m for m in ctx.mappings if m.kind == 'stage']
+  module_dirs = [
+      m.customer for m in ctx.mappings if m.kind == 'module' and m.recursive
+  ]
+  stage_names = sorted({m.name for m in stage_maps})
+  repo_name = os.path.basename(ctx.repo)
   files = []
+  seen = set()
+  with_data = set()
+
+  def stage_for(rel_path):
+    best = None
+    for m in stage_maps:
+      if _inside(rel_path, m.customer) and (best is None or len(m.customer)
+                                            > len(best.customer)):
+        best = m
+    return best
+
+  def repo_file(rel_path, path):
+    real = os.path.realpath(path)
+    if real in seen:
+      return
+    seen.add(real)
+    stage = stage_for(rel_path)
+    if stage is None and any(_inside(rel_path, d) for d in module_dirs):
+      return  # module examples and tests, not data
+    hidden = any(p.startswith('.') for p in rel_path.split('/')[:-1])
+    if stage is not None and not hidden:
+      with_data.add(stage.customer)
+    result = by_path.get(rel_path)
+    if result is not None and result.category in UPSTREAM_CONTENT:
+      return  # upstream's own sample data, used as is
+    # Outside stages, only files that declare a schema are factory data;
+    # the rest is CI configuration and the like.
+    files.append(
+        (path, rel_path, f'{repo_name}/{rel_path}', result, stage is None or
+         hidden, stage))
+
   for rel_path in ctx.scan.yaml_files:
-    if any(_inside(rel_path, d) for d in stage_dirs):
-      result = by_path.get(rel_path)
-      if result is not None and result.category in UPSTREAM_CONTENT:
+    repo_file(rel_path, _join(ctx.repo, rel_path))
+  for link in ctx.scan.links:
+    if not link['dir'] or link['broken']:
+      continue
+    full = _join(ctx.repo, link['path'])
+    for path in factory_data.find_yaml_files([full], IGNORED_DIRS):
+      repo_file(f'{link["path"]}/{_rel(path, full)}', path)
+  for root in ctx.data_paths:
+    for path in factory_data.find_yaml_files([root], IGNORED_DIRS):
+      real = os.path.realpath(path)
+      if real in seen:
         continue
-      files.append((_join(ctx.repo, rel_path), rel_path, result))
-  for path in factory_data.find_yaml_files(ctx.data_paths, IGNORED_DIRS):
-    files.append((path, path, None))
+      seen.add(real)
+      rel = _rel(path,
+                 root) if os.path.isdir(root) else posixpath.basename(path)
+      files.append(
+          (path, path, f'{posixpath.basename(root)}/{rel}', None, False, None))
+
   summary = collections.Counter()
   details = []
-  for path, label, result in files:
+  for path, label, hint, result, loose, stage in files:
     try:
       text = _read_text(path)
     except OSError:
       continue
     ref = factory_data.modeline(text)
     if not ref:
-      summary['no-modeline'] += 1
+      if not loose:
+        summary['no-modeline'] += 1
       continue
     before_path, how = index.resolve(path, ref)
-    if not before_path:
-      summary['unresolved'] += 1
-      details.append({'file': label, 'status': 'unresolved', 'reason': how})
-      continue
     after_path = before_path
     note = None
-    schema_rel = _rel(before_path, ctx.repo)
-    schema_result = by_path.get(schema_rel)
-    if schema_result is not None:
-      if schema_result.category in ('upstream-changed', 'upstream-added',
-                                    'conflict'):
-        after_path = _join(ctx.target_cat['root'], schema_result.target_path)
-        if schema_result.category == 'conflict':
-          note = 'schema has a pending merge'
-      elif schema_result.category in ('upstream-deleted', 'conflict-deleted'):
-        after_path = None
+    upstream_stage = None
+    if before_path:
+      schema_rel = _rel(before_path, ctx.repo)
+      schema_label = schema_rel
+      schema_result = by_path.get(schema_rel)
+      if schema_result is not None:
+        if schema_result.category in ('upstream-changed', 'upstream-added',
+                                      'conflict'):
+          after_path = _join(ctx.target_cat['root'], schema_result.target_path)
+          if schema_result.category == 'conflict':
+            note = 'schema has a pending merge'
+        elif schema_result.category in ('upstream-deleted', 'conflict-deleted'):
+          after_path = None
+      owner = stage_for(schema_rel)
+      if owner is not None and not schema_rel.startswith('../'):
+        with_data.add(owner.customer)
+    else:
+      found, why = upstream_schema(ctx, hint, ref, stage_names)
+      if not found:
+        summary['unresolved'] += 1
+        details.append({
+            'file': label,
+            'status': 'unresolved',
+            'reason': f'{how}; {why}'
+        })
+        continue
+      before_path, after_path, upstream_stage = found
+      schema_label = (f'{ctx.base_version} '
+                      f'{_rel(before_path, ctx.base_cat["root"])}')
+      note = 'validated against the release schemas'
+      with_data.update(
+          m.customer for m in stage_maps if m.name == upstream_stage)
+    if stage is not None:
+      with_data.add(stage.customer)
     before_schema, error = factory_data.load_schema(before_path)
     if error:
       summary['unresolved'] += 1
@@ -1469,7 +2220,10 @@ def data_impact(ctx, results):
       after_schema, error = factory_data.load_schema(after_path)
       after = factory_data.validate_text(
           text, after_schema) if not error else [error]
-      if not before and not after:
+      if (factory_data.is_validator_error(before) or
+          factory_data.is_validator_error(after)):
+        status = 'validator-error'
+      elif not before and not after:
         status = 'ok'
       elif not before:
         status = 'breaks'
@@ -1479,20 +2233,35 @@ def data_impact(ctx, results):
         status = 'still-invalid'
     summary[status] += 1
     if status != 'ok':
+      if status == 'validator-error':
+        errors = [
+            e for e in (before + after)
+            if e.startswith(factory_data.VALIDATOR_ERROR)
+        ][:1]
+      else:
+        errors = (after if status == 'breaks' else before)[:5]
       entry = {
           'file': label,
           'status': status,
-          'schema': schema_rel,
-          'errors': (after if status == 'breaks' else before)[:5],
+          'schema': schema_label,
+          'errors': errors,
       }
       if result is not None and result.category.startswith('conflict'):
         entry['note'] = 'file has a pending merge'
       if note:
         entry['note'] = note
       details.append(entry)
-  order = ('breaks', 'schema-removed', 'still-invalid', 'unresolved', 'fixed')
-  details.sort(key=lambda d: (order.index(d['status']), d['file']))
-  return {'summary': dict(summary), 'files': details}
+  details.sort(key=lambda d: (DATA_ORDER.index(d['status']), d['file']))
+  without = sorted(
+      m.customer or '.'
+      for m in stage_maps
+      if m.customer not in with_data and m.base and
+      os.path.isdir(_join(ctx.base_cat['root'], f'{m.base}/datasets')))
+  return {
+      'summary': dict(summary),
+      'files': details,
+      'stages_without_data': without,
+  }
 
 
 def provider_constraints(root):
@@ -1533,6 +2302,311 @@ def unresolved_sources(ctx, results):
           'source': call.source
       })
   return problems
+
+
+def _pin_version(text):
+  parts = [int(p) for p in text.split('.')]
+  return tuple(parts + [0] * (3 - len(parts))), len(parts)
+
+
+def constraint_allows(constraint, version):
+  """True if a Terraform version constraint admits version; None if unknown.
+
+  Supports =, !=, >, >=, <, <= and ~> clauses separated by commas.
+  """
+  wanted = _version(version) if isinstance(version, str) else version
+  if not constraint or not wanted:
+    return None
+  for clause in constraint.split(','):
+    m = PIN_RE.match(clause)
+    if not m:
+      return None
+    op, (value, precision) = m.group(1) or '=', _pin_version(m.group(2))
+    if op == '~>':
+      upper = list(value[:max(precision - 1, 1)])
+      upper[-1] += 1
+      upper = tuple(upper + [0] * (3 - len(upper)))
+      ok = value <= wanted < upper if precision > 1 else wanted >= value
+    else:
+      ok = {
+          '=': wanted == value,
+          '!=': wanted != value,
+          '>': wanted > value,
+          '>=': wanted >= value,
+          '<': wanted < value,
+          '<=': wanted <= value,
+      }[op]
+    if not ok:
+      return False
+  return True
+
+
+def lower_bound(constraint):
+  """The lowest version a constraint asks for (its >=, >, ~> or = floor)."""
+  best = None
+  for clause in (constraint or '').split(','):
+    m = PIN_RE.match(clause)
+    if m and (m.group(1) or '=') in ('>=', '>', '~>', '='):
+      value = _pin_version(m.group(2))[0]
+      best = value if best is None or value > best else best
+  return best
+
+
+def _loaded_version_files(scan):
+  """Paths of version files that some Terraform configuration loads.
+
+  Terraform reads the top-level .tf files of a root or child module. A
+  file counts when its folder holds configuration besides version files
+  (a stage, a module, an environment folder), or when such a folder links
+  to it: module versions.tf files can be symlinks to one shared file. A
+  template that nothing loads, such as a fork's root default-versions.tf,
+  cannot break `terraform init`.
+  """
+  version_paths = {v['path'] for v in scan.version_files}
+  configs = set()
+  for d in scan.tf_dirs:
+    full = _join(scan.root, d)
+    try:
+      names = sorted(os.listdir(full))
+    except OSError:
+      continue
+    for n in names:
+      path = os.path.join(full, n)
+      if (n.endswith('.tf') and not os.path.islink(path) and
+          CONFIG_BLOCK_RE.search(hcl_lite.mask(_read_text(path)))):
+        configs.add(d)
+        break
+  loaded = {p for p in version_paths if posixpath.dirname(p) in configs}
+  real_root = os.path.realpath(scan.root)
+  for link in scan.links:
+    if (link['dir'] or link['broken'] or not _is_terraform(link['path']) or
+        posixpath.dirname(link['path']) not in configs):
+      continue
+    real = os.path.realpath(_join(scan.root, link['path']))
+    if real.startswith(real_root + os.sep):
+      rel = _rel(real, real_root)
+      if rel in version_paths:
+        loaded.add(rel)
+  return loaded
+
+
+def version_pins_report(ctx, by_path, target_pins):
+  """Customer-owned files whose version pins or release stamp are stale.
+
+  Upstream-owned files are updated by apply. A copy of default-versions.tf
+  under another name (terraform.tf, versions.tf in a stage) is the
+  customer's, is kept, and still pins the base release's providers:
+  `terraform init` then fails against the target's modules. Only files
+  that a Terraform configuration loads are checked.
+  """
+  loaded = _loaded_version_files(ctx.scan)
+  entries = []
+  for info in ctx.scan.version_files:
+    if info['path'] not in loaded:
+      continue
+    result = by_path.get(info['path'])
+    if result is not None and result.category not in CUSTOMER_OWNED:
+      continue
+    pins = []
+    for key, constraint in sorted(info['pins'].items()):
+      target = target_pins.get(key)
+      floor = lower_bound(target)
+      allows = constraint_allows(constraint, floor) if floor else None
+      pins.append({
+          'name': key,
+          'constraint': constraint,
+          'target': target,
+          'allows_target': allows,
+      })
+    stale = bool(info['marker'] and info['marker'] != ctx.target_version)
+    if stale or any(p['allows_target'] is False for p in pins):
+      entries.append({
+          'file': info['path'],
+          'category': result.category if result else 'unmapped',
+          'marker': info['marker'],
+          'stale_marker': stale,
+          'pins': pins,
+          'blocks_init': any(p['allows_target'] is False for p in pins),
+      })
+  return entries
+
+
+def _addon_files(root):
+  files = {}
+  addons = _join(root, 'fast/addons')
+  for name in _subdirs(addons):
+    for rel_path, full in walk_tree(os.path.join(addons, name)).items():
+      if _is_terraform(rel_path) and not os.path.islink(full):
+        files[f'fast/addons/{name}/{rel_path}'] = full
+  return files
+
+
+def _code_only(text):
+  """Terraform text without comments, license headers or blank lines."""
+  lines = []
+  for line in text.splitlines():
+    stripped = line.strip()
+    if stripped and not stripped.startswith(('#', '//', '/*', '*')):
+      lines.append(stripped)
+  return '\n'.join(lines)
+
+
+def addon_copies(ctx, results):
+  """Customer stage files copied from an upstream add-on.
+
+  Add-ons (fast/addons) are enabled by copying or linking their files into
+  a stage. A copy is the customer's file, so apply keeps it: report which
+  add-on it came from and whether upstream changed that add-on since.
+  """
+  base_files = _addon_files(ctx.base_cat['root'])
+  if not base_files:
+    return []
+  target_root = ctx.target_cat['root']
+  texts = {p: _read_text(f) for p, f in base_files.items()}
+  codes = {p: _code_only(t) for p, t in texts.items()}
+  copies = []
+  for r in results:
+    if (r.category != 'customer-added' or r.kind != 'terraform' or r.link or
+        _in_module_mapping(ctx, r.path)):
+      continue
+    full = _join(ctx.repo, r.path)
+    if os.path.islink(full) or not os.path.isfile(full):
+      continue
+    text = _code_only(_read_text(full))
+    if not text:
+      continue
+    best = (0.0, None)
+    for path, addon_text in codes.items():
+      matcher = difflib.SequenceMatcher(None, text, addon_text, autojunk=False)
+      if matcher.real_quick_ratio() < ADDON_MATCH:
+        continue
+      if matcher.quick_ratio() < ADDON_MATCH:
+        continue
+      score = matcher.ratio()
+      if score > best[0]:
+        best = (score, path)
+    if best[0] < ADDON_MATCH:
+      continue
+    path = best[1]
+    target_file = _join(target_root, path)
+    if not os.path.isfile(target_file):
+      status = 'removed upstream'
+      changed = None
+    else:
+      target_text = _read_text(target_file)
+      if target_text == texts[path]:
+        status = 'unchanged upstream'
+        changed = 0
+      else:
+        status = 'changed upstream'
+        diff = difflib.unified_diff(texts[path].splitlines(),
+                                    target_text.splitlines(), lineterm='', n=0)
+        changed = sum(1 for line in diff
+                      if line[:1] in '+-' and line[:3] not in ('+++', '---'))
+    copies.append({
+        'file': r.path,
+        'addon': path.split('/')[2],
+        'addon_file': path,
+        'similarity': round(best[0], 2),
+        'status': status,
+        'changed_lines': changed,
+    })
+  return copies
+
+
+def repo_hygiene(ctx, by_path=None):
+  """Symlinks and committed files that make the repository fragile.
+
+  Paths that also exist in the base or target release are upstream's
+  (sample login configs, dataset aliases) and are not reported.
+  """
+  by_path = by_path or {}
+
+  def upstream(path):
+    result = by_path.get(path)
+    return result is not None and bool(result.base_path or result.target_path)
+
+  def upstream_link(path):
+    result = by_path.get(path)
+    return result is not None and result.category in UPSTREAM_CONTENT
+
+  linked = {l['path'] for l in ctx.linked_repos}
+  broken, absolute = [], []
+  for link in ctx.scan.links:
+    if link['path'] in linked or upstream_link(link['path']):
+      continue
+    entry = {'path': link['path'], 'target': link['target']}
+    if link['broken']:
+      broken.append(entry)
+    elif link['absolute']:
+      absolute.append(entry)
+  generated = []
+  if shutil.which('git'):
+    proc = git(['-C', ctx.repo, 'ls-files', '-z'], check=False)
+    if proc.returncode == 0:
+      top = git(['-C', ctx.repo, 'rev-parse', '--show-prefix'], check=False)
+      prefix = top.stdout.decode().strip() if top.returncode == 0 else ''
+      for name in proc.stdout.decode('utf-8', 'replace').split('\0'):
+        if name and GENERATED_RE.search(name):
+          rel = name[len(prefix):] if name.startswith(prefix) else name
+          if not upstream(rel):
+            generated.append(rel)
+  return {
+      'broken_links': broken,
+      'absolute_links': absolute,
+      'generated_tracked': sorted(generated),
+  }
+
+
+def missing_module_roots(calls, repo):
+  """Groups local sources that point to a missing folder by their root.
+
+  When every missing source shares a root (for example
+  `../../tf-modules/<name>`), the modules are usually a separate checkout
+  that belongs at that path.
+  """
+  roots = collections.defaultdict(list)
+  for call in calls:
+    if call.get('problem') != 'missing':
+      continue
+    target = posixpath.normpath(
+        posixpath.join(posixpath.dirname(call['file']), call['source']))
+    roots[posixpath.dirname(target) or target].append(call['file'])
+  hints = []
+  for root, files in sorted(roots.items(), key=lambda kv: -len(kv[1])):
+    hints.append({
+        'root': root,
+        'expected_path': _join(os.path.abspath(repo), root),
+        'calls': len(files),
+        'ignored': _git_ignored(repo, root),
+        'exists': os.path.lexists(_join(repo, root)),
+    })
+  return hints
+
+
+def breaking_change_impact(changes, interface_hits, stage_variables_):
+  """Annotates relevant breaking changes with what they hit in this repo."""
+  hits_by_module = collections.Counter(h['module'] for h in interface_hits)
+  for change in changes:
+    if not change['relevant']:
+      continue
+    reason = change['reason']
+    if reason.startswith('module '):
+      name = reason.split(' ', 1)[1]
+      count = hits_by_module.get(name, 0)
+      change['impact'] = (f'{count} of your module call(s) affected'
+                          if count else
+                          'no direct call from your own code (upstream code '
+                          'is updated by apply); check factory data and '
+                          'tfvars that feed this module')
+    elif reason.startswith('stage '):
+      name = reason.split(' ', 1)[1]
+      stage = [s for s in stage_variables_ if s['upstream'] == name]
+      change['impact'] = ('stage variables change: see STAGE VARIABLES'
+                          if stage else 'stage code is updated by apply')
+    else:
+      change['impact'] = 'applies to every stage'
+  return changes
 
 
 def build_plan(ctx):
@@ -1635,6 +2709,21 @@ def build_plan(ctx):
   if ctx.template:
     notes.append(f'Fabric modules are sourced from git ({ctx.template}): '
                  'upstream local sources are rewritten to that form')
+  for linked in ctx.linked_repos:
+    notes.append(f'{linked["path"]} is a {linked["kind"]} (a separate git '
+                 'repository): apply writes there too and checks it is clean; '
+                 'commit the upgrade in both repositories')
+  raw = sorted(r.path for r in results if r.upstream_sources)
+  if raw:
+    notes.append(f'{len(raw)} file(s) keep upstream module sources (for '
+                 'example ../../../modules): apply takes the target as is, '
+                 'see UNRESOLVED MODULE SOURCES AFTER UPGRADE')
+
+  stage_vars = stage_variables(ctx)
+  interface = module_interface(ctx, by_path)
+  breaking = breaking_change_impact(
+      release_notes.breaking_changes(ctx.releases, stage_names, module_names),
+      interface, stage_vars)
 
   plan = {
       'tool': {
@@ -1646,57 +2735,52 @@ def build_plan(ctx):
           'git': state,
           'detected_version': ctx.detected,
           'confidence': ctx.confidence,
+          'data_paths': list(ctx.data_paths),
       },
-      'base':
-          _tree_info(ctx.base_cat),
-      'target':
-          _tree_info(ctx.target_cat),
-      'warnings':
-          warnings,
+      'base': _tree_info(ctx.base_cat),
+      'target': _tree_info(ctx.target_cat),
+      'warnings': warnings,
       'mappings': [dataclasses.asdict(m) for m in ctx.mappings],
       'customer_only': {
           'stages': ctx.customer_stages,
           'modules': ctx.customer_modules
       },
-      'summary':
-          dict(summary),
-      'marker_only':
-          dict(marker_only),
+      # Folders that look like FAST stages but match none well enough: ask
+      # the user, then plan again with --map FOLDER=STAGE (or =none).
+      'stage_candidates': ctx.matching['candidates'],
+      'user_mappings': ctx.matching['user'],
+      'summary': dict(summary),
+      'marker_only': dict(marker_only),
       'files': [dataclasses.asdict(r) for r in results],
-      'breaking_changes':
-          release_notes.breaking_changes(ctx.releases, stage_names,
-                                         module_names),
-      'fast_changes':
-          release_notes.fast_changes(ctx.releases),
-      'upgrading_notes':
-          upgrading,
-      'moved_files':
-          moved,
-      'providers':
-          providers,
-      'stage_variables':
-          stage_variables(ctx),
-      'module_interface':
-          module_interface(ctx, by_path),
+      'breaking_changes': breaking,
+      'fast_changes': release_notes.fast_changes(ctx.releases),
+      'upgrading_notes': upgrading,
+      'moved_files': moved,
+      'providers': providers,
+      'version_pins': version_pins_report(ctx, by_path, providers_t),
+      'stage_variables': stage_vars,
+      'module_interface': interface,
       'module_renames': [{
           'old': old,
           'new': new,
           'used': old in module_names
       } for old, new in sorted(ctx.renames.items())],
-      'schema_changes':
-          schema_changes(ctx, results),
-      'data_impact':
-          data_impact(ctx, results),
+      'schema_changes': schema_changes(ctx, results),
+      'data_impact': data_impact(ctx, results),
       'git_refs': {
           'refs': dict(refs),
           'bumpable': bumpable,
           'template': ctx.template
       },
-      'unresolved_sources':
-          unresolved_sources(ctx, results),
-      'notes':
-          notes,
+      'unresolved_sources': unresolved_sources(ctx, results),
+      'upstream_sources': raw,
+      'linked_repos': ctx.linked_repos,
+      'missing_module_roots': missing_module_roots(ctx.scan.calls, ctx.repo),
+      'addon_copies': addon_copies(ctx, results),
+      'hygiene': repo_hygiene(ctx, by_path),
+      'notes': notes,
   }
+  plan.update(report.build_findings(plan))
   return plan, results
 
 
@@ -1705,14 +2789,18 @@ def build_plan(ctx):
 # --------------------------------------------------------------------------
 
 
-def _safe_target(repo, rel_path):
-  """Returns the absolute path for rel_path, refusing to escape the repo."""
+def _safe_target(repo, rel_path, extra_roots=()):
+  """Returns the absolute path for rel_path, refusing to escape the repo.
+
+  `extra_roots` are real paths of linked module repositories that apply
+  has already checked; writes through their symlinks are allowed.
+  """
   path = os.path.normpath(_join(repo, rel_path))
   parent = os.path.realpath(os.path.dirname(path))
-  real_repo = os.path.realpath(repo)
-  if parent != real_repo and not parent.startswith(real_repo + os.sep):
-    raise Refused(f'{rel_path} resolves outside the repository')
-  return path
+  for root in (os.path.realpath(repo),) + tuple(extra_roots):
+    if parent == root or parent.startswith(root + os.sep):
+      return path
+  raise Refused(f'{rel_path} resolves outside the repository')
 
 
 def _write(path, data=None, link=None, executable=False):
@@ -1793,6 +2881,22 @@ def run_apply(ctx, results, dry_run=False, include_deletes=False, bump=False,
     if state['dirty']:
       raise Refused(f'{state["dirty"]} tracked file(s) have uncommitted '
                     'changes: commit or stash them first (or --allow-dirty)')
+    for linked in ctx.linked_repos:
+      if not linked.get('writes', True):
+        continue
+      linked_state = linked['git']
+      if not linked_state.get('git'):
+        raise Refused(f'{linked["path"]} ({linked["kind"]} to '
+                      f'{linked["target"]}) is '
+                      f'{linked_state.get("reason")}: changes there could '
+                      'not be reviewed or reverted (or --allow-dirty)')
+      if linked_state['dirty']:
+        raise Refused(f'{linked["path"]} is a separate repository with '
+                      f'{linked_state["dirty"]} uncommitted tracked file(s): '
+                      'commit or stash them first (or --allow-dirty)')
+  extra_roots = tuple(l['target']
+                      for l in ctx.linked_repos
+                      if l['outside'] and l.get('writes', True))
   by_path = {r.path: r for r in results}
   labels = [
       'customer', f'base {ctx.base_version}', f'target {ctx.target_version}'
@@ -1801,13 +2905,17 @@ def run_apply(ctx, results, dry_run=False, include_deletes=False, bump=False,
   written = set()
 
   def record(result, action, outcome, detail=None):
-    records.append({
+    entry = {
         'path': result.path,
         'category': result.category,
         'action': action,
         'result': outcome,
         'detail': detail
-    })
+    }
+    for linked in ctx.linked_repos:
+      if _inside(result.path, linked['path']):
+        entry['repository'] = linked['path']
+    records.append(entry)
 
   for r in results:
     if r.category in ('unchanged', 'already-updated', 'customer-changed',
@@ -1816,7 +2924,12 @@ def run_apply(ctx, results, dry_run=False, include_deletes=False, bump=False,
     if r.blocked:
       record(r, 'manual', 'manual', r.blocked)
       continue
-    path = _safe_target(ctx.repo, r.path)
+    if r.sample_data:
+      record(
+          r, 'skip', 'skipped', 'upstream sample dataset you do not keep: '
+          'compare with your own data')
+      continue
+    path = _safe_target(ctx.repo, r.path, extra_roots)
     if r.category in ('upstream-changed', 'upstream-added'):
       old = by_path.get(r.renamed_from) if r.renamed_from else None
       if old is not None and old.category == 'conflict-deleted':
@@ -1888,6 +3001,10 @@ def run_apply(ctx, results, dry_run=False, include_deletes=False, bump=False,
         _write(dest, _read_bytes(_join(ctx.target_cat['root'], entry['file'])))
       copied.append({'file': entry['copy_to'], 'result': 'copied'})
   counts = collections.Counter(r['result'] for r in records)
+  touched = collections.Counter(
+      r['repository']
+      for r in records
+      if r.get('repository') and r['result'] not in ('kept', 'manual'))
   return {
       'tool': {
           'name': 'fast_upgrade.py',
@@ -1902,6 +3019,12 @@ def run_apply(ctx, results, dry_run=False, include_deletes=False, bump=False,
       'target': _tree_info(ctx.target_cat),
       'counts': dict(counts),
       'records': records,
+      'linked_repos': [{
+          'path': l['path'],
+          'kind': l['kind'],
+          'target': l['target'],
+          'files': touched.get(l['path'], 0),
+      } for l in ctx.linked_repos],
       'refs_bumped': bumped,
       'moved_copied': copied,
       'moved_pending': [] if copy_moved else list(moved),
@@ -2074,6 +3197,15 @@ def detect(repo, fabric_source=DEFAULT_FABRIC_SOURCE):
   if not scan.stage_dirs:
     warnings.append('no stage folder found by marker or name: plan will try '
                     'to match folders by content')
+  missing_roots = missing_module_roots(scan.calls, scan.root)
+  for hint in missing_roots:
+    if not hint['exists'] and hint['calls'] > 1:
+      warnings.append(
+          f'{hint["calls"]} module sources point to the missing folder '
+          f'{hint["root"]}' +
+          (' (git-ignored: a separate checkout?)' if hint['ignored'] else '') +
+          f': check out or link the modules at {hint["expected_path"]} '
+          'before planning')
   state = git_state(scan.root)
   return {
       'tool': {
@@ -2097,6 +3229,7 @@ def detect(repo, fabric_source=DEFAULT_FABRIC_SOURCE):
           'local_dirs': len(scan.module_dirs),
           'calls': dict(kinds),
           'problems': problems,
+          'missing_roots': missing_roots,
       },
       'fabric_git_refs': dict(fabric_refs),
       'factory': {
@@ -2212,8 +3345,12 @@ def check_data(paths, schema_paths=()):
           'digest': provenance.tool_digest()
       },
       'paths': [os.path.abspath(p) for p in paths],
-      'counts': dict(counts),
-      'files': [r for r in results if r['status'] in ('invalid', 'unresolved')],
+      'counts':
+          dict(counts),
+      'files': [
+          r for r in results
+          if r['status'] in ('invalid', 'unresolved', 'validator-error')
+      ],
   }
 
 
@@ -2254,6 +3391,8 @@ def render_plan(plan, limit):
     tree = plan[key]
     lines.append(f'{key:<8}{tree["path"]}  {tree["version"]}  '
                  f'tree {tree["digest"]}')
+  if 'readiness' in plan:
+    lines.extend(report.render_findings(plan, limit))
   _section(lines, 'WARNINGS', plan['warnings'], 0, lambda w: f'- {w}')
   mappings = plan['mappings']
   _section(
@@ -2264,6 +3403,29 @@ def render_plan(plan, limit):
   if owned['stages'] or owned['modules']:
     lines.append('  yours (no upstream match): ' +
                  ', '.join(owned['stages'] + owned['modules']))
+  for u in plan.get('user_mappings', []):
+    if u['stage'] is None:
+      lines.append(
+          f'  set by user: {u["folder"] or "."} is yours (--map =none)')
+    elif u['low_similarity']:
+      lines.append(f'  set by user: {u["folder"] or "."} <- {u["stage"]}, '
+                   f'only {round(u["score"] * 100)}% of its files match: '
+                   'review every merge')
+  candidates = plan.get('stage_candidates', [])
+  if candidates:
+    lines.append('')
+    lines.append(f'STAGE CANDIDATES ({len(candidates)}): which FAST stage is '
+                 'each folder based on?')
+    for c in candidates:
+      guesses = ', '.join(
+          f'{g["stage"]} (files {round(g["files"] * 100)}%, variables '
+          f'{round(g["variables"] * 100)}%' +
+          (', by name)' if g['by_name'] else ')') for g in c['guesses'])
+      lines.append(f'  {c["folder"] or "."}  [{c["reason"]}]  guesses: '
+                   f'{guesses}')
+    lines.append('  -> plan again with --map <folder>=<stage> for each one, or '
+                 '--map <folder>=none if it is your own; pass the same --map '
+                 'flags to apply.')
   lines.append('')
   lines.append('FILE ACTIONS')
   for category, help_text in CATEGORY_HELP.items():
@@ -2300,8 +3462,10 @@ def render_plan(plan, limit):
            lambda f: f'{f["path"]}{flags(f)}')
   relevant = [b for b in plan['breaking_changes'] if b['relevant']]
   skipped = len(plan['breaking_changes']) - len(relevant)
-  _section(lines, 'BREAKING CHANGES (relevant to this repository)', relevant,
-           limit, lambda b: f'{b["version"]} [{b["reason"]}] {b["text"]}')
+  _section(
+      lines, 'BREAKING CHANGES (relevant to this repository)', relevant, limit,
+      lambda b: f'{b["version"]} [{b["reason"]}] {b["text"]}' +
+      (f'\n    impact: {b["impact"]}' if b.get('impact') else ''))
   if skipped:
     lines.append(f'  ({skipped} more affect stages or modules not in use; '
                  'see --json)')
@@ -2313,6 +3477,18 @@ def render_plan(plan, limit):
            plan['moved_files'], 0, lambda m: f'{m["file"]} -> {m["copy_to"]}')
   _section(lines, 'PROVIDERS (run terraform init -upgrade)', plan['providers'],
            0, lambda p: f'{p["name"]}: {p["base"]} -> {p["target"]}')
+
+  def pin_line(p):
+    pins = ', '.join(
+        f'{x["name"]} "{x["constraint"]}"' +
+        (f' (target needs "{x["target"]}")' if x['allows_target'] is
+         False else '') for x in p['pins'])
+    stamp = f'; stamp {p["marker"]}' if p['stale_marker'] else ''
+    lead = 'BLOCKS INIT ' if p['blocks_init'] else ''
+    return f'{lead}{p["file"]} [{p["category"]}]: {pins or "no pins"}{stamp}'
+
+  _section(lines, 'VERSION PINS IN YOUR FILES (kept by apply)',
+           plan.get('version_pins', []), limit, pin_line)
 
   def stage_line(s):
     parts = []
@@ -2372,6 +3548,37 @@ def render_plan(plan, limit):
   _section(lines, 'UNRESOLVED MODULE SOURCES AFTER UPGRADE',
            plan['unresolved_sources'], limit,
            lambda u: f'{u["file"]}:{u["line"]} {u["source"]}')
+  _section(lines, 'FILES KEEPING UPSTREAM MODULE SOURCES',
+           plan.get('upstream_sources', []), limit, lambda p: p)
+
+  def linked_line(l):
+    state = l['git']
+    text = (('clean' if not state['dirty'] else f'{state["dirty"]} uncommitted')
+            if state.get('git') else state.get('reason'))
+    where = 'outside the repository' if l['outside'] else 'inside'
+    return (f'{l["path"]} ({l["kind"]}, {where}, {l["mappings"]} mapped '
+            f'folder(s)): {text}')
+
+  _section(lines, 'LINKED REPOSITORIES', plan.get('linked_repos', []), 0,
+           linked_line)
+  hygiene = plan.get('hygiene') or {}
+  items = ([
+      f'broken link {l["path"]} -> {l["target"]}'
+      for l in hygiene.get('broken_links', [])
+  ] + [
+      f'absolute link {l["path"]} -> {l["target"]}'
+      for l in hygiene.get('absolute_links', [])
+  ] + [
+      f'generated file tracked in git: {p}'
+      for p in hygiene.get('generated_tracked', [])
+  ])
+  _section(lines, 'REPOSITORY HYGIENE', items, limit, lambda i: i)
+  _section(
+      lines, 'ADD-ON COPIES (yours: not updated by apply)',
+      plan.get('addon_copies',
+               []), limit, lambda a: f'{a["file"]} ~ {a["addon_file"]} '
+      f'({int(a["similarity"] * 100)}%): {a["status"]}' +
+      (f', {a["changed_lines"]} line(s)' if a['changed_lines'] else ''))
   _section(lines, 'NOTES', plan['notes'], 0, lambda n: f'- {n}')
   return '\n'.join(lines)
 
@@ -2391,7 +3598,8 @@ def render_apply(result, limit):
                     ('conflict', 'files with conflict markers to resolve'),
                     ('manual', 'files needing a decision'), ('deleted',
                                                              'files deleted'),
-                    ('kept', 'upstream deletions not applied')):
+                    ('kept', 'upstream deletions not applied'),
+                    ('skipped', 'upstream sample-dataset files not added')):
     if counts.get(key):
       lines.append(f'  {key:<10}{counts[key]:>6}  {text}')
   records = result['records']
@@ -2411,6 +3619,11 @@ def render_apply(result, limit):
   _section(lines, 'MOVED BLOCKS TO COPY (or rerun with --copy-moved)',
            result['moved_pending'], 0,
            lambda m: f'{m["file"]} -> {m["copy_to"]}')
+  _section(
+      lines, 'LINKED REPOSITORIES (commit the upgrade there too)',
+      result.get('linked_repos', []), 0,
+      lambda l: f'{l["path"]} ({l["kind"]} to {l["target"]}): '
+      f'{l["files"]} file(s) changed')
   return '\n'.join(lines)
 
 
@@ -2486,6 +3699,9 @@ def render_check_data(result, limit):
       shown, more = _limited(f['errors'], 3)
       tail = f' (+{more} more)' if more else ''
       return f'INVALID {f["path"]}: ' + '; '.join(shown) + tail
+    if f['status'] == 'validator-error':
+      return (f'NOT CHECKED {f["path"]}: the validator failed '
+              f'({f["errors"][0]}); check this file by hand')
     return f'UNRESOLVED {f["path"]}: {f.get("reason")}'
 
   _section(lines, 'PROBLEMS', result['files'], limit, fmt)
@@ -2559,15 +3775,38 @@ def cmd_changelog(args):
 
 def cmd_plan(args):
   ctx = Context(args.repo, args.base, args.target, args.fabric_source,
-                args.data)
+                args.data, parse_stage_map(args.map))
+  if not factory_data.available() and not args.skip_data_checks:
+    raise UpgradeError(
+        'factory data checks need ' +
+        ' and '.join(factory_data.missing_dependencies()) +
+        ': run with `uv run`, install them (for example in a virtualenv), '
+        'or pass --skip-data-checks to plan without them')
   plan, _ = build_plan(ctx)
+  written = []
+  full = (os.path.basename(args.markdown)
+          if args.markdown else 'plan --markdown')
+  for path, render, kind in ((args.markdown, report.render_markdown,
+                              'Markdown'),
+                             (args.brief,
+                              lambda p: report.render_brief(p, full), 'brief'),
+                             (args.widget,
+                              lambda p: report.render_widget(p, full),
+                              'inline HTML'), (args.html, report.render_html,
+                                               'HTML')):
+    if path:
+      with open(path, 'w', encoding='utf-8') as f:
+        f.write(render(plan))
+      written.append(f'wrote {kind} report to {os.path.abspath(path)}')
   _emit(args, plan, render_plan)
+  for line in written:
+    print(line, file=sys.stderr)
   return 0
 
 
 def cmd_apply(args):
   ctx = Context(args.repo, args.base, args.target, args.fabric_source,
-                args.data)
+                args.data, parse_stage_map(args.map))
   plan, results = build_plan(ctx)
   result = run_apply(ctx, results, dry_run=args.dry_run,
                      include_deletes=args.include_deletes, bump=args.bump_refs,
@@ -2607,6 +3846,12 @@ def build_parser():
         '--data', action='append', default=[],
         help='Extra factory data or tfvars folder outside the repo '
         '(repeatable), e.g. a fast-config folder.')
+    p.add_argument(
+        '--map', action='append', default=[], metavar='FOLDER=STAGE',
+        help='Say which upstream stage a repository folder is based on '
+        '(repeatable), e.g. platform/org=0-org-setup, or FOLDER=none for '
+        'a folder that is your own. Overrides the automatic match; use '
+        'the same flags for plan and apply.')
     p.add_argument('--fabric-source', default=DEFAULT_FABRIC_SOURCE,
                    help='Regex matching git URLs of Fabric (for mirrors).')
 
@@ -2647,12 +3892,37 @@ def build_parser():
   common(p, output=True)
   p.set_defaults(func=cmd_changelog)
 
-  p = sub.add_parser('plan', help='Upgrade report (read-only).')
+  p = sub.add_parser('analyze', aliases=['plan'],
+                     help='Upgrade impact report (read-only).')
   inputs(p)
+  p.add_argument(
+      '--markdown', metavar='FILE',
+      help='Also write the shareable customer report as Markdown '
+      '(summary, findings tracker, details, plan, coverage) to '
+      'FILE.')
+  p.add_argument(
+      '--brief', metavar='FILE',
+      help='Also write a chat-sized Markdown summary of the '
+      'report (verdict, findings, stages, plan) to FILE, for the '
+      'agent to show inline.')
+  p.add_argument(
+      '--html', metavar='FILE',
+      help='Also write the same report as a self-contained, '
+      'interactive HTML file to FILE.')
+  p.add_argument(
+      '--widget', metavar='FILE',
+      help='Also write a compact interactive HTML summary (under '
+      '500 px tall) to FILE, for agents that embed HTML inline in '
+      'the chat.')
+  p.add_argument(
+      '--skip-data-checks', action='store_true',
+      help='Plan without pyyaml/jsonschema: factory YAML is '
+      'then reported as not checked.')
   common(p, output=True)
   p.set_defaults(func=cmd_plan)
 
-  p = sub.add_parser('apply', help='Apply the plan on a clean git tree.')
+  p = sub.add_parser('migrate', aliases=['apply'],
+                     help='Update repository files on a clean git tree.')
   inputs(p)
   p.add_argument('--dry-run', action='store_true',
                  help='Show what would change without writing.')

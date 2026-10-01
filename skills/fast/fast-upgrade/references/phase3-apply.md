@@ -1,12 +1,12 @@
-# Phase 3: Apply
+# Phase 3: Update repository files
 
 > [!IMPORTANT]
 > Start every response with the progress block from [SKILL.md](../SKILL.md).
-> From here on files change, so only continue after the Phase 2 apply gate.
+> From here on files change, so only continue after the Phase 2 code update gate.
 > Every edit you make is shown to the user first and made with your file
 > tools, never with `sed`, `awk`, `echo >>` or heredocs.
 
-## Step 7: Branch, dry run and apply
+## Step 7: Branch, dry run and migrate
 
 1. **Clean tree.** This must print nothing:
 
@@ -22,16 +22,18 @@
    git -C <repo> switch -c fast-upgrade/<target tag>
    ```
 
-3. **Dry run** with exactly the flags the user approved:
+3. **Dry run** with exactly the flags the user approved, and the same
+   `--data` and `--map` flags as the last `analyze`:
 
    ```bash
-   uv run scripts/fast_upgrade.py apply --repo <repo> --base <base tree> \
-     --target <target tree> --dry-run [--include-deletes] [--bump-refs] [--copy-moved]
+   uv run scripts/fast_upgrade.py migrate --repo <repo> --base <base tree> \
+     --target <target tree> [--map <folder>=<stage> ...] --dry-run \
+     [--include-deletes] [--bump-refs] [--copy-moved]
    ```
 
    Present the counts: `written`, `merged`, `conflict`, `manual`,
    `deleted`, `kept`.
-4. **Apply**: the same command without `--dry-run`, plus
+4. **Update files (`migrate`)**: the same command without `--dry-run`, plus
    `--output <repo>/.fast-upgrade/apply.txt`. Exit code `2` is expected
    whenever CONFLICT MARKERS or MANUAL are not empty; `1` means a safety
    check refused (read the `REFUSED:` line).
@@ -40,7 +42,19 @@
 
 The report's sections: CONFLICT MARKERS (files with markers to resolve),
 MANUAL (files needing a decision), NOT DELETED (upstream deletions kept),
-REFS BUMPED, MOVED BLOCKS COPIED, and MOVED BLOCKS TO COPY.
+REFS BUMPED, MOVED BLOCKS COPIED, MOVED BLOCKS TO COPY, and LINKED
+REPOSITORIES (files written through a symlinked or linked module
+repository).
+
+- **Linked repositories.** `apply` refuses when a linked repository is
+  dirty or not a git repository. When it writes through one, tell the user
+  that those files must be reviewed and committed in that repository too,
+  on its own branch.
+- **Version pins.** Every VERSION PINS row marked `BLOCKS INIT` in the plan
+  is a file the customer owns (for example `stages/*/terraform.tf`).
+  `apply` does not rewrite it. Propose the widened constraint as an edit,
+  show it, and make it only after the user approves; `terraform init`
+  fails in Phase 4 until it is fixed.
 
 ## Step 8: Conflicts and manual items (gate per file)
 
@@ -80,11 +94,12 @@ For each file listed under CONFLICT MARKERS:
 | `conflict-added` | the customer and upstream both added this path, with different content | compare with the target version (the file's `target_path` in `plan.json`, under the target tree) and merge by hand |
 | `conflict-deleted` | upstream removed a file the customer changed | with `renamed to`, `apply` already merged the edits into the new path: review that file, then delete the old one with approval. Otherwise port the customer's change, or drop it |
 | `conflict-customer-deleted` | the customer removed a file that upstream changed | confirm it should stay removed; otherwise restore it from the target tree |
-| a parent folder is a symlink | the path goes through a symlink in the customer's repository | `apply` never writes through links: resolve by hand |
+| a parent folder is a symlink | the path goes through a symlink in the customer's repository, such as a `datasets/` folder linked to another checkout | `apply` never writes through links: port the change in the linked checkout by hand, with approval |
 | binary file or symlink changed on both sides | cannot be merged | pick a side with the user |
 
 List the files under NOT DELETED (upstream deletions kept on purpose) in
-the handover.
+the handover. A `skipped` count in the apply output is upstream sample-dataset
+files that the repository does not keep; they were not added on purpose.
 
 ## Step 9: Data, variables, module calls and moved blocks
 
@@ -116,14 +131,14 @@ approval first:
    from the target tree into the customer's module root, or switch the
    call to a git source.
 
-### Re-plan
+### Re-analyze
 
 Verify the result:
 
 1. **Same base and target**:
 
    ```bash
-   uv run scripts/fast_upgrade.py plan --repo <repo> --base <base tree> \
+   uv run scripts/fast_upgrade.py analyze --repo <repo> --base <base tree> \
      --target <target tree> --output <repo>/.fast-upgrade/replan.txt
    ```
 
@@ -138,7 +153,7 @@ Verify the result:
 2. **The target as its own base**:
 
    ```bash
-   uv run scripts/fast_upgrade.py plan --repo <repo> --base <target tree> \
+   uv run scripts/fast_upgrade.py analyze --repo <repo> --base <target tree> \
      --target <target tree> --output <repo>/.fast-upgrade/delta.txt
    ```
 

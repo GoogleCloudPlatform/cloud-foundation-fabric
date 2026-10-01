@@ -37,6 +37,7 @@ upgrade analysis still works without them; `available()` reports whether
 data checks can run.
 """
 
+import datetime
 import functools
 import hashlib
 import json
@@ -58,6 +59,8 @@ YAML_SUFFIXES = ('.yaml', '.yml')
 SCHEMA_SUFFIXES = ('.schema.json', '.schema.yaml', '.schema.yml')
 MAX_MESSAGE = 200
 _NODE_BUDGET = 20000
+# Prefix of an error raised by the validator itself, not by the data.
+VALIDATOR_ERROR = '<validator>'
 
 
 def available():
@@ -146,8 +149,42 @@ def _short(message):
   return message
 
 
+def terraform_view(node):
+  """Returns a YAML document as Terraform's `yamldecode` would see it.
+
+  PyYAML follows YAML 1.1 and returns non-string mapping keys (`471209:`
+  is an int, `2024-01-01:` a date) and date or timestamp scalars.
+  Terraform object keys are always strings, and its YAML 1.2 decoder reads
+  unquoted dates as strings, so validating PyYAML's raw output rejects data
+  that FAST reads fine (or crashes jsonschema, whose patterns expect
+  strings).
+  """
+  if isinstance(node, dict):
+    return {_key(k): terraform_view(v) for k, v in node.items()}
+  if isinstance(node, list):
+    return [terraform_view(v) for v in node]
+  if isinstance(node, (datetime.date, datetime.datetime)):
+    return node.isoformat()
+  return node
+
+
+def _key(key):
+  if isinstance(key, bool):
+    return 'true' if key else 'false'
+  if key is None:
+    return 'null'
+  if isinstance(key, (datetime.date, datetime.datetime)):
+    return key.isoformat()
+  return str(key)
+
+
 def validate_text(text, schema):
-  """Returns sorted 'path: message' errors for all documents in text."""
+  """Returns sorted 'path: message' errors for all documents in text.
+
+  An error the validator raises (not a data error) is returned as a single
+  entry starting with VALIDATOR_ERROR, so callers can tell the tool's
+  limits from invalid customer data.
+  """
   try:
     docs = list(yaml.safe_load_all(text))
   except yaml.YAMLError as e:
@@ -159,12 +196,16 @@ def validate_text(text, schema):
       if doc is None:
         continue
       prefix = f'doc {index}: ' if len(docs) > 1 else ''
-      for error in validator.iter_errors(doc):
+      for error in validator.iter_errors(terraform_view(doc)):
         path = '/'.join(str(p) for p in error.absolute_path) or '<root>'
         errors.append(f'{prefix}{path}: {_short(error.message)}')
   except Exception as e:  # jsonschema raises several unrelated types here
-    return [f'<schema>: schema error: {_short(e)}']
+    return [f'{VALIDATOR_ERROR}: {_short(e)}']
   return sorted(errors)
+
+
+def is_validator_error(errors):
+  return bool(errors) and errors[0].startswith(VALIDATOR_ERROR)
 
 
 def _pointer(root, ref):
@@ -327,9 +368,13 @@ def check_file(path, index):
         'reason': error
     }
   errors = validate_text(text, schema)
+  if is_validator_error(errors):
+    status = 'validator-error'
+  else:
+    status = 'invalid' if errors else 'ok'
   return {
       'path': path,
-      'status': 'invalid' if errors else 'ok',
+      'status': status,
       'schema': schema_path,
       'resolved_by': how,
       'errors': errors,

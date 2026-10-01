@@ -47,6 +47,7 @@ FROZEN_FILES = (
     'plan_review.py',
     'provenance.py',
     'release_notes.py',
+    'report.py',
 )
 # What an upstream release contributes to an upgrade (see `fetch`).
 RELEASE_ENTRIES = ('fast', 'modules', 'CHANGELOG.md', 'default-versions.tf')

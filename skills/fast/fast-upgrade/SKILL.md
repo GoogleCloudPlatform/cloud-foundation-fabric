@@ -65,6 +65,9 @@ cannot. Trust comes from the scripts and the Terraform plan, not from you.
    public issues, upstream pull requests or anything else that leaves the
    customer's environment. Keep reports in `<repo>/.fast-upgrade/`, which
    the scripts ignore and nobody commits. Delete plan files after review.
+   The `plan --markdown` and `--html` reports replace local paths and home
+   folders with placeholders so they can go to the customer's team, but
+   they still name the customer's resources.
 7. **Edit with your file tools.** Never change files with `sed`, `awk`,
    `echo >>` or heredocs. Show each proposed edit and wait for approval.
 
@@ -74,7 +77,7 @@ cannot. Trust comes from the scripts and the Terraform plan, not from you.
 | :--- | :--- | :--- |
 | **Base release** | Phase 1, after `detect` | Which release the repository was built from. With a wrong base, upstream changes become conflicts or old files are silently kept. |
 | **Target release** | Phase 1, after `releases` | Which release to upgrade to (default: the newest). Downgrades are refused. |
-| **Apply** | Phase 2, after the upgrade report | Whether to apply on a new branch, and whether to include deletions, ref bumps and moved-block copies. |
+| **Code update** | Phase 2, after the upgrade report | Whether to update the repository files on a new branch, and whether to include deletions, ref bumps and moved-block copies. |
 | **Resolutions** | Phase 3 | Each conflict block, each manual item, and each change to factory YAML, tfvars or module calls. |
 | **Plans and state** | Phase 4 | Runs `terraform plan` and `apply` per stage, in order; decides every destructive change and state operation. |
 
@@ -93,7 +96,7 @@ confirmation, stop at the gate and report. Never assume approval.
 >   (Step 1/3: Repository scan - IN PROGRESS)
 > - Phase 2: Impact analysis
 >   (Not started)
-> - Phase 3: Apply
+> - Phase 3: Update repository files
 >   (Not started)
 > - Phase 4: Verify & handover
 >   (Not started)
@@ -105,18 +108,26 @@ confirmation, stop at the gate and report. Never assume approval.
 - **Turn boundaries.** When you need an answer, ask the question and STOP.
   Do not call more tools, and never assume or simulate the user's reply in
   the same turn.
-- **Questions.** Use `ask_user` or `ask_question` whenever you offer
-  choices, with your recommendation first. Ask one decision per question.
-  At the Phase 2 gate you may ask about the apply options together, as
-  separate questions in one call.
+- **Questions.** Use your multiple-choice question tool, if you have one,
+  whenever you offer choices, with your recommendation first. Ask one
+  decision per question. At the Phase 2 gate you may ask about the code
+  update options together, as separate questions in one call.
 - **Quote, don't paraphrase.** Report counts, verdicts and the `tools`
   line exactly as the scripts printed them. You may summarize long lists,
   but never invent or round a number.
+- **Show reports inline.** The user reads the upgrade report in your
+  answer. After `analyze`, paste the whole `report-brief.md` into your message
+  verbatim, then link `report.md`; never answer with only a file path. If
+  your chat can embed HTML inline, also embed the `--widget` card above
+  the brief (see [Impact analysis](references/phase2-analysis.md), "Show
+  the report inline").
 - **Workspace only.** Keep the files you create inside the workspace. If
   your file tools cannot read outside it, fetch releases into it with
-  `--cache-dir .fast-upgrade/releases`.
+  `--cache-dir .fast-upgrade/releases`. The one exception: write the
+  `--widget` card (and a copy of `--html`) into your agent's artifact
+  directory when inline embeds must live there.
 - **Resuming.** If the user comes back mid-upgrade, rebuild the state from
-  `git status`, `git diff --check` and a fresh `plan`, then resume at the
+  `git status`, `git diff --check` and a fresh `analyze`, then resume at the
   matching step.
 
 ## Entry points
@@ -128,7 +139,7 @@ it:
 | --- | --- |
 | "Upgrade my FAST repository to vX" | The Workflow Map, from Phase 1 |
 | "What breaks or changes between vX and vY?" | Fetch vY and run `changelog` (add `--repo` to keep only what a repository uses). No progress block, no file changes. |
-| "What would upgrading my repository involve?" | Phases 1–2; stop at the apply gate |
+| "What would upgrading my repository involve?" | Phases 1–2; stop at the code update gate |
 | "Review this plan after an upgrade" | Phase 4, Step 11 only |
 
 ## Workflow Map
@@ -144,18 +155,18 @@ document** for the exact commands and decision logic.
 - **Step 3:** Target release (`releases`) — **gate**
 
 ### Phase 2: Impact analysis
-*Description:* Materialize both releases, produce the upgrade report and decide how to apply it.\
+*Description:* Materialize both releases, produce the upgrade report and decide how to update the repository files.\
 *Reference: [Impact analysis](references/phase2-analysis.md)*
 - **Step 4:** Fetch base and target (`fetch`)
-- **Step 5:** Upgrade report (`plan`)
-- **Step 6:** Apply decision — **gate**
+- **Step 5:** Upgrade report (`analyze`), shown inline
+- **Step 6:** Code update decision — **gate**
 
-### Phase 3: Apply
-*Description:* Apply the upstream changes on a branch, then resolve conflicts, data, variables and moved blocks with the user.\
-*Reference: [Apply](references/phase3-apply.md)*
-- **Step 7:** Branch, dry run and `apply`
+### Phase 3: Update repository files
+*Description:* Update the repository files on a branch, then resolve conflicts, data, variables and moved blocks with the user.\
+*Reference: [Update repository files](references/phase3-apply.md)*
+- **Step 7:** Branch, dry run and `migrate`
 - **Step 8:** Conflicts and manual items — **gate per file**
-- **Step 9:** Factory data, tfvars, module calls and moved blocks; re-plan
+- **Step 9:** Factory data, tfvars, module calls and moved blocks; re-analyze
 
 ### Phase 4: Verify & handover
 *Description:* Validate statically, review each stage's Terraform plan, and hand over.\
@@ -175,14 +186,14 @@ the path, for example `uv run skills/fast/fast-upgrade/scripts/fast_upgrade.py`.
 | `fast_upgrade.py releases` | Upstream release tags, newest first | `--upstream <url or path>` |
 | `fast_upgrade.py fetch <tag>` | Materialize a release (`fast/`, `modules/`, `CHANGELOG.md`); prints its path last | `--from-repo <clone>` (offline), `--upstream`, `--cache-dir`, `--refresh` |
 | `fast_upgrade.py changelog` | Breaking changes, module renames and upgrading notes in (from, to] | `--upstream-dir <target tree>`, `--from`, `--to`, `--repo` |
-| `fast_upgrade.py plan` | The upgrade report (read-only) | `--repo`, `--base <tree>`, `--target <tree>`, `--data <dir>`, `--output`, `--json`, `--limit 0` |
-| `fast_upgrade.py apply` | Apply the plan on a clean git tree | the `plan` options, plus `--dry-run`, `--include-deletes`, `--bump-refs`, `--copy-moved` |
+| `fast_upgrade.py analyze` (alias `fast_upgrade.py plan`) | The upgrade report (read-only): readiness verdict, severity-ranked findings, coverage gaps, then every section | `--repo`, `--base <tree>`, `--target <tree>`, `--data <dir>`, `--map <folder>=<stage>` (the user's answer for a stage candidate, or `=none`), `--output`, `--json`, `--limit 0`, `--markdown <file>` (customer report), `--brief <file>` (inline answer), `--widget <file>` (inline HTML card), `--html <file>` (interactive copy), `--skip-data-checks` |
+| `fast_upgrade.py migrate` (alias `fast_upgrade.py apply`) | Update repository files on a clean git tree | the `analyze` options, plus `--dry-run`, `--include-deletes`, `--bump-refs`, `--copy-moved` |
 | `fast_upgrade.py check-data <paths>` | Validate factory YAML against the modeline schemas | `--schemas <dir>` |
 | `plan_review.py [plan.json]` | Classify a `terraform show -json` plan (file or stdin) | `--json` |
 | `provenance.py` | Print the frozen-tools digest | `--verbose` |
 
 Exit codes: `0` success; `1` error, or refused by a safety check; `2`
-attention needed. For `apply`, `2` means conflict markers or manual items
+attention needed. For `migrate`, `2` means conflict markers or manual items
 remain; for `check-data`, invalid files; for `plan_review.py`, destructive
 or unrecognized changes.
 
@@ -195,11 +206,15 @@ Nothing in `scripts/` runs Terraform, commits or pushes.
 You need `git` and [`uv`](https://docs.astral.sh/uv/). `uv run
 scripts/<name>.py` reads each script's inline (PEP 723) dependencies, so
 nothing needs installing. Without `uv`, `python3` >= 3.10 takes the same
-arguments; install PyYAML and jsonschema for the factory data checks (if
-they are missing, `plan` warns and skips those checks). `terraform` is
-only needed in Phase 4. `releases` and `fetch` need network access to the
-upstream repository or a mirror, unless `fetch --from-repo` archives tags
-from a local clone.
+arguments, with PyYAML and jsonschema installed for the factory data
+checks; where the system Python refuses `pip install` (PEP 668), create a
+virtualenv (`python3 -m venv <dir>`, then `<dir>/bin/pip install pyyaml
+jsonschema`) and run the scripts with `<dir>/bin/python`. If they are
+missing, `analyze` exits `1`; pass `--skip-data-checks` only when the user
+accepts a report without those checks. `terraform` is only needed in
+Phase 4. `releases` and `fetch` need network access to the upstream
+repository or a mirror, unless `fetch --from-repo` archives tags from a
+local clone.
 
 ## Limits
 
@@ -207,21 +222,25 @@ from a local clone.
   its notes are a guideline with no guarantees. What makes an upgrade safe
   is the per-stage plan review in Phase 4, not the file merge.
 - Upstream does not support upgrading from the legacy stages (bootstrap
-  and resource manager, replaced in v44.0.0) to the current ones. `plan`
+  and resource manager, replaced in v44.0.0) to the current ones. `analyze`
   warns when a mapped stage no longer exists in the target; stop and point
   the user to UPGRADING.md.
 - Stages that are new in the target are reported, never added. Adopting a
   new stage is a design decision, not an upgrade.
 - Folders are mapped heuristically: by name first, then by content. Always
   show the MAPPED FOLDERS section and have the user confirm anything
-  surprising.
+  surprising. A folder that looks like a stage but matches none clearly
+  is listed under STAGE CANDIDATES: never pick the stage yourself. Ask the
+  user, one question per folder, then run `analyze` again with
+  `--map <folder>=<stage>` (or `=none`) and pass the same flags to `migrate`
+  ([phase 2](references/phase2-analysis.md#stage-candidates)).
 
 ## References
 
 - [README.md](README.md) — human guide: design, gates, script reference
 - [TESTING.md](TESTING.md) — test scenarios, unit and integration tests, playbooks
 - [references/phase1-discovery.md](references/phase1-discovery.md) — repository scan, base and target releases
-- [references/phase2-analysis.md](references/phase2-analysis.md) — fetching releases, reading the upgrade report, the apply gate
-- [references/phase3-apply.md](references/phase3-apply.md) — apply, conflicts, data and variable fixes, re-plan
+- [references/phase2-analysis.md](references/phase2-analysis.md) — fetching releases, reading the upgrade report, the code update gate
+- [references/phase3-apply.md](references/phase3-apply.md) — updating repository files, conflicts, data and variable fixes, re-analyze
 - [references/phase4-verify.md](references/phase4-verify.md) — static checks, plan review, handover
 - [UPGRADING.md](../../../fast/stages/UPGRADING.md) and [CHANGELOG.md](../../../CHANGELOG.md) — the upstream release notes the scripts read

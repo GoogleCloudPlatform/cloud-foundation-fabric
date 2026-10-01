@@ -68,7 +68,16 @@ customer repositories built from them in several layouts.
 | `TestChangelogAndCheckData` | The `changelog` and `check-data` commands |
 | `TestPlanReview` | Plan classification, `action_reason` hints, critical types, non-plan input, verdicts and exit codes |
 | `TestCli` | Text, JSON and `--output` modes, and the exit codes of every command |
-| `TestSkillDocuments` | SKILL.md frontmatter, links that resolve, documented commands and flags that exist, no local paths |
+| `TestFactoryDataView` | The Terraform view of factory YAML: string keys and dates, validation like Terraform's, validator failures |
+| `TestVersionConstraints` | Whether a provider or Terraform constraint allows a release, and its lower bound |
+| `TestDeepChecks` | Version pins that block `terraform init`, files keeping upstream sources, linked module repositories, broken and absolute links, generated files, add-on copies, missing module folders, findings |
+| `TestStageMapping` | Stage candidates (stage-like folders below the match threshold, guesses ranked by files and variables), `--map` from the API and the CLI for `plan` and `apply`, `=none`, overriding an automatic match, low-similarity hand mappings, unrelated folders not asked about, `parse_stage_map` validation, refused maps |
+| `TestGenericLayouts` | Release files next to `fast/` (upgraded when still upstream's, kept when rewritten), module-root files, pins checked only in files Terraform loads, upstream-shipped files that look generated, new upstream datasets, nested module groups, one-stage repositories, external data masking, unpinned git sources, checklist apply order, per-stage counts |
+| `TestReportHelpers` | Apply order, file counts that skip sample datasets and blocked files, stage attribution, home folder masking, table-cell escaping, single-pass template filling, the CSV formula guard |
+| `TestHtmlReport` | The self-contained HTML report, scrubbing, and the `--html` flag |
+| `TestMarkdownReport` | Report sections, tracker, escaping, the brief, and the `--markdown` and `--brief` flags |
+| `TestInlineWidget` | The inline HTML card and the `--widget` flag |
+| `TestSkillDocuments` | SKILL.md frontmatter, links that resolve, documented commands and flags that exist, no local paths; in this file, cited tests and playbooks that exist and a playbook command that works from the repository root |
 
 ## Integration tests on real releases
 
@@ -82,7 +91,7 @@ FAST_UPGRADE_FABRIC_REPO=$PWD uv run --with pyyaml --with jsonschema \
 ```
 
 `FAST_UPGRADE_BASE` and `FAST_UPGRADE_TARGET` choose the releases (default
-`v57.0.0` and `v59.0.0`). The five tests:
+`v57.0.0` and `v59.0.0`). The six tests:
 
 - **Fork round trip:** a complete copy of the base with one customer edit
   and one customer data file. After `apply`, no conflict markers remain
@@ -102,6 +111,12 @@ FAST_UPGRADE_FABRIC_REPO=$PWD uv run --with pyyaml --with jsonschema \
 - **Archive without tar filters:** fetching the target the way Pythons
   without tar extraction filters do gives the same tree digest as the
   filtered path.
+- **Full release copy:** everything the base release ships, including
+  `CHANGELOG.md`, `default-versions.tf` and `modules/README.md`, plus one
+  customer data file. The plan has no blocker, no stale pin and no
+  generated-file finding; after `apply --include-deletes` the tree equals
+  the target plus the customer file, and `detect` reports the target with
+  high confidence.
 
 ## Plan review with real Terraform
 
@@ -137,12 +152,23 @@ The playbooks in
 [`tools/skill-turn-harness/playbooks/fast/fast-upgrade/`](../../../tools/skill-turn-harness/playbooks/fast/fast-upgrade/)
 run the skill through the
 [skill-turn-harness](../../../tools/skill-turn-harness/README.md). They need
-a Gemini API key (`GEMINI_API_KEY`). From `tools/skill-turn-harness`:
+a Gemini API key, in `GEMINI_API_KEY` or in `~/.gemini/key.env`, and every
+run uses model quota.
+
+Run them from the repository root. The harness copies the paths listed in
+the playbook's `link_paths` from the folder it is started in to a temporary
+workspace, and `--skill-src` is a path inside that workspace:
 
 ```bash
-uv run harness.py playbooks/fast/fast-upgrade/changelog-offline.yaml \
-  --skill-src ../../skills/fast/fast-upgrade
+uv run tools/skill-turn-harness/harness.py \
+  tools/skill-turn-harness/playbooks/fast/fast-upgrade/changelog-offline.yaml \
+  --skill-src skills/fast/fast-upgrade
 ```
+
+Without `uv`, install `tools/skill-turn-harness/requirements.txt` in a
+virtual environment and run the same command with `python3`. Add
+`--keep-workspace` to inspect the workspace after the run. Logs are written
+to `./logs`, and a failed step saves the full trace there.
 
 | Playbook | Mode | Network | What it checks |
 | --- | --- | --- | --- |

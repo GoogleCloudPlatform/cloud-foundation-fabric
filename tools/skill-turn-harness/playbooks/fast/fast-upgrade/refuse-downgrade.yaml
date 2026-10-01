@@ -38,6 +38,6 @@ steps:
     expected_outcome: >-
       The agent starts with the updated progress block and refuses the
       requested target: v50.0.0 is older than the confirmed base release, and
-      downgrades are not supported. It stops without running the plan or
-      apply commands and without modifying any file, and it may offer to
+      downgrades are not supported. It stops without running the analyze/plan or
+      migrate/apply commands and without modifying any file, and it may offer to
       upgrade to a newer release instead.

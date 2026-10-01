@@ -105,6 +105,13 @@ Write a handover report for the user:
   from the UPGRADING notes, new stages not adopted, customer-only stages
   still to check, stages not yet planned or applied, in apply order.
 - **Fork delta**: the `delta.txt` report from Phase 3.
+- **Customer report**: run `plan` again on the upgraded branch with
+  `--markdown <repo>/.fast-upgrade/report-after.md`,
+  `--brief <repo>/.fast-upgrade/report-after-brief.md` and, if your chat
+  embeds HTML, `--widget` into your artifact directory. Show the card and
+  the brief inline in the handover, as in Phase 2, and link
+  `report-after.md` next to the Phase 2 `report.md`; a diff of the two
+  shows which findings are closed and which are still open.
 - **A commit message**, for example:
 
   ```text

@@ -50,13 +50,13 @@ persona:
         custom_roles type change) and the provider changes, and it quoted the
         tools line as printed.
       - >-
-        The agent asked the apply-gate questions and, after the user chose to
-        stop at the report, it ended with a summary without running apply or
-        changing files in customer-fast.
+        The agent asked the code-update gate questions and, after the user chose
+        to stop at the report, it ended with a summary without running migrate
+        or changing files in customer-fast.
     tool_calls_contain:
       run_shell_command:
         - "fast_upgrade.py detect"
         - "fast_upgrade.py fetch"
-        - "fast_upgrade.py plan"
+        - "fast_upgrade.py analyze"
     files_exist:
       - "customer-fast/fast/stages/0-org-setup/fast_version.txt"

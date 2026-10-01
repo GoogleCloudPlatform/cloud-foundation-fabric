@@ -34,9 +34,13 @@ Read the report with this table:
 | confidence `none` | no marker found | ask the user; see [Unknown base](#unknown-base) |
 | `git refs to Fabric` | modules come from upstream git at a `?ref=` | the ref is strong evidence of the base; `apply --bump-refs` can update it later |
 | `SOURCE PROBLEMS` | module sources that do not resolve (missing folder, outside the repository) | fix or explain them before planning: the plan cannot map what it cannot resolve |
+| warning `module sources point to the missing folder <root>` | many sources share one missing root; `(git-ignored ...)` means it is meant to be a separate checkout | ask the user to check out or link the modules repository at the printed path, then run `detect` again. Never create the link without their approval |
+| module folder is a symlink or a nested git repository | the modules live in another repository | fine: `plan` lists it under LINKED REPOSITORIES and `apply` checks that repository is clean too. The upgrade then needs a commit in each repository |
+| `datasets/` is a symlink, or the factory YAML lives in another repository | the data is owned separately from the stage code | a symlink is fine: `plan` compares the data through it and `apply` never writes it. For a separate data repository, ask for its path and pass it with `--data` so the YAML is validated; otherwise the report says no factory data was found |
+| one stage at the repository root | a repository per stage | fine: `plan` matches the root by the repository folder name and content. Plan each repository on its own |
 | `HISTORY` line | the repository's git history contains the upstream tag | a real git fork: mention `git merge <target tag>` as an alternative; this skill still works |
 | dirty tree | uncommitted changes to tracked files | fine for Phases 1–2; `apply` refuses until the user commits or stashes them |
-| no stages | no stage found by marker or name | confirm the path with the user; `plan` still tries to match folders by content |
+| no stages | no stage found by marker or name | confirm the path with the user; `plan` still tries to match folders by content. A stage consumed as a remote module or through Terragrunt is not supported |
 
 ## Step 2: Base release (gate)
 
@@ -52,8 +56,8 @@ the customer's changes. It decides how every file is classified:
   silent.
 
 So when the evidence is split, prefer the older candidate. Ask the user to
-confirm the base with `ask_question` (the detected release first, marked
-as recommended) and STOP.
+confirm the base as a multiple-choice question (the detected release
+first, marked as recommended) and STOP.
 
 ### Unknown base
 

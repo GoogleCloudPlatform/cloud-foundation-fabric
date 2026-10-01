@@ -56,6 +56,7 @@ import hcl_lite  # noqa: E402
 import plan_review  # noqa: E402
 import provenance  # noqa: E402
 import release_notes  # noqa: E402
+import report  # noqa: E402
 
 needs_data = unittest.skipUnless(factory_data.available(),
                                  'needs PyYAML and jsonschema')
@@ -2534,20 +2535,22 @@ class TestCli(_Case):
 
   def test_plan_text_json_and_output(self):
     repo = self.fork(extra=A_EXTRA)
-    code, out, _ = _run(fu, ['plan'] + self.args(repo))
+    plan = ['plan'
+           ] + ([] if factory_data.available() else ['--skip-data-checks'])
+    code, out, _ = _run(fu, plan + self.args(repo))
     self.assertEqual(code, 0)
     self.assertTrue(out.startswith('fast-upgrade plan | tools '))
-    code, out, _ = _run(fu, ['plan'] + self.args(repo, '--json'))
+    code, out, _ = _run(fu, plan + self.args(repo, '--json'))
     self.assertEqual(json.loads(out)['base']['version'], V1)
-    report = self.path('plan.json')
-    code, out, _ = _run(fu, ['plan'] +
-                        self.args(repo, '--json', '--output', report))
+    report_path = self.path('plan.json')
+    code, out, _ = _run(
+        fu, plan + self.args(repo, '--json', '--output', report_path))
     self.assertEqual(len(out.splitlines()), 1)
     self.assertIn('wrote JSON to', out)
-    with open(report, encoding='utf-8') as f:
+    with open(report_path, encoding='utf-8') as f:
       self.assertEqual(json.load(f)['target']['version'], V2)
     text_report = self.path('plan.txt')
-    code, out, _ = _run(fu, ['plan'] + self.args(repo, '--output', text_report))
+    code, out, _ = _run(fu, plan + self.args(repo, '--output', text_report))
     with open(text_report, encoding='utf-8') as f:
       self.assertEqual(f.read(), out)
 
@@ -2589,6 +2592,1067 @@ class TestCli(_Case):
     ])
     self.assertEqual(code, 0)
     self.assertIn('BREAKING CHANGES (relevant to the repository) (4)', out)
+
+
+# --------------------------------------------------------------------------
+# Deep checks, findings and the shareable report
+# --------------------------------------------------------------------------
+
+ADDON_V1 = _d('''
+    module "test-vm" {
+      source     = "../../../modules/compute-vm"
+      project_id = var.project_id
+      zone       = "europe-west1-b"
+      name       = "test-vm"
+      network_interfaces = [{
+        network    = var.network
+        subnetwork = var.subnetwork
+      }]
+      tags = ["ssh", "http-server"]
+    }
+    ''')
+ADDON_V2 = ADDON_V1.replace(
+    '  tags = ["ssh", "http-server"]\n', '  tags = ["ssh", "http-server"]\n'
+    '  shielded_config = {}\n')
+
+
+class TestFactoryDataView(unittest.TestCase):
+
+  def test_terraform_view_makes_keys_and_dates_strings(self):
+    import datetime  # pylint: disable=import-outside-toplevel
+    doc = {
+        113008: 'a',
+        True: 'b',
+        None: 'c',
+        'when': datetime.date(2024, 1, 2),
+        'list': [{
+            1: datetime.date(2024, 1, 3)
+        }],
+    }
+    self.assertEqual(
+        factory_data.terraform_view(doc), {
+            '113008': 'a',
+            'true': 'b',
+            'null': 'c',
+            'when': '2024-01-02',
+            'list': [{
+                '1': '2024-01-03'
+            }],
+        })
+
+  @needs_data
+  def test_numeric_keys_and_dates_validate_like_terraform(self):
+    schema = {
+        'type': 'object',
+        'properties': {
+            'values': {
+                'type': 'object',
+                'propertyNames': {
+                    'pattern': '^[0-9]+$'
+                },
+                'additionalProperties': {
+                    'type': 'string'
+                },
+            },
+            'expires': {
+                'type': 'string'
+            },
+        },
+    }
+    text = 'values:\n  113008: team-a\n  471209: team-b\nexpires: 2026-01-01\n'
+    self.assertEqual(factory_data.validate_text(text, schema), [])
+
+  @needs_data
+  def test_validator_failure_is_not_invalid_data(self):
+    schema = {'$ref': '#/definitions/missing'}
+    errors = factory_data.validate_text('name: x\n', schema)
+    self.assertTrue(factory_data.is_validator_error(errors), errors)
+    self.assertFalse(factory_data.is_validator_error(['name: bad']))
+    self.assertFalse(factory_data.is_validator_error([]))
+
+
+class TestVersionConstraints(unittest.TestCase):
+
+  def test_constraint_allows(self):
+    cases = [
+        ('>= 7.40.0, < 8.0.0', '8.4.0', False),
+        ('>= 7.40.0, < 8.0.0', '7.50.1', True),
+        ('>= 8.4.0, < 9.0.0', '8.4.0', True),
+        ('~> 8.4', '8.9.0', True),
+        ('~> 8.4', '9.0.0', False),
+        ('~> 8.4.1', '8.5.0', False),
+        ('= 1.2.3', '1.2.3', True),
+        ('!= 1.2.3', '1.2.3', False),
+        ('1.2', '1.2.0', True),
+        ('> 1.0.0', '1.0.0', False),
+        ('<= 1.0.0', '1.0.0', True),
+    ]
+    for constraint, version, expected in cases:
+      with self.subTest(constraint=constraint, version=version):
+        self.assertEqual(fu.constraint_allows(constraint, version), expected)
+    self.assertIsNone(fu.constraint_allows('>= banana', '1.0.0'))
+    self.assertIsNone(fu.constraint_allows(None, '1.0.0'))
+
+  def test_lower_bound(self):
+    self.assertEqual(fu.lower_bound('>= 8.4.0, < 9.0.0'), (8, 4, 0))
+    self.assertEqual(fu.lower_bound('~> 1.10'), (1, 10, 0))
+    self.assertIsNone(fu.lower_bound('< 9.0.0'))
+    self.assertIsNone(fu.lower_bound(None))
+
+
+@needs_git
+class TestDeepChecks(_Case):
+
+  def test_customer_version_pins_block_init(self):
+    pins = DEFAULT_VERSIONS.replace('@@V@@',
+                                    V1).replace('@@G@@', '>= 7.0.0, < 8.0.0')
+    repo = self.fork(extra={'fast/stages/0-org-setup/terraform.tf': pins})
+    ctx, plan, _ = self.plan(repo)
+    self.assertIn('pin', ctx.breakdown)
+    [entry] = plan['version_pins']
+    self.assertEqual(entry['file'], 'fast/stages/0-org-setup/terraform.tf')
+    self.assertTrue(entry['blocks_init'])
+    self.assertTrue(entry['stale_marker'])
+    google = {p['name']: p for p in entry['pins']}['google']
+    self.assertIs(google['allows_target'], False)
+    self.assertEqual(google['target'], '>= 8.0.0, < 9.0.0')
+    blockers = [f for f in plan['findings'] if f['severity'] == 'blocker']
+    self.assertEqual([f['files'] for f in blockers],
+                     [['fast/stages/0-org-setup/terraform.tf']])
+    self.assertEqual(blockers[0]['stage'], 'fast/stages/0-org-setup')
+    self.assertEqual(plan['readiness']['status'], 'BLOCKED')
+    self.assertIn('BLOCKS INIT fast/stages/0-org-setup/terraform.tf',
+                  fu.render_plan(plan, 0))
+
+  def test_vanilla_fork_has_no_blocker_and_no_pins(self):
+    _, plan, _ = self.plan(self.fork(extra=A_EXTRA))
+    self.assertEqual(plan['version_pins'], [])
+    self.assertEqual(plan['linked_repos'], [])
+    self.assertEqual(plan['addon_copies'], [])
+    self.assertEqual(plan['readiness']['counts']['blocker'], 0)
+    self.assertEqual(plan['readiness']['status'], 'NEEDS WORK')
+    self.assertEqual([f['id'] for f in plan['findings']],
+                     [f'F{i:03d}' for i in range(1,
+                                                 len(plan['findings']) + 1)])
+    order = [fu.SEVERITIES.index(f['severity']) for f in plan['findings']]
+    self.assertEqual(order, sorted(order))
+    titles = ' | '.join(f['title'] for f in plan['findings'])
+    self.assertIn('tfvars set variables the target no longer declares', titles)
+    self.assertIn('new required variables', titles)
+    self.assertIn('Moved blocks must be copied', titles)
+    coverage = {c['area']: c['status'] for c in plan['coverage']}
+    self.assertEqual(coverage['Terraform state and plan'], 'not checked')
+    self.assertEqual(coverage['File comparison'], 'checked')
+    steps = ' '.join(s['text'] for s in plan['checklist'])
+    self.assertIn('terraform init -upgrade', steps)
+    self.assertIn('Copy the moved-block files', steps)
+
+  def test_file_keeping_upstream_sources_is_not_a_conflict(self):
+    # One stage of a reorganized repository still uses upstream-relative
+    # sources: comparing it with rewritten upstream code used to flag a
+    # conflict on every such file.
+    repo = self.reorganized(
+        extra={'stages/0-org-setup-acme/main.tf': ORG_MAIN_V1})
+    ctx, plan, results = self.plan(repo)
+    entry = self.files(plan)['stages/0-org-setup-acme/main.tf']
+    self.assertEqual(entry['category'], 'upstream-changed')
+    self.assertTrue(entry['upstream_sources'])
+    self.assertEqual(plan['upstream_sources'],
+                     ['stages/0-org-setup-acme/main.tf'])
+    unresolved = {(u['file'], u['source']) for u in plan['unresolved_sources']}
+    self.assertIn(
+        ('stages/0-org-setup-acme/main.tf', '../../../modules/project'),
+        unresolved)
+    self.assertIn(
+        'Module sources in stages/0-org-setup-acme/main.tf will not '
+        'resolve', [f['title'] for f in plan['findings']])
+    self.assertEqual(
+        self.files(plan)['stages/project-factory/main.tf']['upstream_sources'],
+        False)
+    fu.run_apply(ctx, results)
+    self.assertEqual(_read(repo, 'stages/0-org-setup-acme/main.tf'),
+                     ORG_MAIN_V2)
+
+  def _linked_modules_repo(self):
+    mods = self.path('mods')
+    shutil.copytree(os.path.join(UP[V1], 'modules'), mods, symlinks=True)
+    _commit_all(mods)
+    repo = self.path('repo')
+    shutil.copytree(os.path.join(UP[V1], 'fast'), os.path.join(repo, 'fast'),
+                    symlinks=True)
+    os.symlink(os.path.join('..', 'mods'), os.path.join(repo, 'modules'))
+    _write(repo, '.gitignore', 'modules\n')
+    _commit_all(repo)
+    return repo, mods
+
+  def test_symlinked_module_repository_is_checked_and_written(self):
+    repo, mods = self._linked_modules_repo()
+    ctx, plan, results = self.plan(repo)
+    [linked] = plan['linked_repos']
+    self.assertEqual(
+        (linked['path'], linked['kind'], linked['outside'], linked['ignored']),
+        ('modules', 'symlink', True, True))
+    self.assertEqual(linked['git']['dirty'], 0)
+    self.assertIn('modules is a separate repository',
+                  [f['title'] for f in plan['findings']])
+    self.assertIn('LINKED REPOSITORIES (1)', fu.render_plan(plan, 0))
+    result = fu.run_apply(ctx, results)
+    self.assertEqual(_read(mods, 'project/main.tf'), PROJECT_MAIN_V2)
+    [summary] = result['linked_repos']
+    self.assertEqual(summary['path'], 'modules')
+    self.assertGreater(summary['files'], 0)
+    self.assertTrue(
+        all(
+            r.get('repository') == 'modules'
+            for r in result['records']
+            if r['path'].startswith('modules/')))
+    self.assertIn('LINKED REPOSITORIES (commit the upgrade there too)',
+                  fu.render_apply(result, 0))
+
+  def test_dirty_linked_repository_refuses_apply(self):
+    repo, mods = self._linked_modules_repo()
+    _write(mods, 'net-vpc/README.md', '# edited\n')
+    ctx, plan, results = self.plan(repo)
+    self.assertEqual(plan['linked_repos'][0]['git']['dirty'], 1)
+    self.assertIn('modules has uncommitted changes',
+                  [f['title'] for f in plan['findings']])
+    with self.assertRaisesRegex(fu.Refused, 'separate repository with 1 '
+                                'uncommitted'):
+      fu.run_apply(ctx, results)
+    fu.run_apply(ctx, results, dry_run=True, allow_dirty=True)
+
+  def test_broken_tfvars_link_is_reported_with_its_target(self):
+    repo = self.fork(commit=False)
+    link = 'fast/stages/0-org-setup/0-globals.auto.tfvars.json'
+    os.symlink('/nonexistent/tfvars/0-globals.auto.tfvars.json',
+               os.path.join(repo, *link.split('/')))
+    _write(repo, 'fast/stages/0-org-setup/0-org-setup-providers.tf',
+           'provider "google" {}\n')
+    os.symlink(os.path.join(repo, 'fast/stages/0-org-setup/outputs.tf'),
+               os.path.join(repo, 'fast/stages/0-org-setup/abs-link.tf'))
+    _commit_all(repo)
+    _, plan, _ = self.plan(repo)
+    [stage] = [
+        s for s in plan['stage_variables']
+        if s['stage'] == 'fast/stages/0-org-setup'
+    ]
+    self.assertEqual(stage['tfvars_unreadable'], [
+        f'{link} (broken symlink to '
+        '/nonexistent/tfvars/0-globals.auto.tfvars.json)'
+    ])
+    hygiene = plan['hygiene']
+    self.assertEqual([l['path'] for l in hygiene['broken_links']], [link])
+    self.assertEqual([l['path'] for l in hygiene['absolute_links']],
+                     ['fast/stages/0-org-setup/abs-link.tf'])
+    self.assertEqual(hygiene['generated_tracked'], [
+        'fast/stages/0-org-setup/0-globals.auto.tfvars.json',
+        'fast/stages/0-org-setup/0-org-setup-providers.tf',
+    ])
+    titles = [f['title'] for f in plan['findings']]
+    for title in ('Broken symlinks', 'Symlinks with absolute targets',
+                  'Generated provider/tfvars files are committed',
+                  'fast/stages/0-org-setup: tfvars files could not be read'):
+      self.assertIn(title, titles)
+    coverage = {c['area']: c['status'] for c in plan['coverage']}
+    self.assertEqual(coverage['Stage variables and tfvars'], 'partial')
+    self.assertIn('REPOSITORY HYGIENE (4)', fu.render_plan(plan, 0))
+
+  def test_addon_copy_is_matched_and_upstream_changes_reported(self):
+    path = 'fast/addons/2-networking-test/main.tf'
+    base = self.upstream_copy(V1, 'addon-base', {path: ADDON_V1})
+    target = self.upstream_copy(V2, 'addon-target', {path: ADDON_V2})
+    repo = self.fork(
+        base=base, extra={
+            'fast/stages/0-org-setup/test-vm.tf':
+                '# Copied from the test add-on.\n' + ADDON_V1,
+            'fast/stages/0-org-setup/unrelated.tf':
+                'locals {\n  mine = 1\n}\n',
+        })
+    _, plan, _ = self.plan(repo, base=base, target=target)
+    [copy] = plan['addon_copies']
+    self.assertEqual(copy['file'], 'fast/stages/0-org-setup/test-vm.tf')
+    self.assertEqual(copy['addon'], '2-networking-test')
+    self.assertEqual(copy['status'], 'changed upstream')
+    self.assertEqual(copy['changed_lines'], 1)
+    self.assertIn(
+        'fast/stages/0-org-setup/test-vm.tf is a copy of add-on '
+        '2-networking-test: changed upstream (1 line(s))',
+        [f['title'] for f in plan['findings']])
+
+  def test_missing_module_folder_is_explained(self):
+    repo = self.reorganized()
+    shutil.rmtree(os.path.join(repo, 'tf-modules'))
+    _commit_all(repo)
+    result = fu.detect(repo)
+    [hint] = result['modules']['missing_roots']
+    self.assertEqual((hint['root'], hint['calls'], hint['exists']),
+                     ('tf-modules', 3, False))
+    self.assertIn('3 module sources point to the missing folder tf-modules',
+                  ' '.join(result['warnings']))
+    _, plan, _ = self.plan(repo)
+    self.assertIn('Module sources point to a missing folder: tf-modules',
+                  [f['title'] for f in plan['findings']])
+    self.assertEqual(plan['readiness']['status'], 'BLOCKED')
+
+  def test_findings_for_edits_on_both_sides(self):
+    repo = self.fork(edits=B_EDITS, extra=B_EXTRA, remove=B_REMOVE)
+    _, plan, _ = self.plan(repo)
+    by_title = {f['title']: f for f in plan['findings']}
+    conflicts = [t for t in by_title if 'changed on both sides' in t]
+    self.assertTrue(conflicts)
+    self.assertTrue(all(by_title[t]['severity'] == 'high' for t in conflicts))
+    steps = ' '.join(s['text'] for s in plan['checklist'])
+    self.assertIn('Resolve conflict markers', steps)
+    text = fu.render_plan(plan, 0)
+    self.assertIn('READINESS  NEEDS WORK', text)
+    self.assertIn('FINDINGS (', text)
+    self.assertIn('NOT CHECKED', text)
+
+
+@needs_git
+class TestStageMapping(_Case):
+  """Stage-like folders the automatic match misses, and --map answers."""
+
+  DRIFTED = 'platform/core-org'
+
+  def drifted(self, keep_variables=True, extra=None):
+    """0-org-setup moved to platform/core-org and mostly rewritten."""
+    repo = self.fork(commit=False, extra=extra)
+    os.makedirs(os.path.join(repo, 'platform'))
+    shutil.move(os.path.join(repo, 'fast/stages/0-org-setup'),
+                os.path.join(repo, *self.DRIFTED.split('/')))
+    _write(repo, f'{self.DRIFTED}/main.tf',
+           'locals {\n  org = var.organization_id\n}\n')
+    _write(repo, f'{self.DRIFTED}/outputs.tf',
+           'output "org" {\n  value = local.org\n}\n')
+    if not keep_variables:
+      _write(
+          repo, f'{self.DRIFTED}/variables.tf',
+          'variable "organization_id" {\n  type = string\n}\n\n'
+          'variable "mine" {\n  type = string\n}\n')
+    _commit_all(repo)
+    return repo
+
+  def test_close_stage_like_folder_is_a_candidate(self):
+    repo = self.drifted()
+    _, plan, _ = self.plan(repo)
+    [candidate] = plan['stage_candidates']
+    self.assertEqual(candidate['folder'], self.DRIFTED)
+    self.assertEqual(candidate['reason'], 'fast_version.txt')
+    best = candidate['guesses'][0]
+    self.assertEqual((best['stage'], best['path']),
+                     ('0-org-setup', 'fast/stages/0-org-setup'))
+    self.assertEqual((best['files'], best['variables']), (0.33, 1.0))
+    self.assertNotIn(('stage', self.DRIFTED), self.mappings(plan))
+    self.assertNotIn(self.DRIFTED, plan['customer_only']['stages'])
+    self.assertFalse(
+        any(f['path'].startswith(self.DRIFTED + '/') for f in plan['files']))
+    [finding] = [f for f in plan['findings'] if f['category'] == 'mapping']
+    self.assertEqual((finding['severity'], finding['stage']),
+                     ('high', self.DRIFTED))
+    self.assertIn(f'--map {self.DRIFTED}=<stage>', finding['action'])
+    self.assertEqual(plan['readiness']['status'], 'NEEDS WORK')
+    self.assertIn('Confirm which FAST stage',
+                  ' '.join(s['text'] for s in plan['checklist']))
+    coverage = {c['area']: c['status'] for c in plan['coverage']}
+    self.assertEqual(coverage['Stage-like folders waiting for a mapping'],
+                     'not checked')
+    text = fu.render_plan(plan, 0)
+    self.assertIn('STAGE CANDIDATES (1)', text)
+    self.assertIn(
+        f'{self.DRIFTED}  [fast_version.txt]  guesses: '
+        '0-org-setup 100%', text)
+
+  def test_map_sets_the_stage_and_apply_writes_it(self):
+    repo = self.drifted()
+    ctx, plan, results = self.plan(
+        repo, stage_map={self.DRIFTED: 'fast/stages/0-org-setup'})
+    mapping = self.mappings(plan)[('stage', self.DRIFTED)]
+    self.assertEqual((mapping['name'], mapping['match']),
+                     ('0-org-setup', 'set by user'))
+    self.assertEqual(plan['stage_candidates'], [])
+    self.assertEqual(plan['user_mappings'], [{
+        'folder': self.DRIFTED,
+        'stage': '0-org-setup',
+        'score': 0.33,
+        'low_similarity': True
+    }])
+    titles = [
+        f['title'] for f in plan['findings'] if f['category'] == 'mapping'
+    ]
+    self.assertEqual(titles, [
+        f'{self.DRIFTED} was mapped to 0-org-setup by hand; only 33% of its '
+        'files match'
+    ])
+    files = self.files(plan)
+    self.assertEqual(files[f'{self.DRIFTED}/variables.tf']['category'],
+                     'upstream-changed')
+    self.assertEqual(files[f'{self.DRIFTED}/main.tf']['category'], 'conflict')
+    fu.run_apply(ctx, results)
+    self.assertEqual(_read(repo, f'{self.DRIFTED}/variables.tf'),
+                     ORG_VARIABLES_V2)
+
+  def test_map_from_the_command_line_for_plan_and_apply(self):
+    repo = self.drifted()
+    flags = ['--map', f'./{self.DRIFTED}/=0-org-setup']
+    checks = [] if factory_data.available() else ['--skip-data-checks']
+    code, out, _ = _run(fu, [
+        'plan', '--repo', repo, '--base', UP[V1], '--target', UP[V2], '--json'
+    ] + flags + checks)
+    self.assertEqual(code, 0)
+    plan = json.loads(out)
+    self.assertEqual(plan['stage_candidates'], [])
+    self.assertIn(('stage', self.DRIFTED), self.mappings(plan))
+    code, _, _ = _run(
+        fu,
+        ['apply', '--repo', repo, '--base', UP[V1], '--target', UP[V2]] + flags)
+    self.assertIn(code, (0, 2))
+    self.assertEqual(_read(repo, f'{self.DRIFTED}/variables.tf'),
+                     ORG_VARIABLES_V2)
+
+  def test_map_none_keeps_the_folder_as_yours(self):
+    repo = self.drifted()
+    ctx, plan, results = self.plan(repo, stage_map={self.DRIFTED: None})
+    self.assertEqual(plan['stage_candidates'], [])
+    self.assertIn(self.DRIFTED, plan['customer_only']['stages'])
+    self.assertNotIn('mapping', {f['category'] for f in plan['findings']})
+    self.assertIn(f'set by user: {self.DRIFTED} is yours',
+                  fu.render_plan(plan, 0))
+    before = _read(repo, f'{self.DRIFTED}/variables.tf')
+    fu.run_apply(ctx, results)
+    self.assertEqual(_read(repo, f'{self.DRIFTED}/variables.tf'), before)
+
+  def test_map_overrides_the_automatic_match(self):
+    repo = self.fork()
+    stage = 'fast/stages/0-org-setup'
+    _, plan, _ = self.plan(repo, stage_map={stage: None})
+    self.assertNotIn(('stage', stage), self.mappings(plan))
+    self.assertIn(stage, plan['customer_only']['stages'])
+    _, plan, _ = self.plan(repo, stage_map={stage: '0-org-setup'})
+    self.assertEqual(
+        self.mappings(plan)[('stage', stage)]['match'], 'set by user')
+    [user] = plan['user_mappings']
+    self.assertFalse(user['low_similarity'])
+    self.assertNotIn('mapping', {f['category'] for f in plan['findings']})
+
+  def test_low_file_similarity_still_asks_by_interface(self):
+    repo = self.drifted(keep_variables=False)
+    _, plan, _ = self.plan(repo)
+    [candidate] = plan['stage_candidates']
+    best = candidate['guesses'][0]
+    self.assertEqual((best['stage'], best['files'], best['variables']),
+                     ('0-org-setup', 0.0, 0.25))
+
+  def test_unrelated_folders_are_not_candidates(self):
+    repo = self.fork(
+        extra={
+            # Not built like a stage.
+            'apps/web/main.tf':
+                'resource "null_resource" "web" {}\n',
+            'apps/web/variables.tf':
+                'variable "region" {\n  type = string\n}\n',
+            # Built like a stage, but like none of FAST's.
+            'platform/other/fast_version.txt':
+                f'# FAST release: {V1}\n',
+            'platform/other/main.tf':
+                'locals {\n  x = var.zzz\n}\n',
+            'platform/other/variables.tf':
+                'variable "zzz" {\n  type = string\n}\n',
+        })
+    _, plan, _ = self.plan(repo)
+    self.assertEqual(plan['stage_candidates'], [])
+    self.assertIn('platform/other', plan['customer_only']['stages'])
+
+  def test_stage_variables_make_a_folder_stage_like(self):
+    repo = self.fork(
+        extra={
+            'envs/platform/main.tf':
+                'locals {\n  p = var.prefix\n}\n',
+            'envs/platform/variables.tf':
+                ''.join(f'variable "{n}" {{\n  type = string\n}}\n'
+                        for n in ('prefix', 'billing_account', 'organization',
+                                  'organization_id', 'custom_roles')),
+        })
+    _, plan, _ = self.plan(repo)
+    [candidate] = plan['stage_candidates']
+    self.assertEqual(candidate['folder'], 'envs/platform')
+    self.assertTrue(candidate['reason'].startswith('FAST stage variables'))
+
+  def test_parse_stage_map(self):
+    self.assertEqual(
+        fu.parse_stage_map(
+            ['a/b=0-org-setup', './c/=none', '.=fast/stages/2-networking/']), {
+                'a/b': '0-org-setup',
+                'c': None,
+                '': 'fast/stages/2-networking'
+            })
+    for bad, message in (
+        ('nofolder', 'use FOLDER=STAGE'),
+        ('a=', 'use FOLDER=STAGE'),
+        ('=0-org-setup', 'use FOLDER=STAGE'),
+        ('../x=0-org-setup', 'inside the repository'),
+        ('/abs=0-org-setup', 'inside the repository'),
+    ):
+      with self.subTest(value=bad):
+        with self.assertRaisesRegex(fu.UpgradeError, message):
+          fu.parse_stage_map([bad])
+    with self.assertRaisesRegex(fu.UpgradeError, 'more than once'):
+      fu.parse_stage_map(['a=0-org-setup', 'a/=none'])
+
+  def test_invalid_maps_are_refused(self):
+    repo = self.drifted(extra={'docs/README.md': '# docs\n'})
+    for stage_map, message in (
+        ({
+            self.DRIFTED: '9-nope'
+        }, 'not a stage of the base release v1.0.0; '
+         'use one of: 0-cicd-github, 0-org-setup, 2-project-factory'),
+        ({
+            'missing': '0-org-setup'
+        }, 'no such folder'),
+        ({
+            'docs': '0-org-setup'
+        }, 'has no .tf files'),
+    ):
+      with self.subTest(stage_map=stage_map):
+        with self.assertRaisesRegex(fu.UpgradeError, re.escape(message)):
+          self.plan(repo, stage_map=stage_map)
+
+
+@needs_git
+class TestGenericLayouts(_Case):
+  """What any fork can carry besides the stage and module folders."""
+
+  def release_fork(self, name='repo', extra=None, **kwargs):
+    """A fork that also kept the release files next to fast/."""
+    repo = self.fork(name, commit=False, extra=extra, **kwargs)
+    for rel_path in fu.RELEASE_ROOT_FILES:
+      if not _exists(repo, rel_path):
+        _write(repo, rel_path, _read(UP[V1], rel_path))
+    _commit_all(repo)
+    return repo
+
+  def test_release_files_next_to_fast_are_upgraded(self):
+    repo = self.release_fork(extra=A_EXTRA)
+    ctx, plan, results = self.plan(repo)
+    files = self.files(plan)
+    for rel_path in fu.RELEASE_ROOT_FILES:
+      self.assertEqual(files[rel_path]['category'], 'upstream-changed')
+    self.assertIn(('files', ''), self.mappings(plan))
+    # The root default-versions.tf pins the base providers, but it is the
+    # release's own file, so it is upgraded instead of blocking init.
+    self.assertEqual(plan['version_pins'], [])
+    self.assertEqual(plan['readiness']['counts']['blocker'], 0)
+    fu.run_apply(ctx, results, include_deletes=True)
+    for rel_path in fu.RELEASE_ROOT_FILES:
+      self.assertEqual(_read(repo, rel_path), _read(UP[V2], rel_path))
+    result = fu.detect(repo)
+    self.assertEqual(result['version']['detected'], V2)
+    self.assertEqual(result['version']['confidence'], 'high')
+
+  def test_rewritten_release_files_stay_the_customers(self):
+    repo = self.release_fork(
+        extra={
+            'CHANGELOG.md': '# Platform changes\n',
+            'default-versions.tf': 'terraform {\n  required_version = '
+                                   '">= 1.10.0"\n}\n',
+        })
+    _, plan, _ = self.plan(repo)
+    files = self.files(plan)
+    for rel_path in fu.RELEASE_ROOT_FILES:
+      self.assertNotIn(rel_path, files)
+    self.assertNotIn(('files', ''), self.mappings(plan))
+
+  def test_stamped_default_versions_is_merged(self):
+    stamped = _read(UP[V1], 'default-versions.tf') + '# ours\n'
+    repo = self.release_fork(extra={'default-versions.tf': stamped})
+    _, plan, _ = self.plan(repo)
+    files = self.files(plan)
+    self.assertEqual(files['default-versions.tf']['category'], 'conflict')
+    self.assertNotIn(
+        'CHANGELOG.md',
+        {f['path'] for f in plan['files'] if f['category'] == 'conflict'})
+
+  def test_reorganized_stages_folder_maps_no_release_files(self):
+    # stages/ at the repository root is not a copy of fast/: the files next
+    # to it are the customer's.
+    repo = self.reorganized(
+        extra={'CHANGELOG.md': _read(UP[V1], 'CHANGELOG.md')})
+    _, plan, _ = self.plan(repo)
+    self.assertNotIn('CHANGELOG.md', self.files(plan))
+
+  def test_module_root_files_are_mapped_when_fully_vendored(self):
+    base = self.upstream_copy(V1, 'mods-base', {'modules/README.md': '# 1\n'})
+    target = self.upstream_copy(V2, 'mods-target',
+                                {'modules/README.md': '# 2\n'})
+    repo = self.fork(base=base)
+    ctx, plan, results = self.plan(repo, base=base, target=target)
+    self.assertEqual(
+        self.files(plan)['modules/README.md']['category'], 'upstream-changed')
+    self.assertIn(('files', 'modules'), self.mappings(plan))
+    fu.run_apply(ctx, results)
+    self.assertEqual(_read(repo, 'modules/README.md'), '# 2\n')
+
+  def test_version_pins_only_in_files_terraform_loads(self):
+    pins = DEFAULT_VERSIONS.replace('@@V@@',
+                                    V1).replace('@@G@@', '>= 7.0.0, < 8.0.0')
+    repo = self.fork(
+        commit=False,
+        extra={
+            # A template kept for copying: nothing loads it.
+            'templates/versions.tf': pins,
+            # Loaded through a symlink from a stage.
+            'shared/versions.tf': pins,
+            # One file holding both the pins and the configuration.
+            'tools/single/main.tf': pins + 'resource "null_resource" "x" {}\n',
+        })
+    os.symlink('../../../shared/versions.tf',
+               os.path.join(repo, 'fast/stages/0-org-setup/shared-versions.tf'))
+    _commit_all(repo)
+    _, plan, _ = self.plan(repo)
+    self.assertEqual(sorted(p['file'] for p in plan['version_pins']),
+                     ['shared/versions.tf', 'tools/single/main.tf'])
+    self.assertTrue(all(p['blocks_init'] for p in plan['version_pins']))
+
+  def test_generated_file_names(self):
+    for name, generated in (
+        ('fast/stages/1-vpcsc/wif-login-config.json', True),
+        ('ci_wif.json', True),
+        ('a/gh-wif-config.json', True),
+        ('swift-config.json', False),
+        ('wifi-setup.json', False),
+        ('0-org-setup-providers.tf', True),
+        ('0-globals.auto.tfvars.json', True),
+    ):
+      self.assertEqual(bool(fu.GENERATED_RE.search(name)), generated, name)
+
+  def test_upstream_shipped_files_are_not_generated_files(self):
+    wif = 'fast/stages/0-org-setup/wif-login-config.json'
+    base = self.upstream_copy(V1, 'wif-base', {wif: '{}\n'})
+    target = self.upstream_copy(V2, 'wif-target', {wif: '{"v": 2}\n'})
+    repo = self.fork(
+        base=base, extra={
+            'fast/stages/0-org-setup/swift-config.json':
+                '{}\n',
+            'fast/stages/0-org-setup/ci-wif-config.json':
+                '{}\n',
+            'fast/stages/0-org-setup/0-org-setup-providers.tf':
+                'provider "google" {}\n',
+        })
+    _, plan, _ = self.plan(repo, base=base, target=target)
+    self.assertEqual(plan['hygiene']['generated_tracked'], [
+        'fast/stages/0-org-setup/0-org-setup-providers.tf',
+        'fast/stages/0-org-setup/ci-wif-config.json',
+    ])
+
+  def test_new_upstream_datasets_follow_the_forks_choice(self):
+    ds = 'fast/stages/2-project-factory/datasets'
+    base = self.upstream_copy(V1, 'ds-base', {
+        f'{ds}/classic/a.yaml': 'name: a\n',
+        f'{ds}/hardened/a.yaml': 'name: a\n',
+    })
+    target = self.upstream_copy(
+        V2, 'ds-target', {
+            f'{ds}/classic/a.yaml': 'name: a2\n',
+            f'{ds}/hardened/a.yaml': 'name: a2\n',
+            f'{ds}/minimal/a.yaml': 'name: m\n',
+        })
+    # A fork that keeps every base dataset gets the new one too.
+    _, plan, _ = self.plan(self.fork('all', base=base), base=base,
+                           target=target)
+    files = self.files(plan)
+    self.assertEqual(files[f'{ds}/minimal/a.yaml']['category'],
+                     'upstream-added')
+    self.assertFalse(files[f'{ds}/minimal/a.yaml'].get('sample_data'))
+    # A fork that curates its datasets does not.
+    repo = self.fork('curated', base=base, commit=False)
+    shutil.rmtree(os.path.join(repo, *f'{ds}/hardened'.split('/')))
+    _commit_all(repo)
+    ctx, plan, results = self.plan(repo, base=base, target=target)
+    files = self.files(plan)
+    self.assertTrue(files[f'{ds}/hardened/a.yaml'].get('sample_data'))
+    self.assertTrue(files[f'{ds}/minimal/a.yaml'].get('sample_data'))
+    self.assertFalse(files[f'{ds}/classic/a.yaml'].get('sample_data'))
+    self.assertNotIn(
+        f'{ds}/minimal/a.yaml',
+        {
+            f['path'] for f in plan['files'] if report._needs_person(f)  # pylint: disable=protected-access
+        })
+    fu.run_apply(ctx, results, include_deletes=True)
+    self.assertFalse(_exists(repo, f'{ds}/minimal'))
+    self.assertFalse(_exists(repo, f'{ds}/hardened'))
+    self.assertEqual(_read(repo, f'{ds}/classic/a.yaml'), 'name: a2\n')
+
+  def test_nested_module_groups_are_cataloged(self):
+    base = self.upstream_copy(V1, 'nested-base',
+                              {'modules/group/sub/leaf/main.tf': COREDNS_MAIN})
+    cat = fu.catalog(base)
+    self.assertEqual(cat['modules']['group/sub/leaf'], 'modules/group/sub/leaf')
+
+  def test_one_stage_repository_named_after_its_stage(self):
+    repo = self.path('gcp-org-setup')
+    shutil.copytree(os.path.join(UP[V1], 'fast/stages/0-org-setup'), repo)
+    _commit_all(repo)
+    _, plan, _ = self.plan(repo)
+    mapping = self.mappings(plan)[('stage', '')]
+    self.assertEqual(mapping['name'], '0-org-setup')
+    self.assertEqual(mapping['match'], 'repository unnumbered name')
+
+  def test_external_data_folder_is_masked_in_reports(self):
+    repo = self.fork()
+    config = self.path('fast-config')
+    _write(config, 'data/projects/ext.yaml', TEAM_A)
+    _, plan, _ = self.plan(repo, data_paths=[config])
+    self.assertEqual(plan['repo']['data_paths'], [config])
+    text = json.dumps(report.shareable(plan))
+    self.assertNotIn(config, text)
+    self.assertIn('<data>', text)
+
+  def test_unpinned_fabric_sources_are_a_finding(self):
+    repo = self.git_sourced(
+        extra={
+            '0-org-setup/unpinned.tf':
+                f'module "loose" {{\n  source = "{FABRIC_GIT}//modules/'
+                'project"\n  name   = "loose"\n}\n'
+        })
+    _, plan, _ = self.plan(repo)
+    [finding
+    ] = [f for f in plan['findings'] if 'have no ?ref= pin' in f['title']]
+    self.assertEqual(finding['severity'], 'medium')
+    self.assertNotIn('(none)', ' '.join(f['detail'] for f in plan['findings']))
+
+  def test_checklist_follows_the_apply_order(self):
+    _, plan, _ = self.plan(self.fork(extra=A_EXTRA))
+    [init
+    ] = [s['text'] for s in plan['checklist'] if 'init -upgrade' in s['text']]
+    self.assertIn(
+        'fast/stages/0-org-setup, fast/extras/0-cicd-github, '
+        'fast/stages/2-project-factory.', init)
+
+  def test_stage_view_counts_module_files_on_the_modules_row(self):
+    repo = self.fork(edits=B_EDITS, extra=B_EXTRA, remove=B_REMOVE)
+    _, plan, _ = self.plan(repo)
+    data = report.shareable(plan)
+    self.assertIn('modules', data['stage_files'])
+    self.assertNotIn('modules/project', data['stage_files'])
+    self.assertEqual(
+        data['apply_counts']['merges'],
+        sum(c.get('to merge', 0) for c in data['stage_files'].values()))
+    self.assertEqual(
+        data['apply_counts']['updated'],
+        sum(c.get('updated', 0) for c in data['stage_files'].values()))
+
+
+class TestReportHelpers(unittest.TestCase):
+  # pylint: disable=protected-access
+
+  def test_apply_order(self):
+
+    def stage(customer, name, base=None):
+      return {
+          'kind': 'stage',
+          'name': name,
+          'customer': customer,
+          'base': base or customer,
+          'target': None
+      }
+
+    mappings = [
+        stage('fast/addons/2-networking-test', '2-networking-test'),
+        stage('fast/stages/2-networking', '2-networking'),
+        stage('fast/extras/0-cicd-github', '0-cicd-github'),
+        stage('fast/stages/1-vpcsc', '1-vpcsc'),
+        # A renamed copy sorts by its upstream stage.
+        stage('envs/org', '0-org-setup', 'fast/stages/0-org-setup'),
+        stage('platform', 'custom', 'platform'),
+    ]
+    self.assertEqual(
+        [m['customer'] for m in sorted(mappings, key=report._apply_order)], [
+            'envs/org', 'fast/extras/0-cicd-github', 'fast/stages/1-vpcsc',
+            'fast/stages/2-networking', 'fast/addons/2-networking-test',
+            'platform'
+        ])
+
+  def test_counts_skip_sample_datasets_and_blocked_files(self):
+    plan = {
+        'files': [
+            {
+                'path': 'a',
+                'category': 'upstream-changed'
+            },
+            {
+                'path': 'b',
+                'category': 'upstream-added',
+                'sample_data': True
+            },
+            {
+                'path': 'c',
+                'category': 'upstream-changed',
+                'blocked': 'link'
+            },
+            {
+                'path': 'd',
+                'category': 'conflict'
+            },
+            {
+                'path': 'e',
+                'category': 'conflict',
+                'blocked': 'link'
+            },
+            {
+                'path': 'f',
+                'category': 'conflict-deleted'
+            },
+            {
+                'path': 'g',
+                'category': 'conflict-added',
+                'sample_data': True
+            },
+            {
+                'path': 'h',
+                'category': 'customer-changed',
+                'blocked': 'link'
+            },
+        ]
+    }
+    self.assertEqual(report._auto_count(plan), 1)
+    self.assertEqual(report._merge_count(plan), 1)
+    self.assertEqual(report._manual_count(plan), 3)
+
+  def test_owner(self):
+    stages, modules = ['fast/stages/0-org-setup'], ['modules/project']
+    self.assertEqual(
+        report._owner('fast/stages/0-org-setup/main.tf', stages, modules),
+        'fast/stages/0-org-setup')
+    self.assertEqual(report._owner('modules/project/main.tf', stages, modules),
+                     'modules')
+    self.assertEqual(report._owner('CHANGELOG.md', stages, modules),
+                     'repository')
+    # A stage at the repository root does not claim the vendored modules.
+    self.assertEqual(report._owner('modules/project/main.tf', [''], modules),
+                     'modules')
+    self.assertEqual(report._owner('main.tf', [''], modules), '.')
+
+  def test_home_folders_are_masked_but_not_repository_folders(self):
+    self.assertEqual(
+        report._scrub('/home/alice/x, data/home/x.yaml, /Users/bob/y', []),
+        '<home>/x, data/home/x.yaml, <home>/y')
+
+  def test_table_cells_escape_pipes_once(self):
+    self.assertEqual(report._cell('a|b'), 'a\\|b')
+    self.assertEqual(report._cell('a\\|b'), 'a\\|b')
+    self.assertEqual(report._cell('a\\\\|b'), 'a\\\\\\|b')
+
+  def test_fill_substitutes_once(self):
+    out = report._fill('<t>__TITLE__</t>__DATA__', '__DATA__', {'k': 1})
+    self.assertEqual(out, '<t>__DATA__</t>{"k": 1}')
+
+  def test_csv_export_guards_formulas(self):
+    self.assertIn(r'/^[=+\-@\t\r]/.test(v)', report._TEMPLATE)
+
+
+@needs_git
+class TestHtmlReport(_Case):
+
+  def test_report_is_self_contained_and_shareable(self):
+    repo = self.fork(extra=A_EXTRA)
+    _, plan, _ = self.plan(repo)
+    plan['findings'][0]['title'] = 'x </script><img src=y onerror=alert(1)>'
+    html_text = report.render_html(plan, generated='2026-01-01 00:00 UTC')
+    self.assertTrue(html_text.startswith('<!DOCTYPE html>'))
+    self.assertNotIn(self.tmp, html_text)
+    self.assertNotIn(UP[V1], html_text)
+    self.assertNotIn('</script><img', html_text)
+    self.assertNotRegex(html_text, r'(src|href)="(https?:)?//')
+    m = re.search(r'<script type="application/json" id="data">(.*?)</script>',
+                  html_text, re.S)
+    data = json.loads(m.group(1))
+    self.assertEqual(data['findings'][0]['title'], plan['findings'][0]['title'])
+    self.assertEqual(data['readiness'], plan['readiness'])
+    self.assertEqual(data['repo']['path'], '<repo>')
+    self.assertEqual(data['repo']['name'], 'repo')
+    self.assertEqual(data['base']['path'], '<base>')
+    self.assertEqual(data['generated'], '2026-01-01 00:00 UTC')
+    self.assertNotIn('unchanged', {f['category'] for f in data['files']})
+    self.assertEqual(data['unchanged_files'], plan['summary']['unchanged'])
+
+  def test_plan_html_flag(self):
+    repo = self.fork(extra=A_EXTRA)
+    path = self.path('report.html')
+    code, out, err = _run(fu, [
+        'plan', '--repo', repo, '--base', UP[V1], '--target', UP[V2], '--html',
+        path
+    ] + ([] if factory_data.available() else ['--skip-data-checks']))
+    self.assertEqual(code, 0)
+    self.assertIn('READINESS', out)
+    self.assertIn('wrote HTML report to', err)
+    with open(path, encoding='utf-8') as f:
+      self.assertIn('FAST upgrade assessment', f.read())
+
+  def test_plan_requires_data_checks_unless_skipped(self):
+    repo = self.fork(extra=A_EXTRA)
+    args = ['plan', '--repo', repo, '--base', UP[V1], '--target', UP[V2]]
+    with mock.patch.object(factory_data, 'available', return_value=False), \
+        mock.patch.object(factory_data, 'missing_dependencies',
+                          return_value=['jsonschema']):
+      code, _, err = _run(fu, args)
+      self.assertEqual(code, 1)
+      self.assertIn('factory data checks need jsonschema', err)
+      self.assertIn('--skip-data-checks', err)
+      code, out, _ = _run(fu, args + ['--skip-data-checks', '--json'])
+      self.assertEqual(code, 0)
+      plan = json.loads(out)
+    self.assertIn('skipped', plan['data_impact'])
+    coverage = {c['area']: c['status'] for c in plan['coverage']}
+    self.assertEqual(coverage['Factory YAML data'], 'not checked')
+    self.assertNotIn('setup', {f['category'] for f in plan['findings']})
+
+
+@needs_git
+class TestMarkdownReport(_Case):
+
+  def test_report_sections_tracker_and_scrubbing(self):
+    repo = self.fork(extra=A_EXTRA)
+    _, plan, _ = self.plan(repo)
+    first = plan['findings'][0]
+    first['title'] = 'pipe | <b>tag</b> *star* run `terraform init`'
+    first['detail'] = ('link from /home/someone/work/x.tf\n'
+                       'second line with ``` fence')
+    text = report.render_markdown(plan, generated='2026-01-01 00:00 UTC')
+    self.assertTrue(text.startswith('# FAST upgrade assessment: repo\n'))
+    for heading in ('## 1. Summary', '## 2. Findings tracker',
+                    '## 3. Findings in detail', '## 4. By stage',
+                    '## 5. Upgrade plan', '## 6. Breaking changes',
+                    '## 7. File actions', '## 8. Coverage',
+                    '## Appendix A. Technical details',
+                    '## Appendix B. All changed files'):
+      self.assertIn('\n' + heading + '\n', text)
+    self.assertIn(f'**{plan["readiness"]["status"]}**:', text)
+    self.assertRegex(text, r'\n> \[!(CAUTION|WARNING|TIP)\]\n')
+    self.assertIn('[2. Findings tracker](#2-findings-tracker)', text)
+    self.assertNotIn(self.tmp, text)
+    self.assertNotIn(UP[V1], text)
+    self.assertNotIn('/home/someone', text)
+    # Every finding is in the tracker, with columns for the customer.
+    self.assertIn('| ID | Severity | Stage | Finding | Owner | Status | Due |',
+                  text)
+    rows = [l for l in text.splitlines() if re.match(r'\| F\d{3} \|', l)]
+    self.assertEqual(len(rows), len(plan['findings']))
+    # Only what GFM would format is escaped; existing code spans are kept.
+    row = rows[0]
+    self.assertIn('pipe \\| \\<b>tag\\</b> \\*star\\* run `terraform init`',
+                  row)
+    self.assertEqual(len(re.findall(r'(?<!\\)\|', row)), 8)
+    self.assertIn(report.SEV_ICON[first['severity']], row)
+    self.assertNotIn('custom\\_roles', report._md('custom_roles'))  # pylint: disable=protected-access
+    # Line lists become bullets; the home folder is masked.
+    self.assertIn('- link from \\<home>/work/x.tf', text)
+    self.assertIn('- second line with \\`\\`\\` fence', text)
+    # The plan is a task list with one item per checklist step.
+    self.assertEqual(text.count('\n- [ ] **S'), len(plan['checklist']))
+    self.assertIn('2026-01-01 00:00 UTC', text)
+    if any(m['kind'] == 'stage' for m in plan['mappings']):
+      self.assertIn('```mermaid\nflowchart LR\n', text)
+
+  def test_plan_markdown_flag(self):
+    repo = self.fork(extra=A_EXTRA)
+    path = self.path('report.md')
+    code, out, err = _run(fu, [
+        'plan', '--repo', repo, '--base', UP[V1], '--target', UP[V2],
+        '--markdown', path
+    ] + ([] if factory_data.available() else ['--skip-data-checks']))
+    self.assertEqual(code, 0)
+    self.assertIn('READINESS', out)
+    self.assertIn('wrote Markdown report to', err)
+    with open(path, encoding='utf-8') as f:
+      self.assertIn('## 2. Findings tracker', f.read())
+
+  def test_brief_is_chat_sized_and_complete(self):
+    repo = self.fork(extra=A_EXTRA)
+    _, plan, _ = self.plan(repo)
+    text = report.render_brief(plan, 'report.md')
+    status = plan['readiness']['status']
+    self.assertTrue(text.startswith('## FAST upgrade assessment: repo ('))
+    self.assertIn(f'**{status}**', text)
+    for f in plan['findings']:
+      self.assertIn(
+          f'**{f["id"]}**' if f['severity'] in ('blocker',
+                                                'high') else f'| {f["id"]} |',
+          text)
+    self.assertIn('### Upgrade plan', text)
+    self.assertIn('`report.md`', text)
+    # Nothing chat views may not render, and none of the long sections.
+    for absent in ('[!', '```mermaid', '](#', 'Appendix', self.tmp):
+      self.assertNotIn(absent, text)
+    self.assertLess(len(text.splitlines()), 200)
+
+  def test_clip_md_closes_code_spans(self):
+    clipped = report._clip_md('see `a very long code span here` ok', 20)  # pylint: disable=protected-access
+    self.assertEqual(clipped.count('`') % 2, 0)
+    self.assertTrue(clipped.endswith('`...'))
+
+  def test_plan_brief_flag(self):
+    repo = self.fork(extra=A_EXTRA)
+    brief, full = self.path('brief.md'), self.path('full.md')
+    code, _, err = _run(fu, [
+        'plan', '--repo', repo, '--base', UP[V1], '--target', UP[V2],
+        '--markdown', full, '--brief', brief
+    ] + ([] if factory_data.available() else ['--skip-data-checks']))
+    self.assertEqual(code, 0)
+    self.assertIn('wrote brief report to', err)
+    with open(brief, encoding='utf-8') as f:
+      self.assertIn('`full.md`', f.read())
+
+
+@needs_git
+class TestInlineWidget(_Case):
+
+  def test_widget_is_self_contained_complete_and_shareable(self):
+    repo = self.fork(extra=A_EXTRA)
+    _, plan, _ = self.plan(repo)
+    plan['findings'][0]['title'] = 'x </script><img src=y onerror=alert(1)>'
+    text = report.render_widget(plan, 'report.md', generated='2026-01-01')
+    self.assertTrue(text.startswith('<!DOCTYPE html>'))
+    self.assertNotIn(self.tmp, text)
+    self.assertNotIn(UP[V1], text)
+    self.assertNotIn('</script><img', text)
+    self.assertNotRegex(text, r'(src|href)="(https?:)?//')
+    # Chat embeds have a fixed height budget: no viewport-sized layouts.
+    for absent in ('100vh', 'h-screen', 'min-h-screen'):
+      self.assertNotIn(absent, text)
+    # Host theme tokens with fallbacks, never pinned on :root.
+    self.assertIn('var(--card,#fff)', text)
+    self.assertNotIn(':root', text)
+    m = re.search(r'<script type="application/json" id="data">(.*?)</script>',
+                  text, re.S)
+    data = json.loads(m.group(1))
+    self.assertEqual(data['status'], plan['readiness']['status'])
+    self.assertEqual([f['id'] for f in data['findings']],
+                     [f['id'] for f in plan['findings']])
+    self.assertEqual(len(data['plan']), len(plan['checklist']))
+    self.assertEqual(data['full_report'], 'report.md')
+    for f in data['findings']:
+      self.assertLessEqual(len(f['detail']), report.WIDGET_DETAIL)
+      self.assertLessEqual(len(f['files']), report.WIDGET_FILES)
+
+  def test_full_html_follows_the_host_theme(self):
+    repo = self.fork(extra=A_EXTRA)
+    _, plan, _ = self.plan(repo)
+    text = report.render_html(plan)
+    self.assertIn('var(--card,#fff)', text)
+    for pinned in ('#e8f0fe', '#f1f3f4'):
+      self.assertNotIn(pinned, text)
+
+  def test_plan_widget_flag(self):
+    repo = self.fork(extra=A_EXTRA)
+    path, full = self.path('card.html'), self.path('full.md')
+    code, _, err = _run(fu, [
+        'plan', '--repo', repo, '--base', UP[V1], '--target', UP[V2],
+        '--markdown', full, '--widget', path
+    ] + ([] if factory_data.available() else ['--skip-data-checks']))
+    self.assertEqual(code, 0)
+    self.assertIn('wrote inline HTML report to', err)
+    with open(path, encoding='utf-8') as f:
+      self.assertIn('"full_report": "full.md"', f.read())
 
 
 # --------------------------------------------------------------------------
@@ -2672,12 +3736,11 @@ class TestSkillDocuments(unittest.TestCase):
             with self.subTest(doc=name, script=script, flag=flag):
               self.assertIn(flag, known)
 
-  def test_no_local_paths_or_customer_names(self):
+  def test_no_local_paths(self):
     for name in _DOCS:
       text = _doc(name)
       with self.subTest(doc=name):
         self.assertNotRegex(text, r'/(Users|home)/[a-z]')
-        self.assertNotRegex(text.lower(), r'turkcell|argolis')
 
   def test_testing_md_cites_existing_tests_and_playbooks(self):
     text = _doc('TESTING.md')
@@ -2702,6 +3765,37 @@ class TestSkillDocuments(unittest.TestCase):
       with self.subTest(playbook=name):
         self.assertTrue(os.path.isfile(os.path.join(playbooks, name)), name)
 
+  def test_testing_md_harness_command_works_from_the_repository_root(self):
+    # The harness copies a playbook's link_paths from the folder it is started
+    # in to a temporary workspace, and resolves --skill-src in that workspace.
+    root = os.path.join(_BASE, '..', '..', '..')
+    text = _doc('TESTING.md').replace('\\\n', ' ')
+    commands = re.findall(r'harness\.py\s+(\S+\.yaml)\s+--skill-src\s+(\S+)',
+                          text)
+    self.assertTrue(commands, 'TESTING.md must show how to run a playbook')
+    for playbook, skill_src in commands:
+      with self.subTest(playbook=playbook, skill_src=skill_src):
+        self.assertTrue(os.path.isfile(os.path.join(root, playbook)))
+        self.assertEqual(os.path.normpath(os.path.join(root, skill_src)),
+                         os.path.normpath(_BASE))
+    playbooks = os.path.join(root, 'tools', 'skill-turn-harness', 'playbooks',
+                             'fast', 'fast-upgrade')
+    for name in sorted(os.listdir(playbooks)):
+      with open(os.path.join(playbooks, name), encoding='utf-8') as f:
+        block = re.search(r'^\s*link_paths:\n((?:[ \t]+- .+\n)+)', f.read(),
+                          re.M)
+      if block is None:
+        continue
+      paths = re.findall(r'- (\S+)', block.group(1))
+      for path in paths:
+        with self.subTest(playbook=name, link_path=path):
+          self.assertTrue(os.path.exists(os.path.join(root, path)), path)
+      for _, skill_src in commands:
+        with self.subTest(playbook=name, skill_src=skill_src):
+          self.assertTrue(
+              any(skill_src == p or skill_src.startswith(p.rstrip('/') + '/')
+                  for p in paths), f'{skill_src} is not copied by {name}')
+
 
 # --------------------------------------------------------------------------
 # Integration: real Fabric releases (opt-in)
@@ -2710,6 +3804,32 @@ class TestSkillDocuments(unittest.TestCase):
 REAL_REPO = os.environ.get('FAST_UPGRADE_FABRIC_REPO')
 REAL_BASE = os.environ.get('FAST_UPGRADE_BASE', 'v57.0.0')
 REAL_TARGET = os.environ.get('FAST_UPGRADE_TARGET', 'v59.0.0')
+
+
+def _tree_entries(root):
+  """{path: bytes, or ('link', target)} below root, without .git and
+  .fast-upgrade. Links are recorded, not followed: releases have loops."""
+  entries = {}
+  for dirpath, dirnames, filenames in os.walk(root):
+    keep = []
+    for name in dirnames:
+      path = os.path.join(dirpath, name)
+      if dirpath == root and name in ('.git', '.fast-upgrade'):
+        continue
+      if os.path.islink(path):
+        filenames.append(name)
+      else:
+        keep.append(name)
+    dirnames[:] = keep
+    for name in filenames:
+      path = os.path.join(dirpath, name)
+      rel = os.path.relpath(path, root).replace(os.sep, '/')
+      if os.path.islink(path):
+        entries[rel] = ('link', os.readlink(path))
+      else:
+        with open(path, 'rb') as f:
+          entries[rel] = f.read()
+  return entries
 
 
 def _minimal_rewrite(text, upstream_rel, customer_rel, new_target):
@@ -2869,6 +3989,27 @@ class TestIntegration(unittest.TestCase):
         'upstream-changed', 'upstream-added', 'upstream-deleted', 'unchanged'
     }
     self.assertTrue(set(plan['summary']) <= vanilla, plan['summary'])
+
+  def test_full_release_copy_upgrades_to_the_target(self):
+    # Everything a release ships, including CHANGELOG.md, default-versions.tf
+    # and modules/README.md, plus one file of the customer's.
+    repo = os.path.join(self.tmp, 'full')
+    shutil.copytree(self.base, repo, symlinks=True)
+    mine = 'fast/stages/2-project-factory/data/projects/team-x.yaml'
+    _write(repo, mine, TEAM_A.replace('team-a', 'team-x'))
+    _commit_all(repo)
+    ctx, plan, results = self.plan(repo)
+    self.assertEqual(plan['readiness']['counts']['blocker'], 0)
+    self.assertEqual(plan['version_pins'], [])
+    self.assertEqual(plan['hygiene']['generated_tracked'], [])
+    fu.run_apply(ctx, results, include_deletes=True)
+    got, want = _tree_entries(repo), _tree_entries(self.target)
+    self.assertIsNotNone(got.pop(mine, None))
+    self.assertEqual(sorted(set(got) ^ set(want)), [])
+    self.assertEqual([p for p in want if got[p] != want[p]], [])
+    result = fu.detect(repo)
+    self.assertEqual(result['version']['detected'], REAL_TARGET)
+    self.assertEqual(result['version']['confidence'], 'high')
 
   def test_release_archive_without_tar_filters(self):
     with _without_tar_filters():
