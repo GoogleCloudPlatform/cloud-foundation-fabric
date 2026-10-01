@@ -47,7 +47,7 @@ moved {
 }
 
 resource "google_compute_firewall" "allow_tag_http" {
-  count       = length(local.default_rules.http_ranges) > 0 ? 1 : 0
+  count       = length(local.default_rules.http_ranges) > 0 && length(local.default_rules.http_tags) > 0 ? 1 : 0
   project     = local.project_id
   network     = local.network
   name        = "${local.network_name}-ingress-tag-http"
@@ -68,7 +68,7 @@ moved {
 }
 
 resource "google_compute_firewall" "allow_tag_https" {
-  count       = length(local.default_rules.https_ranges) > 0 ? 1 : 0
+  count       = length(local.default_rules.https_ranges) > 0 && length(local.default_rules.https_tags) > 0 ? 1 : 0
   project     = local.project_id
   network     = local.network
   name        = "${local.network_name}-ingress-tag-https"
@@ -89,7 +89,7 @@ moved {
 }
 
 resource "google_compute_firewall" "allow_tag_ssh" {
-  count       = length(local.default_rules.ssh_ranges) > 0 ? 1 : 0
+  count       = length(local.default_rules.ssh_ranges) > 0 && length(local.default_rules.ssh_tags) > 0 ? 1 : 0
   project     = local.project_id
   network     = local.network
   name        = "${local.network_name}-ingress-tag-ssh"
