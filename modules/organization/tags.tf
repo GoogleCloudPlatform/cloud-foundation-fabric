@@ -52,11 +52,11 @@ locals {
       allowed_values_regex = lookup(v, "allowed_values_regex", null)
       description          = v.description
       iam = var.tags_config.ignore_iam == true ? {} : {
-        for ik, iv in v.iam : ik => coalesce(iv, [])
+        for ik, iv in v.iam : ik => coalescelist(iv, [])
       }
       iam_bindings = var.tags_config.ignore_iam == true ? {} : {
         for ik, iv in v.iam_bindings : ik => merge(iv, {
-          members = coalesce(iv.members, [])
+          members = coalescelist(iv.members, [])
         })
       }
       iam_bindings_additive = (
@@ -70,11 +70,11 @@ locals {
           )
           description = vv.description
           iam = var.tags_config.ignore_iam == true ? {} : {
-            for ik, iv in vv.iam : ik => coalesce(iv, [])
+            for ik, iv in vv.iam : ik => coalescelist(iv, [])
           }
           iam_bindings = var.tags_config.ignore_iam == true ? {} : {
             for ik, iv in vv.iam_bindings : ik => merge(iv, {
-              members = coalesce(iv.members, [])
+              members = coalescelist(iv.members, [])
             })
           }
           iam_bindings_additive = (
