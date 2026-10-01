@@ -1,6 +1,6 @@
 ---
 name: fast-upgrade
-description: Upgrades a forked FAST (Cloud Foundation Fabric) repository to a newer release with a three-way comparison of the customer's repository, the release it was built from and the target release. Handles renamed or reorganized folders, edited Terraform, git-sourced modules and customer factory data; reports breaking changes, conflicts, variable, module interface and factory YAML impact, applies upstream changes on a clean git branch with 3-way merges, and reviews each stage's Terraform plan for destructive changes. Never runs terraform apply. Use when a user asks to upgrade or update FAST stages or Fabric modules to a newer release, asks what breaks or changes between two FAST releases, or wants a Terraform plan reviewed after a FAST upgrade.
+description: Upgrades a forked FAST (Cloud Foundation Fabric) repository to a newer release with a three-way comparison of the customer's repository, the release it was built from and the target release. Handles renamed or reorganized folders, edited Terraform, git-sourced modules and customer factory data; reports breaking changes, conflicts, variable, module interface and factory YAML impact, updates repository files on a clean git branch with 3-way merges, and reviews each stage's Terraform plan for destructive changes. Never runs terraform apply. Use when a user asks to upgrade or update FAST stages or Fabric modules to a newer release, asks what breaks or changes between two FAST releases, or wants a Terraform plan reviewed after a FAST upgrade.
 ---
 
 # FAST Upgrade — agent protocol
@@ -48,13 +48,13 @@ cannot. Trust comes from the scripts and the Terraform plan, not from you.
    to: it reads live state with their credentials.
 2. **Never commit, push, merge, tag or open a pull request.** Propose a
    commit message; the user commits.
-3. **Clean tree only.** `apply` refuses a dirty tree or a folder outside
+3. **Clean tree only.** `migrate` refuses a dirty tree or a folder outside
    git. Never pass `--allow-dirty` unless the user explicitly asks for it
    and accepts that the upgrade can no longer be separated from their
    uncommitted work.
 4. **Opt-in flags are gates.** Pass `--include-deletes`, `--bump-refs` and
    `--copy-moved` only after the user has approved the exact list the
-   plan printed for each one.
+   upgrade report printed for each one.
 5. **Never rationalize a destructive plan.** When `plan_review.py` exits
    2, present every delete or replace with the reason it prints, and
    stop. Whether to add a moved block, have the user run
@@ -65,7 +65,7 @@ cannot. Trust comes from the scripts and the Terraform plan, not from you.
    public issues, upstream pull requests or anything else that leaves the
    customer's environment. Keep reports in `<repo>/.fast-upgrade/`, which
    the scripts ignore and nobody commits. Delete plan files after review.
-   The `plan --markdown` and `--html` reports replace local paths and home
+   The `analyze --markdown` and `--html` reports replace local paths and home
    folders with placeholders so they can go to the customer's team, but
    they still name the customer's resources.
 7. **Edit with your file tools.** Never change files with `sed`, `awk`,
@@ -163,7 +163,7 @@ document** for the exact commands and decision logic.
 
 ### Phase 3: Update repository files
 *Description:* Update the repository files on a branch, then resolve conflicts, data, variables and moved blocks with the user.\
-*Reference: [Update repository files](references/phase3-apply.md)*
+*Reference: [Update repository files](references/phase3-migrate.md)*
 - **Step 7:** Branch, dry run and `migrate`
 - **Step 8:** Conflicts and manual items — **gate per file**
 - **Step 9:** Factory data, tfvars, module calls and moved blocks; re-analyze
@@ -241,6 +241,6 @@ local clone.
 - [TESTING.md](TESTING.md) — test scenarios, unit and integration tests, playbooks
 - [references/phase1-discovery.md](references/phase1-discovery.md) — repository scan, base and target releases
 - [references/phase2-analysis.md](references/phase2-analysis.md) — fetching releases, reading the upgrade report, the code update gate
-- [references/phase3-apply.md](references/phase3-apply.md) — updating repository files, conflicts, data and variable fixes, re-analyze
+- [references/phase3-migrate.md](references/phase3-migrate.md) — updating repository files, conflicts, data and variable fixes, re-analyze
 - [references/phase4-verify.md](references/phase4-verify.md) — static checks, plan review, handover
 - [UPGRADING.md](../../../fast/stages/UPGRADING.md) and [CHANGELOG.md](../../../CHANGELOG.md) — the upstream release notes the scripts read

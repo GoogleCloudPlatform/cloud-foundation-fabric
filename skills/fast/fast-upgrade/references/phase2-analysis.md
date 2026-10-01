@@ -269,4 +269,4 @@ Then ask, as separate questions (one call to your question tool is fine):
 STOP and wait for the answers. If the user stops here, finish with a short
 summary of the report and the decisions that remain.
 
-Next: [Phase 3: Update repository files](phase3-apply.md).
+Next: [Phase 3: Update repository files](phase3-migrate.md).

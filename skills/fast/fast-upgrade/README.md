@@ -35,9 +35,9 @@ stage's Terraform plan.
 
 ## How files are classified
 
-For every file of every mapped folder, `plan` compares the three trees:
+For every file of every mapped folder, `analyze` compares the three trees:
 
-| Customer (C) vs base (B) | Target (T) vs base (B) | Category | What `apply` does |
+| Customer (C) vs base (B) | Target (T) vs base (B) | Category | What `migrate` does |
 | --- | --- | --- | --- |
 | same | same | `unchanged` | nothing |
 | same | changed | `upstream-changed` | takes the target |
@@ -87,7 +87,7 @@ compare candidate bases by how many files each one leaves `unchanged`.
 
 ## What the report covers
 
-`plan` is read-only. It opens with a verdict and a ranked list of
+`analyze` is read-only. It opens with a verdict and a ranked list of
 findings, then reports, besides the file actions above, what a file merge
 cannot fix:
 
@@ -111,7 +111,7 @@ cannot fix:
 
 ### The customer report
 
-`plan --markdown <file>` writes the report to hand to the customer, as
+`analyze --markdown <file>` writes the report to hand to the customer, as
 GitHub-flavoured Markdown. It renders on any Git host and in a merge
 request, imports into Google Docs, and diffs cleanly between the report
 before and after the upgrade. It is written for Markdown previews in IDEs
@@ -137,20 +137,20 @@ Its sections:
    calls, factory data, schema changes, linked repositories, add-on copies,
    provenance digests, and every changed file.
 
-`plan --brief <file>` writes a chat-sized version (one message, typically 100–150 lines): the
+`analyze --brief <file>` writes a chat-sized version (one message, typically 100–150 lines): the
 verdict, key points, every blocker and high finding with its fix, every
 other finding in one table, stages, the breaking changes that apply, the
 plan and what was not checked. The agent pastes it into its answer so
 the user reads the report inline; it uses no alerts, Mermaid or anchors,
 which chat views may not render.
 
-`plan --html <file>` writes the same content as one self-contained,
+`analyze --html <file>` writes the same content as one self-contained,
 offline HTML page with filters, search, CSV export and a checklist that
 remembers its ticks in the browser, for walkthroughs. It uses the host's
 theme tokens when they exist, so it reads well in light or dark mode in an
 agent's side pane, and falls back to a light theme in a browser.
 
-`plan --widget <file>` writes a compact, interactive HTML card for chat
+`analyze --widget <file>` writes a compact, interactive HTML card for chat
 clients that can embed HTML inline. It stays under 500 px tall: the
 verdict, severity chips that
 filter the findings, and tabs for Start here, Findings (expandable, with
