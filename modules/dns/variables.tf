@@ -105,11 +105,13 @@ variable "recordsets" {
   validation {
     condition = alltrue(flatten([
       for k, v in coalesce(var.recordsets, {}) : [
-        for r in try(v.geo_routing.health_checked_targets, []) : [
-          contains(
-            ["regionalL4ilb", "regionalL7ilb", "globalL7ilb", null],
-            try(r.load_balancer_type, null)
-          )
+        for g in coalesce(v.geo_routing, []) : [
+          for r in coalesce(g.health_checked_targets, []) : [
+            contains(
+              ["regionalL4ilb", "regionalL7ilb", "globalL7ilb", null],
+              try(r.load_balancer_type, null)
+            )
+          ]
         ]
       ]
     ]))
