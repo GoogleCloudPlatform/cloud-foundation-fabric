@@ -14,9 +14,9 @@
 # limitations under the License.
 
 ENVOY_NODE_ID=$(uuidgen)
-ENVOY_ZONE=$(curl -s -H "Metadata-Flavor: Google" http://metadata/computeMetadata/v1/instance/zone | cut -f 4 -d '/')
-CONFIG_PROJECT_NUMBER=$(curl -s -H "Metadata-Flavor: Google" http://metadata/computeMetadata/v1/instance/network-interfaces/0/network | cut -f 2 -d '/')
-VPC_NETWORK_NAME=$(curl -s -H "Metadata-Flavor: Google" http://metadata/computeMetadata/v1/instance/network-interfaces/0/network | cut -f 4 -d '/')
+ENVOY_ZONE=$(curl -s -H "Metadata-Flavor: Google" http://metadata.google.internal/computeMetadata/v1/instance/zone | cut -f 4 -d '/')
+CONFIG_PROJECT_NUMBER=$(curl -s -H "Metadata-Flavor: Google" http://metadata.google.internal/computeMetadata/v1/instance/network-interfaces/0/network | cut -f 2 -d '/')
+VPC_NETWORK_NAME=$(curl -s -H "Metadata-Flavor: Google" http://metadata.google.internal/computeMetadata/v1/instance/network-interfaces/0/network | cut -f 4 -d '/')
 sed -i "s/ENVOY_NODE_ID/${ENVOY_NODE_ID}/" /etc/envoy/envoy.yaml
 sed -i "s/ENVOY_ZONE/${ENVOY_ZONE}/" /etc/envoy/envoy.yaml
 sed -i "s/CONFIG_PROJECT_NUMBER/${CONFIG_PROJECT_NUMBER}/" /etc/envoy/envoy.yaml
