@@ -19,7 +19,7 @@
 
 write_files:
   - path: /var/lib/docker/daemon.json
-    permissions: 0644
+    permissions: "0644"
     owner: root
     content: |
       {
@@ -32,7 +32,7 @@ write_files:
 
   # disable systemd-resolved to free port 53 on the loopback interface
   - path: /etc/systemd/resolved.conf
-    permissions: 0644
+    permissions: "0644"
     owner: root
     content: |
       [Resolve]
@@ -40,14 +40,14 @@ write_files:
       DNSStubListener=no
 
   - path: /etc/coredns/Corefile
-    permissions: 0644
+    permissions: "0644"
     owner: root
     content: |
       ${indent(6, corefile)}
 
   # coredns container service
   - path: /etc/systemd/system/coredns.service
-    permissions: 0644
+    permissions: "0644"
     owner: root
     content: |
       [Unit]
@@ -57,7 +57,7 @@ write_files:
       [Service]
       ExecStart=/usr/bin/docker run --rm --name=coredns  \
         --network host \
-        -v /etc/coredns:/etc/coredns \
+        -v /etc/coredns:/etc/coredns:ro \
         coredns/coredns -conf /etc/coredns/Corefile
       ExecStop=/usr/bin/docker stop coredns
 
