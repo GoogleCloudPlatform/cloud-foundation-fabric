@@ -157,6 +157,7 @@ values:
           roles: []
         title: test
       resources:
+      - folders/1234567890
       - projects/1234567890
       restricted_services:
       - accessapproval.googleapis.com

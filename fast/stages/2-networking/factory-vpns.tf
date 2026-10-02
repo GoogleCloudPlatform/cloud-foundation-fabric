@@ -112,4 +112,5 @@ module "vpn-ha" {
     routers      = local.ctx_routers.names
     vpn_gateways = local.ctx_gateways
   }
+  depends_on = [google_compute_router_route_policy.default]
 }

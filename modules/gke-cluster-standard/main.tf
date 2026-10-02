@@ -151,6 +151,12 @@ resource "google_container_cluster" "cluster" {
       enabled = var.enable_addons.stateful_ha
     }
   }
+  dynamic "anonymous_authentication_config" {
+    for_each = var.enable_features.anonymous_authentication != null ? [""] : []
+    content {
+      mode = var.enable_features.anonymous_authentication
+    }
+  }
   dynamic "authenticator_groups_config" {
     for_each = var.enable_features.groups_for_rbac != null ? [""] : []
     content {
