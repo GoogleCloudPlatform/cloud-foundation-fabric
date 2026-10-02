@@ -50,10 +50,15 @@ variable "region" {
 }
 
 variable "trusted_ranges" {
-  description = "IP ranges exempted from WAF inspection, e.g. corporate egress ranges."
+  description = "IP ranges exempted from WAF inspection, e.g. corporate egress ranges. Ranges are split across multiple rules of up to 10 ranges each."
   type        = list(string)
   default     = []
   nullable    = false
+  validation {
+    # trusted rules use priorities from 100, and must not overlap WAF rules
+    condition     = length(var.trusted_ranges) <= 9000
+    error_message = "At most 9000 trusted ranges are supported."
+  }
 }
 
 variable "vpc_config" {

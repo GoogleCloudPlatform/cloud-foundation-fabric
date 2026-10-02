@@ -37,6 +37,9 @@ locals {
       v.match != null && (v.match.src_ip_ranges == null) == (v.match.expression == null)
       ? "Rule match must specify exactly one of 'src_ip_ranges' or 'expression'."
       : null,
+      length(coalesce(try(v.match.src_ip_ranges, null), [])) > 10
+      ? "Rule match 'src_ip_ranges' supports at most 10 ranges, split them across multiple rules."
+      : null,
       try(v.match.recaptcha_options, null) != null && try(v.match.expression, null) == null
       ? "'recaptcha_options' requires a match 'expression' evaluating reCAPTCHA tokens."
       : null,

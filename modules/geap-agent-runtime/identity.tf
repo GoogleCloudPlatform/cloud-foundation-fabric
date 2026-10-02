@@ -20,7 +20,7 @@ locals {
     try(google_vertex_ai_reasoning_engine.unmanaged[0].spec[0].effective_identity, null)
   )
   effective_identity = (
-    local._effective_identity == null
+    local._effective_identity != null
     ? "principal://${local._effective_identity}"
     : null
   )

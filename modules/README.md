@@ -105,6 +105,9 @@ These modules are used in the examples included in this repository. If you are u
 ## AI
 
 - [AI Applications](./ai-applications/README.md)
+- [Gemini Enterprise Agent Platform (GEAP) - Agent Gateway](./geap-agent-gateway/README.md)
+- [Gemini Enterprise Agent Platform (GEAP) - Agent Runtime](./geap-agent-runtime/README.md)
+- [Gemini Enterprise Agent Platform (GEAP) - Workbench](./geap-workbench/README.md)
 
 ## Development
 
@@ -133,6 +136,7 @@ These modules are used in the examples included in this repository. If you are u
 - [Cloud Functions v1](./cloud-function-v1)
 - [Cloud Functions v2](./cloud-function-v2)
 - [Cloud Run v2](./cloud-run-v2)
+- [Workflows](./workflows)
 
 ## Other
 
