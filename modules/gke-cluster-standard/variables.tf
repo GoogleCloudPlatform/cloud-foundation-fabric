@@ -46,24 +46,6 @@ variable "access_config" {
   }
 }
 
-variable "anonymous_authentication_config" {
-  description = "Anonymous authentication restrictions. `LIMITED` allows anonymous access only to health check endpoints; `ENABLED` allows it for all endpoints."
-  type = object({
-    mode = string
-  })
-  default = null
-  validation {
-    condition = (
-      var.anonymous_authentication_config == null ||
-      contains(
-        ["ENABLED", "LIMITED"],
-        try(var.anonymous_authentication_config.mode, "")
-      )
-    )
-    error_message = "anonymous_authentication_config.mode must be ENABLED or LIMITED."
-  }
-}
-
 variable "backup_configs" {
   description = "Configuration for Backup for GKE."
   type = object({
@@ -223,6 +205,7 @@ variable "enable_addons" {
 variable "enable_features" {
   description = "Enable cluster-level features. Certain features allow configuration."
   type = object({
+    anonymous_authentication          = optional(string)
     beta_apis                         = optional(list(string))
     binary_authorization              = optional(bool, false)
     cilium_clusterwide_network_policy = optional(bool, false)
@@ -296,6 +279,16 @@ variable "enable_features" {
       ], e)
     ])
     error_message = "Invalid upgrade notification event type."
+  }
+  validation {
+    condition = (
+      var.enable_features.anonymous_authentication == null ||
+      contains(
+        ["ENABLED", "LIMITED"],
+        var.enable_features.anonymous_authentication
+      )
+    )
+    error_message = "enable_features.anonymous_authentication must be ENABLED or LIMITED."
   }
 }
 

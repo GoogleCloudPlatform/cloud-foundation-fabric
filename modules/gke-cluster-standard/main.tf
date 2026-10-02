@@ -152,9 +152,9 @@ resource "google_container_cluster" "cluster" {
     }
   }
   dynamic "anonymous_authentication_config" {
-    for_each = var.anonymous_authentication_config != null ? [""] : []
+    for_each = var.enable_features.anonymous_authentication != null ? [""] : []
     content {
-      mode = var.anonymous_authentication_config.mode
+      mode = var.enable_features.anonymous_authentication
     }
   }
   dynamic "authenticator_groups_config" {
