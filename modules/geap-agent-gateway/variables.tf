@@ -47,14 +47,15 @@ variable "access_path" {
 variable "context" {
   description = "Context-specific interpolations."
   type = object({
-    condition_vars          = optional(map(map(string)), {})
-    custom_roles            = optional(map(string), {})
-    iam_principals          = optional(map(string), {})
-    locations               = optional(map(string), {})
-    model_armor_templates   = optional(map(string), {})
-    networks                = optional(map(string), {})
-    project_ids             = optional(map(string), {})
-    psc_network_attachments = optional(map(string), {})
+    agent_connectivity_templates = optional(map(string), {})
+    condition_vars               = optional(map(map(string)), {})
+    custom_roles                 = optional(map(string), {})
+    iam_principals               = optional(map(string), {})
+    locations                    = optional(map(string), {})
+    model_armor_templates        = optional(map(string), {})
+    networks                     = optional(map(string), {})
+    project_ids                  = optional(map(string), {})
+    psc_network_attachments      = optional(map(string), {})
   })
   default  = {}
   nullable = false
@@ -129,19 +130,69 @@ variable "name" {
   nullable    = false
 }
 
-# Structured as object, as more arguments are coming soon
+# VPC connectivity is only exposed through agent connectivity templates:
+# these attributes configure the template managed by this module, unless
+# the gateway reuses an existing one.
 variable "networking_config" {
-  description = "The Agent Gateway networking configuration."
+  description = "The Agent Gateway networking configuration. Set 'psc_i_network_attachment_id' to manage an agent connectivity template here, or 'connectivity_template_reuse' to attach the gateway to an existing one."
   type = object({
+    # Both 'PUBLIC' and 'PRIVATE' can be configured, singly or
+    # together. Leaves the API default when null.
+    access_types                = optional(list(string))
+    connectivity_template_reuse = optional(string)
+    description                 = optional(string, "Terraform managed.")
     dns_peering_config = optional(object({
-      domains        = list(string)
+      domain         = string
       target_network = string
-      target_project = string
     }))
+    labels = optional(map(string))
+    # Defaults to the gateway name.
+    name                        = optional(string)
     psc_i_network_attachment_id = optional(string)
+    vpc_egress                  = optional(string, "PRIVATE_RANGES_ONLY")
   })
   nullable = false
   default  = {}
+
+  validation {
+    condition = (
+      var.networking_config.psc_i_network_attachment_id == null
+      || var.networking_config.connectivity_template_reuse == null
+    )
+    error_message = "Specify at most one of psc_i_network_attachment_id or connectivity_template_reuse."
+  }
+
+  validation {
+    condition = (
+      var.networking_config.dns_peering_config == null
+      || var.networking_config.psc_i_network_attachment_id != null
+    )
+    error_message = "The dns_peering_config attribute configures the connectivity template managed here, and needs psc_i_network_attachment_id."
+  }
+
+  validation {
+    condition = (
+      var.networking_config.psc_i_network_attachment_id == null
+      || var.access_path != null
+    )
+    error_message = "You must specify var.access_path when managing a connectivity template."
+  }
+
+  validation {
+    condition = contains(
+      ["ALL_TRAFFIC", "PRIVATE_RANGES_ONLY"],
+      coalesce(var.networking_config.vpc_egress, "ALL_TRAFFIC")
+    )
+    error_message = "The connectivity template vpc_egress can be one of the following: 'ALL_TRAFFIC', 'PRIVATE_RANGES_ONLY'."
+  }
+
+  validation {
+    condition = length(setsubtract(
+      coalesce(var.networking_config.access_types, []),
+      ["PRIVATE", "PUBLIC"]
+    )) == 0
+    error_message = "The connectivity template access_types can only contain 'PRIVATE' and 'PUBLIC'."
+  }
 }
 
 
@@ -149,6 +200,12 @@ variable "project_id" {
   description = "The ID of the project where the data stores and the agents will be created."
   type        = string
   nullable    = false
+}
+
+variable "project_number" {
+  description = "Project number of var.project_id. Gateways reference connectivity templates by project number: set this to avoid the additional project data source read."
+  type        = string
+  default     = null
 }
 
 variable "proxy_uri" {

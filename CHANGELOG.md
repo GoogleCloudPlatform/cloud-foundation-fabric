@@ -3,7 +3,84 @@
 All notable changes to this project will be documented in this file.
 <!-- markdownlint-disable MD024 -->
 
-## [Unreleased](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v58.0.0...HEAD)
+## [Unreleased](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v59.0.0...HEAD)
+
+## [v59.0.0](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/releases/tag/v59.0.0) - 2026-09-25 <!-- from: 2026-09-01 20:05:57+00:00 to: 2026-09-25 since: v58.0.0 -->
+
+### BREAKING CHANGES
+
+- `modules/geap-agent-gateway`: replaces some `networking_config` settings. [[#4191](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4191)]
+- `terraform-google-provider`: version updated to 8.4.0, needed to support `cloud_run_v2` agent identities for services. [[#4183](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4183)]
+- `modules/agent-gateway`: renamed to geap-agent-gateway [[#4185](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4185)]
+- `provider`: Minimum version bumped to 7.41.0 [[#4160](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4160)]
+- `modules/agent-engine`: renamed to `modules/geap-agent-runtime`, and the `agent_engine_config` variable renamed to `agent_runtime_config`. Update module sources and variable names accordingly. [[#4160](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4160)]
+- `modules/geap-agent-runtime`: `networking_config` is no longer nullable and defaults to `{}`, with `network_attachment_id` now optional. Code passing `networking_config = null` explicitly must drop the argument or pass `{}`; the object form is unaffected. [[#4160](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4160)]
+- Minimum supported `google`/`google-beta` provider version is now 8.2.0. See the provider's 8.0.0 upgrade guide for the full list of changes. [[#4159](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4159)]
+- `modules/net-lb-app-ext`: the `recipe-cloud-run-iap` recipe has been removed. Provider 8.0.0 removed `google_iap_brand` and `google_iap_client` following the shutdown of the IAP OAuth Admin APIs; OAuth  brands and clients must now be configured in the Cloud Console. [[#4159](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4159)]
+- `modules/project-factory`: the `description` attribute is removed from bucket definitions (`buckets` and `automation.bucket`, in both the project and folder schemas). It never had any effect, because `google_storage_bucket` has no description field, so the schema was advertising an attribute the GCS API cannot store.
+
+No plan or apply breaks and no resource changes: the factory does no runtime schema validation, so a leftover `description` key in project YAML is simply ignored (verified against a real plan). The key is only rejected by schema validation in editors and in CI, so drop it when convenient. Eighteen in-repo datasets set one and are cleaned up in this PR.
+
+Separately, log bucket `description` is now actually applied. A `log_buckets` entry that already sets one will show a one-time in-place update adding it to `google_logging_project_bucket_config`. [[#4150](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4150)]
+- `modules/gke-cluster-standard`: Removed the deprecated `desired_tier` attribute from the `enterprise_config` block.
+`modules/gke-cluster-autopilot`: Removed the deprecated `desired_tier` attribute from the `enterprise_config` block. [[#4129](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4129)]
+
+
+### DOCUMENTATION
+
+- [[#4177](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4177)] Fix module links in net-lb interface standardization ADR ([dshah22](https://github.com/dshah22)) <!-- 2026-09-18 10:16:06+00:00 -->
+
+### FAST
+
+- [[#4183](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4183)] Add agent identity to Cloud Run service v2 ([LucaPrete](https://github.com/LucaPrete)) <!-- 2026-09-25 09:04:49+00:00 -->
+- [[#4159](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4159)] Bump google provider to 8.2.0 ([juliocc](https://github.com/juliocc)) <!-- 2026-09-11 08:09:46+00:00 -->
+- [[#4158](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4158)] Add deletion_policy support to modules/pubsub subscriptions ([nathancolhoun-signifyd](https://github.com/nathancolhoun-signifyd)) <!-- 2026-09-10 17:19:07+00:00 -->
+- [[#4153](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4153)] Add support for service agents IAM on foreign projects to project module ([ludoo](https://github.com/ludoo)) <!-- 2026-09-09 15:02:39+00:00 -->
+- [[#4150](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4150)] Forward dropped bucket and log bucket attributes in project-factory ([sruffilli](https://github.com/sruffilli)) <!-- 2026-09-08 15:18:13+00:00 -->
+- [[#4143](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4143)] Extended context with service_agents in 2-security stage ([kovagoadam](https://github.com/kovagoadam)) <!-- 2026-09-08 12:24:04+00:00 -->
+
+### MODULES
+
+- [[#4191](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4191)] geap-agent-gateway: add support for connectivity templates ([LucaPrete](https://github.com/LucaPrete)) <!-- 2026-09-25 13:56:30+00:00 -->
+- [[#4188](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4188)] Split trusted ranges into rules of up to 10 in `net-cloud-armor/recipe-regional-waf` ([sruffilli](https://github.com/sruffilli)) <!-- 2026-09-25 12:39:21+00:00 -->
+- [[#4183](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4183)] Add agent identity to Cloud Run service v2 ([LucaPrete](https://github.com/LucaPrete)) <!-- 2026-09-25 09:04:49+00:00 -->
+- [[#4185](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4185)] Rename agent-gateway to geap-agent-gateway ([LucaPrete](https://github.com/LucaPrete)) <!-- 2026-09-25 06:36:58+00:00 -->
+- [[#4155](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4155)] Allow contact_email to be passed from context block ([hsharma250](https://github.com/hsharma250)) <!-- 2026-09-24 18:40:02+00:00 -->
+- [[#4163](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4163)] Add workflows module with scheduling, queueing, and event triggers ([emailabhigarg](https://github.com/emailabhigarg)) <!-- 2026-09-18 10:08:57+00:00 -->
+- [[#4168](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4168)] Add geap-workbench module ([emailabhigarg](https://github.com/emailabhigarg)) <!-- 2026-09-17 07:43:49+00:00 -->
+- [[#4173](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4173)] Fix inverted null check on _effective_identity (#4172) ([mlutx](https://github.com/mlutx)) <!-- 2026-09-17 07:03:33+00:00 -->
+- [[#4145](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4145)] Add security policy context support to load balancer modules ([sruffilli](https://github.com/sruffilli)) <!-- 2026-09-16 06:39:30+00:00 -->
+- [[#4144](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4144)] Add net-cloud-armor module ([sruffilli](https://github.com/sruffilli)) <!-- 2026-09-15 12:42:59+00:00 -->
+- [[#4170](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4170)] Agent Gateway module: add service extensions and policies ([LucaPrete](https://github.com/LucaPrete)) <!-- 2026-09-14 12:14:19+00:00 -->
+- [[#4160](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4160)] Rename agent-engine to geap-agent-runtime and add Agent Gateway attachment ([LucaPrete](https://github.com/LucaPrete)) <!-- 2026-09-11 12:17:12+00:00 -->
+- [[#4161](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4161)] Fix module source in gke-cluster-standard PSC example ([juliocc](https://github.com/juliocc)) <!-- 2026-09-11 08:56:24+00:00 -->
+- [[#4128](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4128)] Add IAP tunnel IAM to compute-vm module ([singhal0306](https://github.com/singhal0306)) <!-- 2026-09-11 08:11:51+00:00 -->
+- [[#4159](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4159)] Bump google provider to 8.2.0 ([juliocc](https://github.com/juliocc)) <!-- 2026-09-11 08:09:46+00:00 -->
+- [[#4158](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4158)] Add deletion_policy support to modules/pubsub subscriptions ([nathancolhoun-signifyd](https://github.com/nathancolhoun-signifyd)) <!-- 2026-09-10 17:19:07+00:00 -->
+- [[#4157](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4157)] Fix custom role description handling for empty strings ([sruffilli](https://github.com/sruffilli)) <!-- 2026-09-10 10:07:42+00:00 -->
+- [[#4153](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4153)] Add support for service agents IAM on foreign projects to project module ([ludoo](https://github.com/ludoo)) <!-- 2026-09-09 15:02:39+00:00 -->
+- [[#4152](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4152)] `project-factory` - SA IAM declared (only) via iam_bindings was not applied ([sruffilli](https://github.com/sruffilli)) <!-- 2026-09-09 13:16:40+00:00 -->
+- [[#4151](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4151)] Add BigQuery dataset outputs to project factory ([sruffilli](https://github.com/sruffilli)) <!-- 2026-09-09 08:18:31+00:00 -->
+- [[#4150](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4150)] Forward dropped bucket and log bucket attributes in project-factory ([sruffilli](https://github.com/sruffilli)) <!-- 2026-09-08 15:18:13+00:00 -->
+- [[#4143](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4143)] Extended context with service_agents in 2-security stage ([kovagoadam](https://github.com/kovagoadam)) <!-- 2026-09-08 12:24:04+00:00 -->
+- [[#4140](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4140)] Enable automated tests for README examples and fix CMEK documentation ([emailabhigarg](https://github.com/emailabhigarg)) <!-- 2026-09-07 14:36:06+00:00 -->
+- [[#4113](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4113)] Add missing PSC auto DNS attributes to modules/cloudsql-instance ([YpNo](https://github.com/YpNo)) <!-- 2026-09-07 09:33:09+00:00 -->
+- [[#4141](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4141)] Enable rotation config and topics in modules/secret-manager ([dshah22](https://github.com/dshah22)) <!-- 2026-09-04 08:30:28+00:00 -->
+- [[#4139](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4139)] Explicitly configure disabled IAP ([singhal0306](https://github.com/singhal0306)) <!-- 2026-09-04 07:06:09+00:00 -->
+- [[#4137](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4137)] Bump fast-uri from 3.1.5 to 3.1.7 in /modules/api-gateway/recipe-multi-region/function ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 2026-09-03 06:59:37+00:00 -->
+- [[#4138](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4138)] Bump qs from 6.15.2 to 6.16.0 in /modules/api-gateway/recipe-multi-region/function ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 2026-09-03 06:58:27+00:00 -->
+- [[#4136](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4136)] Conditionally configure GKE backup schedule ([singhal0306](https://github.com/singhal0306)) <!-- 2026-09-02 11:26:07+00:00 -->
+- [[#4129](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4129)] modules/gke-cluster: export backup_plan_ids and remove deprecated variable ([singhal0306](https://github.com/singhal0306)) <!-- 2026-09-02 07:37:26+00:00 -->
+
+### TOOLS
+
+- [[#4183](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4183)] Add agent identity to Cloud Run service v2 ([LucaPrete](https://github.com/LucaPrete)) <!-- 2026-09-25 09:04:49+00:00 -->
+- [[#4186](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4186)] Sort Recipe Directories in tfdoc ([LucaPrete](https://github.com/LucaPrete)) <!-- 2026-09-24 13:04:21+00:00 -->
+- [[#4176](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4176)] Add fabric-importer skill ([sruffilli](https://github.com/sruffilli)) <!-- 2026-09-17 12:58:57+00:00 -->
+- [[#4160](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4160)] Rename agent-engine to geap-agent-runtime and add Agent Gateway attachment ([LucaPrete](https://github.com/LucaPrete)) <!-- 2026-09-11 12:17:12+00:00 -->
+- [[#4165](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4165)] Remove daily tag workflow ([juliocc](https://github.com/juliocc)) <!-- 2026-09-11 11:36:46+00:00 -->
+- [[#4164](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4164)] Shard examples-modules test job across 4 runners ([juliocc](https://github.com/juliocc)) <!-- 2026-09-11 10:20:05+00:00 -->
+- [[#4159](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4159)] Bump google provider to 8.2.0 ([juliocc](https://github.com/juliocc)) <!-- 2026-09-11 08:09:46+00:00 -->
 
 ## [v58.0.0](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/releases/tag/v58.0.0) - 2026-09-01 <!-- from: 2026-07-17 08:35:08+00:00 to: 2026-09-01 since: v57.0.0 -->
 

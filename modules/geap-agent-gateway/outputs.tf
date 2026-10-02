@@ -43,6 +43,11 @@ output "authz_policy_ids" {
   }
 }
 
+output "connectivity_template_id" {
+  description = "The id of the agent connectivity template attached to the gateway."
+  value       = local.connectivity_template_id
+}
+
 output "id" {
   description = "The Agent Gateway id."
   value       = google_network_services_agent_gateway.default.id

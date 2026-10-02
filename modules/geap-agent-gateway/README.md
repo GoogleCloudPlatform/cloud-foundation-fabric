@@ -5,8 +5,7 @@ The module facilitates the deployments of Gemini Enterprise Agent Platform (GEAP
 <!-- BEGIN TOC -->
 - [API](#api)
 - [Minimal Gateway deployment](#minimal-gateway-deployment)
-- [PSC-I: attach to an existing service attachment](#psc-i-attach-to-an-existing-service-attachment)
-- [DNS Peering configuration](#dns-peering-configuration)
+- [VPC connectivity](#vpc-connectivity)
 - [Connect to self-managed proxies](#connect-to-self-managed-proxies)
 - [Authorizing Connectivity with IAP](#authorizing-connectivity-with-iap)
   - [Policy model](#policy-model)
@@ -38,46 +37,56 @@ module "agent-gateway" {
 # tftest inventory=minimal.yaml
 ```
 
-## PSC-I: attach to an existing service attachment
+## VPC connectivity
 
-If it's a egress (or AGENT_TO_ANYWHERE) agent, you can attach with a PSC interface to an existing service attachment.
+A gateway reaches your VPC network through an [agent connectivity template](https://docs.cloud.google.com/gemini-enterprise-agent-platform/govern/gateways/set-up-vpc-connectivity), a separate resource holding the egress networking settings of one or more gateways.
 
-```hcl
-module "agent-gateway" {
-  source      = "./fabric/modules/geap-agent-gateway"
-  name        = "my-gateway"
-  project_id  = "my-project-id"
-  region      = "europe-west1"
-  access_path = "AGENT_TO_ANYWHERE"
-  networking_config = {
-    psc_i_network_attachment_id = "projects/my-project-id/regions/europe-west1/serviceAttachments/my-sa"
-  }
-}
-# tftest inventory=psc-i.yaml
-```
-
-## DNS Peering configuration
-
-You can configure DNS peering to forward DNS queries for specific domains to a target network in another project.
+Set `psc_i_network_attachment_id` to have the module create the template and attach the gateway to it. The other attributes configure that template, which inherits the gateway project, region and access path, and defaults its name to the gateway name.
 
 ```hcl
 module "agent-gateway" {
-  source      = "./fabric/modules/geap-agent-gateway"
-  name        = "my-gateway"
-  project_id  = "my-project-id"
-  region      = "europe-west1"
-  access_path = "AGENT_TO_ANYWHERE"
+  source         = "./fabric/modules/geap-agent-gateway"
+  name           = "my-gateway"
+  project_id     = "my-project-id"
+  project_number = "1234567890"
+  region         = "europe-west1"
+  access_path    = "AGENT_TO_ANYWHERE"
   networking_config = {
-    psc_i_network_attachment_id = "projects/my-project-id/regions/europe-west1/serviceAttachments/my-sa"
+    psc_i_network_attachment_id = "projects/my-host-project/regions/europe-west1/networkAttachments/my-na"
+    access_types                = ["PRIVATE"]
+    vpc_egress                  = "ALL_TRAFFIC"
     dns_peering_config = {
-      domains        = ["agents.internal."]
+      domain         = "corp.internal."
       target_network = "projects/my-host-project/global/networks/my-vpc"
-      target_project = "my-host-project"
     }
   }
 }
-# tftest inventory=peering.yaml
+# tftest inventory=connectivity-template.yaml
 ```
+
+Set `connectivity_template_reuse` instead to attach the gateway to a template managed elsewhere. The two attributes are mutually exclusive, and the reference can be interpolated through the `agent_connectivity_templates` context key.
+
+```hcl
+module "agent-gateway" {
+  source      = "./fabric/modules/geap-agent-gateway"
+  name        = "my-gateway"
+  project_id  = "my-project-id"
+  region      = "europe-west1"
+  access_path = "AGENT_TO_ANYWHERE"
+  networking_config = {
+    connectivity_template_reuse = "$agent_connectivity_templates:shared-egress"
+  }
+  context = {
+    agent_connectivity_templates = {
+      shared-egress = "projects/1234567890/locations/europe-west1/agentConnectivityTemplates/shared-egress"
+    }
+  }
+}
+# tftest inventory=connectivity-template-attach.yaml
+```
+
+> [!IMPORTANT]
+> A gateway only accepts a template reference expressed with the **project number**, not the project id. The module builds that reference for you: pass `project_number` to save it a project data source read, and use the project number form when you reference a template you manage elsewhere.
 
 ## Connect to self-managed proxies
 
@@ -252,13 +261,18 @@ The module supports the contexts interpolation. For example:
 
 ```hcl
 module "agent-gateway" {
-  source      = "./fabric/modules/geap-agent-gateway"
-  name        = "my-gateway"
-  project_id  = "$project_ids:main"
-  region      = "$locations:primary"
-  access_path = "AGENT_TO_ANYWHERE"
+  source         = "./fabric/modules/geap-agent-gateway"
+  name           = "my-gateway"
+  project_id     = "$project_ids:main"
+  project_number = "1234567890"
+  region         = "$locations:primary"
+  access_path    = "AGENT_TO_ANYWHERE"
   networking_config = {
-    psc_i_network_attachment_id = "$psc_network_attachments:my-sa"
+    psc_i_network_attachment_id = "$psc_network_attachments:my-na"
+    dns_peering_config = {
+      domain         = "corp.internal."
+      target_network = "$networks:host"
+    }
   }
   model_armor_config = {
     request_template_id  = "$model_armor_templates:request"
@@ -278,11 +292,14 @@ module "agent-gateway" {
       request  = "projects/my-prj-id/locations/europe-west1/templates/request"
       response = "projects/my-prj-id/locations/europe-west1/templates/response"
     }
+    networks = {
+      host = "projects/my-host-prj-id/global/networks/my-vpc"
+    }
     project_ids = {
       main = "my-prj-id"
     }
     psc_network_attachments = {
-      my-sa = "projects/my-project-id/regions/europe-west1/serviceAttachments/my-sa"
+      my-na = "projects/my-host-prj-id/regions/europe-west1/networkAttachments/my-na"
     }
   }
 }
@@ -293,19 +310,20 @@ module "agent-gateway" {
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [name](variables.tf#L126) | The name of the Agent Gateway. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L148) | The ID of the project where the data stores and the agents will be created. | <code>string</code> | ✓ |  |
-| [region](variables.tf#L169) | The region where the agent gateway is created. | <code>string</code> | ✓ |  |
+| [name](variables.tf#L127) | The name of the Agent Gateway. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L199) | The ID of the project where the data stores and the agents will be created. | <code>string</code> | ✓ |  |
+| [region](variables.tf#L226) | The region where the agent gateway is created. | <code>string</code> | ✓ |  |
 | [access_path](variables.tf#L17) | The direction the gateway applies to: ingress (CLIENT_TO_AGENT) or egress (AGENT_TO_ANYWHERE) (if var.is_google_managed = false). | <code>string</code> |  | <code>null</code> |
 | [context](variables.tf#L47) | Context-specific interpolations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [description](variables.tf#L63) | The description of the Agent Gateway. | <code>string</code> |  | <code>&#34;Terraform managed.&#34;</code> |
-| [iap_config](variables.tf#L69) | Delegate request authorization to Identity-Aware Proxy, which enforces the Agent Registry IAM policies. Creates an authorization extension and the 'REQUEST_AUTHZ' policy binding it to the gateway. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [is_google_managed](variables.tf#L99) | Whether the Agent Gateway is Google or self-managed. | <code>bool</code> |  | <code>true</code> |
-| [labels](variables.tf#L106) | Labels to associate to the Agent Gateway. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
-| [model_armor_config](variables.tf#L112) | Delegate content authorization to Model Armor. Creates an authorization extension and the 'CONTENT_AUTHZ' policy binding it to the gateway. Templates are not managed here: pass their ids, either fully qualified or as short ids resolved against the gateway project and region. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [networking_config](variables.tf#L133) | The Agent Gateway networking configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [proxy_uri](variables.tf#L154) | The uri of a compatible self-managed proxy (if var.is_google_managed = false). | <code>string</code> |  | <code>null</code> |
-| [registries](variables.tf#L175) | A list of Agent Registries containing the agents, MCP servers and tools governed by the Agent Gateway. Note: Currently limited to project-scoped registries Must be of format //agentregistry.googleapis.com/{version}/projects/{{project}}/locations/{{location}}. | <code>list&#40;string&#41;</code> |  | <code>null</code> |
+| [description](variables.tf#L64) | The description of the Agent Gateway. | <code>string</code> |  | <code>&#34;Terraform managed.&#34;</code> |
+| [iap_config](variables.tf#L70) | Delegate request authorization to Identity-Aware Proxy, which enforces the Agent Registry IAM policies. Creates an authorization extension and the 'REQUEST_AUTHZ' policy binding it to the gateway. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [is_google_managed](variables.tf#L100) | Whether the Agent Gateway is Google or self-managed. | <code>bool</code> |  | <code>true</code> |
+| [labels](variables.tf#L107) | Labels to associate to the Agent Gateway. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
+| [model_armor_config](variables.tf#L113) | Delegate content authorization to Model Armor. Creates an authorization extension and the 'CONTENT_AUTHZ' policy binding it to the gateway. Templates are not managed here: pass their ids, either fully qualified or as short ids resolved against the gateway project and region. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [networking_config](variables.tf#L136) | The Agent Gateway networking configuration. Set 'psc_i_network_attachment_id' to manage an agent connectivity template here, or 'connectivity_template_reuse' to attach the gateway to an existing one. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [project_number](variables.tf#L205) | Project number of var.project_id. Gateways reference connectivity templates by project number: set this to avoid the additional project data source read. | <code>string</code> |  | <code>null</code> |
+| [proxy_uri](variables.tf#L211) | The uri of a compatible self-managed proxy (if var.is_google_managed = false). | <code>string</code> |  | <code>null</code> |
+| [registries](variables.tf#L232) | A list of Agent Registries containing the agents, MCP servers and tools governed by the Agent Gateway. Note: Currently limited to project-scoped registries Must be of format //agentregistry.googleapis.com/{version}/projects/{{project}}/locations/{{location}}. | <code>list&#40;string&#41;</code> |  | <code>null</code> |
 | [registry_iam](variables-iam.tf#L19) | Agent Registry IAM bindings in {ROLE => [MEMBERS]} format, applied to every registry governed by the gateway. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [registry_iam_bindings](variables-iam.tf#L26) | Authoritative Agent Registry IAM bindings in {KEY => {role = ROLE, members = [], condition = {}}} format. Set at most one of the '*_id' attributes to scope the binding to a single registered resource, or none to target the whole registry. Location defaults to the gateway region. Keys are arbitrary. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [registry_iam_bindings_additive](variables-iam.tf#L53) | Additive Agent Registry IAM bindings. Set at most one of the '*_id' attributes to scope the binding to a single registered resource, or none to target the whole registry. Location defaults to the gateway region. Keys are arbitrary. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
@@ -318,5 +336,6 @@ module "agent-gateway" {
 | [agent_gateway](outputs.tf#L17) | The Agent Gateway object. |  |
 | [authz_extension_ids](outputs.tf#L22) | The authorization extension ids, keyed by service. |  |
 | [authz_policy_ids](outputs.tf#L34) | The authorization policy ids, keyed by service. |  |
-| [id](outputs.tf#L46) | The Agent Gateway id. |  |
+| [connectivity_template_id](outputs.tf#L46) | The id of the agent connectivity template attached to the gateway. |  |
+| [id](outputs.tf#L51) | The Agent Gateway id. |  |
 <!-- END TFDOC -->

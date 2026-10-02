@@ -13,27 +13,29 @@
 # limitations under the License.
 
 values:
+  module.agent-gateway.google_network_services_agent_connectivity_template.default[0]:
+    access_path: AGENT_TO_ANYWHERE
+    agent_connectivity_template_id: my-gateway
+    egress_network_config:
+    - dns_peering_config:
+      - domain: corp.internal.
+        target_network: projects/my-host-prj-id/global/networks/my-vpc
+      network_attachment: projects/my-host-prj-id/regions/europe-west1/networkAttachments/my-na
+      vpc_egress: PRIVATE_RANGES_ONLY
+    location: europe-west1
+    project: my-prj-id
   module.agent-gateway.google_network_services_agent_gateway.default:
-    deletion_policy: DELETE
+    agent_connectivity_template: projects/1234567890/locations/europe-west1/agentConnectivityTemplates/my-gateway
     description: Terraform managed.
-    effective_labels:
-      goog-terraform-provisioned: 'true'
     google_managed:
     - governed_access_path: AGENT_TO_ANYWHERE
     labels: null
     location: europe-west1
     name: my-gateway
-    network_config:
-    - dns_peering_config: []
-      egress:
-      - network_attachment: projects/my-project-id/regions/europe-west1/serviceAttachments/my-sa
+    network_config: []
     project: my-prj-id
-    protocols: null
     registries: null
     self_managed: []
-    terraform_labels:
-      goog-terraform-provisioned: 'true'
-    timeouts: null
   module.agent-gateway.google_iap_agent_registry_iam_binding.authoritative["europe-west1/roles/iap.egressor"]:
     location: europe-west1
     members:
@@ -51,9 +53,10 @@ values:
 counts:
   google_iap_agent_registry_iam_binding: 1
   google_network_security_authz_policy: 2
+  google_network_services_agent_connectivity_template: 1
   google_network_services_agent_gateway: 1
   google_network_services_authz_extension: 2
   modules: 1
-  resources: 6
+  resources: 7
 
 outputs: {}

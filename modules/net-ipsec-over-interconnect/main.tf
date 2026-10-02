@@ -15,6 +15,8 @@
  */
 
 locals {
+  project_id = var.project_id
+  region     = var.region
   peer_gateway_id = (
     var.peer_gateway_config.create
     ? try(google_compute_external_vpn_gateway.default[0].id, null)
@@ -97,6 +99,8 @@ resource "google_compute_router_peer" "default" {
   router                    = local.router
   peer_ip_address           = each.value.bgp_peer.address
   peer_asn                  = each.value.bgp_peer.asn
+  export_policies           = each.value.bgp_peer.export_policies
+  import_policies           = each.value.bgp_peer.import_policies
   advertised_route_priority = each.value.bgp_peer.route_priority
   advertise_mode = (
     try(each.value.bgp_peer.custom_advertise, null) != null
@@ -125,7 +129,8 @@ resource "google_compute_router_peer" "default" {
     }
   }
 
-  interface = google_compute_router_interface.default[each.key].name
+  interface  = google_compute_router_interface.default[each.key].name
+  depends_on = [google_compute_router_route_policy.default]
 }
 
 resource "google_compute_router_interface" "default" {
