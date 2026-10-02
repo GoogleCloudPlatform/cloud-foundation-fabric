@@ -291,40 +291,41 @@ module "cluster-1" {
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [location](variables.tf#L186) | Autopilot clusters are always regional. | <code>string</code> | ✓ |  |
-| [name](variables.tf#L269) | Cluster name. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L302) | Cluster project ID. | <code>string</code> | ✓ |  |
-| [vpc_config](variables.tf#L318) | VPC-level configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| [location](variables.tf#L185) | Autopilot clusters are always regional. | <code>string</code> | ✓ |  |
+| [name](variables.tf#L268) | Cluster name. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L301) | Cluster project ID. | <code>string</code> | ✓ |  |
+| [vpc_config](variables.tf#L317) | VPC-level configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
 | [access_config](variables.tf#L17) | Control plane endpoint and nodes access configurations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [backup_configs](variables.tf#L49) | Configuration for Backup for GKE. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [deletion_protection](variables.tf#L71) | Whether or not to allow Terraform to destroy the cluster. Unless this field is set to false in Terraform state, a terraform destroy or terraform apply that would delete the cluster will fail. | <code>bool</code> |  | <code>true</code> |
 | [description](variables.tf#L78) | Cluster description. | <code>string</code> |  | <code>null</code> |
 | [enable_addons](variables.tf#L84) | Addons enabled in the cluster (true means enabled). | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [enable_features](variables.tf#L98) | Enable cluster-level features. Certain features allow configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [fleet_project](variables.tf#L168) | The name of the fleet host project where this cluster will be registered. | <code>string</code> |  | <code>null</code> |
-| [issue_client_certificate](variables.tf#L174) | Enable issuing client certificate. | <code>bool</code> |  | <code>false</code> |
-| [labels](variables.tf#L180) | Cluster resource labels. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
-| [logging_config](variables.tf#L191) | Logging configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [maintenance_config](variables.tf#L202) | Maintenance window configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#8230;&#125;</code> |
-| [min_master_version](variables.tf#L225) | Minimum version of the master, defaults to the version of the most recent official release. | <code>string</code> |  | <code>null</code> |
-| [monitoring_config](variables.tf#L231) | Monitoring configuration. System metrics collection cannot be disabled. Control plane metrics are optional. Kube state metrics are optional. Google Cloud Managed Service for Prometheus is enabled by default. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [node_config](variables.tf#L274) | Configuration for nodes and nodepools. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [node_locations](variables.tf#L295) | Zones in which the cluster's nodes are located. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
-| [release_channel](variables.tf#L307) | Release channel for GKE upgrades. Clusters created in the Autopilot mode must use a release channel. Choose between \"RAPID\", \"REGULAR\", and \"STABLE\". | <code>string</code> |  | <code>&#34;REGULAR&#34;</code> |
+| [fleet_project](variables.tf#L167) | The name of the fleet host project where this cluster will be registered. | <code>string</code> |  | <code>null</code> |
+| [issue_client_certificate](variables.tf#L173) | Enable issuing client certificate. | <code>bool</code> |  | <code>false</code> |
+| [labels](variables.tf#L179) | Cluster resource labels. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
+| [logging_config](variables.tf#L190) | Logging configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [maintenance_config](variables.tf#L201) | Maintenance window configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#8230;&#125;</code> |
+| [min_master_version](variables.tf#L224) | Minimum version of the master, defaults to the version of the most recent official release. | <code>string</code> |  | <code>null</code> |
+| [monitoring_config](variables.tf#L230) | Monitoring configuration. System metrics collection cannot be disabled. Control plane metrics are optional. Kube state metrics are optional. Google Cloud Managed Service for Prometheus is enabled by default. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [node_config](variables.tf#L273) | Configuration for nodes and nodepools. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [node_locations](variables.tf#L294) | Zones in which the cluster's nodes are located. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
+| [release_channel](variables.tf#L306) | Release channel for GKE upgrades. Clusters created in the Autopilot mode must use a release channel. Choose between \"RAPID\", \"REGULAR\", and \"STABLE\". | <code>string</code> |  | <code>&#34;REGULAR&#34;</code> |
 
 ## Outputs
 
 | name | description | sensitive |
 |---|---|:---:|
-| [ca_certificate](outputs.tf#L17) | Public certificate of the cluster (base64-encoded). | ✓ |
-| [cluster](outputs.tf#L23) | Cluster resource. | ✓ |
-| [dns_endpoint](outputs.tf#L29) | Control plane DNS endpoint. |  |
-| [endpoint](outputs.tf#L37) | Cluster endpoint. |  |
-| [id](outputs.tf#L42) | Fully qualified cluster ID. |  |
-| [location](outputs.tf#L47) | Cluster location. |  |
-| [master_version](outputs.tf#L52) | Master version. |  |
-| [name](outputs.tf#L57) | Cluster name. |  |
-| [notifications](outputs.tf#L62) | GKE Pub/Sub notifications topic. |  |
-| [self_link](outputs.tf#L67) | Cluster self link. | ✓ |
-| [workload_identity_pool](outputs.tf#L73) | Workload identity pool. |  |
+| [backup_plan_ids](outputs.tf#L17) | GKE backup plan ids. |  |
+| [ca_certificate](outputs.tf#L24) | Public certificate of the cluster (base64-encoded). | ✓ |
+| [cluster](outputs.tf#L30) | Cluster resource. | ✓ |
+| [dns_endpoint](outputs.tf#L36) | Control plane DNS endpoint. |  |
+| [endpoint](outputs.tf#L44) | Cluster endpoint. |  |
+| [id](outputs.tf#L49) | Fully qualified cluster ID. |  |
+| [location](outputs.tf#L54) | Cluster location. |  |
+| [master_version](outputs.tf#L59) | Master version. |  |
+| [name](outputs.tf#L64) | Cluster name. |  |
+| [notifications](outputs.tf#L69) | GKE Pub/Sub notifications topic. |  |
+| [self_link](outputs.tf#L74) | Cluster self link. | ✓ |
+| [workload_identity_pool](outputs.tf#L80) | Workload identity pool. |  |
 <!-- END TFDOC -->

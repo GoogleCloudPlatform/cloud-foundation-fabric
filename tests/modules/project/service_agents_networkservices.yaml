@@ -1,0 +1,91 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  google_project_iam_member.service_agents["agentgateway"]:
+    condition: []
+    member: serviceAccount:service-12345@gcp-sa-agentgateway.iam.gserviceaccount.com
+    project: my-project
+    role: roles/agentgateway.serviceAgent
+  google_project_iam_member.service_agents["networkactions"]:
+    condition: []
+    member: serviceAccount:service-12345@gcp-sa-networkactions.iam.gserviceaccount.com
+    project: my-project
+    role: roles/networkactions.serviceAgent
+  google_project_service.project_services["networkservices.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: my-project
+    service: networkservices.googleapis.com
+    timeouts: null
+  google_project_service_identity.default["networkservices.googleapis.com"]:
+    project: my-project
+    service: networkservices.googleapis.com
+    timeouts: null
+
+outputs:
+  service_agents:
+    agentgateway:
+      api: networkservices.googleapis.com
+      display_name: Agent Gateway Service Account
+      email: service-12345@gcp-sa-agentgateway.iam.gserviceaccount.com
+      iam_email: serviceAccount:service-12345@gcp-sa-agentgateway.iam.gserviceaccount.com
+      is_primary: false
+      name: agentgateway
+      role: roles/agentgateway.serviceAgent
+    cloudservices:
+      api: null
+      display_name: Google APIs Service Agent
+      email: 12345@cloudservices.gserviceaccount.com
+      iam_email: serviceAccount:12345@cloudservices.gserviceaccount.com
+      is_primary: false
+      name: cloudservices
+      role: null
+    cloudsvc:
+      api: null
+      display_name: Google APIs Service Agent
+      email: 12345@cloudservices.gserviceaccount.com
+      iam_email: serviceAccount:12345@cloudservices.gserviceaccount.com
+      is_primary: false
+      name: cloudservices
+      role: null
+    dep:
+      api: networkservices.googleapis.com
+      display_name: Google Cloud Service Extensions Service Account
+      email: service-12345@gcp-sa-dep.iam.gserviceaccount.com
+      iam_email: serviceAccount:service-12345@gcp-sa-dep.iam.gserviceaccount.com
+      is_primary: true
+      name: dep
+      role: null
+    networkactions:
+      api: networkservices.googleapis.com
+      display_name: Network Actions Service Account
+      email: service-12345@gcp-sa-networkactions.iam.gserviceaccount.com
+      iam_email: serviceAccount:service-12345@gcp-sa-networkactions.iam.gserviceaccount.com
+      is_primary: false
+      name: networkactions
+      role: roles/networkactions.serviceAgent
+    securewebproxy:
+      api: networkservices.googleapis.com
+      display_name: Secure Web Proxy Service Account
+      email: service-12345@gcp-sa-securewebproxy.iam.gserviceaccount.com
+      iam_email: serviceAccount:service-12345@gcp-sa-securewebproxy.iam.gserviceaccount.com
+      is_primary: false
+      name: securewebproxy
+      role: null
+
+counts:
+  google_project_iam_member: 2
+  google_project_service: 1
+  google_project_service_identity: 1

@@ -146,6 +146,35 @@ values:
     project: foo-test-0
     role: organizations/366118655033/roles/myRoleOne
     zone: europe-west8-a
+  google_iap_tunnel_instance_iam_binding.authoritative["$custom_roles:myrole_one"]:
+    condition: []
+    instance: test
+    members:
+    - group:test-group@example.com
+    project: foo-test-0
+    role: organizations/366118655033/roles/myRoleOne
+    zone: europe-west8-a
+  google_iap_tunnel_instance_iam_binding.bindings["tunnel-conditional"]:
+    condition:
+    - description: null
+      expression: destination.port == 22
+      title: ssh-only
+    instance: test
+    members:
+    - group:test-group@example.com
+    project: foo-test-0
+    role: organizations/366118655033/roles/myRoleOne
+    zone: europe-west8-a
+  google_iap_tunnel_instance_iam_member.bindings["tunnel-additive"]:
+    condition:
+    - description: null
+      expression: destination.port == 22
+      title: ssh-only-additive
+    instance: test
+    member: group:test-group@example.com
+    project: foo-test-0
+    role: organizations/366118655033/roles/myRoleOne
+    zone: europe-west8-a
   google_tags_location_tag_binding.disks["data-0/bar"]:
     location: europe-west8-a
     tag_value: tagValues/1234567891
@@ -174,6 +203,8 @@ counts:
   google_compute_disk: 1
   google_compute_instance: 1
   google_compute_instance_iam_binding: 1
+  google_iap_tunnel_instance_iam_binding: 2
+  google_iap_tunnel_instance_iam_member: 1
   google_tags_location_tag_binding: 6
   modules: 0
-  resources: 9
+  resources: 12

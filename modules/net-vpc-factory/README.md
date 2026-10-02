@@ -55,7 +55,7 @@ In addition to the YAML-based VPC configurations, the factory accepts three addi
 
 ```hcl
 module "net-vpc-factory" {
-  source = "./modules/net-vpc-factory"
+  source = "./fabric/modules/net-vpc-factory"
   data_defaults = {
     routing_mode = "REGIONAL"
   }
@@ -63,6 +63,15 @@ module "net-vpc-factory" {
     basepath = "data"
   }
 }
+# tftest files=vpc modules=2 resources=4
+```
+
+```yaml
+# yaml-language-server: $schema=../schemas/vpc-factory.schema.json
+
+project_id: my-project
+name: vpc-0
+# tftest-file id=vpc path=data/vpcs/vpc-0/.config.yaml schema=vpc-factory.schema.json
 ```
 
 ### Subnets
@@ -104,20 +113,27 @@ Contexts are passed via the `context` variable or the `factories_config.defaults
 Project IDs use the `$project_ids:` namespace. This allows decoupling the VPC definition from the actual Project ID string.
 
 ```yaml
+# yaml-language-server: $schema=../schemas/vpc-factory.schema.json
+
 # data/vpcs/vpc-0/.config.yaml
 project_id: $project_ids:data-project
 name: vpc-0
+# tftest-file id=vpc path=data/vpcs/vpc-0/.config.yaml schema=vpc-factory.schema.json
 ```
 
 ```hcl
 module "net-vpc-factory" {
-  # ...
+  source = "./fabric/modules/net-vpc-factory"
   context = {
     project_ids = {
       data-project = "prefix-prod-data-app-0"
     }
   }
+  factories_config = {
+    basepath = "data"
+  }
 }
+# tftest files=vpc modules=2 resources=4
 ```
 
 ### Other context ids

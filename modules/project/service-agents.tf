@@ -130,8 +130,6 @@ locals {
       try(var.project_reuse.attributes.services_enabled, [])
     )) : s if !contains(local._u_unavailable_si, s)
   ]
-
-
   default_service_accounts = (
     var.universe == null
     ? {

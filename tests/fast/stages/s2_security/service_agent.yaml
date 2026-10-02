@@ -1,0 +1,122 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  google_storage_bucket_object.tfvars[0]:
+    bucket: test
+    cache_control: null
+    content_disposition: null
+    content_encoding: null
+    content_language: null
+    contexts: []
+    customer_encryption: []
+    deletion_policy: DELETE
+    detect_md5hash: null
+    event_based_hold: null
+    force_empty_content_type: null
+    metadata: null
+    name: tfvars/2-security.auto.tfvars.json
+    retention: []
+    source: null
+    temporary_hold: null
+    timeouts: null
+  google_storage_bucket_object.version[0]:
+    bucket: test
+    cache_control: null
+    content_disposition: null
+    content_encoding: null
+    content_language: null
+    contexts: []
+    customer_encryption: []
+    deletion_policy: DELETE
+    detect_md5hash: null
+    event_based_hold: null
+    force_empty_content_type: null
+    metadata: null
+    name: versions/2-security-version.txt
+    retention: []
+    source: fast_version.txt
+    temporary_hold: null
+    timeouts: null
+  module.factory.module.projects["dev-sec-core-0"].google_project.project[0]:
+    auto_create_network: false
+    billing_account: 000000-111111-222222
+    deletion_policy: DELETE
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    folder_id: null
+    labels: null
+    name: fast-dev-sec-core-0
+    org_id: null
+    project_id: fast-dev-sec-core-0
+    tags: null
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+  module.factory.module.projects["dev-sec-core-0"].google_project_iam_member.service_agents["compute-system"]:
+    condition: []
+    project: fast-dev-sec-core-0
+    role: roles/compute.serviceAgent
+  module.factory.module.projects["dev-sec-core-0"].google_project_service.project_services["compute.googleapis.com"]:
+    deletion_policy: DELETE
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: fast-dev-sec-core-0
+    service: compute.googleapis.com
+    timeouts: null
+  module.factory.terraform_data.defaults_preconditions:
+    input: null
+    output: null
+    triggers_replace: null
+  module.factory.terraform_data.project_preconditions:
+    input: null
+    output: null
+    triggers_replace: null
+  module.kms["keyring"].google_kms_crypto_key.default["compute"]:
+    deletion_policy: DELETE
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    labels: null
+    name: compute
+    purpose: ENCRYPT_DECRYPT
+    rotation_period: null
+    skip_initial_version_creation: false
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+  ? module.kms["keyring"].google_kms_crypto_key_iam_binding.authoritative["compute.roles/cloudkms.cryptoKeyEncrypterDecrypter"]
+  : condition: []
+    role: roles/cloudkms.cryptoKeyEncrypterDecrypter
+  module.kms["keyring"].google_kms_key_ring.default[0]:
+    location: europe-west1
+    name: keyring
+    project: fast-dev-sec-core-0
+    timeouts: null
+
+counts:
+  google_kms_crypto_key: 1
+  google_kms_crypto_key_iam_binding: 1
+  google_kms_key_ring: 1
+  google_project: 1
+  google_project_iam_member: 1
+  google_project_service: 1
+  google_storage_bucket_object: 2
+  modules: 3
+  resources: 10
+  terraform_data: 2
+
+outputs:
+  ca_pools: {}
+  kms_keys_ids: __missing__
+  tfvars: __missing__

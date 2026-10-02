@@ -299,9 +299,6 @@ The following example shows how to create the service agent and grant the requir
 module "organization" {
   source          = "./fabric/modules/organization"
   organization_id = var.organization_id
-  factories_config = {
-    pam_entitlements = "factory/"
-  }
   service_agents_config = {
     services = ["privilegedaccessmanager.googleapis.com"]
   }
@@ -311,12 +308,13 @@ module "organization" {
     ]
   }
 }
+# tftest modules=1 resources=2
 ```
 
 ```hcl
 module "org" {
-  source              = "./fabric/modules/organization"
-  organization_id     = var.organization_id
+  source          = "./fabric/modules/organization"
+  organization_id = var.organization_id
   pam_entitlements = {
     net-admins = {
       max_request_duration = "3600s"
@@ -334,6 +332,7 @@ module "org" {
     }
   }
 }
+# tftest modules=1 resources=1
 ```
 
 ### Privileged Access Manager (PAM) Entitlements Factory
@@ -350,6 +349,25 @@ module "org" {
     pam_entitlements = "configs/pam-entitlements/"
   }
 }
+# tftest modules=1 resources=1 files=pam
+```
+
+```yaml
+# yaml-language-server: $schema=../schemas/pam-entitlements.schema.json
+
+net-admins:
+  max_request_duration: 3600s
+  eligible_users:
+    - group:gcp-network-admins@example.com
+  privileged_access:
+    - role: roles/compute.networkAdmin
+    - role: roles/compute.admin
+  manual_approvals:
+    require_approver_justification: true
+    steps:
+      - approvers:
+          - group:gcp-organization-admins@example.com
+# tftest-file id=pam path=configs/pam-entitlements/entitlements.yaml schema=pam-entitlements.schema.json
 ```
 
 ## Hierarchical Firewall Policy Attachments

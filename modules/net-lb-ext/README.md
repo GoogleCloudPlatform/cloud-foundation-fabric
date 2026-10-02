@@ -6,7 +6,11 @@ This module allows managing a GCE Network Load Balancer and integrates the forwa
 
 - [Referencing existing MIGs](#referencing-existing-migs)
 - [Externally manages instances](#externally-managed-instances)
+- [Multiple forwarding rules](#multiple-forwarding-rules)
+- [Dual stack (IPv4 and IPv6)](#dual-stack-ipv4-and-ipv6)
+- [Cloud Armor network edge policy](#cloud-armor-network-edge-policy)
 - [End to end example](#end-to-end-example)
+- [Context](#context)
 
 ### Referencing existing MIGs
 
@@ -138,6 +142,39 @@ module "nlb" {
 # tftest modules=3 resources=9 fixtures=fixtures/compute-vm-group-bc.tf inventory=dual_stack.yaml e2e
 ```
 
+### Cloud Armor network edge policy
+
+A regional `CLOUD_ARMOR_NETWORK` security policy, for example one managed via the [`net-cloud-armor`](../net-cloud-armor) module, can be attached to the backend service through the `security_policy` attribute. The attribute accepts a policy id or a `security_policies` context key. Network edge policies require Cloud Armor Enterprise with advanced network DDoS protection enabled in the region.
+
+```hcl
+module "nlb" {
+  source     = "./fabric/modules/net-lb-ext"
+  project_id = var.project_id
+  region     = var.region
+  name       = "nlb-test"
+  backend_service_config = {
+    security_policy = "$security_policies:network-edge"
+  }
+  context = {
+    security_policies = {
+      network-edge = "projects/${var.project_id}/regions/${var.region}/securityPolicies/network-edge"
+    }
+  }
+  backends = [{
+    group = module.nlb.groups.my-group.self_link
+  }]
+  group_configs = {
+    my-group = {
+      zone = "${var.region}-b"
+      instances = [
+        module.compute-vm-group-b.id,
+      ]
+    }
+  }
+}
+# tftest modules=3 resources=8 fixtures=fixtures/compute-vm-group-bc.tf inventory=cloud_armor.yaml
+```
+
 ### End to end example
 
 This example spins up a simple HTTP server and combines four modules:
@@ -205,6 +242,60 @@ module "nlb" {
 # tftest modules=3 resources=7 inventory=e2e.yaml e2e
 ```
 
+### Context
+
+The module supports the contexts interpolation. The `security_policies` key resolves the Cloud Armor network edge policy attached to the backend service, which can be managed via the [`net-cloud-armor`](../net-cloud-armor/) module.
+
+```hcl
+module "nlb" {
+  source     = "./fabric/modules/net-lb-ext"
+  project_id = "$project_ids:my-prj"
+  region     = "$locations:primary-region"
+  name       = "nlb-test"
+  forwarding_rules_config = {
+    default = {
+      address = "$addresses:lb-ip-addr"
+    }
+  }
+  group_configs = {
+    my-group = {
+      zone = "$locations:primary-zone"
+      instances = [
+        "instance-1-self-link",
+        "instance-2-self-link"
+      ]
+    }
+  }
+  backends = [{
+    group = module.nlb.groups.my-group.self_link
+  }]
+  backend_service_config = {
+    security_policy = "$security_policies:network-edge"
+  }
+  health_check_config = {
+    http = {
+      port = 80
+    }
+  }
+  context = {
+    addresses = {
+      lb-ip-addr = "1.2.3.4"
+    }
+    locations = {
+      primary-region = "us-central1"
+      primary-zone   = "us-central1-b"
+    }
+    project_ids = {
+      my-prj = "my-project-1"
+    }
+    security_policies = {
+      network-edge = "projects/my-project-1/regions/us-central1/securityPolicies/network-edge"
+    }
+  }
+}
+# tftest modules=1 resources=4 inventory=context.yaml
+```
+
 ## Deploying changes to load balancer configurations
 
 For deploying changes to load balancer configuration please refer to [net-lb-app-ext README.md](../net-lb-app-ext/README.md#deploying-changes-to-load-balancer-configurations)
@@ -213,17 +304,17 @@ For deploying changes to load balancer configuration please refer to [net-lb-app
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [name](variables.tf#L215) | Name used for all resources. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L220) | Project id where resources will be created. | <code>string</code> | ✓ |  |
-| [region](variables.tf#L225) | GCP region. | <code>string</code> | ✓ |  |
+| [name](variables.tf#L217) | Name used for all resources. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L222) | Project id where resources will be created. | <code>string</code> | ✓ |  |
+| [region](variables.tf#L227) | GCP region. | <code>string</code> | ✓ |  |
 | [backend_service_config](variables.tf#L17) | Backend service level configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [backends](variables.tf#L73) | Load balancer backends. | <code>list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#91;&#93;</code> |
-| [context](variables.tf#L84) | Context-specific interpolations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [forwarding_rules_config](variables.tf#L96) | The optional forwarding rules configuration. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#8230;&#125;</code> |
-| [group_configs](variables.tf#L112) | Optional unmanaged groups to create. Can be referenced in backends via outputs. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [health_check](variables.tf#L125) | Name of existing health check to use, disables auto-created health check. | <code>string</code> |  | <code>null</code> |
-| [health_check_config](variables.tf#L131) | Optional auto-created health check configuration, use the output self-link to set it in the auto healing policy. Refer to examples for usage. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#8230;&#125;</code> |
-| [labels](variables.tf#L209) | Labels set on resources. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [backends](variables.tf#L74) | Load balancer backends. | <code>list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#91;&#93;</code> |
+| [context](variables.tf#L85) | Context-specific interpolations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [forwarding_rules_config](variables.tf#L98) | The optional forwarding rules configuration. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#8230;&#125;</code> |
+| [group_configs](variables.tf#L114) | Optional unmanaged groups to create. Can be referenced in backends via outputs. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [health_check](variables.tf#L127) | Name of existing health check to use, disables auto-created health check. | <code>string</code> |  | <code>null</code> |
+| [health_check_config](variables.tf#L133) | Optional auto-created health check configuration, use the output self-link to set it in the auto healing policy. Refer to examples for usage. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#8230;&#125;</code> |
+| [labels](variables.tf#L211) | Labels set on resources. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
 

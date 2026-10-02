@@ -148,7 +148,7 @@ module "folder" {
   pam_entitlements = {
     net-admins = {
       max_request_duration = "3600s"
-      eligible_users = ["group:gcp-network-admins@example.com"]
+      eligible_users       = ["group:gcp-network-admins@example.com"]
       privileged_access = [
         { role = "roles/compute.networkAdmin" },
         { role = "roles/compute.admin" },
@@ -162,6 +162,7 @@ module "folder" {
     }
   }
 }
+# tftest modules=1 resources=2
 ```
 
 ### Privileged Access Manager (PAM) Entitlements Factory
@@ -179,6 +180,25 @@ module "folder" {
     pam_entitlements = "configs/pam-entitlements/"
   }
 }
+# tftest modules=1 resources=2 files=pam
+```
+
+```yaml
+# yaml-language-server: $schema=../schemas/pam-entitlements.schema.json
+
+net-admins:
+  max_request_duration: 3600s
+  eligible_users:
+    - group:gcp-network-admins@example.com
+  privileged_access:
+    - role: roles/compute.networkAdmin
+    - role: roles/compute.admin
+  manual_approvals:
+    require_approver_justification: true
+    steps:
+      - approvers:
+          - group:gcp-organization-admins@example.com
+# tftest-file id=pam path=configs/pam-entitlements/entitlements.yaml schema=pam-entitlements.schema.json
 ```
 
 ## Service Agents

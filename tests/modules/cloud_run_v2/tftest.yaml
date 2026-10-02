@@ -21,4 +21,4 @@ tests:
   multiregion:
   traffic:
   security:
-
+  workload-identity:

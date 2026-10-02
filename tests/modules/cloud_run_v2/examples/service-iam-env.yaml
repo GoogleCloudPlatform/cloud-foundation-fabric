@@ -33,6 +33,7 @@ values:
     multi_region_settings: []
     name: example-hello
     project: project-id
+    tags: null
     template:
     - annotations: null
       containers:
@@ -56,6 +57,7 @@ values:
         liveness_probe: []
         name: hello
         readiness_probe: []
+        sandbox_launcher: null
         source_code: []
         volume_mounts: []
         working_dir: null
@@ -66,6 +68,7 @@ values:
       labels: null
       node_selector: []
       revision: null
+      sandboxes: []
       service_account: example-hello@project-id.iam.gserviceaccount.com
       service_mesh: []
       session_affinity: null
@@ -134,7 +137,7 @@ values:
     is_secret_data_base64: false
     secret_data: manual foo bar spam
     secret_data_wo: null
-    secret_data_wo_version: 0
+    secret_data_wo_version: null
     timeouts: null
 
 counts:

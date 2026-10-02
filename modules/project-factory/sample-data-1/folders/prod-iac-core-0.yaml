@@ -33,14 +33,12 @@ iam_by_principals:
     - roles/storage.admin
 buckets:
   iac-bootstrap-state:
-    description: Terraform state for the org-level automation.
     iam:
       roles/storage.admin:
         - $iam_principals:service_accounts/prod-iac-core-0/iac-bootstrap-rw
       $custom_roles:storage_viewer:
         - $iam_principals:service_accounts/prod-iac-core-0/iac-bootstrap-ro
   iac-outputs:
-    description: Terraform state for the org-level automation.
     iam:
       roles/storage.admin:
         - $iam_principals:service_accounts/prod-iac-core-0/iac-bootstrap-rw
