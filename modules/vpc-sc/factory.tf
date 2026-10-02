@@ -54,6 +54,7 @@ locals {
           access_levels = []
           identity_type = null
           identities    = []
+          psc_endpoints = []
           resources     = []
         }, try(v.from, {}))
         to = {
@@ -77,6 +78,7 @@ locals {
           access_levels = []
           identity_type = null
           identities    = []
+          psc_endpoints = []
           resources     = []
         }, try(v.from, {}))
         to = {

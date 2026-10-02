@@ -48,11 +48,21 @@ values:
           source_restriction: SOURCE_RESTRICTION_ENABLED
           sources:
           - access_level: null
+            psc_endpoint: []
             resource: projects/111111
           - access_level: null
+            psc_endpoint: []
+            resource: folders/1234567890
+          - access_level: null
+            psc_endpoint: []
             resource: projects/321
           - access_level: null
+            psc_endpoint: []
             resource: projects/654
+          - access_level: null
+            psc_endpoint:
+            - forwarding_rule: //compute.googleapis.com/projects/test-net/global/forwardingRules/psc-apis
+            resource: null
         egress_to:
         - external_resources: null
           operations:
@@ -61,6 +71,7 @@ values:
               permission: null
             service_name: artifactregistry.googleapis.com
           resources:
+          - organizations/366118655033
           - projects/111111
           - projects/321
           - projects/654
@@ -74,13 +85,24 @@ values:
           identity_type: null
           sources:
           - access_level: '*'
+            psc_endpoint: []
             resource: null
           - access_level: null
+            psc_endpoint: []
             resource: projects/111111
           - access_level: null
+            psc_endpoint: []
+            resource: folders/1234567890
+          - access_level: null
+            psc_endpoint: []
             resource: projects/321
           - access_level: null
+            psc_endpoint: []
             resource: projects/654
+          - access_level: null
+            psc_endpoint:
+            - forwarding_rule: //compute.googleapis.com/projects/test-net/global/forwardingRules/psc-apis
+            resource: null
         ingress_to:
         - operations:
           - method_selectors: []
@@ -92,6 +114,7 @@ values:
           roles: []
         title: test-context
       resources:
+      - folders/1234567890
       - projects/111111
       - projects/222222
       - projects/321
