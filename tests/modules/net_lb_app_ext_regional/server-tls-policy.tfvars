@@ -12,8 +12,28 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-module: modules/net-lb-app-ext-regional
-
-tests:
-  context:
-  server-tls-policy:
+project_id = "test-project"
+region     = "europe-west1"
+name       = "test-lb"
+vpc_config = {
+  network = "projects/test-project/global/networks/test-vpc"
+}
+group_configs = {
+  default = {
+    zone = "europe-west1-b"
+  }
+}
+backend_service_configs = {
+  default = {
+    backends = [{ group = "default" }]
+  }
+}
+protocol = "HTTPS"
+ssl_certificates = {
+  certificate_ids = [
+    "projects/test-project/regions/europe-west1/sslCertificates/test-cert"
+  ]
+}
+https_proxy_config = {
+  server_tls_policy = "projects/test-project/locations/europe-west1/serverTlsPolicies/mtls"
+}

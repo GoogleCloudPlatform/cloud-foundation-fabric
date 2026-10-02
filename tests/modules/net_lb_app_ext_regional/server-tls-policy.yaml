@@ -12,8 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-module: modules/net-lb-app-ext-regional
+values:
+  google_compute_region_target_https_proxy.default[0]:
+    name: test-lb
+    project: test-project
+    region: europe-west1
+    server_tls_policy: projects/test-project/locations/europe-west1/serverTlsPolicies/mtls
+    ssl_certificates:
+    - projects/test-project/regions/europe-west1/sslCertificates/test-cert
 
-tests:
-  context:
-  server-tls-policy:
+counts:
+  google_compute_region_target_https_proxy: 1
