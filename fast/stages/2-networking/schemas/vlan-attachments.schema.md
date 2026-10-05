@@ -105,3 +105,4 @@
   - **include_export_ranges**: *array*
     - items: *string*
   - **group**: *string*
+  - **site_to_site_data_transfer**: *boolean*
