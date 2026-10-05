@@ -163,6 +163,7 @@ counts:
 
 outputs:
   address: 10.0.0.1
+  backend_service_generated_ids: __missing__
   backend_service_ids: __missing__
   backend_service_names:
     default: test-lb-default
