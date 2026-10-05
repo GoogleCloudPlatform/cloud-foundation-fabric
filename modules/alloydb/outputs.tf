@@ -97,15 +97,6 @@ output "public_ip" {
   value       = google_alloydb_instance.primary.public_ip_address
 }
 
-output "read_pools" {
-  description = "Primary read pool resources."
-  value = {
-    for name, instance in google_alloydb_instance.read_pool_primary :
-    name => instance
-  }
-  sensitive = true
-}
-
 output "read_pool_ids" {
   description = "Fully qualified ids of all primary read pool instances."
   value = {
@@ -120,6 +111,11 @@ output "read_pool_ips" {
     for name, instance in google_alloydb_instance.read_pool_primary :
     name => instance.ip_address
   }
+}
+
+output "read_pools" {
+  description = "Primary read pool resources."
+  value       = google_alloydb_instance.read_pool_primary
 }
 
 output "secondary_cluster_id" {
@@ -152,15 +148,6 @@ output "secondary_public_ip" {
   value       = var.cross_region_replication.enabled ? google_alloydb_instance.secondary[0].public_ip_address : null
 }
 
-output "secondary_read_pools" {
-  description = "Secondary read pool resources."
-  value = {
-    for name, instance in google_alloydb_instance.read_pool_secondary :
-    name => instance
-  }
-  sensitive = true
-}
-
 output "secondary_read_pool_ids" {
   description = "Fully qualified ids of all secondary read pool instances."
   value = {
@@ -170,11 +157,16 @@ output "secondary_read_pool_ids" {
 }
 
 output "secondary_read_pool_ips" {
-  description = "IP addresses of all secondary read poll instances."
+  description = "IP addresses of all secondary read pool instances."
   value = {
     for name, instance in google_alloydb_instance.read_pool_secondary :
     name => instance.ip_address
   }
+}
+
+output "secondary_read_pools" {
+  description = "Secondary read pool resources."
+  value       = google_alloydb_instance.read_pool_secondary
 }
 
 output "service_attachment" {
