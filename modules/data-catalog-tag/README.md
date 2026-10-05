@@ -33,6 +33,9 @@ module "data-catalog-tag" {
         pii = {
           enum_value = "NONE"
         }
+        bool = {
+          bool_value = true
+        }
       }
     }
   }
@@ -133,6 +136,8 @@ fields:
     double_value: 5
   pii:
     enum_value: NONE
+  bool:
+    bool_value: true
 ```
 <!-- BEGIN TFDOC -->
 ## Variables
