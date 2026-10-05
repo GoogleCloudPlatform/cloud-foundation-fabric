@@ -71,6 +71,7 @@ values:
               permission: null
             service_name: storage.googleapis.com
           resources:
+          - organizations/4444
           - projects/123456789
           roles: null
         title: gcs-sa-foo
@@ -104,7 +105,24 @@ values:
           roles:
           - roles/storage.objectViewer
         title: sa-roles
+      - ingress_from:
+        - identities: null
+          identity_type: ANY_IDENTITY
+          sources:
+          - access_level: null
+            psc_endpoint:
+            - forwarding_rule: //compute.googleapis.com/projects/net-0/global/forwardingRules/apis
+            resource: null
+        ingress_to:
+        - operations:
+          - method_selectors: []
+            service_name: '*'
+          resources:
+          - '*'
+          roles: null
+        title: psc-apis
       resources:
+      - folders/3333
       - projects/1111
       - projects/2222
       restricted_services:

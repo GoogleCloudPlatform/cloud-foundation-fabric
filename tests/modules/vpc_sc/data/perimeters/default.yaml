@@ -28,4 +28,5 @@ status:
   resources:
     - $project_numbers:test-0
     - $project_numbers:test-1
+    - $folder_ids:test
     - $resource_sets:test
