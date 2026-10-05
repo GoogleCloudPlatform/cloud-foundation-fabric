@@ -72,14 +72,15 @@ locals {
     "${vpn_key}/${replace(vpn_config.ncc_spoke_config.hub, "$ncc_hubs:", "")}" => merge(
       vpn_config.ncc_spoke_config,
       {
-        name             = replace("${vpn_key}/${vpn_config.ncc_spoke_config.hub}", "$ncc_hubs:", "")
-        project_id       = vpn_config.project_id
-        hub              = vpn_config.ncc_spoke_config.hub
-        group            = try(vpn_config.ncc_spoke_config.group, null)
-        location         = vpn_config.region
-        description      = lookup(vpn_config.ncc_spoke_config, "description", "Terraform-managed.")
-        labels           = lookup(vpn_config.ncc_spoke_config, "labels", {})
-        tunnel_self_link = [for t, _ in vpn_config.tunnels : module.vpn-ha[vpn_key].tunnel_self_links[t]]
+        name                       = replace("${vpn_key}/${vpn_config.ncc_spoke_config.hub}", "$ncc_hubs:", "")
+        project_id                 = vpn_config.project_id
+        hub                        = vpn_config.ncc_spoke_config.hub
+        group                      = try(vpn_config.ncc_spoke_config.group, null)
+        location                   = vpn_config.region
+        description                = lookup(vpn_config.ncc_spoke_config, "description", "Terraform-managed.")
+        labels                     = lookup(vpn_config.ncc_spoke_config, "labels", {})
+        site_to_site_data_transfer = try(vpn_config.ncc_spoke_config.site_to_site_data_transfer, true)
+        tunnel_self_link           = [for t, _ in vpn_config.tunnels : module.vpn-ha[vpn_key].tunnel_self_links[t]]
       }
     ) if try(vpn_config.ncc_spoke_config != null, false)
   }
@@ -88,14 +89,15 @@ locals {
     "${va_key}/${replace(va_config.ncc_spoke_config.hub, "$ncc_hubs:", "")}" => merge(
       va_config.ncc_spoke_config,
       {
-        name           = replace("${va_key}/${va_config.ncc_spoke_config.hub}", "$ncc_hubs:", "")
-        project_id     = va_config.project_id
-        hub            = va_config.ncc_spoke_config.hub
-        group          = try(va_config.ncc_spoke_config.group, null)
-        location       = va_config.region
-        description    = lookup(va_config.ncc_spoke_config, "description", "Terraform-managed.")
-        labels         = lookup(va_config.ncc_spoke_config, "labels", {})
-        attachment_uri = module.vlan-attachments[va_key].id
+        name                       = replace("${va_key}/${va_config.ncc_spoke_config.hub}", "$ncc_hubs:", "")
+        project_id                 = va_config.project_id
+        hub                        = va_config.ncc_spoke_config.hub
+        group                      = try(va_config.ncc_spoke_config.group, null)
+        location                   = va_config.region
+        description                = lookup(va_config.ncc_spoke_config, "description", "Terraform-managed.")
+        labels                     = lookup(va_config.ncc_spoke_config, "labels", {})
+        site_to_site_data_transfer = try(va_config.ncc_spoke_config.site_to_site_data_transfer, true)
+        attachment_uri             = module.vlan-attachments[va_key].id
       }
     ) if try(va_config.ncc_spoke_config != null, false)
   }
@@ -202,7 +204,7 @@ resource "google_network_connectivity_spoke" "tunnels" {
   )
   linked_vpn_tunnels {
     uris                       = each.value.tunnel_self_link
-    site_to_site_data_transfer = true
+    site_to_site_data_transfer = each.value.site_to_site_data_transfer
     include_import_ranges      = ["ALL_IPV4_RANGES"]
   }
   depends_on = [module.vpn-ha]
@@ -235,7 +237,7 @@ resource "google_network_connectivity_spoke" "vlan_attachments" {
   )
   linked_interconnect_attachments {
     uris                       = [each.value.attachment_uri]
-    site_to_site_data_transfer = true
+    site_to_site_data_transfer = each.value.site_to_site_data_transfer
     include_import_ranges      = ["ALL_IPV4_RANGES"]
   }
   depends_on = [module.vlan-attachments]
