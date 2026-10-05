@@ -1,0 +1,62 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.hub.google_gke_hub_namespace.default["team-payments/payments-backend"]:
+    project: my-project
+    scope_id: team-payments
+    scope_namespace_id: payments-backend
+  module.hub.google_gke_hub_namespace.default["team-payments/payments-prod"]:
+    labels:
+      tier: frontend
+    project: my-project
+    scope_id: team-payments
+    scope_namespace_id: payments-prod
+  module.hub.google_gke_hub_scope.default["team-payments"]:
+    labels:
+      environment: production
+    namespace_labels:
+      team: payments
+    project: my-project
+    scope_id: team-payments
+  module.hub.google_gke_hub_scope_rbac_role_binding.default["team-payments/admins"]:
+    group: payments-admins@example.com
+    project: my-project
+    role:
+    - predefined_role: ADMIN
+    scope_id: team-payments
+    scope_rbac_role_binding_id: admins
+  module.hub.google_gke_hub_scope_rbac_role_binding.default["team-payments/devs"]:
+    group: principalSet://iam.googleapis.com/projects/12345/locations/global/workloadIdentityPools/my-pool/attribute.department/dev
+    project: my-project
+    role:
+    - custom_role: payments-developer
+    scope_id: team-payments
+    scope_rbac_role_binding_id: devs
+  module.hub.google_gke_hub_scope_rbac_role_binding.default["team-payments/viewers"]:
+    group: payments-viewers@example.com
+    project: my-project
+    role:
+    - predefined_role: VIEW
+    scope_id: team-payments
+    scope_rbac_role_binding_id: viewers
+
+counts:
+  google_gke_hub_namespace: 2
+  google_gke_hub_scope: 1
+  google_gke_hub_scope_rbac_role_binding: 3
+  modules: 1
+  resources: 6
+
+outputs: {}
