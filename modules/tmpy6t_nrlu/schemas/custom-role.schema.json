@@ -1,0 +1,35 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Custom Role",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "stage": {
+      "type": "string",
+      "enum": [
+        "ALPHA",
+        "BETA",
+        "GA",
+        "DEPRECATED",
+        "DISABLED",
+        "EAP"
+      ]
+    },
+    "includedPermissions": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[a-zA-Z-]+\\.[a-zA-Z-]+\\.[a-zA-Z-]+$"
+      }
+    }
+  }
+}

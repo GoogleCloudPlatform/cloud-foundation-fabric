@@ -1,0 +1,2462 @@
+# Project Module
+
+This module implements the creation and management of one GCP project including IAM, organization policies, Shared VPC host or service attachment, service API activation, and tag attachment. It also offers a convenient way to refer to managed service identities (aka robot service accounts) for APIs.
+
+## TOC
+
+<!-- BEGIN TOC -->
+- [TOC](#toc)
+- [Basic Project Creation](#basic-project-creation)
+- [IAM](#iam)
+  - [Authoritative IAM](#authoritative-iam)
+  - [Conditional IAM by Principals](#conditional-iam-by-principals)
+  - [Additive IAM](#additive-iam)
+  - [Service Agents](#service-agents)
+    - [Cloudservices Editor Role](#cloudservices-editor-role)
+    - [Skipping Service Agent IAM Grants](#skipping-service-agent-iam-grants)
+    - [Service Agent Aliases](#service-agent-aliases)
+- [Shared VPC](#shared-vpc)
+- [Organization Policies](#organization-policies)
+  - [Dry-Run Mode](#dry-run-mode)
+  - [Organization Policy Factory](#organization-policy-factory)
+- [Log Sinks](#log-sinks)
+- [Data Access Logs](#data-access-logs)
+- [Log Scopes](#log-scopes)
+- [Cloud KMS Encryption Keys](#cloud-kms-encryption-keys)
+- [Custom Security Health Analytics Modules](#custom-security-health-analytics-modules)
+  - [Custom Security Health Analytics Modules Factory](#custom-security-health-analytics-modules-factory)
+- [Security Command Center Mute Configs](#security-command-center-mute-configs)
+  - [Security Command Center Mute Configs Factory](#security-command-center-mute-configs-factory)
+- [Tags](#tags)
+  - [Tags Factory](#tags-factory)
+- [Tag Bindings](#tag-bindings)
+- [Project-scoped Tags](#project-scoped-tags)
+- [Custom Roles](#custom-roles)
+  - [Custom Roles Factory](#custom-roles-factory)
+- [KMS Autokeys](#kms-autokeys)
+- [Quotas](#quotas)
+- [Quotas factory](#quotas-factory)
+- [Privileged Access Manager (PAM) Entitlements](#privileged-access-manager-pam-entitlements)
+  - [Privileged Access Manager (PAM) Entitlements Factory](#privileged-access-manager-pam-entitlements-factory)
+- [VPC Service Controls](#vpc-service-controls)
+- [Default compute network tier](#default-compute-network-tier)
+- [Cloud Asset Search](#cloud-asset-search)
+- [Cloud Asset Inventory Feeds](#cloud-asset-inventory-feeds)
+- [BigQuery Reservations](#bigquery-reservations)
+- [Project Related Outputs](#project-related-outputs)
+- [Managing project related configuration without creating it](#managing-project-related-configuration-without-creating-it)
+- [Observability](#observability)
+- [Observability factory](#observability-factory)
+- [Workload Identity Federation](#workload-identity-federation)
+- [IAM Deny Policies](#iam-deny-policies)
+- [Files](#files)
+- [Variables](#variables)
+- [Outputs](#outputs)
+- [Fixtures](#fixtures)
+<!-- END TOC -->
+
+## Basic Project Creation
+
+```hcl
+module "project" {
+  source          = "./fabric/modules/project"
+  billing_account = var.billing_account_id
+  name            = "project"
+  parent          = var.folder_id
+  prefix          = var.prefix
+  services = [
+    "container.googleapis.com",
+    "stackdriver.googleapis.com"
+  ]
+}
+# tftest modules=1 resources=6 inventory=basic.yaml e2e
+```
+
+## IAM
+
+IAM is managed via several variables that implement different features and levels of control:
+
+- `iam` and `iam_by_principals` configure authoritative bindings that manage individual roles exclusively, and are internally merged
+- `iam_bindings` configure authoritative bindings with optional support for conditions, and are not internally merged with the previous two variables
+- `iam_bindings_additive` configure additive bindings via individual role/member pairs with optional support for conditions
+- `iam_by_principals_additive` configure additive bindings via individual principal/role pairs with optional support for conditions, and is internally merged with the previous variable
+
+The authoritative and additive approaches can be used together, provided different roles are managed by each. Some care must also be taken with the `iam_by_principals` variable to ensure that variable keys are static values, so that Terraform is able to compute the dependency graph.
+
+Be mindful about service identity roles when using authoritative IAM, as you might inadvertently remove a role from a [service identity](https://cloud.google.com/iam/docs/service-account-types#google-managed) or default service account. For example, using `roles/editor` with `iam` or `iam_principals` will remove the default permissions for the Cloud Services identity. A simple workaround for these scenarios is described below.
+
+IAM also supports variable interpolation for both roles and principals, via the respective attributes in the `var.context` variable. Some usage examples are provided below.
+
+### Authoritative IAM
+
+The `iam` variable is based on role keys and is typically used for service accounts, or where member values can be dynamic and would create potential problems in the underlying `for_each` cycle.
+
+```hcl
+module "project" {
+  source          = "./fabric/modules/project"
+  billing_account = var.billing_account_id
+  name            = "project"
+  parent          = var.folder_id
+  prefix          = var.prefix
+  services = [
+    "container.googleapis.com",
+    "stackdriver.googleapis.com"
+  ]
+  context = {
+    iam_principals = {
+      org_admins = "group:${var.group_email}"
+    }
+  }
+  iam = {
+    "roles/cloudasset.owner" = [
+      "$iam_principals:org_admins"
+    ]
+  }
+}
+# tftest fixtures=fixtures/organization-custom-role.tf inventory=iam-authoritative.yaml e2e
+```
+
+The `iam_by_principals` variable uses [principals](https://cloud.google.com/iam/docs/principal-identifiers) as keys and is a convenient way to assign roles to humans following Google's best practices. The end result is readable code that also serves as documentation.
+
+```hcl
+module "project" {
+  source          = "./fabric/modules/project"
+  billing_account = var.billing_account_id
+  name            = "project"
+  parent          = var.folder_id
+  prefix          = var.prefix
+  context = {
+    iam_principals = {
+      org_admins = "group:${var.group_email}"
+    }
+  }
+  iam_by_principals = {
+    "group:${var.group_email}" = [
+      "roles/cloudasset.owner",
+      "roles/cloudsupport.techSupportEditor",
+      "roles/iam.securityReviewer",
+      "roles/logging.admin",
+    ]
+    "$iam_principals:org_admins" = [
+      "roles/owner"
+    ]
+  }
+}
+# tftest fixtures=fixtures/organization-custom-role.tf inventory=iam-group.yaml e2e
+```
+
+The `iam_bindings` variable behaves like a more verbose version of `iam`, and allows setting binding-level IAM conditions.
+
+### Conditional IAM by Principals
+
+The `iam_by_principals_conditional` variable allows defining IAM bindings keyed by principal, where each principal shares a common condition for multiple roles. This is useful for granting access with specific conditions (e.g., time-based or resource-based) to users or groups across different roles.
+
+```hcl
+module "project" {
+  source          = "./fabric/modules/project"
+  billing_account = var.billing_account_id
+  name            = "project"
+  parent          = var.folder_id
+  prefix          = var.prefix
+  services        = ["storage.googleapis.com"]
+  iam_by_principals_conditional = {
+    "user:one@example.com" = {
+      roles = ["roles/owner", "roles/viewer"]
+      condition = {
+        title       = "expires_after_2024_12_31"
+        description = "Expiring at midnight of 2024-12-31"
+        expression  = "request.time < timestamp(\"2025-01-01T00:00:00Z\")"
+      }
+    }
+  }
+}
+# tftest modules=1 resources=5 inventory=iam-bpc.yaml
+```
+
+```hcl
+module "project" {
+  source          = "./fabric/modules/project"
+  billing_account = var.billing_account_id
+  name            = "project"
+  parent          = var.folder_id
+  prefix          = var.prefix
+  services = [
+    "stackdriver.googleapis.com"
+  ]
+  context = {
+    condition_vars = {
+      custom_roles = {
+        my_role = google_organization_iam_custom_role.custom_role.id # or module.organization.custom_roles["my_role"].id
+      }
+    }
+    iam_principals = {
+      org_admins = "group:${var.group_email}"
+    }
+  }
+  iam_bindings = {
+    iam_admin_conditional = {
+      members = [
+        "group:${var.group_email}",
+        "$iam_principals:org_admins"
+      ]
+      role = "roles/resourcemanager.projectIamAdmin"
+      condition = {
+        title      = "delegated_custom_role"
+        expression = <<-END
+          api.getAttribute(
+            'iam.googleapis.com/modifiedGrantsByRole', []
+          ).hasOnly([
+            '$${custom_roles.my_role}'
+          ])
+        END
+      }
+    }
+  }
+}
+# tftest fixtures=fixtures/organization-custom-role.tf inventory=iam-bindings.yaml e2e
+```
+
+### Additive IAM
+
+Additive IAM is typically used where bindings for specific roles are controlled by different modules or in different Terraform stages. One common example is a host project managed by the networking team, and a project factory that manages service projects and needs to assign `roles/networkUser` on the host project.
+
+The `iam_bindings_additive` variable allows setting individual role/principal binding pairs. Support for IAM conditions is implemented like for `iam_bindings` above.
+
+```hcl
+module "project" {
+  source          = "./fabric/modules/project"
+  billing_account = var.billing_account_id
+  name            = "project"
+  parent          = var.folder_id
+  prefix          = var.prefix
+  services = [
+    "compute.googleapis.com"
+  ]
+  context = {
+    iam_principals = {
+      org_admins = "group:${var.group_email}"
+    }
+  }
+  iam_bindings_additive = {
+    group-owner = {
+      member = "group:${var.group_email}"
+      role   = "roles/owner"
+    }
+    org-admins-viewer = {
+      member = "$iam_principals:org_admins"
+      role   = "roles/viewer"
+    }
+  }
+}
+# tftest modules=1 resources=5 inventory=iam-bindings-additive.yaml e2e
+```
+
+### Service Agents
+
+By default, upon service activation, this module will perform the following actions:
+
+- **Create primary service agents:** For each service listed in the `var.services` variable, the module will trigger the creation of the corresponding primary service agent (if any).
+- **Grant agent-specific roles:** If a service agent has a predefined role associated with it, that role will be granted on project if its API matches any of the services in `var.services`.
+
+You can control these actions by adjusting the settings in the `var.service_agents_config` variable. To prevent the creation of specific service agents or the assignment of their default roles, modify the relevant fields within this variable.
+
+The `service_agents` output provides a convenient way to access information about all active service agents in the project. Note that this output only includes details for service agents that are currently active (i.e. their API is listed in `var.services`) within your project.
+
+> [!IMPORTANT]
+> You can only access a service agent's details through the `service_agents` output if its corresponding API is enabled through the `services` variable.
+
+The complete list of Google Cloud service agents, including their names, default roles, and associated APIs, is maintained in the  [service-agents.yaml](./service-agents.yaml) file.  This file is regularly updated to reflect the [official list of Google Cloud service agents](https://cloud.google.com/iam/docs/service-agents) using the [`build_service_agents`](../../tools/build_service_agents.py) script.
+
+#### Cloudservices Editor Role
+
+The `cloudservices` service agent is granted `roles/editor` by default, making it easy to accidentally remove this binding when managing the editor role authoritatively. In those cases, the module auto-injects the `cloudservices` service agent to preserve the binding. This behaviour is disabled when the `service_agents_config.grant_service_agent_editor` variable is set to `false`.
+
+#### Skipping Service Agent IAM Grants
+
+In some cases, you might want to prevent the module from automatically granting default roles to specific service agents (for example, if the service agent is created lazily by GCP and does not exist yet). You can do this by listing the agent names in `service_agents_config.skip_iam`:
+
+```hcl
+module "project" {
+  source          = "./fabric/modules/project"
+  billing_account = var.billing_account_id
+  name            = "project"
+  parent          = var.folder_id
+  prefix          = var.prefix
+  services = [
+    "container.googleapis.com",
+    "run.googleapis.com"
+  ]
+  service_agents_config = {
+    skip_iam = ["serverless-robot-prod"]
+  }
+}
+# tftest modules=1 resources=7 inventory=service-agents-skip.yaml
+```
+
+#### Service Agent Aliases
+
+Consider the code below:
+
+```hcl
+module "project" {
+  source          = "./fabric/modules/project"
+  billing_account = var.billing_account_id
+  name            = "project"
+  parent          = var.folder_id
+  prefix          = var.prefix
+  services = [
+    "artifactregistry.googleapis.com",
+    "container.googleapis.com",
+  ]
+}
+
+# tftest modules=1 resources=8 e2e
+```
+
+The `service_agents` output for this snippet would look similar to this:
+
+```tfvars
+service_agents = {
+  "artifactregistry" = {
+    "api" = "artifactregistry.googleapis.com"
+    "display_name" = "Artifact Registry Service Agent"
+    "email" = "service-0123456789@gcp-sa-artifactregistry.iam.gserviceaccount.com"
+    "iam_email" = "serviceAccount:service-0123456789@gcp-sa-artifactregistry.iam.gserviceaccount.com"
+    "is_primary" = true
+    "role" = "roles/artifactregistry.serviceAgent"
+  }
+  "cloudservices" = {
+    "api" = null
+    "display_name" = "Google APIs Service Agent"
+    "email" = "0123456789@cloudservices.gserviceaccount.com"
+    "iam_email" = "serviceAccount:0123456789@cloudservices.gserviceaccount.com"
+    "is_primary" = false
+    "role" = null
+  }
+  "cloudsvc" = {
+    "api" = null
+    "display_name" = "Google APIs Service Agent"
+    "email" = "0123456789@cloudservices.gserviceaccount.com"
+    "iam_email" = "serviceAccount:0123456789@cloudservices.gserviceaccount.com"
+    "is_primary" = false
+    "role" = null
+  }
+  "container" = {
+    "api" = "container.googleapis.com"
+    "display_name" = "Kubernetes Engine Service Agent"
+    "email" = "service-0123456789@container-engine-robot.iam.gserviceaccount.com"
+    "iam_email" = "serviceAccount:service-0123456789@container-engine-robot.iam.gserviceaccount.com"
+    "is_primary" = true
+    "role" = "roles/container.serviceAgent"
+  }
+  "container-engine" = {
+    "api" = "container.googleapis.com"
+    "display_name" = "Kubernetes Engine Service Agent"
+    "email" = "service-0123456789@container-engine-robot.iam.gserviceaccount.com"
+    "iam_email" = "serviceAccount:service-0123456789@container-engine-robot.iam.gserviceaccount.com"
+    "is_primary" = true
+    "role" = "roles/container.serviceAgent"
+  }
+  "container-engine-robot" = {
+    "api" = "container.googleapis.com"
+    "display_name" = "Kubernetes Engine Service Agent"
+    "email" = "service-0123456789@container-engine-robot.iam.gserviceaccount.com"
+    "iam_email" = "serviceAccount:service-0123456789@container-engine-robot.iam.gserviceaccount.com"
+    "is_primary" = true
+    "role" = "roles/container.serviceAgent"
+  }
+  "gkenode" = {
+    "api" = "container.googleapis.com"
+    "display_name" = "Kubernetes Engine Node Service Agent"
+    "email" = "service-0123456789@gcp-sa-gkenode.iam.gserviceaccount.com"
+    "iam_email" = "serviceAccount:service-0123456789@gcp-sa-gkenode.iam.gserviceaccount.com"
+    "is_primary" = false
+    "role" = "roles/container.defaultNodeServiceAgent"
+  }
+}
+```
+
+Notice that some service agents appear under multiple names. For example, the Kubernetes Engine Service Agent shows up as `container-engine-robot` but also has the `container` and `container-engine` aliases. These aliases exist only in Fabric for convenience and backwards compatibility. Refer to the table below for the list of aliases.
+
+| Canonical Name                 | Aliases                    |
+|--------------------------------|----------------------------|
+| bigquery-encryption            | bq                         |
+| cloudservices                  | cloudsvc                   |
+| compute-system                 | compute                    |
+| cloudcomposer-accounts         | composer                   |
+| container-engine-robot         | container container-engine |
+| dataflow-service-producer-prod | dataflow                   |
+| dataproc-accounts              | dataproc                   |
+| gae-api-prod                   | gae-flex                   |
+| gcf-admin-robot                | cloudfunctions gcf         |
+| gkehub                         | fleet                      |
+| gs-project-accounts            | storage                    |
+| monitoring-notification        | monitoring                 |
+| serverless-robot-prod          | cloudrun run               |
+
+## Shared VPC
+
+The module allows managing Shared VPC status for both hosts and service projects, and control of IAM bindings for service agents.
+
+Project service association for VPC host projects can be
+
+- authoritatively managed in the host project by enabling Shared VPC and specifying the set of service projects, or
+- additively managed in service projects by enabling Shared VPC in the host project and then "attaching" each service project independently
+
+IAM bindings in the host project for API service identities can be managed from service projects in two different ways:
+
+- via the `service_agent_iam` attribute, by specifying the set of roles and service agents
+- via the `service_iam_grants` attribute that leverages a [fixed list of roles for each service](./sharedvpc-agent-iam.yaml), by specifying a list of services
+- via the `service_agent_subnet_iam` attribute, by providing a map of `"<region>/<subnet_name>"` -> `[ "<service_identity>", (...)]`, to grant `compute.networkUser` role on subnet level to service identity
+
+While the first method is more explicit and readable, the second method is simpler and less error prone as all appropriate roles are predefined for all required service agents (e.g. compute and cloud services). You can mix and match as the two sets of bindings are then internally combined.
+
+This example shows a simple configuration with a host project, and a service project independently attached with granular IAM bindings for service identities. The full list of service agent names can be found in [service-agents.yaml](./service-agents.yaml)
+
+```hcl
+module "host-project" {
+  source          = "./fabric/modules/project"
+  billing_account = var.billing_account_id
+  name            = "host"
+  parent          = var.folder_id
+  prefix          = var.prefix
+  shared_vpc_host_config = {
+    enabled = true
+  }
+}
+
+module "service-project" {
+  source          = "./fabric/modules/project"
+  billing_account = var.billing_account_id
+  name            = "service"
+  parent          = var.folder_id
+  prefix          = var.prefix
+  services = [
+    "container.googleapis.com",
+    "run.googleapis.com"
+  ]
+  shared_vpc_service_config = {
+    host_project = module.host-project.project_id
+    service_agent_iam = {
+      "roles/compute.networkUser" = [
+        "$service_agents:cloudservices", "$service_agents:container-engine"
+      ]
+      "roles/vpcaccess.user" = [
+        "$service_agents:cloudrun"
+      ]
+      "roles/container.hostServiceAgentUser" = [
+        "$service_agents:container-engine"
+      ]
+    }
+  }
+}
+# tftest modules=2 resources=15 inventory=shared-vpc.yaml e2e
+```
+
+This example shows a similar configuration, with the simpler way of defining IAM bindings for service identities. The list of services passed to `service_iam_grants` uses the same module's outputs to establish a dependency, as service agents are typically only available after service (API) activation.
+
+```hcl
+module "host-project" {
+  source          = "./fabric/modules/project"
+  billing_account = var.billing_account_id
+  name            = "host"
+  parent          = var.folder_id
+  prefix          = var.prefix
+  shared_vpc_host_config = {
+    enabled = true
+  }
+}
+
+module "service-project" {
+  source          = "./fabric/modules/project"
+  billing_account = var.billing_account_id
+  name            = "service"
+  parent          = var.folder_id
+  prefix          = var.prefix
+  services = [
+    "container.googleapis.com",
+  ]
+  shared_vpc_service_config = {
+    host_project = module.host-project.project_id
+    # reuse the list of services from the module's outputs
+    service_iam_grants = [
+      for v in module.service-project.services :
+      "$service_agents:${v}"
+    ]
+  }
+}
+# tftest modules=2 resources=12 inventory=shared-vpc-auto-grants.yaml e2e
+```
+
+The `compute.networkUser` role for identities other than API services (e.g. users, groups or service accounts) can be managed via the `network_users` attribute, by specifying the list of identities. Avoid using dynamically generated lists, as this attribute is involved in a `for_each` loop and may result in Terraform errors.
+
+Note that this configuration grants the role at project level which results in the identities being able to configure resources on all the VPCs and subnets belonging to the host project. The most reliable way to restrict which subnets can be used on the newly created project is via the `compute.restrictSharedVpcSubnetworks` organization policy. For more information on the Org Policy configuration check the corresponding [Organization Policy section](#organization-policies). The following example details this configuration.
+
+```hcl
+module "host-project" {
+  source          = "./fabric/modules/project"
+  billing_account = var.billing_account_id
+  name            = "host"
+  parent          = var.folder_id
+  prefix          = var.prefix
+  shared_vpc_host_config = {
+    enabled = true
+  }
+}
+
+module "service-project" {
+  source          = "./fabric/modules/project"
+  billing_account = var.billing_account_id
+  name            = "service"
+  parent          = var.folder_id
+  prefix          = var.prefix
+  org_policies = {
+    "compute.restrictSharedVpcSubnetworks" = {
+      rules = [{
+        allow = {
+          values = ["projects/host/regions/europe-west1/subnetworks/prod-default-ew1"]
+        }
+      }]
+    }
+  }
+  services = [
+    "container.googleapis.com",
+  ]
+  shared_vpc_service_config = {
+    host_project  = module.host-project.project_id
+    network_users = ["group:${var.group_email}"]
+    # reuse the list of services from the module's outputs
+    service_iam_grants = [
+      for v in module.service-project.services :
+      "$service_agents:${v}"
+    ]
+  }
+}
+# tftest modules=2 resources=14 inventory=shared-vpc-host-project-iam.yaml e2e
+```
+
+In specific cases it might make sense to selectively grant the `compute.networkUser` role for service identities at the subnet level, and while that is best done via org policies it's also supported by this module. In this example, Compute service identity and `team-1@example.com` Google Group will be granted compute.networkUser in the `gce` subnet defined in `europe-west1` region in the `host` project (not included in the example) via the `service_agent_subnet_iam` and `network_subnet_users` attributes.
+
+```hcl
+module "host-project" {
+  source          = "./fabric/modules/project"
+  billing_account = var.billing_account_id
+  name            = "host"
+  parent          = var.folder_id
+  prefix          = var.prefix
+  shared_vpc_host_config = {
+    enabled = true
+  }
+}
+
+module "service-project" {
+  source          = "./fabric/modules/project"
+  billing_account = var.billing_account_id
+  name            = "service"
+  parent          = var.folder_id
+  prefix          = var.prefix
+  services = [
+    "compute.googleapis.com",
+  ]
+  shared_vpc_service_config = {
+    host_project = module.host-project.project_id
+    service_agent_subnet_iam = {
+      "europe-west1/gce" = ["compute"]
+    }
+    network_subnet_users = {
+      "europe-west1/gce" = ["group:team-1@example.com"]
+    }
+  }
+}
+# tftest modules=2 resources=8 inventory=shared-vpc-subnet-grants.yaml
+```
+
+## Organization Policies
+
+To manage organization policies, the `orgpolicy.googleapis.com` service should be enabled in the quota project.
+
+```hcl
+module "project" {
+  source          = "./fabric/modules/project"
+  billing_account = var.billing_account_id
+  name            = "project"
+  parent          = var.folder_id
+  prefix          = var.prefix
+  org_policies = {
+    "compute.disableGuestAttributesAccess" = {
+      rules = [{ enforce = true }]
+    }
+    "compute.skipDefaultNetworkCreation" = {
+      rules = [{ enforce = true }]
+    }
+    "iam.disableServiceAccountKeyCreation" = {
+      rules = [{ enforce = true }]
+    }
+    "iam.disableServiceAccountKeyUpload" = {
+      rules = [
+        {
+          condition = {
+            expression  = "resource.matchTagId('tagKeys/1234', 'tagValues/1234')"
+            title       = "condition"
+            description = "test condition"
+            location    = "somewhere"
+          }
+          enforce = true
+        },
+        {
+          enforce = false
+        }
+      ]
+    }
+    "iam.allowedPolicyMemberDomains" = {
+      rules = [{
+        allow = {
+          values = ["C0xxxxxxx", "C0yyyyyyy", "C0zzzzzzz"]
+        }
+      }]
+    }
+    "compute.trustedImageProjects" = {
+      rules = [{
+        allow = {
+          values = ["projects/my-project"]
+        }
+      }]
+    }
+    "compute.vmExternalIpAccess" = {
+      rules = [{ deny = { all = true } }]
+    }
+    "essentialcontacts.managed.allowedContactDomains" = {
+      rules = [
+        {
+          enforce = true
+          parameters = jsonencode({
+            allowedDomains = ["@example.com", "@secondary.example.com"]
+          })
+        }
+      ]
+    }
+  }
+}
+# tftest modules=1 resources=9 inventory=org-policies.yaml e2e
+```
+
+### Dry-Run Mode
+
+To enable dry-run mode, add the `dry_run:` prefix to the constraint name in your Terraform configuration:
+
+```hcl
+module "project" {
+  source = "./fabric/modules/project"
+  name   = "project"
+  parent = var.folder_id
+  org_policies = {
+    "gcp.restrictTLSVersion" = {
+      rules = [{ deny = { values = ["TLS_VERSION_1"] } }]
+    }
+    "dry_run:gcp.restrictTLSVersion" = {
+      rules = [{ deny = { values = ["TLS_VERSION_1", "TLS_VERSION_1_1"] } }]
+    }
+  }
+}
+# tftest modules=1 resources=2 inventory=org-policies-dry-run.yaml
+```
+
+### Organization Policy Factory
+
+Organization policies can be loaded from a directory containing YAML files where each file defines one or more constraints. The structure of the YAML files is exactly the same as the `org_policies` variable.
+
+Note that constraints defined via `org_policies` take precedence over those in `org_policies_data_path`. In other words, if you specify the same constraint in a YAML file *and* in the `org_policies` variable, the latter will take priority.
+
+The example below deploys a few organization policies split between two YAML files.
+
+```hcl
+module "project" {
+  source          = "./fabric/modules/project"
+  billing_account = var.billing_account_id
+  name            = "project"
+  parent          = var.folder_id
+  prefix          = var.prefix
+  factories_config = {
+    org_policies = "configs/org-policies/"
+  }
+  context = {
+    condition_vars = {
+      tags = {
+        my_conditional_tag = "tagKeys/1234"
+      }
+      domains = {
+        secondary = "@secondary.example.com"
+      }
+      customer_ids = {
+        extra = "C0zzzzzzz"
+      }
+    }
+  }
+}
+# tftest modules=1 resources=9 files=boolean,list inventory=org-policies.yaml e2e
+```
+
+```yaml
+compute.disableGuestAttributesAccess:
+  rules:
+  - enforce: true
+compute.skipDefaultNetworkCreation:
+  rules:
+  - enforce: true
+iam.disableServiceAccountKeyCreation:
+  rules:
+  - enforce: true
+iam.disableServiceAccountKeyUpload:
+  rules:
+  - condition:
+      description: test condition
+      expression: resource.matchTagId('${tags.my_conditional_tag}', 'tagValues/1234')
+      location: somewhere
+      title: condition
+    enforce: true
+  - enforce: false
+essentialcontacts.managed.allowedContactDomains:
+  rules:
+  - enforce: true
+    parameters: |
+      {"allowedDomains": ["@example.com", "${domains.secondary}"]}
+# tftest-file id=boolean path=configs/org-policies/boolean.yaml schema=org-policies.schema.json
+```
+
+```yaml
+compute.trustedImageProjects:
+  rules:
+  - allow:
+      values:
+      - projects/my-project
+compute.vmExternalIpAccess:
+  rules:
+  - deny:
+      all: true
+iam.allowedPolicyMemberDomains:
+  rules:
+  - allow:
+      values:
+      - C0xxxxxxx
+      - C0yyyyyyy
+      - ${customer_ids.extra}
+
+# tftest-file id=list path=configs/org-policies/list.yaml schema=org-policies.schema.json
+```
+
+## Log Sinks
+
+```hcl
+module "gcs" {
+  source        = "./fabric/modules/gcs"
+  project_id    = var.project_id
+  name          = "gcs_sink"
+  location      = "EU"
+  prefix        = var.prefix
+  force_destroy = true
+}
+
+module "dataset" {
+  source     = "./fabric/modules/bigquery-dataset"
+  project_id = var.project_id
+  id         = "bq_sink"
+  options    = { delete_contents_on_destroy = true }
+}
+
+module "pubsub" {
+  source     = "./fabric/modules/pubsub"
+  project_id = var.project_id
+  name       = "pubsub_sink"
+}
+
+module "bucket" {
+  source = "./fabric/modules/logging-bucket"
+  parent = var.project_id
+  name   = "${var.prefix}-bucket"
+}
+
+module "destination-project" {
+  source          = "./fabric/modules/project"
+  name            = "dest-prj"
+  billing_account = var.billing_account_id
+  parent          = var.folder_id
+  prefix          = var.prefix
+  services = [
+    "logging.googleapis.com"
+  ]
+}
+
+module "project-host" {
+  source          = "./fabric/modules/project"
+  name            = "project"
+  billing_account = var.billing_account_id
+  parent          = var.folder_id
+  prefix          = var.prefix
+  services = [
+    "logging.googleapis.com"
+  ]
+  logging_sinks = {
+    warnings = {
+      destination = module.gcs.id
+      filter      = "severity=WARNING"
+      type        = "storage"
+    }
+    info = {
+      destination = module.dataset.id
+      filter      = "severity=INFO"
+      type        = "bigquery"
+    }
+    notice = {
+      destination = module.pubsub.id
+      filter      = "severity=NOTICE"
+      type        = "pubsub"
+    }
+    debug = {
+      destination = module.bucket.id
+      filter      = "severity=DEBUG"
+      exclusions = {
+        no-compute = "logName:compute"
+      }
+      type = "logging"
+    }
+    alert = {
+      destination = module.destination-project.id
+      filter      = "severity=ALERT"
+      type        = "project"
+    }
+  }
+  logging_exclusions = {
+    no-gce-instances = "resource.type=gce_instance"
+  }
+}
+# tftest inventory=logging.yaml e2e
+```
+
+## Data Access Logs
+
+Activation of data access logs can be controlled via the `logging_data_access` variable. If the `iam_bindings_authoritative` variable is used to set a resource-level IAM policy, the data access log configuration will also be authoritative as part of the policy.
+
+This example shows how to set a non-authoritative access log configuration:
+
+```hcl
+module "project" {
+  source          = "./fabric/modules/project"
+  name            = "project"
+  billing_account = var.billing_account_id
+  parent          = var.folder_id
+  prefix          = var.prefix
+  logging_data_access = {
+    allServices = {
+      ADMIN_READ = {
+        exempted_members = ["group:${var.group_email}"]
+      }
+    }
+    "storage.googleapis.com" = {
+      DATA_READ  = {}
+      DATA_WRITE = {}
+    }
+  }
+}
+# tftest modules=1 resources=3 inventory=logging-data-access.yaml e2e
+```
+
+## Log Scopes
+
+```hcl
+module "bucket" {
+  source = "./fabric/modules/logging-bucket"
+  parent = "other-project"
+  name   = "mybucket"
+  views = {
+    view1 = {
+      filter = "LOG_ID(\"stdout\")"
+      iam = {
+        "roles/logging.viewAccessor" = ["user:user@example.com"]
+      }
+    }
+  }
+}
+
+module "project" {
+  source          = "./fabric/modules/project"
+  billing_account = var.billing_account_id
+  prefix          = var.prefix
+  parent          = var.folder_id
+  name            = "logscope"
+  services = [
+    "logging.googleapis.com",
+  ]
+  log_scopes = {
+    scope = {
+      description = "My log scope"
+      resource_names = [
+        "project1",
+        "project2",
+        module.bucket.view_ids["_AllLogs"],
+      ]
+    }
+  }
+}
+# tftest inventory=log-scopes.yaml
+```
+
+## Cloud KMS Encryption Keys
+
+This module streamlines the process of granting KMS encryption/decryption permissions. By assigning the `roles/cloudkms.cryptoKeyEncrypterDecrypter` role, it ensures that all required service agents for a service (such as Cloud Composer, which depends on multiple agents) have the necessary access to the keys.
+
+```hcl
+module "project" {
+  source          = "./fabric/modules/project"
+  billing_account = var.billing_account_id
+  name            = "project"
+  prefix          = var.prefix
+  parent          = var.folder_id
+  services = [
+    "compute.googleapis.com",
+    "storage.googleapis.com"
+  ]
+  service_encryption_key_ids = {
+    "compute.googleapis.com" = [module.kms.keys.key-regional.id]
+    "storage.googleapis.com" = [module.kms.keys.key-regional.id]
+  }
+}
+
+module "kms" {
+  source     = "./fabric/modules/kms"
+  project_id = var.project_id # KMS is in different project to prevent dependency cycle
+  keyring = {
+    location = var.region
+    name     = "${var.prefix}-keyring"
+  }
+  keys = {
+    "key-regional" = {
+    }
+  }
+  iam = {
+    "roles/cloudkms.cryptoKeyEncrypterDecrypter" = [
+      module.project.service_agents.compute.iam_email,
+      module.project.service_agents.storage.iam_email,
+    ]
+  }
+}
+
+# tftest modules=2 resources=10 e2e
+```
+
+Services like Composer, Dataflow, and Datafusion require service agent dependencies from other services to function properly with CMEK encryption. These dependencies are automatically resolved based on a predefined mapping that follows the latest service requirements.
+
+In situations where the predefined mapping doesn't cover your specific use case (such as using older service versions or custom configurations), you can extend this mapping by explicitly declaring additional dependencies.
+
+The `service_encryption_key_ids` parameter accepts keys declared using either:
+
+- [Service Agents](#service-agents) API names (e.g., composer.googleapis.com)
+- [Service Agent aliases](#service-agent-aliases) (e.g., container-engine-robot)
+
+The following examples demonstrate how to configure CMEK encryption for different Composer versions:
+
+For composer v3:
+
+```
+module "project" {
+  source  =  "./fabric/modules/project"
+  billing_account = var.billing_account_id
+  name            = "project"
+  prefix          = var.prefix
+  parent          = var.folder_id
+  services = [
+    "composer.googleapis.com",
+  ]
+  service_encryption_key_ids = {
+    "composer.googleapis.com" = [module.kms.keys.key-regional.id]
+  }
+}
+```
+
+For composer v2:
+
+```
+module "project" {
+  source  =  "./fabric/modules/project"
+  billing_account = var.billing_account_id
+  name            = "project"
+  prefix          = var.prefix
+  parent          = var.folder_id
+  services = [
+    "composer.googleapis.com",
+  ]
+  service_encryption_key_ids = {
+    "composer.googleapis.com"         = [module.kms.keys.key-regional.id]
+    # Composer v2 dependencies
+    "artifactregistry.googleapis.com" = [module.kms.keys.key-regional.id]
+    "container-engine-robot"          = [module.kms.keys.key-regional.id]
+    "container.googleapis.com"        = [module.kms.keys.key-regional.id]
+    "pubsub.googleapis.com"           = [module.kms.keys.key-regional.id]
+  }
+}
+```
+
+## Custom Security Health Analytics Modules
+
+[Security Health Analytics custom modules](https://cloud.google.com/security-command-center/docs/custom-modules-sha-create) can be defined via the `scc_sha_custom_modules` variable:
+
+```hcl
+module "project" {
+  source          = "./fabric/modules/project"
+  billing_account = var.billing_account_id
+  name            = "project"
+  prefix          = var.prefix
+  parent          = var.folder_id
+  scc_sha_custom_modules = {
+    cloudkmKeyRotationPeriod = {
+      description    = "The rotation period of the identified cryptokey resource exceeds 30 days."
+      recommendation = "Set the rotation period to at most 30 days."
+      severity       = "MEDIUM"
+      predicate = {
+        expression = "resource.rotationPeriod > duration(\"2592000s\")"
+      }
+      resource_selector = {
+        resource_types = ["cloudkms.googleapis.com/CryptoKey"]
+      }
+    }
+  }
+}
+# tftest modules=1 resources=2 inventory=custom-modules-sha.yaml
+```
+
+### Custom Security Health Analytics Modules Factory
+
+Custom modules can also be specified via a factory. Each file is mapped to a custom module, where the module name defaults to the file name.
+
+Custom modules defined via the variable are merged with those coming from the factory, and override them in case of duplicate names.
+
+```hcl
+module "project" {
+  source          = "./fabric/modules/project"
+  billing_account = var.billing_account_id
+  name            = "project"
+  prefix          = var.prefix
+  parent          = var.folder_id
+  factories_config = {
+    scc_sha_custom_modules = "data/scc_sha_custom_modules"
+  }
+}
+# tftest modules=1 resources=2 files=custom-module-sha-1 inventory=custom-modules-sha.yaml
+```
+
+```yaml
+# tftest-file id=custom-module-sha-1 path=data/scc_sha_custom_modules/cloudkmKeyRotationPeriod.yaml schema=scc-sha-custom-modules.schema.json
+cloudkmKeyRotationPeriod:
+  description: "The rotation period of the identified cryptokey resource exceeds 30 days."
+  recommendation: "Set the rotation period to at most 30 days."
+  severity: "MEDIUM"
+  predicate:
+    expression: "resource.rotationPeriod > duration(\"2592000s\")"
+  resource_selector:
+    resource_types:
+    - "cloudkms.googleapis.com/CryptoKey"
+```
+
+## Security Command Center Mute Configs
+
+[Security Command Center Mute Configs](https://cloud.google.com/security-command-center/docs/how-to-mute-findings) can be defined via the `scc_mute_configs` variable:
+
+```hcl
+module "project" {
+  source          = "./fabric/modules/project"
+  billing_account = var.billing_account_id
+  name            = "project"
+  prefix          = var.prefix
+  parent          = var.folder_id
+  scc_mute_configs = {
+    muteHighSeverity = {
+      description = "Mute high severity findings"
+      filter      = "severity=\"HIGH\""
+      type        = "DYNAMIC"
+    }
+  }
+}
+# tftest modules=1 inventory=scc-mute-configs.yaml
+```
+
+### Security Command Center Mute Configs Factory
+
+Mute configs can also be specified via a factory. Each file is mapped to a mute config, where the config ID defaults to the file name.
+
+Mute configs defined via the variable are merged with those coming from the factory, and override them in case of duplicate names.
+
+```hcl
+module "project" {
+  source          = "./fabric/modules/project"
+  billing_account = var.billing_account_id
+  name            = "project"
+  prefix          = var.prefix
+  parent          = var.folder_id
+  factories_config = {
+    scc_mute_configs = "data/scc_mute_configs"
+  }
+}
+# tftest modules=1 files=mute-config-1 inventory=scc-mute-configs.yaml
+```
+
+```yaml
+# tftest-file id=mute-config-1 path=data/scc_mute_configs/muteHighSeverity.yaml schema=scc-mute-config.schema.json
+muteHighSeverity:
+  description: "Mute high severity findings"
+  filter: "severity=\"HIGH\""
+  type: "DYNAMIC"
+```
+
+## Tags
+
+Refer to the [Creating and managing tags](https://cloud.google.com/resource-manager/docs/tags/tags-creating-and-managing) documentation for details on usage.
+
+```hcl
+module "project" {
+  source          = "./fabric/modules/project"
+  billing_account = var.billing_account_id
+  name            = "project"
+  prefix          = var.prefix
+  parent          = var.folder_id
+  services = [
+    "compute.googleapis.com",
+  ]
+  tags = {
+    cost_center = {
+      description          = "Cost center code."
+      allowed_values_regex = "^cc-[0-9]{3}$"
+    }
+    environment = {
+      description = "Environment specification."
+      iam = {
+        "roles/resourcemanager.tagAdmin" = ["group:${var.group_email}"]
+      }
+      iam_bindings = {
+        viewer = {
+          role    = "roles/resourcemanager.tagViewer"
+          members = ["group:gcp-support@example.org"]
+        }
+      }
+      iam_bindings_additive = {
+        user_app1 = {
+          role   = "roles/resourcemanager.tagUser"
+          member = "group:app1-team@example.org"
+        }
+      }
+      values = {
+        dev = {
+          iam_bindings_additive = {
+            user_app2 = {
+              role   = "roles/resourcemanager.tagUser"
+              member = "group:app2-team@example.org"
+            }
+          }
+        }
+        prod = {
+          description = "Environment: production."
+          iam = {
+            "roles/resourcemanager.tagViewer" = ["group:app1-team@example.org"]
+          }
+          iam_bindings = {
+            admin = {
+              role    = "roles/resourcemanager.tagAdmin"
+              members = ["group:gcp-support@example.org"]
+              condition = {
+                title      = "gcp_support"
+                expression = <<-END
+                  request.time.getHours("Europe/Berlin") <= 9 &&
+                  request.time.getHours("Europe/Berlin") >= 17
+                END
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  tag_bindings = {
+    env-prod = module.project.tag_values["environment/prod"].id
+  }
+}
+# tftest modules=1 resources=14 inventory=tags.yaml
+```
+
+You can also define network tags through the dedicated `network_tags` variable:
+
+```hcl
+module "project" {
+  source          = "./fabric/modules/project"
+  billing_account = var.billing_account_id
+  name            = "project"
+  prefix          = var.prefix
+  parent          = var.folder_id
+  services = [
+    "compute.googleapis.com"
+  ]
+  network_tags = {
+    net-environment = {
+      description = "This is a network tag."
+      network     = "${var.project_id}/${var.vpc.name}"
+      iam = {
+        "roles/resourcemanager.tagAdmin" = ["group:${var.group_email}"]
+      }
+      values = {
+        dev = {}
+        prod = {
+          description = "Environment: production."
+          iam = {
+            "roles/resourcemanager.tagUser" = ["group:${var.group_email}"]
+          }
+        }
+      }
+    }
+  }
+}
+# tftest modules=1 resources=8 inventory=tags-network.yaml
+```
+
+If you want to create a Tag Key with `GCE_FIREWALL` purpose that is valid for the whole organization (allowing the binding on any network within it), use `"ALL"` as the network value:
+
+```hcl
+module "project" {
+  source          = "./fabric/modules/project"
+  billing_account = var.billing_account_id
+  name            = "project"
+  prefix          = var.prefix
+  parent          = var.folder_id
+  services = [
+    "compute.googleapis.com"
+  ]
+  network_tags = {
+    net-environment = {
+      description = "This is a network tag."
+      network     = "ALL"
+      iam = {
+        "roles/resourcemanager.tagAdmin" = ["group:${var.group_email}"]
+      }
+      values = {
+        dev = {}
+        prod = {
+          description = "Environment: production."
+          iam = {
+            "roles/resourcemanager.tagUser" = ["group:${var.group_email}"]
+          }
+        }
+      }
+    }
+  }
+}
+# tftest modules=1 resources=8 inventory=tags-network-all.yaml
+```
+
+### Tags Factory
+
+Tags can also be specified via a factory in a similar way to organization policies and policy constraints. Each file is mapped to tag key, where
+
+- the key name defaults to the file name but can be overridden via a `name` attribute in the yaml
+- The structure of the YAML file allows defining the `description`, `iam` bindings, and a map of `values` for the tag key, including their own descriptions and IAM.
+- Tags defined via the `tags` and `network_tags` variables are merged with those from the factory, and will override factory definitions in case of duplicate names.
+
+The example below deploys a `workloads` tag key and its values from a YAML file.
+
+```hcl
+module "project" {
+  source          = "./fabric/modules/project"
+  billing_account = var.billing_account_id
+  name            = "project"
+  prefix          = var.prefix
+  parent          = var.folder_id
+  context = {
+    tag_keys = {
+      service = "tagKeys/1234567890"
+    }
+    tag_values = {
+      "service/nginx" = "tagValues/1234567890"
+    }
+  }
+  factories_config = {
+    tags = "data/tags"
+  }
+}
+# tftest modules=1 resources=8 files=0,1 inventory=tags-factory.yaml
+```
+
+```yaml
+# tftest-file id=0 path=data/tags/workload.yaml
+
+description: "Tag for workload classifications."
+iam:
+  "roles/resourcemanager.tagViewer":
+    - "group:devops@example.com"
+values:
+  frontend:
+    description: "Frontend workload."
+  backend:
+    description: "Backend workload."
+```
+
+```yaml
+# tftest-file id=1 path=data/tags/service.yaml
+
+id: $tag_keys:service
+iam:
+  "roles/resourcemanager.tagViewer":
+    - "group:devops@example.com"
+values:
+  apache:
+    description: "Apache."
+  nginx:
+    id: $tag_values:service/nginx
+    iam:
+      "roles/resourcemanager.tagUser":
+        - "group:devops@example.com"
+```
+
+## Tag Bindings
+
+You can bind secure tags to a project with the `tag_bindings` attribute
+
+```hcl
+module "org" {
+  source          = "./fabric/modules/organization"
+  organization_id = var.organization_id
+  tags = {
+    environment = {
+      description = "Environment specification."
+      values = {
+        dev  = {}
+        prod = {}
+      }
+    }
+  }
+}
+
+module "project" {
+  source = "./fabric/modules/project"
+  name   = "project"
+  parent = var.folder_id
+  tag_bindings = {
+    env-prod = module.org.tag_values["environment/prod"].id
+    foo      = "tagValues/12345678"
+  }
+}
+# tftest modules=2 resources=6
+```
+
+## Project-scoped Tags
+
+To create project-scoped secure tags, use the `tags` and `network_tags` attributes. Tags can also be created via a factory, refer to the [organization module documentation](../organization/README.md#tags-factory) for an example.
+
+```hcl
+module "project" {
+  source = "./fabric/modules/project"
+  name   = "project"
+  parent = var.folder_id
+  tags = {
+    mytag1 = {}
+    mytag2 = {
+      iam = {
+        "roles/resourcemanager.tagAdmin" = ["user:admin@example.com"]
+      }
+      values = {
+        myvalue1 = {}
+        myvalue2 = {
+          iam = {
+            "roles/resourcemanager.tagUser" = ["user:user@example.com"]
+          }
+        }
+      }
+    }
+  }
+  network_tags = {
+    my_net_tag = {
+      network = "${var.project_id}/${var.vpc.name}"
+    }
+  }
+}
+# tftest modules=1 resources=8
+```
+
+## Custom Roles
+
+Custom roles can be defined via the `custom_roles` variable, and referenced via the `custom_role_id` output (this also provides explicit dependency on the custom role):
+
+```hcl
+module "project" {
+  source = "./fabric/modules/project"
+  name   = "project"
+  custom_roles = {
+    "myRole" = {
+      title       = "My custom role"
+      description = "Allows listing compute instances."
+      permissions = [
+        "compute.instances.list",
+      ]
+    }
+  }
+  context = {
+    condition_vars = {
+      custom_roles = {
+        my_role = "organizations/1234567890/roles/myRole"
+      }
+    }
+  }
+  iam = {
+    (module.project.custom_role_id.myRole) = ["group:${var.group_email}"]
+  }
+  iam_bindings = {
+    iam_admin_conditional = {
+      members = [
+        "group:${var.group_email}",
+        "$iam_principals:org_admins"
+      ]
+      role = "roles/resourcemanager.projectIamAdmin"
+      condition = {
+        title      = "delegated_custom_role"
+        expression = <<-END
+          api.getAttribute(
+            'iam.googleapis.com/modifiedGrantsByRole', []
+          ).hasOnly([
+            '$${custom_roles.my_role}'
+          ])
+        END
+      }
+    }
+  }
+}
+# tftest inventory=custom-role-iam.yaml
+```
+
+### Custom Roles Factory
+
+Custom roles can also be specified via a factory in a similar way to organization policies and policy constraints. Each file is mapped to a custom role, where
+
+- the role name defaults to the file name but can be overridden via a `name` attribute in the yaml
+- role permissions are defined in an `includedPermissions` map
+- role title, description and launch stage can optionally be set via the `title`, `description` and `stage` attributes
+
+Custom roles defined via the variable are merged with those coming from the factory, and override them in case of duplicate names.
+
+```hcl
+module "project" {
+  source = "./fabric/modules/project"
+  name   = "project"
+  factories_config = {
+    custom_roles = "data/custom_roles"
+  }
+}
+# tftest modules=1 resources=3 files=custom-role-1,custom-role-2
+```
+
+```yaml
+includedPermissions:
+ - compute.globalOperations.get
+
+# tftest-file id=custom-role-1 path=data/custom_roles/test_1.yaml schema=custom-role.schema.json
+```
+
+```yaml
+name: projectViewer
+title: Project viewer
+description: Allows viewing project resources.
+stage: GA
+includedPermissions:
+  - resourcemanager.projects.get
+  - resourcemanager.projects.getIamPolicy
+  - resourcemanager.projects.list
+
+# tftest-file id=custom-role-2 path=data/custom_roles/test_2.yaml schema=custom-role.schema.json
+```
+
+## KMS Autokeys
+
+For KMS Autokey to be used the [project needs to be enabled](https://docs.cloud.google.com/kms/docs/enable-autokey) and the principal running Terraform needs to have the `roles/cloudkms.autokeyUser` on the Autokey project.
+
+```hcl
+module "project" {
+  source          = "./fabric/modules/project"
+  name            = "project"
+  billing_account = var.billing_account_id
+  parent          = var.folder_id
+  prefix          = var.prefix
+  services = [
+    "cloudkms.googleapis.com"
+  ]
+  kms_autokeys = {
+    compute-disk-ew8 = {
+      location               = "europe-west8"
+      resource_type_selector = "compute.googleapis.com/Disk"
+    }
+  }
+}
+# tftest modules=1 resources=5
+```
+
+## Quotas
+
+Project and regional quotas can be managed via the `quotas` variable. Keep in mind, that metrics returned by `gcloud compute regions describe` do not match `quota_id`s. To get a list of quotas in the project use the API call, for example to get quotas for `compute.googleapis.com` use:
+
+```bash
+curl -X GET \
+  -H "Authorization: Bearer $(gcloud auth print-access-token)" \
+  -H "X-Goog-User-Project: ${PROJECT_ID}" \
+  "https://cloudquotas.googleapis.com/v1/projects/${PROJECT_ID}/locations/global/services/compute.googleapis.com/quotaInfos?pageSize=1000" \
+  | grep quotaId
+```
+
+```hcl
+module "project" {
+  source          = "./fabric/modules/project"
+  name            = "project"
+  billing_account = var.billing_account_id
+  parent          = var.folder_id
+  prefix          = var.prefix
+  quotas = {
+    cpus-ew8 = {
+      service         = "compute.googleapis.com"
+      quota_id        = "CPUS-per-project-region"
+      contact_email   = "user@example.com"
+      preferred_value = 751
+      dimensions = {
+        region = "europe-west8"
+      }
+    }
+  }
+  services = [
+    "cloudquotas.googleapis.com",
+    "compute.googleapis.com"
+  ]
+}
+# tftest modules=1 resources=5 inventory=quotas.yaml
+```
+
+## Quotas factory
+
+Quotas can be also specified via a factory in a similar way to organization policies, policy constraints and custom roles by pointing to a directory containing YAML files where each file defines one or more quotas. The structure of the YAML files is exactly the same as the `quotas` variable.
+
+```hcl
+module "project" {
+  source          = "./fabric/modules/project"
+  name            = "project"
+  billing_account = var.billing_account_id
+  parent          = var.folder_id
+  prefix          = var.prefix
+  factories_config = {
+    quotas = "data/quotas"
+  }
+  services = [
+    "cloudquotas.googleapis.com",
+    "compute.googleapis.com"
+  ]
+}
+# tftest modules=1 resources=5 files=quota-cpus-ew8 inventory=quotas.yaml
+```
+
+```yaml
+cpus-ew8:
+  service: compute.googleapis.com
+  quota_id: CPUS-per-project-region
+  contact_email: user@example.com
+  preferred_value: 751
+  dimensions:
+    region: europe-west8
+
+# tftest-file id=quota-cpus-ew8 path=data/quotas/cpus-ew8.yaml schema=quotas.schema.json
+```
+
+## Privileged Access Manager (PAM) Entitlements
+
+[Privileged Access Manager](https://docs.cloud.google.com/iam/docs/pam-overview) entitlements can be defined via the `pam_entitlements` variable.
+
+Note that using PAM entitlements requires specific roles to be granted to the users and groups that will be using them. For more information, see the [official documentation](https://cloud.google.com/iam/docs/pam-permissions-and-setup#before-you-begin).
+
+Additionally, the Privileged Access Manager Service Agent must be created and granted the `roles/privilegedaccessmanager.projectServiceAgent` role. This is usually done automatically when the API is enabled. For more information on service agents, see the [official documentation](https://cloud.google.com/iam/docs/service-agents). Refer to the [organization module's documentation](../organization/README.md#privileged-access-manager-pam-entitlements) for an example on how to grant the required role.
+
+```hcl
+module "project" {
+  source              = "./fabric/modules/project"
+  billing_account     = var.billing_account_id
+  name                = "project"
+  parent              = var.folder_id
+  prefix              = var.prefix
+  pam_entitlements = {
+    net-admins = {
+      max_request_duration = "3600s"
+      manual_approvals = {
+        require_approver_justification = true
+        steps = [{
+          approvers = ["group:gcp-organization-admins@example.com"]
+        }]
+      }
+      eligible_users = ["group:gcp-network-admins@example.com"]
+      privileged_access = [
+        { role = "roles/compute.networkAdmin" },
+        { role = "roles/compute.admin" }
+      ]
+    }
+  }
+}
+```
+
+### Privileged Access Manager (PAM) Entitlements Factory
+
+PAM entitlements can be loaded from a directory containing YAML files where each file defines one or more entitlements. The structure of the YAML files is exactly the same as the `pam_entitlements` variable.
+
+Note that entitlements defined via `pam_entitlements` take precedence over those in the factory. In other words, if you specify the same entitlement in a YAML file and in the `pam_entitlements` variable, the latter will take priority.
+
+```hcl
+module "project" {
+  source  =  "./fabric/modules/project"
+  billing_account = var.billing_account_id
+  name            = "project"
+  parent          = var.folder_id
+  prefix          = var.prefix
+  factories_config = {
+    pam_entitlements = "configs/pam-entitlements/"
+  }
+}
+```
+
+## VPC Service Controls
+
+This module also allows managing project membership in VPC Service Controls perimeters. When using this functionality care should be taken so that perimeter management (e.g. via the `vpc-sc` module) does not try reconciling resources, to avoid permadiffs and related violations.
+
+```hcl
+module "project" {
+  source          = "./fabric/modules/project"
+  billing_account = var.billing_account_id
+  name            = "project"
+  parent          = var.folder_id
+  prefix          = var.prefix
+  services = [
+    "stackdriver.googleapis.com"
+  ]
+  vpc_sc = {
+    perimeter_name = "accessPolicies/1234567890/servicePerimeters/default"
+  }
+}
+# tftest modules=1 resources=3 inventory=vpc-sc.yaml
+```
+
+Dry run configuration is also supported.
+
+```hcl
+module "project" {
+  source          = "./fabric/modules/project"
+  billing_account = var.billing_account_id
+  name            = "project"
+  parent          = var.folder_id
+  prefix          = var.prefix
+  services = [
+    "stackdriver.googleapis.com"
+  ]
+  vpc_sc = {
+    perimeter_name = "accessPolicies/1234567890/servicePerimeters/default"
+    is_dry_run     = true
+  }
+}
+# tftest modules=1 resources=3
+```
+
+## Default compute network tier
+
+This module allows to configure the default network tier for a project.
+
+```hcl
+module "project" {
+  source          = "./fabric/modules/project"
+  billing_account = var.billing_account_id
+  name            = "project"
+  parent          = var.folder_id
+  prefix          = var.prefix
+  services = [
+    "compute.googleapis.com"
+  ]
+  default_network_tier = "STANDARD"
+}
+# tftest modules=1 resources=4
+```
+
+## Cloud Asset Search
+
+The Cloud Asset Search feature allows you to search for resources within the project using the Cloud Asset Inventory API. This is useful for discovering and auditing resources based on asset types and query filters.
+
+```hcl
+module "project" {
+  source          = "./fabric/modules/project"
+  billing_account = var.billing_account_id
+  name            = "project"
+  parent          = var.folder_id
+  prefix          = var.prefix
+  asset_search = {
+    compute-sas = {
+      asset_types = ["iam.googleapis.com/ServiceAccount"]
+      query       = "name:compute@developer.gserviceaccount.com"
+    }
+  }
+}
+
+output "service_accounts" {
+  value = module.project.asset_search_results["copute-sas"]
+}
+# tftest skip
+```
+
+## Cloud Asset Inventory Feeds
+
+Cloud Asset Inventory feeds allow you to monitor asset changes in real-time by publishing notifications to a Pub/Sub topic. Feeds can be configured to monitor specific asset types, filter by conditions, and export different content types.
+
+```hcl
+module "pubsub" {
+  source     = "./fabric/modules/pubsub"
+  project_id = var.project_id
+  name       = "asset-feed"
+}
+
+module "project" {
+  source          = "./fabric/modules/project"
+  billing_account = var.billing_account_id
+  name            = "project"
+  parent          = var.folder_id
+  prefix          = var.prefix
+  services = [
+    "cloudasset.googleapis.com"
+  ]
+  asset_feeds = {
+    compute-instances = {
+      feed_output_config = {
+        pubsub_destination = {
+          topic = module.pubsub.id
+        }
+      }
+      content_type = "RESOURCE"
+      asset_types = [
+        "compute.googleapis.com/Instance"
+      ]
+    }
+  }
+}
+# tftest modules=2 resources=6 inventory=feeds.yaml
+```
+
+## BigQuery Reservations
+
+BigQuery reservations are primarily used to manage and allocate dedicated compute capacity for running queries, which helps provide predictable and consistent performance and costs. You can configure BigQuery reservations and assign projects, folders, or organizations to them by specifying the job type.
+
+```hcl
+module "project-bq-billing" {
+  source          = "./fabric/modules/project"
+  billing_account = var.billing_account_id
+  name            = "project-billing"
+  parent          = var.folder_id
+  prefix          = var.prefix
+  services = [
+    "container.googleapis.com",
+    "bigquery.googleapis.com",
+    "bigqueryreservation.googleapis.com",
+    "stackdriver.googleapis.com"
+  ]
+  bigquery_reservations = {
+    "ew8" = {
+      location      = "europe-west8"
+      slot_capacity = 0
+      assignments = {
+        "QUERY" = ["projects/{$module.project-bq-data.project_id}"]
+      }
+    }
+  }
+}
+
+module "project-bq-data" {
+  source          = "./fabric/modules/project"
+  billing_account = var.billing_account_id
+  name            = "project-data"
+  parent          = var.folder_id
+  prefix          = var.prefix
+  services = [
+    "container.googleapis.com",
+    "bigquery.googleapis.com",
+    "bigqueryreservation.googleapis.com",
+    "stackdriver.googleapis.com"
+  ]
+}
+# tftest modules=2 resources=20 inventory=bigqueryreservation.yaml
+```
+
+## Project Related Outputs
+
+Most of this module's outputs depend on its resources, to allow Terraform to compute all dependencies required for the project to be correctly configured. This allows you to reference outputs like `project_id` in other modules or resources without having to worry about setting `depends_on` blocks manually.
+
+The `default_service_accounts` contains the emails of the default service accounts the project.
+
+```hcl
+module "project" {
+  source          = "./fabric/modules/project"
+  billing_account = var.billing_account_id
+  name            = "project"
+  prefix          = var.prefix
+  parent          = var.folder_id
+  services = [
+    "compute.googleapis.com"
+  ]
+}
+
+output "default_service_accounts" {
+  value = module.project.default_service_accounts
+}
+# tftest modules=1 resources=3 inventory=outputs.yaml e2e
+```
+
+## Managing project related configuration without creating it
+
+The module also supports configuring an existing project, via the `project_reuse` variable. Two different behaviours are possible when a project is reused:
+
+- using a data source to fetch project data (name and number) dynamically
+- avoiding use of a data source when project data is known
+
+The first use case is the most common one, and is what the module defaults to when the `project_reuse` variable is not null. The second use case is used when project creation and configuration are split in two separate modules in the same Terraform root module, e.g. to avoid dependency cycles.
+
+```hcl
+module "create-project" {
+  source          = "./fabric/modules/project"
+  billing_account = var.billing_account_id
+  name            = "project"
+  parent          = var.folder_id
+  prefix          = var.prefix
+}
+
+module "project" {
+  source = "./fabric/modules/project"
+  name   = module.create-project.project_id
+  # default behavior, uses a data source internally
+  # project_reuse = {}
+  # avoid use of a data source when project attributes are available
+  project_reuse = {
+    use_data_source = false
+    attributes = {
+      name   = module.create-project.name
+      number = module.create-project.number
+    }
+  }
+  iam_by_principals = {
+    "group:${var.group_email}" = [
+      "roles/cloudasset.owner",
+      "roles/cloudsupport.techSupportEditor",
+      "roles/iam.securityReviewer",
+      "roles/logging.admin",
+    ]
+  }
+  iam_bindings = {
+    iam_admin_conditional = {
+      members = [
+        "group:${var.group_email}"
+      ]
+      role = "roles/resourcemanager.projectIamAdmin"
+      condition = {
+        title      = "delegated_network_user_one"
+        expression = <<-END
+          api.getAttribute(
+            'iam.googleapis.com/modifiedGrantsByRole', []
+          ).hasOnly([
+            'roles/compute.networkAdmin'
+          ])
+        END
+      }
+    }
+  }
+  iam_bindings_additive = {
+    group-owner = {
+      member = "group:${var.group_email}"
+      role   = "roles/owner"
+    }
+  }
+  iam = {
+    "roles/editor" = [
+      module.project.service_agents.cloudservices.iam_email,
+      "$iam_principalsets:service_accounts/all"
+    ]
+    "roles/apigee.serviceAgent" = [
+      module.project.service_agents.apigee.iam_email
+    ]
+  }
+  logging_data_access = {
+    allServices = {
+      ADMIN_READ = {
+        exempted_members = ["group:${var.group_email}"]
+      }
+    }
+    "storage.googleapis.com" = {
+      DATA_READ  = {}
+      DATA_WRITE = {}
+    }
+  }
+  logging_sinks = {
+    warnings = {
+      destination = module.gcs.id
+      filter      = "severity=WARNING"
+      type        = "storage"
+    }
+    info = {
+      destination = module.dataset.id
+      filter      = "severity=INFO"
+      type        = "bigquery"
+    }
+    notice = {
+      destination = module.pubsub.id
+      filter      = "severity=NOTICE"
+      type        = "pubsub"
+    }
+    debug = {
+      destination = module.bucket.id
+      filter      = "severity=DEBUG"
+      exclusions = {
+        no-compute = "logName:compute"
+      }
+      type = "logging"
+    }
+  }
+  logging_exclusions = {
+    no-gce-instances = "resource.type=gce_instance"
+  }
+  org_policies = {
+    "compute.disableGuestAttributesAccess" = {
+      rules = [{ enforce = true }]
+    }
+    "compute.skipDefaultNetworkCreation" = {
+      rules = [{ enforce = true }]
+    }
+    "iam.disableServiceAccountKeyCreation" = {
+      rules = [{ enforce = true }]
+    }
+    "iam.disableServiceAccountKeyUpload" = {
+      rules = [
+        {
+          condition = {
+            expression  = "resource.matchTagId('tagKeys/1234', 'tagValues/1234')"
+            title       = "condition"
+            description = "test condition"
+            location    = "somewhere"
+          }
+          enforce = true
+        },
+        {
+          enforce = false
+        }
+      ]
+    }
+    "iam.allowedPolicyMemberDomains" = {
+      rules = [{
+        allow = {
+          values = ["C0xxxxxxx", "C0yyyyyyy"]
+        }
+      }]
+    }
+    "compute.trustedImageProjects" = {
+      rules = [{
+        allow = {
+          values = ["projects/my-project"]
+        }
+      }]
+    }
+    "compute.vmExternalIpAccess" = {
+      rules = [{ deny = { all = true } }]
+    }
+  }
+  shared_vpc_service_config = {
+    host_project = module.host-project.project_id
+    service_iam_grants = [
+      for v in module.project.services :
+      "$service_agents:${v}"
+    ]
+    service_agent_iam = {
+      "roles/cloudasset.owner" = [
+        "$service_agents:cloudservices",
+        "$service_agents:container-engine"
+      ]
+    }
+  }
+  services = [
+    "apigee.googleapis.com",
+    "bigquery.googleapis.com",
+    "container.googleapis.com",
+    "compute.googleapis.com",
+    "logging.googleapis.com",
+    "run.googleapis.com",
+    "storage.googleapis.com",
+  ]
+  service_encryption_key_ids = {
+    "compute.googleapis.com" = [module.kms.keys.key-global.id]
+    "storage.googleapis.com" = [module.kms.keys.key-global.id]
+  }
+}
+
+module "kms" {
+  source     = "./fabric/modules/kms"
+  project_id = var.project_id # Keys come from different project to prevent dependency cycle
+  keyring = {
+    location = "global"
+    name     = "${var.prefix}-keyring"
+  }
+  keys = {
+    "key-global" = {
+    }
+  }
+  iam = {
+    "roles/cloudkms.cryptoKeyEncrypterDecrypter" = [
+      module.project.service_agents.compute.iam_email,
+      module.project.service_agents.storage.iam_email
+    ]
+  }
+}
+
+module "host-project" {
+  source          = "./fabric/modules/project"
+  billing_account = var.billing_account_id
+  name            = "host"
+  parent          = var.folder_id
+  prefix          = var.prefix
+  shared_vpc_host_config = {
+    enabled = true
+  }
+}
+
+module "gcs" {
+  source        = "./fabric/modules/gcs"
+  project_id    = var.project_id
+  name          = "gcs_sink"
+  location      = "EU"
+  prefix        = var.prefix
+  force_destroy = true
+}
+
+module "dataset" {
+  source     = "./fabric/modules/bigquery-dataset"
+  project_id = var.project_id
+  id         = "bq_sink"
+  options    = { delete_contents_on_destroy = true }
+}
+
+module "pubsub" {
+  source     = "./fabric/modules/pubsub"
+  project_id = var.project_id
+  name       = "pubsub_sink"
+}
+
+module "bucket" {
+  source = "./fabric/modules/logging-bucket"
+  parent = var.project_id
+  name   = "${var.prefix}-bucket"
+}
+# tftest inventory=data.yaml e2e
+```
+
+## Observability
+
+Alerting policies, log-based metrics, and notification channels are managed by the `alerts`, `logging_metrics`, and `notification_channels` variables, respectively.
+
+```hcl
+module "project" {
+  source          = "./fabric/modules/project"
+  name            = "project"
+  billing_account = var.billing_account_id
+  parent          = var.folder_id
+  prefix          = var.prefix
+  alerts = {
+    alert-1 = {
+      display_name = "alert-1"
+      combiner     = "OR"
+      notification_channels = [
+        "my-channel",
+        "projects/other-project/notificationChannels/1234567890"
+      ]
+      conditions = [{
+        display_name = "test condition"
+        condition_threshold = {
+          filter          = "metric.type=\"compute.googleapis.com/instance/disk/write_bytes_count\""
+          comparison      = "COMPARISON_GT"
+          threshold_value = 100
+          duration        = "60s"
+          aggregations = [{
+            alignment_period   = "60s"
+            per_series_aligner = "ALIGN_RATE"
+          }]
+        }
+      }]
+    }
+  }
+  logging_metrics = {
+    metric-1 = {
+      name        = "metric-1"
+      filter      = "resource.type=\"gce_instance\""
+      description = "This is a metric"
+      metric_descriptor = {
+        metric_kind = "GAUGE"
+        value_type  = "DOUBLE"
+        unit        = "ms"
+      }
+    }
+  }
+  notification_channels = {
+    my-channel = {
+      display_name = "My Channel"
+      type         = "email"
+      labels = {
+        email_address = "hello@example.com"
+      }
+    }
+  }
+}
+# tftest modules=1 resources=4
+```
+
+## Observability factory
+
+Observability variables are exposed through a factory enabled by setting `var.factories_config.observability`. YAML files configure observability resources using top-level keys: `alerts`, `logging_metrics`, and `notification_channels`, which correspond to the respective variables. All top-level keys are optional, and their structure mirrors their corresponding variable's structure.
+
+```hcl
+module "project" {
+  source          = "./fabric/modules/project"
+  name            = "project"
+  billing_account = var.billing_account_id
+  parent          = var.folder_id
+  prefix          = var.prefix
+  factories_config = {
+    observability = "data/observability"
+  }
+  context = {
+    notification_channels = {
+      common-channel = "projects/other-project/notificationChannels/1234567890"
+    }
+  }
+}
+# tftest modules=1 resources=5 files=observability
+```
+
+```yaml
+# tftest-file id=observability path=data/observability/observability.yaml schema=observability.schema.json
+logging_metrics:
+  factory-metric-1:
+    filter: "resource.type=gae_app AND severity>=ERROR"
+    metric_descriptor:
+      metric_kind: DELTA
+      value_type: INT64
+    disabled: true
+
+  factory-metric-2:
+    filter: resource.type=gae_app AND severity>=ERROR
+    metric_descriptor:
+      metric_kind: DELTA
+      value_type: DISTRIBUTION
+      unit: "1"
+      labels:
+        - key: mass
+          value_type: STRING
+          description: amount of matter
+        - key: sku
+          value_type: INT64
+          description: Identifying number for item
+      display_name: My metric
+    value_extractor: EXTRACT(jsonPayload.request)
+    label_extractors:
+      mass: EXTRACT(jsonPayload.request)
+      sku: EXTRACT(jsonPayload.id)
+    bucket_options:
+      linear_buckets:
+        num_finite_buckets: 3
+        width: 1
+        offset: 1
+
+notification_channels:
+  channel-1:
+    display_name: channel-1
+    type: email
+    labels:
+      email_address: hello2@example.com
+
+alerts:
+  alert-1:
+    display_name: My Alert Policy
+    combiner: OR
+    notification_channels:
+      - channel-1
+      - common-channel
+    conditions:
+      - display_name: test condition
+        condition_threshold:
+          filter: |
+            metric.type="compute.googleapis.com/instance/disk/write_bytes_count" AND resource.type="gce_instance"
+          duration: 60s
+          comparison: COMPARISON_GT
+          aggregations:
+            - alignment_period: 60s
+              per_series_aligner: ALIGN_RATE
+    user_labels:
+      foo: bar
+```
+
+## Workload Identity Federation
+
+Workload Identity federation pools and providers can be created via the `workload_identity_pools` variable.
+
+Auto-population of provider attributes and issuer are supported for OIDC providers via the `provider_template` attribute. Currently `github`, `gitlab`, `okta` and `terraform` provider types are supported.
+
+```hcl
+module "project" {
+  source          = "./fabric/modules/project"
+  name            = "project"
+  billing_account = var.billing_account_id
+  parent          = var.folder_id
+  prefix          = var.prefix
+  workload_identity_pools = {
+    test-oidc = {
+      display_name = "Test pool (OIDC)."
+      providers = {
+        github-test = {
+          attribute_condition = "attribute.repository_owner=='my_org'"
+          display_name        = "GitHub provider (from template)."
+          identity_provider = {
+            oidc = {
+              template = "github"
+            }
+          }
+        }
+        gitlab-test = {
+          display_name        = "GitLab provider (explicit attributes)."
+          attribute_condition = "attribute.namespace_path=='my_org'"
+          attribute_mapping = {
+            "google.subject"           = "assertion.sub"
+            "attribute.sub"            = "assertion.sub"
+            "attribute.environment"    = "assertion.environment"
+            "attribute.namespace_id"   = "assertion.namespace_id"
+            "attribute.namespace_path" = "assertion.namespace_path"
+            "attribute.project_id"     = "assertion.project_id"
+            "attribute.project_path"   = "assertion.project_path"
+            "attribute.repository"     = "assertion.project_path"
+            "attribute.ref"            = "assertion.ref"
+            "attribute.ref_type"       = "assertion.ref_type"
+          }
+          identity_provider = {
+            oidc = {
+              issuer_uri = "https://gitlab.com"
+            }
+          }
+        }
+      }
+    }
+    test-non-oidc = {
+      display_name = "Test pool (non-OIDC)."
+      providers = {
+        aws-test = {
+          attribute_condition = "attribute.aws_role==\"arn:aws:sts::999999999999:assumed-role/stack-eu-central-1-lambdaRole\""
+          attribute_mapping = {
+            "google.subject"        = "assertion.arn"
+            "attribute.aws_account" = "assertion.account"
+            "attribute.environment" = "assertion.arn.contains(\":instance-profile/Production\") ? \"prod\" : \"test\""
+          }
+          identity_provider = {
+            aws = {
+              account_id = "999999999999"
+            }
+          }
+        }
+        saml-test = {
+          attribute_mapping = {
+            "google.subject"        = "assertion.arn"
+            "attribute.aws_account" = "assertion.account"
+            "attribute.environment" = "assertion.arn.contains(\":instance-profile/Production\") ? \"prod\" : \"test\""
+          }
+          identity_provider = {
+            saml = {
+              idp_metadata_xml = "<?xml version=\"1.0\" encoding=\"utf-8\"?>..."
+            }
+          }
+        }
+      }
+    }
+  }
+}
+# tftest modules=1 resources=7 inventory=wif.yaml
+```
+
+## IAM Deny Policies
+
+[IAM Deny policies](https://cloud.google.com/iam/docs/deny-overview) allow you to set centralized guardrails that prevent principals from using specific permissions within the project, regardless of the roles they have been granted.
+
+You can define Deny policies using the `iam_deny_policies` variable. Each policy requires you to specify the principals and permissions to deny. You can optionally define exception principals, exception permissions, and conditions to tailor the restriction.
+
+Note that IAM Deny policies require a specific prefix for principal definitions (e.g., `principalSet://goog/public:all` or `principalSet://goog/group/group-email@example.com`), and permissions must be prefixed with the service fully qualified domain name (e.g., `iam.googleapis.com/serviceAccountKeys.create`). The module automatically leverages context interpolation for principal formatting if they are defined in your `var.context.iam_principals` mapping.
+
+```hcl
+module "project" {
+  source          = "./fabric/modules/project"
+  name            = "my-project"
+  parent          = var.folder_id
+  billing_account = var.billing_account_id
+
+  iam_deny_policies = {
+    "prevent-kms-destruction" = {
+      display_name = "Prevent KMS Key destruction"
+      rules = [
+        {
+          description        = "Deny destroying KMS key versions to all except the key admins group."
+          denied_principals  = ["principalSet://goog/public:all"]
+          denied_permissions = ["cloudkms.googleapis.com/cryptoKeyVersions.destroy"]
+          exception_principals = [
+            "principalSet://goog/group/gcp-kms-admins@example.com"
+          ]
+        }
+      ]
+    }
+    "prevent-core-bucket-deletion" = {
+      display_name = "Prevent core bucket deletion"
+      rules = [
+        {
+          description        = "Deny deletion of any Cloud Storage bucket with the 'core-' prefix."
+          denied_principals  = ["principalSet://goog/public:all"]
+          denied_permissions = ["storage.googleapis.com/buckets.delete"]
+          denial_condition = {
+            title       = "core_buckets_only"
+            description = "Applies only to buckets starting with 'core-'."
+            expression  = "resource.name.startsWith(\"projects/-/buckets/core-\")"
+          }
+        }
+      ]
+    }
+  }
+}
+# tftest modules=1 resources=3 inventory=iam-deny-policies.yaml
+```
+
+<!-- TFDOC OPTS files:1 -->
+<!-- BEGIN TFDOC -->
+## Files
+
+| name | description | resources |
+|---|---|---|
+| [alerts.tf](./alerts.tf) | None | <code>google_monitoring_alert_policy</code> |
+| [assets.tf](./assets.tf) | None | <code>google_cloud_asset_project_feed</code> |
+| [bigquery-reservation.tf](./bigquery-reservation.tf) | None | <code>google_bigquery_reservation</code> · <code>google_bigquery_reservation_assignment</code> |
+| [cmek.tf](./cmek.tf) | Service Agent IAM Bindings for CMEK | <code>google_kms_crypto_key_iam_member</code> |
+| [deny-policies.tf](./deny-policies.tf) | IAM Deny policies. | <code>google_iam_deny_policy</code> |
+| [iam.tf](./iam.tf) | IAM bindings. | <code>google_project_iam_binding</code> · <code>google_project_iam_custom_role</code> · <code>google_project_iam_member</code> |
+| [identity-providers-defs.tf](./identity-providers-defs.tf) | Workload Identity provider definitions. |  |
+| [identity-providers.tf](./identity-providers.tf) | None | <code>google_iam_workload_identity_pool</code> · <code>google_iam_workload_identity_pool_provider</code> |
+| [logging-metrics.tf](./logging-metrics.tf) | None | <code>google_logging_metric</code> |
+| [logging.tf](./logging.tf) | Log sinks and supporting resources. | <code>google_bigquery_dataset_iam_member</code> · <code>google_logging_log_scope</code> · <code>google_logging_project_exclusion</code> · <code>google_logging_project_sink</code> · <code>google_project_iam_audit_config</code> · <code>google_project_iam_member</code> · <code>google_pubsub_topic_iam_member</code> · <code>google_storage_bucket_iam_member</code> |
+| [main.tf](./main.tf) | Module-level locals and resources. | <code>google_compute_project_default_network_tier</code> · <code>google_compute_project_metadata_item</code> · <code>google_essential_contacts_contact</code> · <code>google_kms_key_handle</code> · <code>google_monitoring_monitored_project</code> · <code>google_project</code> · <code>google_project_service</code> · <code>google_resource_manager_lien</code> |
+| [notification-channels.tf](./notification-channels.tf) | None | <code>google_monitoring_notification_channel</code> |
+| [organization-policies.tf](./organization-policies.tf) | Project-level organization policies. | <code>google_org_policy_policy</code> |
+| [outputs.tf](./outputs.tf) | Module outputs. |  |
+| [pam.tf](./pam.tf) | None | <code>google_privileged_access_manager_entitlement</code> |
+| [quotas.tf](./quotas.tf) | None | <code>google_cloud_quotas_quota_preference</code> |
+| [scc-mute-configs.tf](./scc-mute-configs.tf) | Project-level SCC mute configurations. | <code>google_scc_v2_project_mute_config</code> |
+| [scc-sha-custom-modules.tf](./scc-sha-custom-modules.tf) | Project-level Custom modules with Security Health Analytics. | <code>google_scc_management_project_security_health_analytics_custom_module</code> |
+| [service-agents.tf](./service-agents.tf) | Service agents supporting resources. | <code>google_project_default_service_accounts</code> · <code>google_project_iam_member</code> · <code>google_project_service_identity</code> |
+| [shared-vpc.tf](./shared-vpc.tf) | Shared VPC project-level configuration. | <code>google_compute_shared_vpc_host_project</code> · <code>google_compute_shared_vpc_service_project</code> · <code>google_compute_subnetwork_iam_member</code> · <code>google_project_iam_member</code> |
+| [tags.tf](./tags.tf) | Manages GCP Secure Tags, keys, values, and IAM. | <code>google_tags_tag_binding</code> · <code>google_tags_tag_key</code> · <code>google_tags_tag_key_iam_binding</code> · <code>google_tags_tag_key_iam_member</code> · <code>google_tags_tag_value</code> · <code>google_tags_tag_value_iam_binding</code> · <code>google_tags_tag_value_iam_member</code> |
+| [variables-iam.tf](./variables-iam.tf) | None |  |
+| [variables-identity-providers.tf](./variables-identity-providers.tf) | None |  |
+| [variables-observability.tf](./variables-observability.tf) | None |  |
+| [variables-pam.tf](./variables-pam.tf) | None |  |
+| [variables-quotas.tf](./variables-quotas.tf) | None |  |
+| [variables-scc.tf](./variables-scc.tf) | None |  |
+| [variables-tags.tf](./variables-tags.tf) | None |  |
+| [variables.tf](./variables.tf) | Module variables. |  |
+| [versions.tf](./versions.tf) | Version pins. |  |
+| [vpc-sc.tf](./vpc-sc.tf) | VPC-SC project-level perimeter configuration. | <code>google_access_context_manager_service_perimeter_dry_run_resource</code> · <code>google_access_context_manager_service_perimeter_resource</code> |
+
+## Variables
+
+| name | description | type | required | default |
+|---|---|:---:|:---:|:---:|
+| [name](variables.tf#L266) | Project name and id suffix. | <code>string</code> | ✓ |  |
+| [alerts](variables-observability.tf#L17) | Monitoring alerts. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [asset_feeds](variables.tf#L18) | Cloud Asset Inventory feeds. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [asset_search](variables.tf#L51) | Cloud Asset Inventory search configurations. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [auto_create_network](variables.tf#L61) | Whether to create the default network for the project. | <code>bool</code> |  | <code>false</code> |
+| [bigquery_reservations](variables.tf#L67) | BigQuery reservations and assignments. Assignment specified as {JOB_TYPE = ['projects/PROJECT_ID']}. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [billing_account](variables.tf#L104) | Billing account id. | <code>string</code> |  | <code>null</code> |
+| [compute_metadata](variables.tf#L110) | Optional compute metadata key/values. Only usable if compute API has been enabled. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [contacts](variables.tf#L117) | List of essential contacts for this resource. Must be in the form EMAIL -> [NOTIFICATION_TYPES]. Valid notification types are ALL, SUSPENSION, SECURITY, TECHNICAL, BILLING, LEGAL, PRODUCT_UPDATES. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [context](variables.tf#L135) | Context-specific interpolations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [custom_roles](variables.tf#L162) | Map of role name => role attributes to create in this project. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [default_network_tier](variables.tf#L183) | Default compute network tier for the project. | <code>string</code> |  | <code>null</code> |
+| [default_service_account](variables.tf#L189) | Project default service account setting: can be one of `delete`, `deprivilege`, `disable`, or `keep`. | <code>string</code> |  | <code>&#34;keep&#34;</code> |
+| [deletion_policy](variables.tf#L202) | Deletion policy setting for this project. | <code>string</code> |  | <code>&#34;DELETE&#34;</code> |
+| [descriptive_name](variables.tf#L213) | Descriptive project name. Set when name differs from project id. | <code>string</code> |  | <code>null</code> |
+| [factories_config](variables.tf#L219) | Paths to data files and folders that enable factory functionality. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [iam](variables-iam.tf#L17) | Authoritative IAM bindings in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [iam_bindings](variables-iam.tf#L24) | Authoritative IAM bindings in {KEY => {role = ROLE, members = [], condition = {}}}. Keys are arbitrary. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [iam_bindings_additive](variables-iam.tf#L39) | Individual additive IAM bindings. Keys are arbitrary. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [iam_by_principals](variables-iam.tf#L61) | Authoritative IAM binding in {PRINCIPAL => [ROLES]} format. Principals need to be statically defined to avoid errors. Merged internally with the `iam` variable. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [iam_by_principals_additive](variables-iam.tf#L54) | Additive IAM binding in {PRINCIPAL => [ROLES]} format. Principals need to be statically defined to avoid errors. Merged internally with the `iam_bindings_additive` variable. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [iam_by_principals_conditional](variables-iam.tf#L68) | Authoritative IAM binding in {PRINCIPAL => {roles = [roles], condition = {cond}}} format. Principals need to be statically defined to avoid errors. Condition is required. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [iam_deny_policies](variables-iam.tf#L98) | IAM Deny policies to be applied to the project. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [kms_autokeys](variables.tf#L235) | KMS Autokey key handles. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [labels](variables.tf#L253) | Resource labels. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [lien_reason](variables.tf#L260) | If non-empty, creates a project lien with this description. | <code>string</code> |  | <code>null</code> |
+| [log_scopes](variables-observability.tf#L117) | Log scopes under this project. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [logging_data_access](variables-observability.tf#L127) | Control activation of data access logs. The special 'allServices' key denotes configuration for all services. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [logging_exclusions](variables-observability.tf#L138) | Logging exclusions for this project in the form {NAME -> FILTER}. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [logging_metrics](variables-observability.tf#L145) | Log-based metrics. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [logging_sinks](variables-observability.tf#L185) | Logging sinks to create for this project. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [metric_scopes](variables-observability.tf#L216) | List of projects that will act as metric scopes for this project. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
+| [network_tags](variables-tags.tf#L17) | Network tags by key name. If `id` is provided, key creation is skipped. The `iam` attribute behaves like the similarly named one at module level. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [notification_channels](variables-observability.tf#L223) | Monitoring notification channels. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [org_policies](variables.tf#L271) | Organization policies applied to this project keyed by policy name. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [pam_entitlements](variables-pam.tf#L17) | Privileged Access Manager entitlements for this resource, keyed by entitlement ID. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [parent](variables.tf#L299) | Parent folder or organization in 'folders/folder_id' or 'organizations/org_id' format. | <code>string</code> |  | <code>null</code> |
+| [prefix](variables.tf#L313) | Optional prefix used to generate project id and name. | <code>string</code> |  | <code>null</code> |
+| [project_reuse](variables.tf#L323) | Reuse existing project if not null. If name and number are not passed in, a data source is used. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [quotas](variables-quotas.tf#L17) | Service quota configuration. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [scc_mute_configs](variables-scc.tf#L17) | SCC mute configurations keyed by name. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [scc_sha_custom_modules](variables-scc.tf#L28) | SCC custom modules keyed by module name. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [service_agents_config](variables.tf#L343) | Automatic service agent configuration options. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [service_config](variables.tf#L355) | Configure service API activation. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#8230;&#125;</code> |
+| [service_encryption_key_ids](variables.tf#L367) | Service Agents to be granted encryption/decryption permissions over Cloud KMS encryption keys. Format {SERVICE_AGENT => [KEY_ID]}. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [services](variables.tf#L374) | Service APIs to enable. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
+| [shared_vpc_host_config](variables.tf#L380) | Configures this project as a Shared VPC host project (mutually exclusive with shared_vpc_service_project). | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [shared_vpc_service_config](variables.tf#L390) | Configures this project as a Shared VPC service project (mutually exclusive with shared_vpc_host_config). | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#8230;&#125;</code> |
+| [skip_delete](variables.tf#L427) | Deprecated. Use deletion_policy. | <code>bool</code> |  | <code>null</code> |
+| [tag_bindings](variables-tags.tf#L89) | Tag bindings for this project, in key => tag value id format. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
+| [tags](variables-tags.tf#L96) | Tags by key name. If `id` is provided, key or value creation is skipped. The `iam` attribute behaves like the similarly named one at module level. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [tags_config](variables-tags.tf#L171) | Fine-grained control on tag resource and IAM creation. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [universe](variables.tf#L439) | GCP universe where to deploy the project. The prefix will be prepended to the project id. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [vpc_sc](variables.tf#L450) | VPC-SC configuration for the project, use when `ignore_changes` for resources is set in the VPC-SC module. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [workload_identity_pools](variables-identity-providers.tf#L17) | Workload Identity Federation pools and providers. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+
+## Outputs
+
+| name | description | sensitive |
+|---|---|:---:|
+| [alert_ids](outputs.tf#L17) | Monitoring alert IDs. |  |
+| [asset_search_results](outputs.tf#L25) | Cloud Asset Inventory search results. |  |
+| [bigquery_reservations](outputs.tf#L32) | BigQuery reservations and assignments. |  |
+| [custom_role_id](outputs.tf#L40) | Map of custom role IDs created in the project. |  |
+| [custom_roles](outputs.tf#L45) | Map of custom roles resources created in the project. |  |
+| [default_service_accounts](outputs.tf#L50) | Emails of the default service accounts for this project. |  |
+| [id](outputs.tf#L55) | Project id. |  |
+| [kms_autokeys](outputs.tf#L73) | KMS Autokey key ids. |  |
+| [name](outputs.tf#L80) | Project name. |  |
+| [network_tag_keys](outputs.tf#L92) | Tag key resources. |  |
+| [network_tag_values](outputs.tf#L101) | Tag value resources. |  |
+| [notification_channel_names](outputs.tf#L109) | Notification channel names. |  |
+| [notification_channels](outputs.tf#L117) | Full notification channel objects. |  |
+| [number](outputs.tf#L122) | Project number. |  |
+| [organization_policies_ids](outputs.tf#L137) | Map of ORGANIZATION_POLICIES => ID in the organization. |  |
+| [project_id](outputs.tf#L144) | Project id. |  |
+| [quota_configs](outputs.tf#L162) | Quota configurations. |  |
+| [quotas](outputs.tf#L173) | Quota resources. |  |
+| [scc_custom_sha_modules_ids](outputs.tf#L178) | Map of SCC CUSTOM SHA MODULES => ID in the project. |  |
+| [service_agents](outputs.tf#L183) | List of all (active) service agents for this project. |  |
+| [services](outputs.tf#L192) | Service APIs to enable in the project. |  |
+| [sink_writer_identities](outputs.tf#L201) | Writer identities created for each sink. |  |
+| [tag_keys](outputs.tf#L208) | Tag key resources. |  |
+| [tag_values](outputs.tf#L217) | Tag value resources. |  |
+| [workload_identity_pool_ids](outputs.tf#L225) | Workload identity provider ids. |  |
+| [workload_identity_provider_ids](outputs.tf#L232) | Workload identity provider attributes. |  |
+| [workload_identity_providers](outputs.tf#L240) | Workload identity provider attributes. |  |
+
+## Fixtures
+
+- [organization-custom-role.tf](../../tests/fixtures/organization-custom-role.tf)
+<!-- END TFDOC -->
