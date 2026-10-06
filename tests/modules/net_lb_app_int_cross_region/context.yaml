@@ -166,6 +166,7 @@ counts:
 
 outputs:
   addresses: __missing__
+  backend_service_generated_ids: {}
   backend_service_ids: {}
   backend_service_names: {}
   forwarding_rules: __missing__

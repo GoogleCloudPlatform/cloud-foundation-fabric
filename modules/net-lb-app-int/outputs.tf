@@ -19,6 +19,13 @@ output "address" {
   value       = google_compute_forwarding_rule.default.ip_address
 }
 
+output "backend_service_generated_ids" {
+  description = "Generated Ids for backend service resources."
+  value = {
+    for k, v in google_compute_region_backend_service.default : k => v.generated_id
+  }
+}
+
 output "backend_service_ids" {
   description = "Backend service resources."
   value = {

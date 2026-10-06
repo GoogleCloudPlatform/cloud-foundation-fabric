@@ -21,7 +21,8 @@ values:
     description: Terraform managed.
     egress_network_config:
     - dns_peering_config:
-      - domain: corp.internal.
+      - domains:
+        - corp.internal.
         target_network: projects/my-host-project/global/networks/my-vpc
       network_attachment: projects/my-host-project/regions/europe-west1/networkAttachments/my-na
       vpc_egress: ALL_TRAFFIC
