@@ -345,6 +345,10 @@
         },
         "group": {
           "type": "string"
+        },
+        "site_to_site_data_transfer": {
+          "type": "boolean",
+          "default": true
         }
       }
     }

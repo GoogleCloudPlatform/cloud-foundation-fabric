@@ -144,7 +144,7 @@ values:
       include_export_ranges: null
       include_import_ranges:
       - ALL_IPV4_RANGES
-      site_to_site_data_transfer: true
+      site_to_site_data_transfer: false
     linked_producer_vpc_network: []
     linked_router_appliance_instances: []
     linked_vpc_network: []
