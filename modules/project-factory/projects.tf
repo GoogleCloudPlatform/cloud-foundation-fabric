@@ -209,6 +209,8 @@ module "projects-iam" {
         projects = {
           for k, v in module.projects : k => v.project_id
         }
+        tag_keys   = local.ctx_tag_keys
+        tag_values = local.ctx_tag_values
       }
     )
     tag_vars = {

@@ -47,6 +47,11 @@ locals {
       retention_policy      = lookup(v.bucket, "retention_policy", null)
       soft_delete_retention = lookup(v.bucket, "soft_delete_retention", null)
       logging_config        = lookup(v.bucket, "logging_config", null)
+      force_destroy = try(coalesce(
+        local.data_defaults.overrides.bucket.force_destroy,
+        lookup(v.bucket, "force_destroy", null),
+        local.data_defaults.defaults.bucket.force_destroy,
+      ), false)
       prefix = try(coalesce(
         local.data_defaults.overrides.prefix,
         v.prefix,
@@ -90,15 +95,12 @@ module "automation-bucket" {
   name           = each.value.name
   bucket_create  = each.value.create
   encryption_key = lookup(each.value, "encryption_key", null)
-  force_destroy = try(coalesce(
-    local.data_defaults.overrides.bucket.force_destroy,
-    each.value.force_destroy,
-    local.data_defaults.defaults.force_destroy,
-  ), null)
+  force_destroy  = each.value.force_destroy
   context = merge(local.ctx, {
     project_ids     = local.ctx_project_ids
     iam_principals  = local.ctx_iam_principals
     storage_buckets = local.ctx.storage_buckets
+    kms_keys        = merge(local.ctx.kms_keys, local.kms_keys, local.kms_autokeys)
   })
   iam                   = lookup(each.value, "iam", {})
   iam_bindings          = lookup(each.value, "iam_bindings", {})

@@ -42,6 +42,7 @@ The code is meant to be executed by a high level service account with powerful p
   - [Service account context ids](#service-account-context-ids)
   - [Log bucket context ids](#log-bucket-context-ids)
   - [Other context ids](#other-context-ids)
+  - [IAM condition variables](#iam-condition-variables)
 - [Service agent grants outside the project](#service-agent-grants-outside-the-project)
 - [Example](#example)
 - [Files](#files)
@@ -401,6 +402,30 @@ tag_bindings:
   foo: $tag_values:test/one
 vpc_sc:
   perimeter_name: $vpc_sc_perimeters:default
+```
+
+### IAM condition variables
+
+IAM conditions in project-level IAM and PAM entitlements are rendered via `templatestring`, using the variables passed in `context.condition_vars` merged with these factory-managed maps:
+
+- `folder_ids`: folder ids keyed by folder path, e.g. `${folder_ids["teams/team-a"]}`
+- `projects`: project ids keyed by project file name, e.g. `${projects["app-0-0"]}`
+- `tag_keys`: tag key ids from `context.tag_keys` and project-level tag keys keyed by `project/key`, e.g. `${tag_keys["app-0-0/environment"]}`
+- `tag_values`: tag value ids from `context.tag_values` and project-level tag values keyed by `project/key/value`, e.g. `${tag_values["app-0-0/environment/dev"]}`
+
+```yaml
+iam_bindings:
+  dev-only:
+    role: roles/viewer
+    members:
+      - $iam_principals:mygroup
+    condition:
+      title: dev-only
+      expression: >-
+        resource.matchTagId(
+          '${tag_keys["app-0-0/environment"]}',
+          '${tag_values["app-0-0/environment/dev"]}'
+        )
 ```
 
 ## Service agent grants outside the project
