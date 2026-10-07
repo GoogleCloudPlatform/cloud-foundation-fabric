@@ -1005,9 +1005,11 @@ module "org" {
           }
           identity_provider = {
             oidc = {
-              issuer_uri    = "https://sts.windows.net/abcd01234/"
-              client_id     = "https://analysis.windows.net/powerbi/connector/GoogleBigQuery"
-              client_secret = "client-secret"
+              issuer_uri = "https://sts.windows.net/abcd01234/"
+              client_id  = "https://analysis.windows.net/powerbi/connector/GoogleBigQuery"
+              client_secret = {
+                value = "client-secret"
+              }
               web_sso_config = {
                 response_type             = "CODE"
                 assertion_claims_behavior = "MERGE_USER_INFO_OVER_ID_TOKEN_CLAIMS"

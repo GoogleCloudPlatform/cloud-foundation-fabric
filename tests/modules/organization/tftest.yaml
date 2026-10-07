@@ -33,3 +33,6 @@ tests:
   tags:
   tags_force_context:
   tags_skip_iam:
+  workforce_identity_client_secret_file:
+    extra_dirs:
+      - ../../tests/modules/organization/wfif-secret
