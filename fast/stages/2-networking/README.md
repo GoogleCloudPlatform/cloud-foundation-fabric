@@ -421,7 +421,7 @@ Internally created resources are mapped to context namespaces, and use specific 
 | [factory-dns.tf](./factory-dns.tf) | DNS zones and RPZ factory. | <code>dns</code> · <code>dns-response-policy</code> |  |
 | [factory-firewall-policies.tf](./factory-firewall-policies.tf) | Firewall policies factory. | <code>net-firewall-policy</code> |  |
 | [factory-ncc.tf](./factory-ncc.tf) | NCC Hubs and Groups factory |  | <code>google_network_connectivity_group</code> · <code>google_network_connectivity_hub</code> · <code>google_network_connectivity_spoke</code> |
-| [factory-nva.tf](./factory-nva.tf) | NVA factory | <code>compute-vm</code> · <code>net-lb-int</code> | <code>google_compute_instance_group</code> |
+| [factory-nva.tf](./factory-nva.tf) | NVA factory | <code>compute-vm</code> · <code>net-lb-int</code> | <code>google_compute_health_check</code> · <code>google_compute_instance_group</code> |
 | [factory-peering.tf](./factory-peering.tf) | VPC Peering factory. |  | <code>google_compute_network_peering</code> |
 | [factory-projects.tf](./factory-projects.tf) | Projects factory. | <code>project-factory</code> |  |
 | [factory-routers.tf](./factory-routers.tf) | Routers factory. |  | <code>google_compute_router</code> · <code>google_compute_router_route_policy</code> |
