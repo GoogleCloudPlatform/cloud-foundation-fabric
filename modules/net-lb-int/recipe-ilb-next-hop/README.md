@@ -8,13 +8,17 @@ The following diagram shows the resources created by this blueprint
 
 Two ILBs are configured on the primary and secondary interfaces of gateway VMs with active health checks, but only a single one is used as next hop by default to simplify testing. The second (right-side) VPC has default routes that point to the gateway VMs, to also use the right-side ILB as next hop set the `ilb_right_enable` variable to `true`.
 
+Both ILBs share the same health check and use identical connection tracking settings (`NEVER_PERSIST` on unhealthy backends, `PER_CONNECTION` tracking, and the API default idle timeout of 600 seconds). Symmetric hashing only applies when a flow misses the connection tracking table of each ILB, and the two tables are not synchronized: different health check results or long-lived stale entries on either side can pin the forward and return legs of a flow to different gateways after a backend failure. These defaults can be changed via the `ilb_connection_tracking` variable.
+
+The idle timeout is a tradeoff. When an entry expires, the next packet of an idle connection is hashed again: if the set of healthy gateways changed in the meantime, the connection can move to a gateway that has no state for it, which a stateful appliance would drop. A shorter timeout makes this happen after shorter idle periods, while every packet including retransmits refreshes the timer, so it does not clear a flow that keeps retrying. Lower it only for applications that send keepalives more often than the timeout.
+
 ## Testing
 
 This setup can be used to test and verify new Internal Network LB features like [forwards all protocols on Internal Network LB as next hops](https://cloud.google.com/load-balancing/docs/internal/ilb-next-hop-overview#all-traffic) and [symmetric hashing](https://cloud.google.com/load-balancing/docs/internal/ilb-next-hop-overview#symmetric-hashing), using simple `curl` and `ping` tests on clients. To make this practical, test VMs on both VPCs have `nginx` pre-installed and active on port 80.
 
 On the gateways, `iftop` and `tcpdump` are installed by default to quickly monitor traffic passing forwarded across VPCs.
 
-Session affinity on the Internal Network LB backend services can be changed using `gcloud compute backend-services update` on each of the Internal Network LBs, or by setting the `ilb_session_affinity` variable to update both Internal Network LBs.
+Session affinity on the Internal Network LB backend services can be changed using `gcloud compute backend-services update` on each of the Internal Network LBs, or by setting the `ilb_session_affinity` variable to update both Internal Network LBs. Note that with `CLIENT_IP` or `CLIENT_IP_PROTO` affinity the API defaults the tracking mode to `PER_SESSION`, unless it is explicitly set as this recipe does via `ilb_connection_tracking.track_per_session`.
 
 Simple `/root/start.sh` and `/root/stop.sh` scripts are pre-installed on both gateways to configure `iptables` so that health check requests are rejected and re-enabled, to quickly simulate removing instances from the Internal Network LB backends.
 
@@ -22,6 +26,7 @@ Some scenarios to test:
 
 - short-lived connections with session affinity set to the default of `NONE`, then to `CLIENT_IP`
 - long-lived connections, failing health checks on the active gateway while the connection is active
+- connection tracking behavior after a gateway fails and recovers, comparing the defaults with `persist_conn_on_unhealthy = "DEFAULT_FOR_PROTOCOL"`, and idle connections after a rebalance with a shorter `idle_timeout_sec`
 
 ### Useful commands
 
@@ -64,14 +69,15 @@ A sample testing session using `tmux`:
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [prefix](variables.tf#L49) | Prefix used for resource names. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L58) | Existing project id. | <code>string</code> | ✓ |  |
+| [prefix](variables.tf#L67) | Prefix used for resource names. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L76) | Existing project id. | <code>string</code> | ✓ |  |
 | [_testing](variables.tf#L18) | Populate this variable to avoid triggering the data source. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [ilb_right_enable](variables.tf#L28) | Route right to left traffic through ILB. | <code>bool</code> |  | <code>false</code> |
-| [ilb_session_affinity](variables.tf#L34) | Session affinity configuration for ILBs. | <code>string</code> |  | <code>&#34;CLIENT_IP&#34;</code> |
-| [ip_ranges](variables.tf#L40) | IP CIDR ranges used for VPC subnets. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#8230;&#125;</code> |
-| [region](variables.tf#L63) | Region used for resources. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
-| [zones](variables.tf#L69) | Zone suffixes used for instances. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#34;b&#34;, &#34;c&#34;&#93;</code> |
+| [ilb_connection_tracking](variables.tf#L28) | Connection tracking configuration for ILBs. Defaults keep connection tracking tables consistent across both ILBs after backend failures, the idle timeout uses the API default of 600 seconds when not set. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [ilb_right_enable](variables.tf#L46) | Route right to left traffic through ILB. | <code>bool</code> |  | <code>false</code> |
+| [ilb_session_affinity](variables.tf#L52) | Session affinity configuration for ILBs. | <code>string</code> |  | <code>&#34;NONE&#34;</code> |
+| [ip_ranges](variables.tf#L58) | IP CIDR ranges used for VPC subnets. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#8230;&#125;</code> |
+| [region](variables.tf#L81) | Region used for resources. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
+| [zones](variables.tf#L87) | Zone suffixes used for instances. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#34;b&#34;, &#34;c&#34;&#93;</code> |
 
 ## Outputs
 
@@ -96,5 +102,5 @@ module "test" {
     number = 1234567890
   }
 }
-# tftest modules=18 resources=50
+# tftest modules=18 resources=49
 ```

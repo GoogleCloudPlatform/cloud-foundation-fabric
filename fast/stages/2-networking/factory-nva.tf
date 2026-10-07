@@ -29,11 +29,35 @@ locals {
       for k, v in module.ilb : k => v.forwarding_rule_addresses[""]
     }
   }
+  # defaults that keep ILB sandwich connection tracking tables consistent
+  # across all load balancers fronting the same NVAs; the idle timeout is
+  # left to the API default (600s) so idle connections survive rebalancing
+  nva_conntrack_defaults = {
+    persist_conn_on_unhealthy = "NEVER_PERSIST"
+    track_per_session         = false
+  }
   nva_configs = {
     for k, v in local._nva_configs : try(v.name, k) => merge(v, {
       auto_instance_config = try(v.auto_instance_config, {})
       ilb_config           = try(v.ilb_config, {})
     })
+  }
+  # one health check per NVA, shared by all its ILBs
+  nva_health_checks = {
+    for k, v in local.nva_configs : k => merge(
+      {
+        check_interval_sec  = null
+        healthy_threshold   = null
+        timeout_sec         = null
+        unhealthy_threshold = null
+      },
+      # fall back to the net-lb-int default when no health check is set
+      try(
+        coalesce(v.ilb_config.health_check),
+        { tcp = { port_specification = "USE_SERVING_PORT" } }
+      ),
+      { project_id = v.project_id }
+    ) if length(try(v.ilb_config.forwarding_rules, [])) > 0
   }
   nva_instances = merge(flatten([
     for nva_key, nva_def in local.nva_configs : [
@@ -104,7 +128,11 @@ locals {
             network    = attachment.network
             subnetwork = attachment.subnet
           }
-          health_check = try(nva_def.ilb_config.health_check, null)
+          connection_tracking = merge(
+            local.nva_conntrack_defaults,
+            try(nva_def.ilb_config.connection_tracking, {})
+          )
+          session_affinity = try(nva_def.ilb_config.session_affinity, "NONE")
         }
       }
     ]
@@ -166,6 +194,100 @@ resource "google_compute_instance_group" "nva" {
   depends_on = [module.nva-instance]
 }
 
+resource "google_compute_health_check" "nva" {
+  for_each = local.nva_health_checks
+  project = lookup(
+    local.ctx_projects.project_ids,
+    replace(each.value.project_id, "$project_ids:", ""),
+    each.value.project_id
+  )
+  name                = "nva-${each.key}"
+  description         = "Shared health check for all ILBs of NVA ${each.key}."
+  check_interval_sec  = each.value.check_interval_sec
+  healthy_threshold   = each.value.healthy_threshold
+  timeout_sec         = each.value.timeout_sec
+  unhealthy_threshold = each.value.unhealthy_threshold
+  dynamic "grpc_health_check" {
+    for_each = try(each.value.grpc, null) == null ? [] : [each.value.grpc]
+    iterator = hc
+    content {
+      port               = try(hc.value.port, null)
+      port_name          = try(hc.value.port_name, null)
+      port_specification = try(hc.value.port_specification, null)
+      grpc_service_name  = try(hc.value.service_name, null)
+    }
+  }
+  dynamic "http_health_check" {
+    for_each = try(each.value.http, null) == null ? [] : [each.value.http]
+    iterator = hc
+    content {
+      host               = try(hc.value.host, null)
+      port               = try(hc.value.port, null)
+      port_name          = try(hc.value.port_name, null)
+      port_specification = try(hc.value.port_specification, null)
+      proxy_header       = try(hc.value.proxy_header, null)
+      request_path       = try(hc.value.request_path, null)
+      response           = try(hc.value.response, null)
+    }
+  }
+  dynamic "http2_health_check" {
+    for_each = try(each.value.http2, null) == null ? [] : [each.value.http2]
+    iterator = hc
+    content {
+      host               = try(hc.value.host, null)
+      port               = try(hc.value.port, null)
+      port_name          = try(hc.value.port_name, null)
+      port_specification = try(hc.value.port_specification, null)
+      proxy_header       = try(hc.value.proxy_header, null)
+      request_path       = try(hc.value.request_path, null)
+      response           = try(hc.value.response, null)
+    }
+  }
+  dynamic "https_health_check" {
+    for_each = try(each.value.https, null) == null ? [] : [each.value.https]
+    iterator = hc
+    content {
+      host               = try(hc.value.host, null)
+      port               = try(hc.value.port, null)
+      port_name          = try(hc.value.port_name, null)
+      port_specification = try(hc.value.port_specification, null)
+      proxy_header       = try(hc.value.proxy_header, null)
+      request_path       = try(hc.value.request_path, null)
+      response           = try(hc.value.response, null)
+    }
+  }
+  dynamic "ssl_health_check" {
+    for_each = try(each.value.ssl, null) == null ? [] : [each.value.ssl]
+    iterator = hc
+    content {
+      port               = try(hc.value.port, null)
+      port_name          = try(hc.value.port_name, null)
+      port_specification = try(hc.value.port_specification, null)
+      proxy_header       = try(hc.value.proxy_header, null)
+      request            = try(hc.value.request, null)
+      response           = try(hc.value.response, null)
+    }
+  }
+  dynamic "tcp_health_check" {
+    for_each = try(each.value.tcp, null) == null ? [] : [each.value.tcp]
+    iterator = hc
+    content {
+      port               = try(hc.value.port, null)
+      port_name          = try(hc.value.port_name, null)
+      port_specification = try(hc.value.port_specification, null)
+      proxy_header       = try(hc.value.proxy_header, null)
+      request            = try(hc.value.request, null)
+      response           = try(hc.value.response, null)
+    }
+  }
+  dynamic "log_config" {
+    for_each = try(each.value.enable_logging, false) == true ? [""] : []
+    content {
+      enable = true
+    }
+  }
+}
+
 module "ilb" {
   source     = "../../../modules/net-lb-int"
   for_each   = local.nva_ilbs
@@ -178,7 +300,14 @@ module "ilb" {
       group = google_compute_instance_group.nva[k].id
     } if v.nva_config == each.value.nva_config
   ]
-  health_check_config = each.value.health_check
+  backend_service_config = {
+    connection_tracking = each.value.connection_tracking
+    session_affinity    = each.value.session_affinity
+  }
+  # all ILBs of the same NVA share one health check, so that backend health
+  # is evaluated identically on every leg of the sandwich
+  health_check        = google_compute_health_check.nva[each.value.nva_config].id
+  health_check_config = null
   context = {
     project_ids = local.ctx_projects.project_ids
     networks    = local.ctx_vpcs.self_links

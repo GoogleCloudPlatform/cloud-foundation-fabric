@@ -23,7 +23,7 @@ module "gw" {
   machine_type = "f1-micro"
   boot_disk = {
     source = {
-      image = "projects/ubuntu-os-cloud/global/images/family/ubuntu-2004-lts"
+      image = "projects/ubuntu-os-cloud/global/images/family/ubuntu-2404-lts-amd64"
     }
     initialize_params = {
       type = "pd-ssd",
@@ -75,7 +75,8 @@ module "ilb-left" {
     }
   }
   backend_service_config = {
-    session_affinity = var.ilb_session_affinity
+    connection_tracking = var.ilb_connection_tracking
+    session_affinity    = var.ilb_session_affinity
   }
   backends = [for z, mod in module.gw : {
     group = mod.group.self_link
@@ -103,15 +104,14 @@ module "ilb-right" {
     }
   }
   backend_service_config = {
-    session_affinity = var.ilb_session_affinity
+    connection_tracking = var.ilb_connection_tracking
+    session_affinity    = var.ilb_session_affinity
   }
   backends = [for z, mod in module.gw : {
     group = mod.group.self_link
   }]
-  health_check_config = {
-    enable_logging = true
-    tcp = {
-      port = 22
-    }
-  }
+  # reuse the left ILB health check so backend health is evaluated
+  # identically on both sides of the sandwich
+  health_check        = module.ilb-left.health_check_self_link
+  health_check_config = null
 }
