@@ -25,8 +25,8 @@ locals {
     )
     is_win = length(regexall("WIN", local._image)) > 0
   }
-  node_metadata = var.node_config.metadata == null ? null : merge(
-    var.node_config.metadata,
+  node_metadata = merge(
+    coalesce(var.node_config.metadata, {}),
     { disable-legacy-endpoints = "true" }
   )
   # if no attributes passed for service account, use the GCE default
