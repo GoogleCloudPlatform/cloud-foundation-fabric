@@ -76,6 +76,7 @@ resource "google_workstations_workstation_config" "configs" {
   workstation_config_id   = each.key
   annotations             = each.value.annotations
   display_name            = each.value.display_name
+  enable_audit_agent      = each.value.enable_audit_agent
   labels                  = each.value.labels
   max_usable_workstations = each.value.max_workstations
   replica_zones           = each.value.replica_zones
@@ -179,10 +180,11 @@ resource "google_workstations_workstation_config" "configs" {
       dynamic "gce_pd" {
         for_each = persistent_directories.value.gce_pd == null ? [] : [""]
         content {
-          size_gb        = persistent_directories.value.gce_pd.size_gb
-          fs_type        = persistent_directories.value.gce_pd.fs_type
-          disk_type      = persistent_directories.value.gce_pd.disk_type
-          reclaim_policy = persistent_directories.value.gce_pd.reclaim_policy
+          size_gb         = persistent_directories.value.gce_pd.size_gb
+          fs_type         = persistent_directories.value.gce_pd.fs_type
+          disk_type       = persistent_directories.value.gce_pd.disk_type
+          reclaim_policy  = persistent_directories.value.gce_pd.reclaim_policy
+          source_snapshot = persistent_directories.value.gce_pd.source_snapshot
         }
       }
     }
@@ -197,6 +199,7 @@ resource "google_workstations_workstation" "workstations" {
   workstation_config_id  = google_workstations_workstation_config.configs[each.value.workstation_config_id].workstation_config_id
   workstation_cluster_id = google_workstations_workstation_cluster.cluster.workstation_cluster_id
   location               = google_workstations_workstation_cluster.cluster.location
+  display_name           = each.value.display_name
   labels                 = each.value.labels
   env                    = each.value.env
   annotations            = each.value.annotations

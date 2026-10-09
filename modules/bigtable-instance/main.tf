@@ -91,7 +91,7 @@ resource "google_bigtable_table" "default" {
 resource "google_bigtable_gc_policy" "default" {
   for_each = { for k, v in local.gc_pairs : k => v if v.gc_policy != null }
 
-  table         = each.value.table
+  table         = google_bigtable_table.default[each.value.table].name
   column_family = each.value.column_family
   instance_name = google_bigtable_instance.default.name
   project       = var.project_id
