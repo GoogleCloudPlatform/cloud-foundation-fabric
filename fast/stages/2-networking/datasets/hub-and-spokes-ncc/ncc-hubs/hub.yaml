@@ -14,11 +14,9 @@
 
 # yaml-language-server: $schema=../../../schemas/ncc-hub.schema.json
 
-name: hub
-project_id: $project_ids:net-core-0
+name: placard-ncc-hub
+project_id: $project_ids:net-prod-0
 groups:
   default:
     auto_accept:
-      - $project_ids:net-core-0
       - $project_ids:net-prod-0
-      - $project_ids:net-dev-0

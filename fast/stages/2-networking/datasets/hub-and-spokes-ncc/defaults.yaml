@@ -21,23 +21,23 @@ context:
       - 130.211.0.0/22
       - 209.85.152.0/22
       - 209.85.204.0/22
+    # Standard Google Identity-Aware Proxy (IAP) range for secure SSH/RDP without public IPs
+    iap_forwarders:
+      - 35.235.240.0/20
     rfc1918:
       - 10.0.0.0/8
       - 172.16.0.0/12
       - 192.168.0.0/16
   locations:
-    primary: europe-west1
-    secondary: europe-west3
+    london: europe-west2
+    new-york: us-east1
+    los-angeles: us-west2
+    berlin: europe-west3
   iam_principals: {}
 projects:
   defaults:
     locations:
-      storage: eu
-  # edit and uncomment for vpc-sc cooperative configuration
-  # overrides:
-  #   vpc_sc:
-  #     perimeter_name: $vpc_sc_perimeters:default
-  #     is_dry_run: true
+      storage: europe-west2
 vpcs:
   defaults:
     auto_create_subnetworks: false
@@ -45,5 +45,5 @@ vpcs:
     mtu: 1500
 output_files:
   # local path is optional but recommended when starting
-  # local_path: ~/fast-config/fast-test-00
+  local_path: ~/fast-config/placard
   storage_bucket: $storage_buckets:iac-0/iac-outputs

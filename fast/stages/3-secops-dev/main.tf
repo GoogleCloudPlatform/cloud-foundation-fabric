@@ -127,12 +127,12 @@ resource "google_apikeys_key" "feed_api_key" {
   }
 }
 
-module "secops-rules" {
-  source     = "../../../modules/secops-rules"
-  project_id = var.project_id
-  tenant_config = {
-    region      = var.tenant_config.region
-    customer_id = var.tenant_config.customer_id
-  }
-  factories_config = var.factories_config
-}
+# module "secops-rules" {
+#   source     = "../../../modules/secops-rules"
+#   project_id = module.project.project_id
+#   tenant_config = {
+#     region      = var.tenant_config.region
+#     customer_id = var.tenant_config.customer_id
+#   }
+#   factories_config = var.factories_config
+# }

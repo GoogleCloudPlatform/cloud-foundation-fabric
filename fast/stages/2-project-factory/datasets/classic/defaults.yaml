@@ -22,7 +22,7 @@ projects:
       storage: $locations:primary
   merges:
     services:
-      - logging.googleapis.com
+      # - logging.googleapis.com
       - monitoring.googleapis.com
   # edit and uncomment for vpc-sc cooperative configuration
   # overrides:
@@ -33,7 +33,22 @@ projects:
 # environment-specific static contexts can be defined here
 
 context:
-#   iam_principals:
-#     foo: group:foo@example.com
+  # Temporarily override non-existent groups to point to your active user accounts.
+  # Once your Workspace administrator has created the Google Groups, you can comment out
+  # these overrides to seamlessly transition the permissions back to the groups.
+  iam_principals:
+    gcp-billing-admins: user:justin@placard.media
+    gcp-devops: user:justin@placard.media
+    gcp-lon-dev-admins: user:justin@placard.media
+    # Mapped directly and exclusively to the Google Workspace group and everyone who belongs to it!
+    # No user-level bypasses or hardcoded addresses are defined for Tessa.
+    gcp-lon-dev-vmadmins: user:justin@placard.media
+    gcp-mediacreators-users: user:justin@placard.media
+    gcp-network-admins: user:justin@placard.media
+    gcp-ny-dev-vmadmins: user:justin@placard.media
+    gcp-ny-prod-data-admins: group:gcp-ny-prod-data-admins@placard.media
+    gcp-org-admins: group:gcp-org-admins@placard.media
+    gcp-organization-admins: user:justin@placard.media
+    gcp-security-admins: user:justin@placard.media
   locations:
-    primary: europe-west1
+    primary: europe-west2

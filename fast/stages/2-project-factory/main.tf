@@ -17,9 +17,13 @@
 # tfdoc:file:description Project factory.
 
 locals {
+  _context_keys = distinct(concat(keys(var.context), keys(try(local.defaults.context, {}))))
   _context = {
-    for k, v in var.context :
-    k => merge(v, try(local.defaults.context[k], {}))
+    for k in local._context_keys :
+    k => merge(
+      try(var.context[k], {}),
+      try(local.defaults.context[k], {})
+    )
   }
   context = merge(local._context, {
     vpc_sc_perimeters = merge(var.perimeters, local._context.vpc_sc_perimeters)
@@ -129,3 +133,5 @@ module "factory" {
     paths = var.factories_config.paths
   }
 }
+
+

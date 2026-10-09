@@ -171,7 +171,7 @@
 - **pam_entitlements**: *reference([pam_entitlements](#refs-pam_entitlements))*
 - **assured_workload_config**: *reference([assured_workload_config](#refs-assured_workload_config))*
 - **parent**: *string*
-  <br>*pattern: ^(?:folders/[0-9]+|organizations/[0-9]+|\$folder_ids:[a-z0-9_-]+)$*
+  <br>*pattern: ^(?:folders/[0-9]+|organizations/[0-9]+|\$folder_ids:[a-z0-9_/-]+)$*
 - **tag_bindings**: *reference([tag_bindings](#refs-tag_bindings))*
 
 ## Definitions

@@ -1,0 +1,61 @@
+#!/usr/bin/env bash
+
+# -----------------------------------------------------------------------------
+# Google Cloud Platform - Direct VM & Disk Scan-and-Delete Recovery Script
+# -----------------------------------------------------------------------------
+# Saved as a .txt file in fast/stages/3-workloads to prevent accidental execution.
+# To execute this script in your GCP Cloud Shell:
+#   1. Rename it to a shell script: mv gcloud-DEL-compute.txt gcloud-DEL-compute.sh
+#   2. Mark it as executable:      chmod +x gcloud-DEL-compute.sh
+#   3. Run the script:              ./gcloud-DEL-compute.sh
+# -----------------------------------------------------------------------------
+
+# Define your complete list of projects
+PROJECTS=(
+  "placard-lon-dev-project-0"
+  "placard-ny-dev-project-0"
+  "placard-la-dev-project-0"
+  "placard-dev-net-spoke-0"
+  "placard-prod-net-spoke-0"
+  "placard-prod-net-core-0"
+  "placard-prod-iac-core-0"
+  "placard-dev-secops-core-0"
+)
+
+echo "=========================================================="
+echo "🔍 DIRECT SCAN: Locating active VMs inside your projects..."
+echo "=========================================================="
+
+for project in "${PROJECTS[@]}"; do
+  echo -e "\n----------------------------------------------------------"
+  echo "Checking project: ${project} ..."
+  
+  # Fetch VMs inside the project
+  VMS=$(gcloud compute instances list --project="${project}" --format="value(name,zone)" 2>/dev/null)
+  
+  if [ -z "$VMS" ]; then
+    echo "✔ No VMs found in ${project}."
+  else
+    # Loop through each found VM and permanently delete it!
+    echo "$VMS" | while read -r vm_line; do
+      if [ ! -z "$vm_line" ]; then
+        VM_NAME=$(echo "$vm_line" | awk '{print $1}')
+        VM_ZONE=$(echo "$vm_line" | awk '{print $2}')
+        
+        echo "🚨 FOUND ACTIVE VM: ${VM_NAME} in zone ${VM_ZONE}!"
+        echo "Permanently deleting ${VM_NAME} from ${project}..."
+        
+        gcloud compute instances delete "${VM_NAME}" \
+          --project="${project}" \
+          --zone="${VM_ZONE}" \
+          --quiet
+          
+        echo "✔ Successfully deleted ${VM_NAME}!"
+      fi
+    done
+  fi
+done
+
+echo -e "\n=========================================================="
+echo "Done scanning and deleting. All VM instances and disks are cleared!"
+echo "=========================================================="

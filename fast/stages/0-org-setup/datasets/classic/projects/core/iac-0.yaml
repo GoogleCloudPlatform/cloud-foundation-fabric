@@ -45,6 +45,10 @@ iam_by_principals:
     - roles/serviceusage.serviceUsageConsumer
   $iam_principals:service_accounts/iac-0/iac-security-ro:
     - roles/serviceusage.serviceUsageConsumer
+  $iam_principals:service_accounts/iac-0/iac-vpcsc-rw:
+    - roles/serviceusage.serviceUsageConsumer
+  $iam_principals:service_accounts/iac-0/iac-vpcsc-ro:
+    - roles/serviceusage.serviceUsageConsumer
 services:
   - accesscontextmanager.googleapis.com
 # uncomment if you want to use Assured Workloads

@@ -1,0 +1,55 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# yaml-language-server: $schema=../../../schemas/project.schema.json
+
+name: ny-dev-project-0
+parent: $folder_ids:naeu-department/ny-team/ny-nonprod/dev-project
+
+# Enable Compute and network APIs
+services:
+  - compute.googleapis.com
+  - iap.googleapis.com
+  - logging.googleapis.com
+  - monitoring.googleapis.com
+
+# Connect this project as a Service Project to your Shared VPC host project (net-dev-0)
+# Note: The network_users list does not support context-interpolation in the project module,
+# so we declare your active user account directly to authorize the Shared VPC network connection.
+shared_vpc_service_config:
+  host_project: $project_ids:net-dev-0
+  network_users:
+    - user:justin@placard.media
+
+# Custom IAM Roles created specifically inside this project
+custom_roles:
+  ny_dev_vm_viewer:
+    title: "NY Dev VM Viewer"
+    description: "Grants specific permissions to retrieve details of compute instances."
+    permissions:
+      - compute.instances.get
+
+# Project-Level IAM Permissions
+#
+#----------------------------------------------------------------------------
+# Principal-based mappings declared under iam_by_principals (conforms to schema)
+iam_by_principals:
+  # Bind your NY developers group context key to the GCE/IAP access roles
+  # This resolves dynamically to Tessa Bloggs (user:tessa.bloggs@placard.media)
+  # via the Stage 2 context-merging logic!
+  "$iam_principals:gcp-ny-dev-vmadmins":
+    - roles/compute.instanceAdmin.v1
+    - roles/compute.osLogin
+    - roles/iap.tunnelResourceAccessor
+    - $custom_roles:ny_dev_vm_viewer

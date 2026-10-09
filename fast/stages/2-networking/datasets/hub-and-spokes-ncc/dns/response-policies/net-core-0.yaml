@@ -16,9 +16,10 @@
 
 project_id: $project_ids:net-core-0
 networks:
-  - $networks:hub
-  - $networks:prod
-  - $networks:dev
+  - $networks:london
+  - $networks:new-york
+  - $networks:los-angeles
+  - $networks:berlin
 rules:
   accounts:
     dns_name: "accounts.google.com."

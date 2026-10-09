@@ -36,3 +36,4 @@ logs/*
 .jetskicli
 .agents
 scratch/
+modules/tmp*

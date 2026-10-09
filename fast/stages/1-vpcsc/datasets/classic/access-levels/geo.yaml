@@ -9,15 +9,39 @@
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the_org_setup
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the 'AS IS' BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
 # yaml-language-server: $schema=../../../schemas/access-level.schema.json
 
-# this is just an example that reflects the FAST core team members' locations
-# and needs to be edited, or not referenced in the perimeter variable
 conditions:
   - regions:
-      - ES
-      - ID
-      - IT
+      - GB # United Kingdom (Primary office)
+      - US # United States (Spoke office)
+      - BE # Belgium (europe-west1 - Core Cloud Shell VM location)
+      - DE # Germany (europe-west3 - Ephemeral Cloud Shell location)
+      - NL # Netherlands (europe-west4)
+      - IE # Ireland (europe-west2)
+      - FI # Finland (europe-north1)
+      - FR # France (europe-west9)
+      - ES # Spain (europe-south1)
+      - IT # Italy (europe-west8)
+      - PL # Poland (europe-central2)
+      - CH # Switzerland (europe-west6)
+      - TW # Taiwan (asia-east1 - Ephemeral Cloud Shell location)
+      - SG # Singapore (asia-southeast1)
+      - CA # Canada (northamerica-northeast1)
+      - IN # India (asia-south1 - Ephemeral Cloud Shell location)
+      - JP # Japan (asia-northeast1 - Ephemeral Cloud Shell location)
+      - BR # Brazil (southamerica-east1 - Ephemeral Cloud Shell location)
+      - AU # Australia (australia-southeast1)
+      - HK # Hong Kong (asia-east2)
+      - KR # South Korea (asia-northeast3)
+      - CL # Chile (southamerica-west1)

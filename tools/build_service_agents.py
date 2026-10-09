@@ -70,6 +70,7 @@ SKIP_IAM_AGENTS = [
     'service-PROJECT_NUMBER@gcp-sa-krmapihosting-dataplane.iam.gserviceaccount.com',
     'service-PROJECT_NUMBER@gcp-sa-krmapihosting.iam.gserviceaccount.com',
     'service-PROJECT_NUMBER@gcp-sa-logging.iam.gserviceaccount.com',
+    'service-PROJECT_NUMBER@gcp-sa-monitoring-notification.iam.gserviceaccount.com',
     'service-PROJECT_NUMBER@gcp-sa-prod-bigqueryomni.iam.gserviceaccount.com',
     'service-PROJECT_NUMBER@gcp-sa-scc-notification.iam.gserviceaccount.com',
     'service-PROJECT_NUMBER@gcp-sa-securitycenter.iam.gserviceaccount.com',

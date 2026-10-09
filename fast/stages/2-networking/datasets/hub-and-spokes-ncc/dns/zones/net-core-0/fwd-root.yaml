@@ -21,4 +21,7 @@ forwarding:
     "8.8.8.8": default
     "1.1.1.1": default
   client_networks:
-    - $networks:hub
+    - $networks:london
+    - $networks:new-york
+    - $networks:los-angeles
+    - $networks:berlin

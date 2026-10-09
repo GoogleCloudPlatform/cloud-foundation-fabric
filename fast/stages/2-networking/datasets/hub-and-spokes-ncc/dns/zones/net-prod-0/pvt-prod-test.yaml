@@ -18,8 +18,10 @@ project_id: $project_ids:net-prod-0
 domain: prod.test.
 private:
   client_networks:
-    - $networks:hub
-    - $networks:prod
+    - $networks:london
+    - $networks:new-york
+    - $networks:los-angeles
+    - $networks:berlin
 recordsets:
   "A localhost":
     records: ["127.0.0.1"]

@@ -1643,7 +1643,7 @@
   is_primary: true
   aliases:
   - monitoring
-  skip_iam: false
+  skip_iam: true
 - name: multiclusteringress
   display_name: Multi Cluster Ingress Service Account
   api: multiclusteringress.googleapis.com

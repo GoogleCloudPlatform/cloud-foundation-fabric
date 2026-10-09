@@ -16,19 +16,19 @@
 
 global:
   # use `gcloud beta billing accounts list` to populate
-  billing_account: ABCDEF-0123456-ABCDEF
+  billing_account: 011375-A0472C-432D72
   organization:
     # use `gcloud organizations list`` to populate
-    domain: fast-test-00.example.com
-    id: 1234567890
-    customer_id: abcd123456
+    domain: placard.media
+    id: "150829647948"
+    customer_id: C03zf671x
 observability:
   project_id: $project_ids:log-0
   number: $project_numbers:log-0
 projects:
   defaults:
     # prefix must be unique and less than 9 characters
-    prefix: test00
+    prefix: placard
     locations:
       bigquery: $locations:primary
       logging: $locations:primary
@@ -37,15 +37,17 @@ projects:
 context:
   # you can populate context variables here for use in YAML replacements
   email_addresses:
-    gcp-organization-admins: gcp-organization-admins@example.com
+    gcp-organization-admins: justin@placard.media
   iam_principals:
     # this is the default group used in bootstrap, initial user must be a member
-    gcp-organization-admins: group:gcp-organization-admins@example.com
+    # Since the gcp-org-admins group doesn't exist yet, we use your active user to bootstrap
+    gcp-org-admins: group:gcp-org-admins@placard.media
+    gcp-organization-admins: group:gcp-org-admins@placard.media
   locations:
-    primary: europe-west1
+    primary: europe-west2
 output_files:
   # local path is optional but recommended when starting
-  local_path: ~/fast-config/fast-test-00
+  local_path: ~/fast-config/placard
   storage_bucket: $storage_buckets:iac-0/iac-outputs
   providers:
     0-org-setup:
