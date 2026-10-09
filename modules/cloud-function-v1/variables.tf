@@ -66,7 +66,7 @@ variable "bundle_config" {
         ||
         # local ZIP archive
         (
-          try(fileexists(pathexpand(var.bundle_config.path)), null) != null &&
+          try(fileexists(pathexpand(var.bundle_config.path)), false) &&
           endswith(var.bundle_config.path, ".zip")
         )
       )

@@ -198,7 +198,7 @@ module "public-dns" {
 | [iam](variables.tf#L41) | IAM bindings in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>null</code> |
 | [labels](variables.tf#L47) | Labels to be assigned to the zone. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 | [recordsets](variables.tf#L63) | Map of DNS recordsets in \"type name\" => {ttl, [records]} format. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [zone_config](variables.tf#L120) | DNS zone configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [zone_config](variables.tf#L122) | DNS zone configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 
 ## Outputs
 
