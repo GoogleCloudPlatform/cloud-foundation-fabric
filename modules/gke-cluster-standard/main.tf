@@ -47,7 +47,7 @@ resource "google_container_cluster" "cluster" {
   datapath_provider = (
     var.enable_features.dataplane_v2
     ? "ADVANCED_DATAPATH"
-    : "LEGACY_DATAPATH"
+    : null
   )
 
   dynamic "default_snat_status" {
@@ -149,6 +149,12 @@ resource "google_container_cluster" "cluster" {
     }
     stateful_ha_config {
       enabled = var.enable_addons.stateful_ha
+    }
+  }
+  dynamic "anonymous_authentication_config" {
+    for_each = var.enable_features.anonymous_authentication != null ? [""] : []
+    content {
+      mode = var.enable_features.anonymous_authentication
     }
   }
   dynamic "authenticator_groups_config" {

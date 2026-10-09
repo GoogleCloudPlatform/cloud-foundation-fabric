@@ -38,6 +38,7 @@ locals {
   restricted_services = yamldecode(file(local.paths.restricted_services))
   # extend context with our own data
   ctx = merge(local._ctx, {
+    folder_ids = merge(var.folder_ids, local._ctx.folder_ids)
     iam_principals = merge(
       var.iam_principals,
       {
@@ -51,6 +52,10 @@ locals {
         for _, v in var.logging_sinks : v.writer_identity
       ])
     })
+    organization_ids = merge(
+      { default = "organizations/${var.organization.id}" },
+      local._ctx.organization_ids
+    )
     project_numbers = local._project_numbers
     resource_sets = merge(
       {

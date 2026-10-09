@@ -1,6 +1,9 @@
 automation = {
   outputs_bucket = "test"
 }
+folder_ids = {
+  teams = "folders/1234567890"
+}
 factories_config = {
   paths = {
     access_levels    = "./data-simple/access-levels"

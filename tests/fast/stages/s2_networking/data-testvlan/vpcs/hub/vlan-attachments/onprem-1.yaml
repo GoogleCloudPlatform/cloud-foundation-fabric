@@ -22,6 +22,7 @@ router_config:
   name: $routers:hub/hybrid-connectivity-router
 ncc_spoke_config:
   hub: $ncc_hubs:hub
+  site_to_site_data_transfer: false
 bgp_peer:
   custom_advertise:
     all_subnets: true

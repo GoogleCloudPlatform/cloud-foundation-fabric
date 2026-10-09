@@ -38,6 +38,7 @@
           "properties": {
             "src_ip_ranges": {
               "type": "array",
+              "maxItems": 10,
               "items": {
                 "type": "string"
               }

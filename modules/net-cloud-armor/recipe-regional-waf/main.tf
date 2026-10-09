@@ -15,6 +15,17 @@
  */
 
 locals {
+  # Cloud Armor limits basic match rules to 10 source ranges, trusted
+  # ranges are split across as many rules as needed
+  trusted_rules = {
+    for i, r in chunklist(var.trusted_ranges, 10) : "allow-trusted-${i}" => {
+      priority = 100 + i
+      action   = "allow"
+      match = {
+        src_ip_ranges = r
+      }
+    }
+  }
   waf_rules = {
     for i, rs in var.waf_config.rule_sets : "waf-${rs}" => {
       priority = 1000 + i
@@ -87,18 +98,7 @@ module "waf" {
   project_id = module.project.id
   region     = var.region
   name       = "${var.name}-waf"
-  rules = merge(
-    local.waf_rules,
-    length(var.trusted_ranges) == 0 ? {} : {
-      allow-trusted = {
-        priority = 100
-        action   = "allow"
-        match = {
-          src_ip_ranges = var.trusted_ranges
-        }
-      }
-    }
-  )
+  rules      = merge(local.trusted_rules, local.waf_rules)
 }
 
 module "ralb" {
