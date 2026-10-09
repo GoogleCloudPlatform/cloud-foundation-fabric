@@ -152,12 +152,12 @@ module "firestore" {
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
 | [database](variables.tf#L41) | Database attributes. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
-| [project_id](variables.tf#L228) | Project id. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L230) | Project id. | <code>string</code> | ✓ |  |
 | [backup_schedule](variables.tf#L17) | Backup schedule. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [database_create](variables.tf#L95) | Flag indicating whether the database should be created of not. | <code>string</code> |  | <code>&#34;true&#34;</code> |
-| [documents](variables.tf#L101) | Documents. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [fields](variables.tf#L112) | Fields. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [indexes](variables.tf#L164) | Indexes. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [database_create](variables.tf#L97) | Flag indicating whether the database should be created of not. | <code>string</code> |  | <code>&#34;true&#34;</code> |
+| [documents](variables.tf#L103) | Documents. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [fields](variables.tf#L114) | Fields. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [indexes](variables.tf#L166) | Indexes. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
 
