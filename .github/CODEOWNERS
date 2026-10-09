@@ -1,0 +1,21 @@
+# Default fallback owners for the entire repository
+* @Mother-London/mother-london-it
+
+# Core FAST Stages (Admin-Only Access)
+/fast/stages/0-org-setup/ @Mother-London/mother-london-it
+/fast/stages/1-vpcsc/ @Mother-London/mother-london-it
+/fast/stages/2-networking/ @Mother-London/mother-london-it
+/fast/stages/2-security/ @Mother-London/mother-london-it
+
+# Standard Project Factory / Teams Folder Configuration
+/fast/stages/2-project-factory/datasets/classic/folders/naeu-department/ @Mother-London/mother-london-it
+/fast/stages/2-project-factory/datasets/classic/folders/naeu-department/lon-team/ @Mother-London/mother-london-it
+/fast/stages/2-project-factory/datasets/classic/folders/naeu-department/ny-team/ @ny-team-admins @cloud-foundation-admins
+
+# Team Project Definitions in Project Factory
+/fast/stages/2-project-factory/datasets/classic/projects/lon-* @Mother-London/mother-london-it
+/fast/stages/2-project-factory/datasets/classic/projects/ny-* @ny-team-admins @cloud-foundation-admins
+
+# Sensitive Terraform / Fabric Module Definitions
+/modules/organization/ @Mother-London/mother-london-it
+/modules/vpc-sc/ @Mother-London/mother-london-it
