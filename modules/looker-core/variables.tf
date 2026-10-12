@@ -95,15 +95,15 @@ variable "maintenance_config" {
   validation {
     condition = (
       try(var.maintenance_config.maintenance_window, null) == null ? true : (
-        var.maintenance_config.start_time.hours >= 0 &&
-        var.maintenance_config.start_time.hours <= 23 &&
-        var.maintenance_config.start_time.minutes == 0 &&
-        var.maintenance_config.start_time.seconds == 0 &&
-        var.maintenance_config.start_time.nanos == 0 &&
+        var.maintenance_config.maintenance_window.start_time.hours >= 0 &&
+        var.maintenance_config.maintenance_window.start_time.hours <= 23 &&
+        var.maintenance_config.maintenance_window.start_time.minutes == 0 &&
+        var.maintenance_config.maintenance_window.start_time.seconds == 0 &&
+        var.maintenance_config.maintenance_window.start_time.nanos == 0 &&
         # Maintenance window day validation
         contains([
           "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"
-        ], var.maintenance_config.day)
+        ], var.maintenance_config.maintenance_window.day)
       )
     )
     error_message = "Maintenance window day must be between 1 and 7, maintenance window hour must be between 0 and 23 and maintenance window update_track must be 'stable' or 'canary'."

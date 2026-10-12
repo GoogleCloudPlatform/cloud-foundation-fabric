@@ -259,5 +259,5 @@ resource "google_pubsub_topic" "topic" {
   count        = local.topic_create ? 1 : 0
   project      = local.project_id
   name         = var.notification_config.topic_name
-  kms_key_name = try(var.notification_config.topic_create.kms_key_id, null)
+  kms_key_name = try(var.notification_config.create_topic.kms_key_id, null)
 }

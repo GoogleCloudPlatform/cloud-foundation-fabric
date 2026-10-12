@@ -19,7 +19,7 @@ locals {
     startswith(var.bundle_config.path, "gs://")
     ? "gcs"
     : (
-      try(fileexists(pathexpand(var.bundle_config.path)), null) != null &&
+      try(fileexists(pathexpand(var.bundle_config.path)), false) &&
       endswith(var.bundle_config.path, ".zip")
       ? "local-file"
       : "local-folder"

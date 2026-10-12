@@ -529,7 +529,7 @@ resource "google_compute_region_url_map" "default" {
                   exact_match   = h.value.type == "exact" ? h.value.value : null
                   invert_match  = h.value.invert_match
                   prefix_match  = h.value.type == "prefix" ? h.value.value : null
-                  present_match = h.value.type == "present" ? h.value.value : null
+                  present_match = h.value.type == "present" ? true : null
                   regex_match   = h.value.type == "regex" ? h.value.value : null
                   suffix_match  = h.value.type == "suffix" ? h.value.value : null
                   dynamic "range_match" {

@@ -41,13 +41,14 @@ variable "external_addresses" {
   }))
   default = {}
   validation {
-    condition = (
-      try(var.external_addresses.ipv6, null) == null
+    condition = alltrue([
+      for k, v in var.external_addresses :
+      try(v.ipv6, null) == null
       || can(
         regex("^(NETLB|VM)$",
-        try(var.external_addresses.ipv6.endpoint_type, null))
+        try(v.ipv6.endpoint_type, null))
       )
-    )
+    ])
     error_message = "IPv6 endpoint type must be NETLB, VM."
   }
 }

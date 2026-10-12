@@ -24,6 +24,21 @@ The core of this dataset is the Network Virtual Appliance (NVA), which is deploy
 
 The NVA configuration is defined in the [`nvas/main.yaml`](./nvas/main.yaml) file. By default, the NVA factory allows for quick prototyping by deploying a set of very simple Linux instances that take care of routing traffic across the different NICs. The factory also allows the user to swap the automatically created instances with a production-grade set of NVAs, not provisioned by this codebase.
 
+### Load balancer health checks and connection tracking
+
+The ILBs in front of the NVAs form a "sandwich": traffic enters an NVA through the ILB in one VPC and comes back through the ILB in another. Stateful NVAs need both legs of a flow to reach the same instance. Symmetric hashing gives that only when a packet misses the connection tracking table of each ILB, and the tables of different ILBs are not synchronized. The factory configures the ILBs so the tables stay consistent after a backend failure:
+
+- all ILBs of an NVA share a single health check, so they evaluate backend health with the same probe, port, interval and thresholds
+- `persist_conn_on_unhealthy` is set to `NEVER_PERSIST`, so an ILB drops its entries for an unhealthy NVA and stops pinning flows to it
+- `track_per_session` is set to `false` (`PER_CONNECTION` tracking), so every new TCP connection is hashed again and stale entries cannot capture it
+- `session_affinity` is set to `NONE`; with `CLIENT_IP` or `CLIENT_IP_PROTO` the API defaults to `PER_SESSION` tracking unless `track_per_session` is explicitly set to `false`
+
+The idle timeout keeps the API default of 600 seconds. A shorter timeout makes entries expire sooner, and the next packet of an idle connection is hashed again. If the set of healthy NVAs has changed in the meantime, for example after an NVA recovers or is added, the connection can move to an NVA that has no state for it, and the NVA drops it. Every packet refreshes the timer, so a shorter timeout does not clear a flow that keeps retrying either. Lower it only if your applications send keepalives more often than the timeout. Raising it above the idle timeout configured on the NVAs gains nothing, since the NVAs drop the session first.
+
+All these settings can be overridden per NVA via `ilb_config.connection_tracking` and `ilb_config.session_affinity`. Changing any of them flushes the connection tracking tables of the ILBs once, which resets open connections through the NVAs.
+
+Health check probes reach every NIC of every NVA, so each VPC the NVAs attach to must allow ingress from the health check ranges on the probe port. In this dataset the [hierarchical firewall policy](./firewall-policies/networking-policy.yaml) allows TCP 22, 80 and 443; extend it if you move the health check to another port.
+
 ## Routing Configuration
 
 The spoke VPCs and the DMZ VPC are configured to use the NVA as their default gateway. This is achieved by creating a default route in each VPC that points to the ILB of the NVA. The `hub` VPC has a specific route to the internet for `8.8.8.8/32`.
