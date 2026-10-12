@@ -145,7 +145,8 @@
 - **name**: *string*
 - **org_policies**: *object*
   <br>*additional properties: false*
-  - **`^[a-z]+\.`**: *object*
+  - **`^(dry_run:)?[a-z-]+[a-zA-Z0-9\.]+$`**: *object*
+    <br>*additional properties: false*
     - **inherit_from_parent**: *boolean*
     - **reset**: *boolean*
     - **rules**: *array*
@@ -168,6 +169,7 @@
           - **expression**: *string*
           - **location**: *string*
           - **title**: *string*
+        - **parameters**: *string*
 - **pam_entitlements**: *reference([pam_entitlements](#refs-pam_entitlements))*
 - **assured_workload_config**: *reference([assured_workload_config](#refs-assured_workload_config))*
 - **parent**: *string*

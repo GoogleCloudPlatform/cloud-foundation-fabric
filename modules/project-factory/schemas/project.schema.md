@@ -209,7 +209,8 @@
     <br>*enum: ['INFOBLOX']*
 - **org_policies**: *object*
   <br>*additional properties: false*
-  - **`^[a-z]+\.`**: *object*
+  - **`^(dry_run:)?[a-z-]+[a-zA-Z0-9\.]+$`**: *object*
+    <br>*additional properties: false*
     - **inherit_from_parent**: *boolean*
     - **reset**: *boolean*
     - **rules**: *array*
@@ -232,6 +233,7 @@
           - **expression**: *string*
           - **location**: *string*
           - **title**: *string*
+        - **parameters**: *string*
 - **quotas**: *object*
   <br>*additional properties: false*
   - **`^[a-zA-Z0-9_-]+$`**: *object*
