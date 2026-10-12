@@ -216,11 +216,12 @@ def handle_tftest(test_file, target, save):
   spec = raw.get('tests', {})[test_name] or {}
   extra_dirs = spec.get('extra_dirs', [])
   extra_files = spec.get('extra_files', [])
+  workspace = spec.get('workspace')
   tf_var_files = common + [f'{test_name}.tfvars'] + spec.get('tfvars', [])
   module_path = BASEDIR / module
   summary = fixtures.plan_summary(module_path, test_base_dir, tf_var_files,
                                   extra_files=extra_files,
-                                  extra_dirs=extra_dirs)
+                                  extra_dirs=extra_dirs, workspace=workspace)
 
   inventory_path = test_base_dir / f'{test_name}.yaml' if save else None
   output_summary(summary, inventory_path, save)
