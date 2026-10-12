@@ -20,6 +20,7 @@
   - [Generated provider and Terraform variables for projects](#generated-provider-and-terraform-variables-for-projects)
     - [Individual output files](#individual-output-files)
     - [Pattern-defined output files](#pattern-defined-output-files)
+  - [Scaling with workspaces](#scaling-with-workspaces)
 - [Files](#files)
 - [Variables](#variables)
 - [Outputs](#outputs)
@@ -465,6 +466,23 @@ Pattern-based files make specific assumptions:
 - service accounts can only refer to project-factory generated service accounts in each project definition
 - the backend prefix is always set, as the same bucket is used for all provider files
 
+### Scaling with workspaces
+
+In its default configuration (`default` Terraform workspace), this stage reads a single dataset from `var.factories_config.dataset` (defaulting to `datasets/classic`), placing all folders, projects, and sub-resources in a single state file and plan/apply cycle. For production environments managing larger numbers of projects or high resource density per project, datasets can be partitioned by logical groupings (for example per team, business unit, or application domain, typically 10–20 projects per slice) and managed via separate Terraform workspaces.
+
+When `terraform.workspace` is set to any value other than `default`, `var.factories_config.dataset` acts as the umbrella directory and the active dataset path resolves to `${var.factories_config.dataset}/${terraform.workspace}`:
+
+- state is stored under `2-project-factory/${terraform.workspace}.tfstate` in the stage state bucket (within the `2-project-factory/` managed folder created by `0-org-setup`)
+- stage version tracking writes to `versions/${var.stage_name}-version-${terraform.workspace}.txt`
+- generated output files, backend prefixes, and state bucket managed folders are namespaced under `${terraform.workspace}/` (e.g., `providers/${terraform.workspace}/...` and `tfvars/${terraform.workspace}/...`)
+- shared paths that live at the umbrella level rather than inside each workspace folder (such as shared `project-templates` or `defaults.yaml`) can be referenced in `factories_config.paths` using a leading `./` (for example `project_templates = "./datasets/project-templates"`), which resolves relative to the stage directory instead of the workspace folder
+
+To migrate an existing `default` workspace deployment to workspace-based datasets:
+
+1. Move the existing dataset contents into a workspace-named subdirectory under the umbrella folder (for example `datasets/team-a/`) and set `factories_config = { dataset = "datasets" }` in `2-project-factory.auto.tfvars`.
+2. Create and select the new workspace (`terraform workspace new team-a`), and migrate the state in the GCS backend from `2-project-factory/default.tfstate` to `2-project-factory/team-a.tfstate` (or pull the state before switching workspaces and push it into `team-a`, then remove `default.tfstate`).
+3. Run `terraform plan` in the `team-a` workspace to verify that only the stage version object and any output file paths reflect the new workspace prefix.
+
 <!-- TFDOC OPTS files:1 show_extra:1 exclude:2-project-factory-providers.tf -->
 <!-- BEGIN TFDOC -->
 ## Files
@@ -511,6 +529,6 @@ Pattern-based files make specific assumptions:
 
 | name | description | sensitive | consumers |
 |---|---|:---:|---|
-| [projects](outputs.tf#L17) | Attributes for managed projects. |  |  |
-| [vpcs](outputs.tf#L22) | VPCs. |  |  |
+| [projects](outputs.tf#L23) | Attributes for managed projects. |  |  |
+| [vpcs](outputs.tf#L28) | VPCs. |  |  |
 <!-- END TFDOC -->
