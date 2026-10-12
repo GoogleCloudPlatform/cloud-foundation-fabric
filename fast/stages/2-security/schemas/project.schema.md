@@ -119,6 +119,7 @@
   - **data_catalog_taxonomy**: *string*
   - **observability**: *string*
   - **org_policies**: *string*
+  - **pam_entitlements**: *string*
   - **quotas**: *string*
   - **scc_sha_custom_modules**: *string*
   - **tags**: *string*
