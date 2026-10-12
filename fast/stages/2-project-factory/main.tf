@@ -24,6 +24,11 @@ locals {
   context = merge(local._context, {
     vpc_sc_perimeters = merge(var.perimeters, local._context.vpc_sc_perimeters)
   })
+  dataset = (
+    terraform.workspace == "default"
+    ? var.factories_config.dataset
+    : "${var.factories_config.dataset}/${terraform.workspace}"
+  )
   defaults = yamldecode(file(pathexpand(local.paths.defaults)))
   fast_defaults = {
     billing_account = try(coalesce(
@@ -38,7 +43,7 @@ locals {
     for k, v in var.factories_config.paths : k => try(pathexpand(
       startswith(v, "/") || startswith(v, ".")
       ? v :
-      "${var.factories_config.dataset}/${v}"
+      "${local.dataset}/${v}"
     ), null)
   }
   project_defaults = {
@@ -122,7 +127,7 @@ module "factory" {
   data_merges    = local.project_defaults.merges
   data_overrides = local.project_defaults.overrides
   factories_config = {
-    basepath = var.factories_config.dataset
+    basepath = local.dataset
     budgets = {
       billing_account = var.billing_account.id
     }
