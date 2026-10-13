@@ -3,7 +3,54 @@
 All notable changes to this project will be documented in this file.
 <!-- markdownlint-disable MD024 -->
 
-## [Unreleased](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v59.0.0...HEAD)
+## [Unreleased](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v59.1.0...HEAD)
+
+## [v59.1.0](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/releases/tag/v59.1.0) - 2026-10-12 <!-- from: 2026-09-25 14:53:33+00:00 to: 2026-10-12 since: v59.0.0 -->
+
+### BREAKING CHANGES
+
+- `fast/stages/2-networking`: NVA ILBs now share one health check per NVA (`nva-<name>`). Applying replaces the existing per-ILB health checks and updates connection tracking on each backend service, which flushes connection tracking tables once and resets open long-lived connections through the NVAs. [[#4244](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4244)]
+- `modules/geap-agent-gateway`: `networking_config.dns_peering_config.domain` (`string`) has been replaced with `networking_config.dns_peering_config.domains` (`list(string)`). [[#4241](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4241)]
+
+
+### FAST
+
+- [[#4254](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4254)] Support Terraform workspaces in FAST 2-project-factory stage ([ludoo](https://github.com/ludoo)) <!-- 2026-10-12 10:02:55+00:00 -->
+- [[#4252](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4252)] Clarify shared health check vs per-NIC probe state in NVA READMEs ([sruffilli](https://github.com/sruffilli)) <!-- 2026-10-12 09:52:42+00:00 -->
+- [[#4084](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4084)] Fix project factory automation bucket force_destroy and kms_keys, add pam_entitlements to schemas and tag ids to condition_vars ([witodev](https://github.com/witodev)) <!-- 2026-10-12 08:35:54+00:00 -->
+- [[#4244](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4244)] Share health check and harden connection tracking for NVA ILB sandwiches ([sruffilli](https://github.com/sruffilli)) <!-- 2026-10-07 15:40:59+00:00 -->
+- [[#4194](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4194)] Add MongoDB Atlas database user resource to fast/data-mongodb ([suresharam](https://github.com/suresharam)) <!-- 2026-10-06 12:19:27+00:00 -->
+- [[#4241](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4241)] Use domains in geap-agent-gateway DNS peering config ([LucaPrete](https://github.com/LucaPrete)) <!-- 2026-10-06 12:14:38+00:00 -->
+- [[#4237](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4237)] Add site_to_site_data_transfer to NCC spoke config in 2-networking ([sruffilli](https://github.com/sruffilli)) <!-- 2026-10-05 09:43:11+00:00 -->
+- [[#4196](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4196)] Folder, organization and PSC endpoint support in vpc-sc module and FAST stage ([ludoo](https://github.com/ludoo)) <!-- 2026-10-02 06:42:39+00:00 -->
+- [[#3809](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3809)] feat: BGP Route policies implementation in modules and FAST networking stages ([SamuPert](https://github.com/SamuPert)) <!-- 2026-10-01 13:03:14+00:00 -->
+
+### MODULES
+
+- [[#4252](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4252)] Clarify shared health check vs per-NIC probe state in NVA READMEs ([sruffilli](https://github.com/sruffilli)) <!-- 2026-10-12 09:52:42+00:00 -->
+- [[#4084](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4084)] Fix project factory automation bucket force_destroy and kms_keys, add pam_entitlements to schemas and tag ids to condition_vars ([witodev](https://github.com/witodev)) <!-- 2026-10-12 08:35:54+00:00 -->
+- [[#4248](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4248)] Add Dataplex integration support to `modules/cloudsql-instance` ([Ferdinanddb](https://github.com/Ferdinanddb)) <!-- 2026-10-12 07:42:15+00:00 -->
+- [[#4181](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4181)] Add GKE Identity Service configuration to GKE cluster modules ([emailabhigarg](https://github.com/emailabhigarg)) <!-- 2026-10-09 08:30:13+00:00 -->
+- [[#4246](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4246)] Fix variable validations and empty list handling across 8 modules ([aghassemlouei](https://github.com/aghassemlouei)) <!-- 2026-10-09 08:09:44+00:00 -->
+- [[#4245](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4245)] Remove always false condition for project_id. ([comp-boop](https://github.com/comp-boop)) <!-- 2026-10-09 08:06:11+00:00 -->
+- [[#4233](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4233)] Fix resource attribute and reference bugs across 9 modules ([aghassemlouei](https://github.com/aghassemlouei)) <!-- 2026-10-08 17:56:53+00:00 -->
+- [[#4244](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4244)] Share health check and harden connection tracking for NVA ILB sandwiches ([sruffilli](https://github.com/sruffilli)) <!-- 2026-10-07 15:40:59+00:00 -->
+- [[#4241](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4241)] Use domains in geap-agent-gateway DNS peering config ([LucaPrete](https://github.com/LucaPrete)) <!-- 2026-10-06 12:14:38+00:00 -->
+- [[#4171](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4171)] Add datapath_provider override to gke-cluster-standard ([iAbhishek91](https://github.com/iAbhishek91)) <!-- 2026-10-06 09:43:38+00:00 -->
+- [[#4197](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4197)] Add read pools to outputs in modules/alloydb ([btuckVZ](https://github.com/btuckVZ)) <!-- 2026-10-05 14:32:20+00:00 -->
+- [[#4238](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4238)] Export backend_service_generated_ids across application LB modules ([sruffilli](https://github.com/sruffilli)) <!-- 2026-10-05 14:32:19+00:00 -->
+- [[#4190](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4190)] Add anonymous authentication configuration to GKE modules ([solomon585858](https://github.com/solomon585858)) <!-- 2026-10-02 07:53:46+00:00 -->
+- [[#4169](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4169)] Add server_tls_policy support to net-lb-app-ext-regional https_proxy_config ([vvakadani](https://github.com/vvakadani)) <!-- 2026-10-02 06:49:34+00:00 -->
+- [[#4196](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4196)] Folder, organization and PSC endpoint support in vpc-sc module and FAST stage ([ludoo](https://github.com/ludoo)) <!-- 2026-10-02 06:42:39+00:00 -->
+- [[#3809](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3809)] feat: BGP Route policies implementation in modules and FAST networking stages ([SamuPert](https://github.com/SamuPert)) <!-- 2026-10-01 13:03:14+00:00 -->
+- [[#4193](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4193)] Create and grant networkservices service agents in project module ([LucaPrete](https://github.com/LucaPrete)) <!-- 2026-09-28 08:03:08+00:00 -->
+
+### TOOLS
+
+- [[#4254](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4254)] Support Terraform workspaces in FAST 2-project-factory stage ([ludoo](https://github.com/ludoo)) <!-- 2026-10-12 10:02:55+00:00 -->
+- [[#4241](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4241)] Use domains in geap-agent-gateway DNS peering config ([LucaPrete](https://github.com/LucaPrete)) <!-- 2026-10-06 12:14:38+00:00 -->
+- [[#3809](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3809)] feat: BGP Route policies implementation in modules and FAST networking stages ([SamuPert](https://github.com/SamuPert)) <!-- 2026-10-01 13:03:14+00:00 -->
+- [[#4193](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4193)] Create and grant networkservices service agents in project module ([LucaPrete](https://github.com/LucaPrete)) <!-- 2026-09-28 08:03:08+00:00 -->
 
 ## [v59.0.0](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/releases/tag/v59.0.0) - 2026-09-25 <!-- from: 2026-09-01 20:05:57+00:00 to: 2026-09-25 since: v58.0.0 -->
 

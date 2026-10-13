@@ -71,7 +71,7 @@ def _prepare_root_module(path):
 
 
 def plan_summary(module_path, basedir, tf_var_files=None, extra_files=None,
-                 extra_dirs=None, **tf_vars):
+                 extra_dirs=None, workspace=None, **tf_vars):
   """
   Run a Terraform plan on the module located at `module_path`.
 
@@ -115,7 +115,7 @@ def plan_summary(module_path, basedir, tf_var_files=None, extra_files=None,
     extra_dirs = [
         (module_path / dirname).resolve() for dirname in extra_dirs or []
     ]
-    tf.setup(extra_files=extra_files, upgrade=True)
+    tf.setup(extra_files=extra_files, upgrade=True, workspace_name=workspace)
     for extra_dir in extra_dirs:
       os.symlink(extra_dir, tf.tfdir / extra_dir.name)
     tf_var_files = [(basedir / x).resolve() for x in tf_var_files or []]
@@ -180,21 +180,22 @@ def plan_summary_fixture(request):
   """
 
   def inner(module_path, basedir=None, tf_var_files=None, extra_files=None,
-            extra_dirs=None, **tf_vars):
+            extra_dirs=None, workspace=None, **tf_vars):
     if basedir is None:
       basedir = Path(request.fspath).parent
     return plan_summary(module_path=module_path, basedir=basedir,
                         tf_var_files=tf_var_files, extra_files=extra_files,
-                        extra_dirs=extra_dirs, **tf_vars)
+                        extra_dirs=extra_dirs, workspace=workspace, **tf_vars)
 
   return inner
 
 
 def plan_validator(module_path, inventory_paths, basedir, tf_var_files=None,
-                   extra_files=None, extra_dirs=None, **tf_vars):
+                   extra_files=None, extra_dirs=None, workspace=None,
+                   **tf_vars):
   summary = plan_summary(module_path=module_path, tf_var_files=tf_var_files,
                          extra_files=extra_files, extra_dirs=extra_dirs,
-                         basedir=basedir, **tf_vars)
+                         basedir=basedir, workspace=workspace, **tf_vars)
 
   # allow single single string for inventory_paths
   if not isinstance(inventory_paths, list):

@@ -28,7 +28,7 @@ The NVA configuration is defined in the [`nvas/main.yaml`](./nvas/main.yaml) fil
 
 The ILBs in front of the NVAs form a "sandwich": traffic enters an NVA through the ILB in one VPC and comes back through the ILB in another. Stateful NVAs need both legs of a flow to reach the same instance. Symmetric hashing gives that only when a packet misses the connection tracking table of each ILB, and the tables of different ILBs are not synchronized. The factory configures the ILBs so the tables stay consistent after a backend failure:
 
-- all ILBs of an NVA share a single health check, so they evaluate backend health with the same probe, port, interval and thresholds
+- all ILBs of an NVA share a single health check, so they use the same probe, port, interval and thresholds; Google Cloud still probes each NIC and forwarding rule independently, so health state can briefly diverge during a failure
 - `persist_conn_on_unhealthy` is set to `NEVER_PERSIST`, so an ILB drops its entries for an unhealthy NVA and stops pinning flows to it
 - `track_per_session` is set to `false` (`PER_CONNECTION` tracking), so every new TCP connection is hashed again and stale entries cannot capture it
 - `session_affinity` is set to `NONE`; with `CLIENT_IP` or `CLIENT_IP_PROTO` the API defaults to `PER_SESSION` tracking unless `track_per_session` is explicitly set to `false`
