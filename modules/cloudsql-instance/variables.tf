@@ -128,6 +128,12 @@ variable "edition" {
   default     = "ENTERPRISE"
 }
 
+variable "enable_dataplex_integration" {
+  description = "Enable Dataplex integration to publish database metadata to Knowledge Catalog. Only applied to the primary instance; unset means disabled."
+  type        = bool
+  default     = null
+}
+
 variable "encryption_key_name" {
   description = "The full path to the encryption key used for the CMEK disk encryption of the primary instance."
   type        = string

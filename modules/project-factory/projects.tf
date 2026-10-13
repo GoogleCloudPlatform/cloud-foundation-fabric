@@ -143,14 +143,14 @@ module "projects" {
   default_service_account = try(each.value.default_service_account, "keep")
   # Exclude factories that are either:
   # a) Handled in parallel by calling specific modules (e.g., aspect_types, data_catalog_taxonomy)
-  # b) Handled in the projects-iam call to leverage expanded context (e.g., org_policies)
+  # b) Handled in the projects-iam call to leverage expanded context (e.g., org_policies, pam_entitlements)
   factories_config = {
     for k, v in each.value.factories_config : k => try(pathexpand(
       var.factories_config.basepath == null || startswith(v, "/") || startswith(v, ".")
       ? v :
       "${var.factories_config.basepath}/${v}"
     ), null)
-    if !contains(["aspect_types", "data_catalog_taxonomy", "org_policies"], k)
+    if !contains(["aspect_types", "data_catalog_taxonomy", "org_policies", "pam_entitlements"], k)
   }
   kms_autokeys = try(each.value.kms.autokeys, {})
   labels = merge(
@@ -209,6 +209,8 @@ module "projects-iam" {
         projects = {
           for k, v in module.projects : k => v.project_id
         }
+        tag_keys   = local.ctx_tag_keys
+        tag_values = local.ctx_tag_values
       }
     )
     tag_vars = {
@@ -236,12 +238,12 @@ module "projects-iam" {
   })
   factories_config = {
     # we do anything that can refer to IAM and custom roles in this call
-    pam_entitlements = try(each.value.factories_config.pam_entitlements, null)
-    org_policies = lookup(each.value.factories_config, "org_policies", null) == null ? null : try(pathexpand(
-      var.factories_config.basepath == null || startswith(each.value.factories_config.org_policies, "/") || startswith(each.value.factories_config.org_policies, ".")
-      ? each.value.factories_config.org_policies :
-      "${var.factories_config.basepath}/${each.value.factories_config.org_policies}"
+    for k, v in each.value.factories_config : k => try(pathexpand(
+      var.factories_config.basepath == null || startswith(v, "/") || startswith(v, ".")
+      ? v :
+      "${var.factories_config.basepath}/${v}"
     ), null)
+    if contains(["org_policies", "pam_entitlements"], k)
   }
   iam                           = lookup(each.value, "iam", {})
   iam_bindings                  = lookup(each.value, "iam_bindings", {})

@@ -18,7 +18,8 @@ values:
     agent_connectivity_template_id: my-gateway
     egress_network_config:
     - dns_peering_config:
-      - domain: corp.internal.
+      - domains:
+        - corp.internal.
         target_network: projects/my-host-prj-id/global/networks/my-vpc
       network_attachment: projects/my-host-prj-id/regions/europe-west1/networkAttachments/my-na
       vpc_egress: PRIVATE_RANGES_ONLY

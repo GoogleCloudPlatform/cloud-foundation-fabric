@@ -18,7 +18,7 @@ terraform {
   required_providers {
     mongodbatlas = {
       source  = "mongodb/mongodbatlas"
-      version = "~> 2.7"
+      version = "~> 2.17"
     }
   }
 }

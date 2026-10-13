@@ -24,7 +24,7 @@ locals {
   }
   ctx_p    = "$"
   location = try(local.ctx.locations[var.location], var.location)
-  project_id = var.project_id == null ? null : lookup(
+  project_id = lookup(
     local.ctx.project_ids, var.project_id, var.project_id
   )
   _factory_data = try(

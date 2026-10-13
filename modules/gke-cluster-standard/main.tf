@@ -47,7 +47,7 @@ resource "google_container_cluster" "cluster" {
   datapath_provider = (
     var.enable_features.dataplane_v2
     ? "ADVANCED_DATAPATH"
-    : "LEGACY_DATAPATH"
+    : null
   )
 
   dynamic "default_snat_status" {
@@ -319,6 +319,12 @@ resource "google_container_cluster" "cluster" {
     for_each = var.enable_features.gateway_api ? [""] : []
     content {
       channel = "CHANNEL_STANDARD"
+    }
+  }
+  dynamic "identity_service_config" {
+    for_each = var.enable_features.identity_service ? [""] : []
+    content {
+      enabled = true
     }
   }
   dynamic "ip_allocation_policy" {

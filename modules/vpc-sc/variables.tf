@@ -57,11 +57,12 @@ variable "access_levels" {
     condition = alltrue([
       for k, v in var.access_levels : alltrue([
         for condition in v.conditions : alltrue([
-          for member in condition.members : can(regex("^(?:serviceAccount:|user:)", member))
+          for member in condition.members :
+          can(regex("^(?:serviceAccount:|user:|group:)", member))
         ])
       ])
     ])
-    error_message = "Invalid `conditions[].members`. It needs to start with on of the prefixes: 'serviceAccount:' or 'user:'."
+    error_message = "Invalid `conditions[].members`. It needs to start with on of the prefixes: 'serviceAccount:', 'user:' or 'group:'."
   }
   validation {
     condition = alltrue([

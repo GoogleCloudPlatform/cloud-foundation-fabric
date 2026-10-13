@@ -142,7 +142,7 @@ variable "networking_config" {
     connectivity_template_reuse = optional(string)
     description                 = optional(string, "Terraform managed.")
     dns_peering_config = optional(object({
-      domain         = string
+      domains        = list(string)
       target_network = string
     }))
     labels = optional(map(string))
@@ -168,6 +168,14 @@ variable "networking_config" {
       || var.networking_config.psc_i_network_attachment_id != null
     )
     error_message = "The dns_peering_config attribute configures the connectivity template managed here, and needs psc_i_network_attachment_id."
+  }
+
+  validation {
+    condition = (
+      var.networking_config.dns_peering_config == null
+      || length(try(var.networking_config.dns_peering_config.domains, [])) > 0
+    )
+    error_message = "Specify at least one domain in dns_peering_config.domains."
   }
 
   validation {

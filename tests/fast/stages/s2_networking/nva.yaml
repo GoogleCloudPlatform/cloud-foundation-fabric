@@ -12,6 +12,33 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+values:
+  google_compute_health_check.nva["main"]:
+    name: nva-main
+    project: fast-prod-net-core-0
+    tcp_health_check:
+    - port: 22
+  module.ilb["dev/main"].google_compute_region_backend_service.default:
+    connection_tracking_policy:
+    - connection_persistence_on_unhealthy_backends: NEVER_PERSIST
+      tracking_mode: PER_CONNECTION
+    session_affinity: NONE
+  module.ilb["dmz/main"].google_compute_region_backend_service.default:
+    connection_tracking_policy:
+    - connection_persistence_on_unhealthy_backends: NEVER_PERSIST
+      tracking_mode: PER_CONNECTION
+    session_affinity: NONE
+  module.ilb["hub/main"].google_compute_region_backend_service.default:
+    connection_tracking_policy:
+    - connection_persistence_on_unhealthy_backends: NEVER_PERSIST
+      tracking_mode: PER_CONNECTION
+    session_affinity: NONE
+  module.ilb["prod/main"].google_compute_region_backend_service.default:
+    connection_tracking_policy:
+    - connection_persistence_on_unhealthy_backends: NEVER_PERSIST
+      tracking_mode: PER_CONNECTION
+    session_affinity: NONE
+
 counts:
   google_compute_external_vpn_gateway: 1
   google_compute_firewall: 4
@@ -20,7 +47,7 @@ counts:
   google_compute_firewall_policy_rule: 5
   google_compute_forwarding_rule: 4
   google_compute_ha_vpn_gateway: 1
-  google_compute_health_check: 4
+  google_compute_health_check: 1
   google_compute_instance: 3
   google_compute_instance_group: 2
   google_compute_network: 4
@@ -44,5 +71,5 @@ counts:
   google_storage_bucket_object: 2
   modules: 36
   random_id: 3
-  resources: 212
+  resources: 209
   terraform_data: 2

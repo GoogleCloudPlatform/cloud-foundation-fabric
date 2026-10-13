@@ -17,6 +17,9 @@
 locals {
   # output files configurations
   _of_p = try(local.defaults.output_files.providers_pattern, {})
+  _of_ws_prefix = (
+    terraform.workspace == "default" ? "" : "${terraform.workspace}/"
+  )
   _of = {
     bucket           = try(local.defaults.output_files.storage_bucket, null)
     local_path       = try(local.defaults.output_files.local_path, null)
@@ -45,8 +48,12 @@ locals {
     # single providers
     {
       for k, v in local._of.providers : k => {
-        filename = k
-        prefix   = lookup(v, "set_prefix", true) == true ? k : null
+        filename = "${local._of_ws_prefix}${k}"
+        prefix = (
+          lookup(v, "set_prefix", true) == true
+          ? "${local._of_ws_prefix}${k}"
+          : null
+        )
         # single providers can reference external service accounts
         service_account = lookup(
           local.of_service_accounts, v.service_account, v.service_account
@@ -57,8 +64,8 @@ locals {
     # pattern providers, read-only service account
     local._of.p_ro == null ? {} : {
       for k, v in local._of_p_projects : "${k}-ro" => {
-        filename        = "${k}-ro"
-        prefix          = k
+        filename        = "${local._of_ws_prefix}${k}-ro"
+        prefix          = "${local._of_ws_prefix}${k}"
         service_account = v.ro
         storage_bucket  = local._of.p_bucket
       } if v.ro != null
@@ -66,8 +73,8 @@ locals {
     # pattern providers, read-write service account
     local._of.p_rw == null ? {} : {
       for k, v in local._of_p_projects : "${k}-rw" => {
-        filename        = "${k}-rw"
-        prefix          = k
+        filename        = "${local._of_ws_prefix}${k}-rw"
+        prefix          = "${local._of_ws_prefix}${k}"
         service_account = v.rw
         storage_bucket  = local._of.p_bucket
       } if v.rw != null
@@ -81,7 +88,7 @@ locals {
     {
       projects = {
         for k, v in local._of_p_projects :
-        k => v if v.ro != null || v.rw != null
+        "${local._of_ws_prefix}${k}" => v if v.ro != null || v.rw != null
       }
     }
   )
@@ -146,7 +153,7 @@ resource "local_file" "tfvars" {
   )
   file_permission = "0644"
   filename = (
-    "${local.of_paths.local}/tfvars/${each.value}.auto.tfvars.json"
+    "${local.of_paths.local}/tfvars/${local._of_ws_prefix}${each.value}.auto.tfvars.json"
   )
   content = jsonencode(module.factory.projects[each.value])
 }
@@ -164,7 +171,7 @@ resource "google_storage_bucket_object" "tfvars" {
     local.of_storage_bucket == null ? [] : local.of_tfvars_projects
   )
   bucket         = local.of_storage_bucket
-  name           = "tfvars/${each.value}.auto.tfvars.json"
+  name           = "tfvars/${local._of_ws_prefix}${each.value}.auto.tfvars.json"
   content        = jsonencode(module.factory.projects[each.value])
   source_md5hash = md5(jsonencode(module.factory.projects[each.value]))
 }

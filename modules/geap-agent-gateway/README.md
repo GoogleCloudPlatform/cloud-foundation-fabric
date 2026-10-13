@@ -56,7 +56,7 @@ module "agent-gateway" {
     access_types                = ["PRIVATE"]
     vpc_egress                  = "ALL_TRAFFIC"
     dns_peering_config = {
-      domain         = "corp.internal."
+      domains        = ["corp.internal."]
       target_network = "projects/my-host-project/global/networks/my-vpc"
     }
   }
@@ -270,7 +270,7 @@ module "agent-gateway" {
   networking_config = {
     psc_i_network_attachment_id = "$psc_network_attachments:my-na"
     dns_peering_config = {
-      domain         = "corp.internal."
+      domains        = ["corp.internal."]
       target_network = "$networks:host"
     }
   }
@@ -311,8 +311,8 @@ module "agent-gateway" {
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
 | [name](variables.tf#L127) | The name of the Agent Gateway. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L199) | The ID of the project where the data stores and the agents will be created. | <code>string</code> | ✓ |  |
-| [region](variables.tf#L226) | The region where the agent gateway is created. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L207) | The ID of the project where the data stores and the agents will be created. | <code>string</code> | ✓ |  |
+| [region](variables.tf#L234) | The region where the agent gateway is created. | <code>string</code> | ✓ |  |
 | [access_path](variables.tf#L17) | The direction the gateway applies to: ingress (CLIENT_TO_AGENT) or egress (AGENT_TO_ANYWHERE) (if var.is_google_managed = false). | <code>string</code> |  | <code>null</code> |
 | [context](variables.tf#L47) | Context-specific interpolations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [description](variables.tf#L64) | The description of the Agent Gateway. | <code>string</code> |  | <code>&#34;Terraform managed.&#34;</code> |
@@ -321,9 +321,9 @@ module "agent-gateway" {
 | [labels](variables.tf#L107) | Labels to associate to the Agent Gateway. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
 | [model_armor_config](variables.tf#L113) | Delegate content authorization to Model Armor. Creates an authorization extension and the 'CONTENT_AUTHZ' policy binding it to the gateway. Templates are not managed here: pass their ids, either fully qualified or as short ids resolved against the gateway project and region. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [networking_config](variables.tf#L136) | The Agent Gateway networking configuration. Set 'psc_i_network_attachment_id' to manage an agent connectivity template here, or 'connectivity_template_reuse' to attach the gateway to an existing one. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [project_number](variables.tf#L205) | Project number of var.project_id. Gateways reference connectivity templates by project number: set this to avoid the additional project data source read. | <code>string</code> |  | <code>null</code> |
-| [proxy_uri](variables.tf#L211) | The uri of a compatible self-managed proxy (if var.is_google_managed = false). | <code>string</code> |  | <code>null</code> |
-| [registries](variables.tf#L232) | A list of Agent Registries containing the agents, MCP servers and tools governed by the Agent Gateway. Note: Currently limited to project-scoped registries Must be of format //agentregistry.googleapis.com/{version}/projects/{{project}}/locations/{{location}}. | <code>list&#40;string&#41;</code> |  | <code>null</code> |
+| [project_number](variables.tf#L213) | Project number of var.project_id. Gateways reference connectivity templates by project number: set this to avoid the additional project data source read. | <code>string</code> |  | <code>null</code> |
+| [proxy_uri](variables.tf#L219) | The uri of a compatible self-managed proxy (if var.is_google_managed = false). | <code>string</code> |  | <code>null</code> |
+| [registries](variables.tf#L240) | A list of Agent Registries containing the agents, MCP servers and tools governed by the Agent Gateway. Note: Currently limited to project-scoped registries Must be of format //agentregistry.googleapis.com/{version}/projects/{{project}}/locations/{{location}}. | <code>list&#40;string&#41;</code> |  | <code>null</code> |
 | [registry_iam](variables-iam.tf#L19) | Agent Registry IAM bindings in {ROLE => [MEMBERS]} format, applied to every registry governed by the gateway. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [registry_iam_bindings](variables-iam.tf#L26) | Authoritative Agent Registry IAM bindings in {KEY => {role = ROLE, members = [], condition = {}}} format. Set at most one of the '*_id' attributes to scope the binding to a single registered resource, or none to target the whole registry. Location defaults to the gateway region. Keys are arbitrary. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [registry_iam_bindings_additive](variables-iam.tf#L53) | Additive Agent Registry IAM bindings. Set at most one of the '*_id' attributes to scope the binding to a single registered resource, or none to target the whole registry. Location defaults to the gateway region. Keys are arbitrary. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |

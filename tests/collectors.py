@@ -76,6 +76,7 @@ class FabricTestFile(pytest.File):
         continue
       extra_dirs = spec.get('extra_dirs')
       extra_files = spec.get('extra_files')
+      workspace = spec.get('workspace')
       inventories = spec.get('inventory', [f'{test_name}.yaml'])
       tf_var_files = common + [f'{test_name}.tfvars'] + spec.get('tfvars', [])
       for i in inventories:
@@ -83,28 +84,31 @@ class FabricTestFile(pytest.File):
         if isinstance(inventories, list) and len(inventories) > 1:
           name = f'{test_name}[{i}]'
         yield FabricTestItem.from_parent(self, name=name, module=module,
-                                         inventory=[i],
-                                         tf_var_files=tf_var_files,
+                                         inventory=[i
+                                                   ], tf_var_files=tf_var_files,
                                          extra_files=extra_files,
-                                         extra_dirs=extra_dirs)
+                                         extra_dirs=extra_dirs,
+                                         workspace=workspace)
 
 
 class FabricTestItem(pytest.Item):
 
   def __init__(self, name, parent, module, inventory, tf_var_files,
-               extra_files=None, extra_dirs=None):
+               extra_files=None, extra_dirs=None, workspace=None):
     super().__init__(name, parent)
     self.module = module
     self.inventory = inventory
     self.tf_var_files = tf_var_files
     self.extra_dirs = extra_dirs if extra_dirs else []
     self.extra_files = extra_files if extra_files else []
+    self.workspace = workspace
 
   def runtest(self):
     try:
       summary = plan_validator(self.module, self.inventory,
                                self.parent.path.parent, self.tf_var_files,
-                               self.extra_files, self.extra_dirs)
+                               self.extra_files, self.extra_dirs,
+                               workspace=self.workspace)
     except AssertionError:
 
       def full_paths(root_path, paths):
