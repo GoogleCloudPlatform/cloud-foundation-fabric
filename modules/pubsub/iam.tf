@@ -74,6 +74,7 @@ resource "google_pubsub_topic_iam_binding" "authoritative" {
 
 resource "google_pubsub_topic_iam_binding" "bindings" {
   for_each = var.iam_bindings
+  project  = local.project_id
   topic    = google_pubsub_topic.default.id
   role     = lookup(local.ctx.custom_roles, each.value.role, each.value.role)
   members = [
@@ -91,6 +92,7 @@ resource "google_pubsub_topic_iam_binding" "bindings" {
 
 resource "google_pubsub_topic_iam_member" "bindings" {
   for_each = var.iam_bindings_additive
+  project  = local.project_id
   topic    = google_pubsub_topic.default.id
   role     = lookup(local.ctx.custom_roles, each.value.role, each.value.role)
   member = lookup(
