@@ -372,7 +372,7 @@ values:
     timeouts: null
     vpn_gateway_interface: 1
   module.vpngw-a.random_id.default:
-    byte_length: 8
+    byte_length: 16
     keepers: null
     prefix: null
 

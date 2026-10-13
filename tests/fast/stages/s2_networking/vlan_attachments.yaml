@@ -765,7 +765,7 @@ values:
     keepers: null
     prefix: null
   module.vpn-ha["hub/to-onprem"].random_id.secret:
-    byte_length: 8
+    byte_length: 16
     keepers: null
     prefix: null
 
