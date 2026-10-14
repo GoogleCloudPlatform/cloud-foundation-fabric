@@ -88,6 +88,10 @@ network_interfaces = [{
   }
 }]
 project_id = "$project_ids:test"
+scratch_disks = {
+  count = 1
+  size  = 3000
+}
 tag_bindings = {
   bar = "tagValues/1234567891"
   baz = "$tag_values:test/one"

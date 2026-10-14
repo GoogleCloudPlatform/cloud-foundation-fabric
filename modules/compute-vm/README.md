@@ -1335,7 +1335,7 @@ module "tpu-template" {
 | [name](variables.tf#L395) | Instance name. | <code>string</code> | ✓ |  |
 | [network_interfaces](variables.tf#L407) | Network interfaces configuration. Use self links for Shared VPC, set addresses to null if not needed. | <code>list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> | ✓ |  |
 | [project_id](variables.tf#L448) | Project id. | <code>string</code> | ✓ |  |
-| [zone](variables.tf#L628) | Compute zone. | <code>string</code> | ✓ |  |
+| [zone](variables.tf#L633) | Compute zone. | <code>string</code> | ✓ |  |
 | [attached_disks](variables.tf#L17) | Additional disks. Source type is one of 'image' (zonal disks in vms and template), 'snapshot' (vm), 'existing', and null. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [boot_disk](variables.tf#L57) | Boot disk properties. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [can_ip_forward](variables.tf#L113) | Enable IP forwarding. | <code>bool</code> |  | <code>false</code> |
@@ -1368,13 +1368,13 @@ module "tpu-template" {
 | [resource_policies](variables.tf#L459) | Resource policies to attach to the instance or template. | <code>list&#40;string&#41;</code> |  | <code>null</code> |
 | [scheduling_config](variables.tf#L466) | Scheduling configuration for the instance. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [scratch_disks](variables.tf#L501) | Scratch disks configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#8230;&#125;</code> |
-| [service_account](variables.tf#L514) | Service account email and scopes. If email is null, the default Compute service account will be used unless auto_create is true, in which case a service account will be created. Set the variable to null to avoid attaching a service account. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [shielded_config](variables.tf#L525) | Shielded VM configuration of the instances. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [snapshot_schedules](variables.tf#L535) | Snapshot schedule resource policies that can be attached to disks. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [tag_bindings](variables.tf#L578) | Resource manager tag bindings in arbitrary key => tag key or value id format. Set on both the instance and zonal disks, and modifiable without impacting the main resource lifecycle. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [tag_bindings_immutable](variables.tf#L585) | Immutable resource manager tag bindings, in tagKeys/id => tagValues/id format. These are set on the instance or instance template at creation time, and trigger recreation if changed. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
-| [tags](variables.tf#L599) | Instance network tags for firewall rule targets. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
-| [tpu_config](variables.tf#L605) | TPU configuration. If null, a standard VM is created. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [service_account](variables.tf#L519) | Service account email and scopes. If email is null, the default Compute service account will be used unless auto_create is true, in which case a service account will be created. Set the variable to null to avoid attaching a service account. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [shielded_config](variables.tf#L530) | Shielded VM configuration of the instances. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [snapshot_schedules](variables.tf#L540) | Snapshot schedule resource policies that can be attached to disks. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [tag_bindings](variables.tf#L583) | Resource manager tag bindings in arbitrary key => tag key or value id format. Set on both the instance and zonal disks, and modifiable without impacting the main resource lifecycle. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [tag_bindings_immutable](variables.tf#L590) | Immutable resource manager tag bindings, in tagKeys/id => tagValues/id format. These are set on the instance or instance template at creation time, and trigger recreation if changed. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
+| [tags](variables.tf#L604) | Instance network tags for firewall rule targets. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
+| [tpu_config](variables.tf#L610) | TPU configuration. If null, a standard VM is created. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 
 ## Outputs
 
