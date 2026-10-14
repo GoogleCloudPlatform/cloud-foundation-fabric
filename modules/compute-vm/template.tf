@@ -141,6 +141,20 @@ resource "google_compute_instance_template" "default" {
     }
   }
 
+  dynamic "disk" {
+    for_each = [
+      for i in range(0, var.scratch_disks.count) : var.scratch_disks.interface
+    ]
+    iterator = config
+    content {
+      auto_delete  = true
+      disk_size_gb = var.scratch_disks.size
+      disk_type    = "local-ssd"
+      interface    = config.value
+      type         = "SCRATCH"
+    }
+  }
+
   dynamic "network_interface" {
     for_each = var.network_interfaces
     iterator = config
@@ -403,6 +417,20 @@ resource "google_compute_region_instance_template" "default" {
           )
         }
       }
+    }
+  }
+
+  dynamic "disk" {
+    for_each = [
+      for i in range(0, var.scratch_disks.count) : var.scratch_disks.interface
+    ]
+    iterator = config
+    content {
+      auto_delete  = true
+      disk_size_gb = var.scratch_disks.size
+      disk_type    = "local-ssd"
+      interface    = config.value
+      type         = "SCRATCH"
     }
   }
 

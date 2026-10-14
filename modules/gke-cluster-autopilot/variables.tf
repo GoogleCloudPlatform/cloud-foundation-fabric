@@ -98,6 +98,7 @@ variable "enable_addons" {
 variable "enable_features" {
   description = "Enable cluster-level features. Certain features allow configuration."
   type = object({
+    anonymous_authentication          = optional(string)
     beta_apis                         = optional(list(string))
     binary_authorization              = optional(bool, false)
     cilium_clusterwide_network_policy = optional(bool, false)
@@ -116,6 +117,7 @@ variable "enable_features" {
     fqdn_network_policy = optional(bool, false)
     gateway_api         = optional(bool, false)
     groups_for_rbac     = optional(string)
+    identity_service    = optional(bool, false)
     l4_ilb_subsetting   = optional(bool, false)
     mesh_certificates   = optional(bool)
     pod_security_policy = optional(bool, false)
@@ -161,6 +163,16 @@ variable "enable_features" {
       ], e)
     ])
     error_message = "Invalid upgrade notification event type."
+  }
+  validation {
+    condition = (
+      var.enable_features.anonymous_authentication == null ||
+      contains(
+        ["ENABLED", "LIMITED"],
+        var.enable_features.anonymous_authentication
+      )
+    )
+    error_message = "enable_features.anonymous_authentication must be ENABLED or LIMITED."
   }
 }
 

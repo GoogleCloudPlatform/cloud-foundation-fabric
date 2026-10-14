@@ -1,6 +1,9 @@
 automation = {
   outputs_bucket = "test"
 }
+folder_ids = {
+  teams = "folders/1234567890"
+}
 factories_config = {
   paths = {
     access_levels    = "./data-simple/access-levels"
@@ -84,7 +87,8 @@ perimeters = {
       ingress_policies    = ["$ingress_policies:fast-org-log-sinks", "$ingress_policies:test"]
       restricted_services = ["$service_sets:restricted_services"]
       resources = [
-        "projects/1234567890"
+        "projects/1234567890",
+        "$folder_ids:teams"
       ]
     }
   }

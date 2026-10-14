@@ -119,6 +119,7 @@
   - **data_catalog_taxonomy**: *string*
   - **observability**: *string*
   - **org_policies**: *string*
+  - **pam_entitlements**: *string*
   - **quotas**: *string*
   - **scc_sha_custom_modules**: *string*
   - **tags**: *string*
@@ -208,7 +209,8 @@
     <br>*enum: ['INFOBLOX']*
 - **org_policies**: *object*
   <br>*additional properties: false*
-  - **`^[a-z]+\.`**: *object*
+  - **`^(dry_run:)?[a-z-]+[a-zA-Z0-9\.]+$`**: *object*
+    <br>*additional properties: false*
     - **inherit_from_parent**: *boolean*
     - **reset**: *boolean*
     - **rules**: *array*
@@ -231,6 +233,7 @@
           - **expression**: *string*
           - **location**: *string*
           - **title**: *string*
+        - **parameters**: *string*
 - **quotas**: *object*
   <br>*additional properties: false*
   - **`^[a-zA-Z0-9_-]+$`**: *object*

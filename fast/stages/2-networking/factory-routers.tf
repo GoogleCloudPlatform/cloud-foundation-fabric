@@ -33,6 +33,18 @@ locals {
           advertised_groups = try(router_config.custom_advertise.all_subnets, false) ? ["ALL_SUBNETS"] : []
           keepalive         = try(router_config.keepalive, null)
           asn               = try(router_config.asn, null)
+          route_policies    = try(router_config.route_policies, {})
+        })
+      }
+    ]
+  ])...)
+
+  router_route_policies = merge(flatten([
+    for router_key, router_config in local.router_configs : [
+      for policy_key, policy_config in router_config.route_policies : {
+        "${router_key}/${policy_key}" = merge(policy_config, {
+          name       = policy_key
+          router_key = router_key
         })
       }
     ]
@@ -70,5 +82,51 @@ resource "google_compute_router" "default" {
     }
     keepalive_interval = each.value.keepalive
     asn                = each.value.asn
+  }
+}
+
+resource "google_compute_router_route_policy" "default" {
+  for_each = local.router_route_policies
+  project  = google_compute_router.default[each.value.router_key].project
+  region   = google_compute_router.default[each.value.router_key].region
+  router   = google_compute_router.default[each.value.router_key].name
+  name     = each.value.name
+  type     = each.value.type == "IMPORT" ? "ROUTE_POLICY_TYPE_IMPORT" : each.value.type == "EXPORT" ? "ROUTE_POLICY_TYPE_EXPORT" : null
+
+  dynamic "terms" {
+    for_each = each.value.terms
+    content {
+      priority = terms.value.priority
+      match {
+        expression  = terms.value.match.expression
+        title       = try(terms.value.match.title, null)
+        description = try(terms.value.match.description, null)
+        location    = try(terms.value.match.location, null)
+      }
+      dynamic "actions" {
+        for_each = terms.value.actions
+        content {
+          expression  = actions.value.expression
+          title       = try(actions.value.title, null)
+          description = try(actions.value.description, null)
+          location    = try(actions.value.location, null)
+        }
+      }
+    }
+  }
+
+  lifecycle {
+    precondition {
+      condition     = contains(["IMPORT", "EXPORT"], each.value.type)
+      error_message = "Route policy type must be either 'IMPORT' or 'EXPORT'."
+    }
+    precondition {
+      condition     = length(each.value.terms) == length(distinct([for t in each.value.terms : t.priority]))
+      error_message = "Route policy term priorities must be unique."
+    }
+    precondition {
+      condition     = alltrue([for t in each.value.terms : t.priority >= 0 && t.priority < 2147483648])
+      error_message = "Route policy term priority must be between 0 (inclusive) and 2147483648 (exclusive)."
+    }
   }
 }

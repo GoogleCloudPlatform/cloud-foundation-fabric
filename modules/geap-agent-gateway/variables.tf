@@ -47,6 +47,7 @@ variable "access_path" {
 variable "context" {
   description = "Context-specific interpolations."
   type = object({
+    access_policies              = optional(map(string), {})
     agent_connectivity_templates = optional(map(string), {})
     condition_vars               = optional(map(map(string)), {})
     custom_roles                 = optional(map(string), {})
@@ -68,15 +69,14 @@ variable "description" {
 }
 
 variable "iap_config" {
-  description = "Delegate request authorization to Identity-Aware Proxy, which enforces the Agent Registry IAM policies. Creates an authorization extension and the 'REQUEST_AUTHZ' policy binding it to the gateway."
+  description = "Delegate request authorization to Identity-Aware Proxy, which enforces IAM Unified Access Policies (UAPs). Creates an authorization extension and the 'REQUEST_AUTHZ' policy binding it to the gateway."
   type = object({
     fail_open = optional(bool, false)
     # Null enforces the IAM policies. Set to 'DRY_RUN' to audit them.
     iam_enforcement_mode = optional(string)
     name                 = optional(string)
-    # 'V2' evaluates IAM Unified Access Policies, which the
-    # 'registry_iam*' variables cannot manage. See the README.
-    policy_version = optional(string, "V1")
+    # 'V2' evaluates IAM Unified Access Policies managed via 'access_policies'.
+    policy_version = optional(string, "V2")
     timeout        = optional(string, "2s")
   })
   default = {}
@@ -91,7 +91,7 @@ variable "iap_config" {
 
   validation {
     condition = contains(
-      ["V1", "V2"], try(var.iap_config.policy_version, "V1")
+      ["V1", "V2"], try(var.iap_config.policy_version, "V2")
     )
     error_message = "The policy_version can be one of the following: 'V1', 'V2'."
   }
@@ -142,7 +142,7 @@ variable "networking_config" {
     connectivity_template_reuse = optional(string)
     description                 = optional(string, "Terraform managed.")
     dns_peering_config = optional(object({
-      domain         = string
+      domains        = list(string)
       target_network = string
     }))
     labels = optional(map(string))
@@ -168,6 +168,14 @@ variable "networking_config" {
       || var.networking_config.psc_i_network_attachment_id != null
     )
     error_message = "The dns_peering_config attribute configures the connectivity template managed here, and needs psc_i_network_attachment_id."
+  }
+
+  validation {
+    condition = (
+      var.networking_config.dns_peering_config == null
+      || length(try(var.networking_config.dns_peering_config.domains, [])) > 0
+    )
+    error_message = "Specify at least one domain in dns_peering_config.domains."
   }
 
   validation {

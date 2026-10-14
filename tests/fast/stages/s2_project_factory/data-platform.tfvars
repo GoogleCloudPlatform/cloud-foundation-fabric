@@ -16,7 +16,7 @@ tag_values = {
   "environment/production"  = "tagValues/2345678901"
 }
 factories_config = {
-  dataset = "datasets/data-platform"
+  dataset = "datasets"
 }
 organization = {
   domain      = "fast.example.com"

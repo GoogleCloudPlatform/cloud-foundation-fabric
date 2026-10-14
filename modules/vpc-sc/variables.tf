@@ -57,11 +57,12 @@ variable "access_levels" {
     condition = alltrue([
       for k, v in var.access_levels : alltrue([
         for condition in v.conditions : alltrue([
-          for member in condition.members : can(regex("^(?:serviceAccount:|user:)", member))
+          for member in condition.members :
+          can(regex("^(?:serviceAccount:|user:|group:)", member))
         ])
       ])
     ])
-    error_message = "Invalid `conditions[].members`. It needs to start with on of the prefixes: 'serviceAccount:' or 'user:'."
+    error_message = "Invalid `conditions[].members`. It needs to start with on of the prefixes: 'serviceAccount:', 'user:' or 'group:'."
   }
   validation {
     condition = alltrue([
@@ -132,13 +133,16 @@ variable "access_policy_create" {
 variable "context" {
   description = "External context used in replacements."
   type = object({
-    access_levels   = optional(map(string), {})
-    condition_vars  = optional(map(map(string)), {})
-    iam_principals  = optional(map(string), {})
-    identity_sets   = optional(map(list(string)), {})
-    project_numbers = optional(map(number), {})
-    resource_sets   = optional(map(list(string)), {})
-    service_sets    = optional(map(list(string)), {})
+    access_levels    = optional(map(string), {})
+    condition_vars   = optional(map(map(string)), {})
+    folder_ids       = optional(map(string), {})
+    iam_principals   = optional(map(string), {})
+    identity_sets    = optional(map(list(string)), {})
+    organization_ids = optional(map(string), {})
+    project_numbers  = optional(map(number), {})
+    psc_endpoints    = optional(map(string), {})
+    resource_sets    = optional(map(list(string)), {})
+    service_sets     = optional(map(list(string)), {})
   })
   default  = {}
   nullable = false
@@ -152,6 +156,7 @@ variable "egress_policies" {
       access_levels = optional(list(string), [])
       identity_type = optional(string)
       identities    = optional(list(string))
+      psc_endpoints = optional(list(string), [])
       resources     = optional(list(string), [])
     })
     to = object({
@@ -243,6 +248,7 @@ variable "ingress_policies" {
       access_levels = optional(list(string), [])
       identity_type = optional(string)
       identities    = optional(list(string))
+      psc_endpoints = optional(list(string), [])
       resources     = optional(list(string), [])
     })
     to = object({

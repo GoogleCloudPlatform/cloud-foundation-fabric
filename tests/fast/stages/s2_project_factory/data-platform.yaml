@@ -26,7 +26,7 @@ values:
     event_based_hold: null
     force_empty_content_type: null
     metadata: null
-    name: versions/2-project-factory-version.txt
+    name: versions/2-project-factory-version-data-platform.txt
     retention: []
     source: fast_version.txt
     temporary_hold: null

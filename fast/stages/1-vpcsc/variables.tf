@@ -73,12 +73,15 @@ variable "access_policy" {
 variable "context" {
   description = "External context used in replacements."
   type = object({
-    iam_principals  = optional(map(string), {})
-    identity_sets   = optional(map(list(string)), {})
-    project_numbers = optional(map(number), {})
-    resource_sets   = optional(map(list(string)), {})
-    service_sets    = optional(map(list(string)), {})
-    storage_buckets = optional(map(string), {})
+    folder_ids       = optional(map(string), {})
+    iam_principals   = optional(map(string), {})
+    identity_sets    = optional(map(list(string)), {})
+    organization_ids = optional(map(string), {})
+    project_numbers  = optional(map(number), {})
+    psc_endpoints    = optional(map(string), {})
+    resource_sets    = optional(map(list(string)), {})
+    service_sets     = optional(map(list(string)), {})
+    storage_buckets  = optional(map(string), {})
   })
   default  = {}
   nullable = false
@@ -92,6 +95,7 @@ variable "egress_policies" {
       access_levels = optional(list(string), [])
       identity_type = optional(string)
       identities    = optional(list(string))
+      psc_endpoints = optional(list(string), [])
       resources     = optional(list(string), [])
     })
     to = object({
@@ -152,6 +156,7 @@ variable "ingress_policies" {
       access_levels = optional(list(string), [])
       identity_type = optional(string)
       identities    = optional(list(string))
+      psc_endpoints = optional(list(string), [])
       resources     = optional(list(string), [])
     })
     to = object({

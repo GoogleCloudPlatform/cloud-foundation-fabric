@@ -126,7 +126,9 @@ values:
       preemptible: false
       provisioning_model: STANDARD
       termination_time: null
-    scratch_disk: []
+    scratch_disk:
+    - interface: NVME
+      size: 3000
     service_account:
     - scopes:
       - https://www.googleapis.com/auth/devstorage.read_only

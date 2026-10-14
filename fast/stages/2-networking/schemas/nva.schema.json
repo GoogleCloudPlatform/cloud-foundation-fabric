@@ -77,6 +77,26 @@
     "ilb_config": {
       "type": "object",
       "properties": {
+        "connection_tracking": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "idle_timeout_sec": {
+              "type": "number"
+            },
+            "persist_conn_on_unhealthy": {
+              "type": "string",
+              "enum": [
+                "DEFAULT_FOR_PROTOCOL",
+                "NEVER_PERSIST",
+                "ALWAYS_PERSIST"
+              ]
+            },
+            "track_per_session": {
+              "type": "boolean"
+            }
+          }
+        },
         "health_check": {
           "type": "object"
         },
@@ -93,6 +113,16 @@
           "items": {
             "$ref": "#/$defs/forwarding_rule"
           }
+        },
+        "session_affinity": {
+          "type": "string",
+          "enum": [
+            "NONE",
+            "CLIENT_IP",
+            "CLIENT_IP_NO_DESTINATION",
+            "CLIENT_IP_PORT_PROTO",
+            "CLIENT_IP_PROTO"
+          ]
         }
       }
     },

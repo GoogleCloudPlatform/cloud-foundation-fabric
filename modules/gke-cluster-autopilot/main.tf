@@ -60,6 +60,12 @@ resource "google_container_cluster" "cluster" {
       enabled = var.backup_configs.enable_backup_agent
     }
   }
+  dynamic "anonymous_authentication_config" {
+    for_each = var.enable_features.anonymous_authentication != null ? [""] : []
+    content {
+      mode = var.enable_features.anonymous_authentication
+    }
+  }
   dynamic "authenticator_groups_config" {
     for_each = var.enable_features.groups_for_rbac != null ? [""] : []
     content {
@@ -132,6 +138,12 @@ resource "google_container_cluster" "cluster" {
     for_each = var.enable_features.gateway_api ? [""] : []
     content {
       channel = "CHANNEL_STANDARD"
+    }
+  }
+  dynamic "identity_service_config" {
+    for_each = var.enable_features.identity_service ? [""] : []
+    content {
+      enabled = true
     }
   }
   dynamic "ip_allocation_policy" {

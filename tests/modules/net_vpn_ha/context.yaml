@@ -130,7 +130,7 @@ values:
     keepers: null
     prefix: null
   random_id.secret:
-    byte_length: 8
+    byte_length: 16
     keepers: null
     prefix: null
 

@@ -375,6 +375,9 @@
         "org_policies": {
           "type": "string"
         },
+        "pam_entitlements": {
+          "type": "string"
+        },
         "quotas": {
           "type": "string"
         },
@@ -672,8 +675,9 @@
       "type": "object",
       "additionalProperties": false,
       "patternProperties": {
-        "^[a-z]+\\.": {
+        "^(dry_run:)?[a-z-]+[a-zA-Z0-9\\.]+$": {
           "type": "object",
+          "additionalProperties": false,
           "properties": {
             "inherit_from_parent": {
               "type": "boolean"
@@ -737,6 +741,9 @@
                         "type": "string"
                       }
                     }
+                  },
+                  "parameters": {
+                    "type": "string"
                   }
                 }
               }
