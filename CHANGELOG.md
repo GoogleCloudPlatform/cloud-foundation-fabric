@@ -3,7 +3,39 @@
 All notable changes to this project will be documented in this file.
 <!-- markdownlint-disable MD024 -->
 
-## [Unreleased](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v59.1.0...HEAD)
+## [Unreleased](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v59.2.0...HEAD)
+
+## [v59.2.0](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/releases/tag/v59.2.0) - 2026-10-14 <!-- from: 2026-10-12 12:21:01+00:00 to: 2026-10-14 since: v59.1.0 -->
+
+### BREAKING CHANGES
+
+- `modules/geap-agent-gateway`: `iap_config.policy_version` now defaults to `V2` and `registry_iam*` variables have been replaced by `access_policies` (IAM v3 Unified Access Policies). [[#4267](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4267)]
+- `terraform-google-provider`: version updated to 8.6.0, because `target.resource` on `google_iam_projects_policy_binding` requires provider >= 8.6.0. [[#4267](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4267)]
+
+
+### DOCUMENTATION
+
+- [[#4256](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4256)] Update release-process skill for PR workflow and macOS compatibility ([LucaPrete](https://github.com/LucaPrete)) <!-- 2026-10-13 13:45:39+00:00 -->
+
+### FAST
+
+- [[#4268](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4268)] Fix `secondary_ip_ranges` schema and internal range validation in `modules/net-vpc` ([sruffilli](https://github.com/sruffilli)) <!-- 2026-10-14 14:08:48+00:00 -->
+- [[#4267](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4267)] Migrate geap-agent-gateway to IAM v3 Unified Access Policies ([LucaPrete](https://github.com/LucaPrete)) <!-- 2026-10-14 14:00:06+00:00 -->
+- [[#4265](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4265)] Export organization network tags in 0-org-setup context ([sruffilli](https://github.com/sruffilli)) <!-- 2026-10-14 11:49:16+00:00 -->
+- [[#4253](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4253)] Allow dry_run and parameters in project-factory org_policies schemas ([ludoo](https://github.com/ludoo)) <!-- 2026-10-13 13:51:00+00:00 -->
+
+### MODULES
+
+- [[#4268](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4268)] Fix `secondary_ip_ranges` schema and internal range validation in `modules/net-vpc` ([sruffilli](https://github.com/sruffilli)) <!-- 2026-10-14 14:08:48+00:00 -->
+- [[#4267](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4267)] Migrate geap-agent-gateway to IAM v3 Unified Access Policies ([LucaPrete](https://github.com/LucaPrete)) <!-- 2026-10-14 14:00:06+00:00 -->
+- [[#4259](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4259)] Increase generated VPN shared secret length to 16 bytes ([aghassemlouei](https://github.com/aghassemlouei)) <!-- 2026-10-14 06:20:09+00:00 -->
+- [[#4258](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4258)] Support scratch disk size and template scratch disks in compute-vm ([ludoo](https://github.com/ludoo)) <!-- 2026-10-14 06:05:31+00:00 -->
+- [[#4253](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4253)] Allow dry_run and parameters in project-factory org_policies schemas ([ludoo](https://github.com/ludoo)) <!-- 2026-10-13 13:51:00+00:00 -->
+- [[#4251](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4251)] Fix resource wiring, CMEK settings, and IAM bindings across 4 modules ([aghassemlouei](https://github.com/aghassemlouei)) <!-- 2026-10-13 09:46:28+00:00 -->
+
+### TOOLS
+
+- [[#4267](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4267)] Migrate geap-agent-gateway to IAM v3 Unified Access Policies ([LucaPrete](https://github.com/LucaPrete)) <!-- 2026-10-14 14:00:06+00:00 -->
 
 ## [v59.1.0](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/releases/tag/v59.1.0) - 2026-10-12 <!-- from: 2026-09-25 14:53:33+00:00 to: 2026-10-12 since: v59.0.0 -->
 
