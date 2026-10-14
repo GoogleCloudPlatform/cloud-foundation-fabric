@@ -109,6 +109,8 @@ values:
     secondary_ip_range:
       - ip_cidr_range: 192.168.0.0/24
         range_name: secondary-range-a
+      - ip_cidr_range: 192.168.1.0/24
+        range_name: secondary-range-b
     timeouts: null
   module.vpc.google_compute_subnetwork.subnetwork["europe-west4/simple"]:
     description: Terraform-managed.

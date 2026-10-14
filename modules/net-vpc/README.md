@@ -539,6 +539,7 @@ iam:
 secondary_ip_ranges:          # map of secondary ip ranges
   secondary-range-a:
     ip_cidr_range: 192.168.0.0/24
+  secondary-range-b: 192.168.1.0/24
 flow_logs_config:             # enable, set to empty map to use defaults
   aggregation_interval: "INTERVAL_5_SEC"
   flow_sampling: 0.5
