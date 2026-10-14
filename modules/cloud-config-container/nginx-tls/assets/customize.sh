@@ -15,7 +15,7 @@
 
 FQDN=$(
 	curl -s -H "Metadata-Flavor: Google" \
-		http://metadata/computeMetadata/v1/instance/hostname
+		http://metadata.google.internal/computeMetadata/v1/instance/hostname
 )
 HOSTNAME=$(echo "$FQDN" | cut -d"." -f1)
 openssl req -new -newkey rsa:4096 -days 365 -nodes -x509 \

@@ -29,7 +29,7 @@ module "cos-envoy-td" {
     { host = "/etc/envoy/envoy.yaml", container = "/etc/envoy/envoy.yaml" }
   ]
 
-  docker_args = "--network host --pid host"
+  docker_args = "--network host"
 
   files = {
     "/var/run/envoy/customize.sh" = {
