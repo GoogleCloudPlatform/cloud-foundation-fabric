@@ -276,7 +276,7 @@ values:
     vpn_gateway: null
     vpn_gateway_interface: null
   module.vpn-dynamic.random_id.secret:
-    byte_length: 8
+    byte_length: 16
     keepers: null
     prefix: null
 
