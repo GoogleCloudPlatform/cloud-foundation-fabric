@@ -50,9 +50,18 @@ variable "backup_configs" {
   description = "Configuration for Backup for GKE."
   type = object({
     enable_backup_agent = optional(bool, false)
+    backup_channels = optional(map(object({
+      destination_project = string
+      region              = optional(string)
+      deletion_policy     = optional(string)
+      description         = optional(string)
+      labels              = optional(map(string))
+    })), {})
     backup_plans = optional(map(object({
-      region                            = string
+      region                            = optional(string)
       applications                      = optional(map(list(string)))
+      deletion_policy                   = optional(string)
+      description                       = optional(string)
       encryption_key                    = optional(string)
       include_secrets                   = optional(bool, true)
       include_volume_data               = optional(bool, true)
@@ -63,6 +72,72 @@ variable "backup_configs" {
       retention_policy_days             = optional(number)
       retention_policy_lock             = optional(bool, false)
       retention_policy_delete_lock_days = optional(number)
+    })), {})
+    restore_channels = optional(map(object({
+      destination_project = string
+      region              = optional(string)
+      deletion_policy     = optional(string)
+      description         = optional(string)
+      labels              = optional(map(string))
+    })), {})
+    restore_plans = optional(map(object({
+      backup_plan     = string
+      region          = optional(string)
+      deletion_policy = optional(string)
+      description     = optional(string)
+      labels          = optional(map(string))
+      cluster_resource_restore_scope = optional(object({
+        all_group_kinds = optional(bool)
+        no_group_kinds  = optional(bool)
+        conflict_policy = optional(string)
+        excluded_group_kinds = optional(list(object({
+          resource_group = optional(string)
+          resource_kind  = optional(string)
+        })))
+        selected_group_kinds = optional(list(object({
+          resource_group = optional(string)
+          resource_kind  = optional(string)
+        })))
+      }))
+      namespaced_restore_scope = optional(object({
+        all_namespaces      = optional(bool)
+        no_namespaces       = optional(bool)
+        applications        = optional(map(list(string)))
+        excluded_namespaces = optional(list(string))
+        restore_mode        = optional(string)
+        selected_namespaces = optional(list(string))
+      }), { all_namespaces = true })
+      restore_order = optional(list(object({
+        requiring = object({
+          resource_group = optional(string)
+          resource_kind  = optional(string)
+        })
+        satisfying = object({
+          resource_group = optional(string)
+          resource_kind  = optional(string)
+        })
+      })))
+      transformation_rules = optional(list(object({
+        description = optional(string)
+        field_actions = list(object({
+          op        = string
+          from_path = optional(string)
+          path      = optional(string)
+          value     = optional(string)
+        }))
+        resource_filter = optional(object({
+          json_path  = optional(string)
+          namespaces = optional(list(string))
+          group_kinds = optional(list(object({
+            resource_group = optional(string)
+            resource_kind  = optional(string)
+          })))
+        }))
+      })))
+      volume_data_restore = optional(object({
+        policy   = optional(string)
+        bindings = optional(map(string), {})
+      }))
     })), {})
   })
   default  = {}
@@ -149,6 +224,23 @@ variable "cluster_autoscaling" {
   }
 }
 
+variable "context" {
+  description = "Context-specific interpolations."
+  type = object({
+    cidr_ranges     = optional(map(string), {})
+    email_addresses = optional(map(string), {})
+    iam_principals  = optional(map(string), {})
+    kms_keys        = optional(map(string), {})
+    locations       = optional(map(string), {})
+    networks        = optional(map(string), {})
+    project_ids     = optional(map(string), {})
+    subnets         = optional(map(string), {})
+    tag_values      = optional(map(string), {})
+  })
+  default  = {}
+  nullable = false
+}
+
 variable "default_nodepool" {
   description = "Enable default nodepool."
   type = object({
@@ -183,6 +275,7 @@ variable "description" {
 variable "enable_addons" {
   description = "Addons enabled in the cluster (true means enabled)."
   type = object({
+    agent_sandbox                  = optional(bool)
     cloudrun                       = optional(bool, false)
     config_connector               = optional(bool, false)
     dns_cache                      = optional(bool, true)
@@ -221,16 +314,17 @@ variable "enable_features" {
       state    = string
       key_name = string
     }))
-    dataplane_v2         = optional(bool, true)
-    fqdn_network_policy  = optional(bool, true)
-    gateway_api          = optional(bool, false)
-    groups_for_rbac      = optional(string)
-    identity_service     = optional(bool, false)
-    image_streaming      = optional(bool, false)
-    intranode_visibility = optional(bool, false)
-    l4_ilb_subsetting    = optional(bool, false)
-    mesh_certificates    = optional(bool)
-    pod_security_policy  = optional(bool, false)
+    dataplane_v2          = optional(bool, true)
+    fqdn_network_policy   = optional(bool, true)
+    gateway_api           = optional(bool, false)
+    groups_for_rbac       = optional(string)
+    identity_service      = optional(bool, false)
+    image_streaming       = optional(bool, false)
+    intranode_visibility  = optional(bool, false)
+    l4_ilb_subsetting     = optional(bool, false)
+    managed_opentelemetry = optional(bool)
+    mesh_certificates     = optional(bool)
+    pod_security_policy   = optional(bool, false)
     rbac_binding_config = optional(object({
       enable_insecure_binding_system_unauthenticated = optional(bool)
       enable_insecure_binding_system_authenticated   = optional(bool)
