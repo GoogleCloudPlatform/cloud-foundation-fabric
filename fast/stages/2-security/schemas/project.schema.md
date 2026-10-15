@@ -186,10 +186,20 @@
             - **protection_level**: *string*
               <br>*default: SOFTWARE*, *enum: ['SOFTWARE', 'HSM', 'EXTERNAL', 'EXTERNAL_VPC']*
 - **labels**: *reference([labels](#refs-labels))*
+- **lien_reason**: *string*
 - **pam_entitlements**: *reference([pam_entitlements](#refs-pam_entitlements))*
 - **log_buckets**: *object*
   <br>*additional properties: false*
   - **`^[a-zA-Z0-9_-]+$`**: *reference([log_bucket](#refs-log_bucket))*
+- **log_scopes**: *object*
+  <br>*additional properties: false*
+  - **`^[a-zA-Z0-9_-]+$`**: *object*
+    <br>*additional properties: false*
+    - **description**: *string*
+    - ⁺**resource_names**: *array*
+      - items: *string*
+- **logging_exclusions**: *object*
+  <br>*additional properties: string*
 - **logging_sinks**: *object*
   <br>*additional properties: false*
   - **`^[a-zA-Z0-9_-]+$`**: *reference([logging_sink](#refs-logging_sink))*

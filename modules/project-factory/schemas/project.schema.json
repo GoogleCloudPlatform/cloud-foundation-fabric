@@ -608,6 +608,9 @@
     "labels": {
       "$ref": "#/$defs/labels"
     },
+    "lien_reason": {
+      "type": "string"
+    },
     "pam_entitlements": {
       "$ref": "#/$defs/pam_entitlements"
     },
@@ -618,6 +621,36 @@
         "^[a-zA-Z0-9_-]+$": {
           "$ref": "#/$defs/log_bucket"
         }
+      }
+    },
+    "log_scopes": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[a-zA-Z0-9_-]+$": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "resource_names"
+          ],
+          "properties": {
+            "description": {
+              "type": "string"
+            },
+            "resource_names": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "logging_exclusions": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
       }
     },
     "logging_sinks": {
