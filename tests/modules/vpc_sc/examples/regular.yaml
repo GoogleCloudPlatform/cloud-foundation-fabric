@@ -128,9 +128,21 @@ values:
       restricted_services:
       - storage.googleapis.com
       vpc_accessible_services:
-      - allowed_services:
-        - storage.googleapis.com
+      - allowed_service_patterns:
+        - modifiers: []
+          pattern: admin.googleapis.com/*
+          service: null
+        - modifiers:
+          - add_request_header:
+            - key: X-GoogApps-Allowed-Domains
+              value: example.com
+          pattern: maps.googleapis.com/*
+          service: null
+        allowed_services:
+        - RESTRICTED-SERVICES
         enable_restriction: true
+        service_patterns_enforcement_scopes:
+        - GOOGLE_APIS_VIA_PRIVATE_PATH
     timeouts: null
     title: r1
     use_explicit_dry_run_spec: false
