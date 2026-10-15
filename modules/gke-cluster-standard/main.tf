@@ -26,9 +26,7 @@ locals {
   ctx_p      = "$"
   location   = lookup(local.ctx.locations, var.location, var.location)
   project_id = lookup(local.ctx.project_ids, var.project_id, var.project_id)
-  region = (
-    length(split("-", local.location)) == 2 ? local.location : null
-  )
+  region     = join("-", slice(split("-", local.location), 0, 2))
 }
 
 resource "google_container_cluster" "cluster" {
@@ -594,7 +592,11 @@ resource "google_container_cluster" "cluster" {
         }
         topic = (
           try(var.enable_features.upgrade_notifications.topic_id, null) != null
-          ? var.enable_features.upgrade_notifications.topic_id
+          ? lookup(
+            local.ctx.pubsub_topics,
+            var.enable_features.upgrade_notifications.topic_id,
+            var.enable_features.upgrade_notifications.topic_id
+          )
           : google_pubsub_topic.notifications[0].id
         )
       }
@@ -690,7 +692,11 @@ resource "google_container_cluster" "cluster" {
         var.enable_features.resource_usage_export.enable_resource_consumption_metering
       )
       bigquery_destination {
-        dataset_id = var.enable_features.resource_usage_export.dataset
+        dataset_id = lookup(
+          local.ctx.bigquery_datasets,
+          var.enable_features.resource_usage_export.dataset,
+          var.enable_features.resource_usage_export.dataset
+        )
       }
     }
   }

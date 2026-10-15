@@ -54,10 +54,21 @@ values:
     node_pool_auto_config:
     - resource_manager_tags:
         env: tagValues/123456789
+    notification_config:
+    - pubsub:
+      - enabled: true
+        filter:
+        - event_type: []
+        topic: projects/my-project/topics/gke-upgrades
     private_cluster_config:
     - enable_private_nodes: true
       master_ipv4_cidr_block: 172.16.20.0/28
     project: my-project
+    resource_usage_export_config:
+    - bigquery_destination:
+      - dataset_id: gke_usage
+      enable_network_egress_metering: false
+      enable_resource_consumption_metering: true
     subnetwork: projects/my-project/regions/europe-west8/subnetworks/gke
 
   google_gke_backup_backup_plan.backup_plan["backup-1"]:

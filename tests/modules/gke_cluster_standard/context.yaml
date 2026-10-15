@@ -51,7 +51,7 @@ values:
       state: ENCRYPTED
     fleet:
     - project: my-project
-    location: europe-west8
+    location: europe-west8-b
     managed_opentelemetry_config:
     - scope: COLLECTION_AND_INSTRUMENTATION_COMPONENTS
     master_authorized_networks_config:
@@ -66,11 +66,22 @@ values:
         env: tagValues/123456789
       service_account: nodes@my-project.iam.gserviceaccount.com
     node_locations:
-    - europe-west8-b
+    - europe-west8-c
+    notification_config:
+    - pubsub:
+      - enabled: true
+        filter:
+        - event_type: []
+        topic: projects/my-project/topics/gke-upgrades
     private_cluster_config:
     - enable_private_nodes: true
       master_ipv4_cidr_block: 172.16.20.0/28
     project: my-project
+    resource_usage_export_config:
+    - bigquery_destination:
+      - dataset_id: gke_usage
+      enable_network_egress_metering: false
+      enable_resource_consumption_metering: true
     subnetwork: projects/my-project/regions/europe-west8/subnetworks/gke
     workload_identity_config:
     - workload_pool: my-project.svc.id.goog

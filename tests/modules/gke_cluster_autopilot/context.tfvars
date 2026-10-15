@@ -1,4 +1,7 @@
 context = {
+  bigquery_datasets = {
+    usage = "gke_usage"
+  }
   cidr_ranges = {
     home   = "192.168.0.0/16"
     master = "172.16.20.0/28"
@@ -22,6 +25,9 @@ context = {
   project_ids = {
     default = "my-project"
     dr      = "my-dr-project"
+  }
+  pubsub_topics = {
+    upgrades = "projects/my-project/topics/gke-upgrades"
   }
   subnets = {
     default = "projects/my-project/regions/europe-west8/subnetworks/gke"
@@ -57,6 +63,12 @@ enable_features = {
   }
   groups_for_rbac       = "$email_addresses:rbac"
   managed_opentelemetry = true
+  resource_usage_export = {
+    dataset = "$bigquery_datasets:usage"
+  }
+  upgrade_notifications = {
+    topic_id = "$pubsub_topics:upgrades"
+  }
 }
 
 node_config = {

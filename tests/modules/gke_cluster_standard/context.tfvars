@@ -1,4 +1,7 @@
 context = {
+  bigquery_datasets = {
+    usage = "gke_usage"
+  }
   cidr_ranges = {
     home   = "192.168.0.0/16"
     master = "172.16.20.0/28"
@@ -15,6 +18,7 @@ context = {
   locations = {
     primary   = "europe-west8"
     primary-b = "europe-west8-b"
+    primary-c = "europe-west8-c"
   }
   networks = {
     default = "projects/my-project/global/networks/vpc"
@@ -22,6 +26,9 @@ context = {
   project_ids = {
     default = "my-project"
     dr      = "my-dr-project"
+  }
+  pubsub_topics = {
+    upgrades = "projects/my-project/topics/gke-upgrades"
   }
   subnets = {
     default = "projects/my-project/regions/europe-west8/subnetworks/gke"
@@ -33,8 +40,8 @@ context = {
 
 project_id     = "$project_ids:default"
 name           = "cluster-1"
-location       = "$locations:primary"
-node_locations = ["$locations:primary-b"]
+location       = "$locations:primary-b"
+node_locations = ["$locations:primary-c"]
 fleet_project  = "$project_ids:default"
 
 access_config = {
@@ -57,6 +64,12 @@ enable_features = {
   }
   groups_for_rbac       = "$email_addresses:rbac"
   managed_opentelemetry = true
+  resource_usage_export = {
+    dataset = "$bigquery_datasets:usage"
+  }
+  upgrade_notifications = {
+    topic_id = "$pubsub_topics:upgrades"
+  }
 }
 
 node_config = {

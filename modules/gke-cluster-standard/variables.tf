@@ -142,6 +142,92 @@ variable "backup_configs" {
   })
   default  = {}
   nullable = false
+  validation {
+    condition = (
+      alltrue([
+        for v in values(var.backup_configs.backup_channels) :
+        v.deletion_policy == null || contains(["DELETE", "PREVENT", "ABANDON"], v.deletion_policy)
+      ]) &&
+      alltrue([
+        for v in values(var.backup_configs.restore_channels) :
+        v.deletion_policy == null || contains(["DELETE", "PREVENT", "ABANDON"], v.deletion_policy)
+      ]) &&
+      alltrue([
+        for v in values(var.backup_configs.backup_plans) :
+        v.deletion_policy == null || contains(["DELETE", "ABANDON"], v.deletion_policy)
+      ]) &&
+      alltrue([
+        for v in values(var.backup_configs.restore_plans) :
+        v.deletion_policy == null || contains(["DELETE", "ABANDON"], v.deletion_policy)
+      ])
+    )
+    error_message = "Invalid deletion_policy value in backup_configs."
+  }
+  validation {
+    condition = alltrue([
+      for v in values(var.backup_configs.restore_plans) :
+      try(v.cluster_resource_restore_scope.conflict_policy, null) == null || contains(
+        ["USE_EXISTING_VERSION", "USE_BACKUP_VERSION"],
+        v.cluster_resource_restore_scope.conflict_policy
+      )
+    ])
+    error_message = "Invalid cluster_resource_restore_scope.conflict_policy value in backup_configs.restore_plans."
+  }
+  validation {
+    condition = alltrue([
+      for v in values(var.backup_configs.restore_plans) :
+      try(v.namespaced_restore_scope.restore_mode, null) == null || contains(
+        [
+          "DELETE_AND_RESTORE",
+          "FAIL_ON_CONFLICT",
+          "MERGE_SKIP_ON_CONFLICT",
+          "MERGE_REPLACE_VOLUME_ON_CONFLICT",
+          "MERGE_REPLACE_ON_CONFLICT"
+        ],
+        v.namespaced_restore_scope.restore_mode
+      )
+    ])
+    error_message = "Invalid namespaced_restore_scope.restore_mode value in backup_configs.restore_plans."
+  }
+  validation {
+    condition = alltrue([
+      for v in values(var.backup_configs.restore_plans) : (
+        (
+          try(v.volume_data_restore.policy, null) == null || contains(
+            [
+              "RESTORE_VOLUME_DATA_FROM_BACKUP",
+              "REUSE_VOLUME_HANDLE_FROM_BACKUP",
+              "NO_VOLUME_DATA_RESTORATION"
+            ],
+            v.volume_data_restore.policy
+          )
+          ) && alltrue([
+            for p in values(try(v.volume_data_restore.bindings, {})) : contains(
+              [
+                "RESTORE_VOLUME_DATA_FROM_BACKUP",
+                "REUSE_VOLUME_HANDLE_FROM_BACKUP",
+                "NO_VOLUME_DATA_RESTORATION"
+              ],
+              p
+            )
+        ])
+      )
+    ])
+    error_message = "Invalid volume_data_restore policy in backup_configs.restore_plans."
+  }
+  validation {
+    condition = alltrue(flatten([
+      for v in values(var.backup_configs.restore_plans) : [
+        for r in coalesce(v.transformation_rules, []) : [
+          for a in r.field_actions : contains(
+            ["REMOVE", "MOVE", "COPY", "ADD", "TEST", "REPLACE"],
+            a.op
+          )
+        ]
+      ]
+    ]))
+    error_message = "Invalid transformation_rules.field_actions.op in backup_configs.restore_plans."
+  }
 }
 
 variable "cluster_autoscaling" {
@@ -227,15 +313,17 @@ variable "cluster_autoscaling" {
 variable "context" {
   description = "Context-specific interpolations."
   type = object({
-    cidr_ranges     = optional(map(string), {})
-    email_addresses = optional(map(string), {})
-    iam_principals  = optional(map(string), {})
-    kms_keys        = optional(map(string), {})
-    locations       = optional(map(string), {})
-    networks        = optional(map(string), {})
-    project_ids     = optional(map(string), {})
-    subnets         = optional(map(string), {})
-    tag_values      = optional(map(string), {})
+    bigquery_datasets = optional(map(string), {})
+    cidr_ranges       = optional(map(string), {})
+    email_addresses   = optional(map(string), {})
+    iam_principals    = optional(map(string), {})
+    kms_keys          = optional(map(string), {})
+    locations         = optional(map(string), {})
+    networks          = optional(map(string), {})
+    project_ids       = optional(map(string), {})
+    pubsub_topics     = optional(map(string), {})
+    subnets           = optional(map(string), {})
+    tag_values        = optional(map(string), {})
   })
   default  = {}
   nullable = false
