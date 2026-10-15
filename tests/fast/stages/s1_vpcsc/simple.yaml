@@ -162,6 +162,9 @@ values:
       restricted_services:
       - accessapproval.googleapis.com
       - adsdatahub.googleapis.com
+      - agentidentity.googleapis.com
+      - agentidentitycredentials.googleapis.com
+      - agentregistry.googleapis.com
       - aiplatform.googleapis.com
       - apigee.googleapis.com
       - apigeeconnect.googleapis.com
@@ -194,6 +197,7 @@ values:
       - dataproc.googleapis.com
       - datastream.googleapis.com
       - dialogflow.googleapis.com
+      - discoveryengine.googleapis.com
       - dlp.googleapis.com
       - dns.googleapis.com
       - documentai.googleapis.com
@@ -213,6 +217,7 @@ values:
       - meshca.googleapis.com
       - metastore.googleapis.com
       - ml.googleapis.com
+      - modelarmor.googleapis.com
       - monitoring.googleapis.com
       - networkconnectivity.googleapis.com
       - networkmanagement.googleapis.com
@@ -243,6 +248,7 @@ values:
       - trafficdirector.googleapis.com
       - transcoder.googleapis.com
       - translate.googleapis.com
+      - vectorsearch.googleapis.com
       - videointelligence.googleapis.com
       - vision.googleapis.com
       - vpcaccess.googleapis.com
