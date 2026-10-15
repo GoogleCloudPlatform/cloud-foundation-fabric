@@ -19,7 +19,7 @@ module "cos-envoy" {
   container_volumes = [
     { host = "/etc/envoy/envoy.yaml", container = "/etc/envoy/envoy.yaml" }
   ]
-  docker_args = "--network host --pid host"
+  docker_args = "--network host"
   # file paths are mocked to run this example in tests
   files = {
     "/var/run/envoy/customize.sh" = {
