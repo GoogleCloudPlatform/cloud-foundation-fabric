@@ -33,6 +33,36 @@ values:
     retention_policy:
     - locked: false
 
+  module.cluster-1.google_gke_backup_restore_channel.restore_channel["restore-channel-1"]:
+    destination_project: projects/my-dr-project
+    location: europe-west1
+    name: restore-channel-1
+    project: project-id
+
+  module.cluster-1.google_gke_backup_restore_plan.restore_plan["restore-1"]:
+    location: europe-west1
+    name: restore-1
+    project: project-id
+    restore_config:
+    - all_namespaces: true
+      cluster_resource_conflict_policy: USE_EXISTING_VERSION
+      cluster_resource_restore_scope:
+      - all_group_kinds: true
+        excluded_group_kinds: []
+        no_group_kinds: null
+        selected_group_kinds: []
+      excluded_namespaces: []
+      namespaced_resource_restore_mode: DELETE_AND_RESTORE
+      no_namespaces: null
+      restore_order: []
+      selected_applications: []
+      selected_namespaces: []
+      transformation_rules: []
+      volume_data_restore_policy: RESTORE_VOLUME_DATA_FROM_BACKUP
+      volume_data_restore_policy_bindings: []
+
 counts:
   google_container_cluster: 1
   google_gke_backup_backup_plan: 1
+  google_gke_backup_restore_channel: 1
+  google_gke_backup_restore_plan: 1
