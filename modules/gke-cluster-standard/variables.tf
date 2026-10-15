@@ -50,9 +50,18 @@ variable "backup_configs" {
   description = "Configuration for Backup for GKE."
   type = object({
     enable_backup_agent = optional(bool, false)
+    backup_channels = optional(map(object({
+      destination_project = string
+      region              = optional(string)
+      deletion_policy     = optional(string)
+      description         = optional(string)
+      labels              = optional(map(string))
+    })), {})
     backup_plans = optional(map(object({
-      region                            = string
+      region                            = optional(string)
       applications                      = optional(map(list(string)))
+      deletion_policy                   = optional(string)
+      description                       = optional(string)
       encryption_key                    = optional(string)
       include_secrets                   = optional(bool, true)
       include_volume_data               = optional(bool, true)
@@ -64,9 +73,161 @@ variable "backup_configs" {
       retention_policy_lock             = optional(bool, false)
       retention_policy_delete_lock_days = optional(number)
     })), {})
+    restore_channels = optional(map(object({
+      destination_project = string
+      region              = optional(string)
+      deletion_policy     = optional(string)
+      description         = optional(string)
+      labels              = optional(map(string))
+    })), {})
+    restore_plans = optional(map(object({
+      backup_plan     = string
+      region          = optional(string)
+      deletion_policy = optional(string)
+      description     = optional(string)
+      labels          = optional(map(string))
+      cluster_resource_restore_scope = optional(object({
+        all_group_kinds = optional(bool)
+        no_group_kinds  = optional(bool)
+        conflict_policy = optional(string)
+        excluded_group_kinds = optional(list(object({
+          resource_group = optional(string)
+          resource_kind  = optional(string)
+        })))
+        selected_group_kinds = optional(list(object({
+          resource_group = optional(string)
+          resource_kind  = optional(string)
+        })))
+      }))
+      namespaced_restore_scope = optional(object({
+        all_namespaces      = optional(bool)
+        no_namespaces       = optional(bool)
+        applications        = optional(map(list(string)))
+        excluded_namespaces = optional(list(string))
+        restore_mode        = optional(string)
+        selected_namespaces = optional(list(string))
+      }), { all_namespaces = true })
+      restore_order = optional(list(object({
+        requiring = object({
+          resource_group = optional(string)
+          resource_kind  = optional(string)
+        })
+        satisfying = object({
+          resource_group = optional(string)
+          resource_kind  = optional(string)
+        })
+      })))
+      transformation_rules = optional(list(object({
+        description = optional(string)
+        field_actions = list(object({
+          op        = string
+          from_path = optional(string)
+          path      = optional(string)
+          value     = optional(string)
+        }))
+        resource_filter = optional(object({
+          json_path  = optional(string)
+          namespaces = optional(list(string))
+          group_kinds = optional(list(object({
+            resource_group = optional(string)
+            resource_kind  = optional(string)
+          })))
+        }))
+      })))
+      volume_data_restore = optional(object({
+        policy   = optional(string)
+        bindings = optional(map(string), {})
+      }))
+    })), {})
   })
   default  = {}
   nullable = false
+  validation {
+    condition = (
+      alltrue([
+        for v in values(var.backup_configs.backup_channels) :
+        v.deletion_policy == null || contains(["DELETE", "PREVENT", "ABANDON"], v.deletion_policy)
+      ]) &&
+      alltrue([
+        for v in values(var.backup_configs.restore_channels) :
+        v.deletion_policy == null || contains(["DELETE", "PREVENT", "ABANDON"], v.deletion_policy)
+      ]) &&
+      alltrue([
+        for v in values(var.backup_configs.backup_plans) :
+        v.deletion_policy == null || contains(["DELETE", "ABANDON"], v.deletion_policy)
+      ]) &&
+      alltrue([
+        for v in values(var.backup_configs.restore_plans) :
+        v.deletion_policy == null || contains(["DELETE", "ABANDON"], v.deletion_policy)
+      ])
+    )
+    error_message = "Invalid deletion_policy value in backup_configs."
+  }
+  validation {
+    condition = alltrue([
+      for v in values(var.backup_configs.restore_plans) :
+      try(v.cluster_resource_restore_scope.conflict_policy, null) == null || contains(
+        ["USE_EXISTING_VERSION", "USE_BACKUP_VERSION"],
+        v.cluster_resource_restore_scope.conflict_policy
+      )
+    ])
+    error_message = "Invalid cluster_resource_restore_scope.conflict_policy value in backup_configs.restore_plans."
+  }
+  validation {
+    condition = alltrue([
+      for v in values(var.backup_configs.restore_plans) :
+      try(v.namespaced_restore_scope.restore_mode, null) == null || contains(
+        [
+          "DELETE_AND_RESTORE",
+          "FAIL_ON_CONFLICT",
+          "MERGE_SKIP_ON_CONFLICT",
+          "MERGE_REPLACE_VOLUME_ON_CONFLICT",
+          "MERGE_REPLACE_ON_CONFLICT"
+        ],
+        v.namespaced_restore_scope.restore_mode
+      )
+    ])
+    error_message = "Invalid namespaced_restore_scope.restore_mode value in backup_configs.restore_plans."
+  }
+  validation {
+    condition = alltrue([
+      for v in values(var.backup_configs.restore_plans) : (
+        (
+          try(v.volume_data_restore.policy, null) == null || contains(
+            [
+              "RESTORE_VOLUME_DATA_FROM_BACKUP",
+              "REUSE_VOLUME_HANDLE_FROM_BACKUP",
+              "NO_VOLUME_DATA_RESTORATION"
+            ],
+            v.volume_data_restore.policy
+          )
+          ) && alltrue([
+            for p in values(try(v.volume_data_restore.bindings, {})) : contains(
+              [
+                "RESTORE_VOLUME_DATA_FROM_BACKUP",
+                "REUSE_VOLUME_HANDLE_FROM_BACKUP",
+                "NO_VOLUME_DATA_RESTORATION"
+              ],
+              p
+            )
+        ])
+      )
+    ])
+    error_message = "Invalid volume_data_restore policy in backup_configs.restore_plans."
+  }
+  validation {
+    condition = alltrue(flatten([
+      for v in values(var.backup_configs.restore_plans) : [
+        for r in coalesce(v.transformation_rules, []) : [
+          for a in r.field_actions : contains(
+            ["REMOVE", "MOVE", "COPY", "ADD", "TEST", "REPLACE"],
+            a.op
+          )
+        ]
+      ]
+    ]))
+    error_message = "Invalid transformation_rules.field_actions.op in backup_configs.restore_plans."
+  }
 }
 
 variable "cluster_autoscaling" {
@@ -149,6 +310,25 @@ variable "cluster_autoscaling" {
   }
 }
 
+variable "context" {
+  description = "Context-specific interpolations."
+  type = object({
+    bigquery_datasets = optional(map(string), {})
+    cidr_ranges       = optional(map(string), {})
+    email_addresses   = optional(map(string), {})
+    iam_principals    = optional(map(string), {})
+    kms_keys          = optional(map(string), {})
+    locations         = optional(map(string), {})
+    networks          = optional(map(string), {})
+    project_ids       = optional(map(string), {})
+    pubsub_topics     = optional(map(string), {})
+    subnets           = optional(map(string), {})
+    tag_values        = optional(map(string), {})
+  })
+  default  = {}
+  nullable = false
+}
+
 variable "default_nodepool" {
   description = "Enable default nodepool."
   type = object({
@@ -183,6 +363,7 @@ variable "description" {
 variable "enable_addons" {
   description = "Addons enabled in the cluster (true means enabled)."
   type = object({
+    agent_sandbox                  = optional(bool)
     cloudrun                       = optional(bool, false)
     config_connector               = optional(bool, false)
     dns_cache                      = optional(bool, true)
@@ -221,16 +402,17 @@ variable "enable_features" {
       state    = string
       key_name = string
     }))
-    dataplane_v2         = optional(bool, true)
-    fqdn_network_policy  = optional(bool, true)
-    gateway_api          = optional(bool, false)
-    groups_for_rbac      = optional(string)
-    identity_service     = optional(bool, false)
-    image_streaming      = optional(bool, false)
-    intranode_visibility = optional(bool, false)
-    l4_ilb_subsetting    = optional(bool, false)
-    mesh_certificates    = optional(bool)
-    pod_security_policy  = optional(bool, false)
+    dataplane_v2          = optional(bool, true)
+    fqdn_network_policy   = optional(bool, true)
+    gateway_api           = optional(bool, false)
+    groups_for_rbac       = optional(string)
+    identity_service      = optional(bool, false)
+    image_streaming       = optional(bool, false)
+    intranode_visibility  = optional(bool, false)
+    l4_ilb_subsetting     = optional(bool, false)
+    managed_opentelemetry = optional(bool)
+    mesh_certificates     = optional(bool)
+    pod_security_policy   = optional(bool, false)
     rbac_binding_config = optional(object({
       enable_insecure_binding_system_unauthenticated = optional(bool)
       enable_insecure_binding_system_authenticated   = optional(bool)
