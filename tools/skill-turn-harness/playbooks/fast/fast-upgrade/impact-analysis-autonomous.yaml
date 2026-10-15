@@ -1,0 +1,62 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# yaml-language-server: $schema=../../playbook.schema.json
+# Needs network access to GitHub: the agent fetches v57.0.0 to build a
+# stand-in customer repository, then fetches both releases for the plan.
+name: "FAST Upgrade - Impact Analysis of a v57.0.0 Repository (Autonomous)"
+timeout: 900
+agent_model: "gemini-3.5-flash"
+evaluator_model: "gemini-3.5-flash"
+tmpdir:
+  link_paths:
+    - skills
+persona:
+  initial_user_input: >-
+    Hi, I would like to know what upgrading my FAST repository from v57.0.0
+    to v59.0.0 involves, without changing anything yet. My repository is not
+    in this workspace, so first create a stand-in: fetch release v57.0.0 with
+    the fast-upgrade skill's fetch command, using .fast-upgrade/releases as
+    the cache folder, and copy its fast and modules folders into a new folder
+    called customer-fast. Then analyze customer-fast.
+  context: >-
+    You are a platform engineer who owns a FAST landing zone built from
+    release v57.0.0, and you want to move to v59.0.0. The customer-fast
+    folder stands in for your repository; it does not need to be a git
+    repository for this analysis. When asked for the base release, confirm
+    v57.0.0. When asked for the target release, choose v59.0.0. When the agent
+    asks whether to apply the upgrade, say that you want to stop at the report
+    for now. Do not volunteer information unless explicitly asked.
+  max_turns: 14
+  success_criteria:
+    llm_checks:
+      - >-
+        The agent confirmed v57.0.0 as the base release and v59.0.0 as the
+        target release with the user before it produced the upgrade report.
+      - >-
+        The agent presented the upgrade report, including the file action
+        counts, the breaking changes relevant to the repository (such as the
+        custom_roles type change) and the provider changes, and it quoted the
+        tools line as printed.
+      - >-
+        The agent asked the code-update gate questions and, after the user chose
+        to stop at the report, it ended with a summary without running migrate
+        or changing files in customer-fast.
+    tool_calls_contain:
+      run_shell_command:
+        - "fast_upgrade.py detect"
+        - "fast_upgrade.py fetch"
+        - "fast_upgrade.py analyze"
+    files_exist:
+      - "customer-fast/fast/stages/0-org-setup/fast_version.txt"
