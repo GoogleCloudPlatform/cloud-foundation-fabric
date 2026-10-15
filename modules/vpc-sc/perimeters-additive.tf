@@ -240,28 +240,28 @@ resource "google_access_context_manager_service_perimeter" "additive" {
           ? []
           : [spec.value.vpc_accessible_services]
         )
-        iterator = vas
+        iterator = services
         content {
           allowed_services = distinct(concat(
-            vas.value.enable_restriction && vas.value.allow_all_restricted_services
+            services.value.enable_restriction && services.value.allow_all_restricted_services
             ? ["RESTRICTED-SERVICES"]
             : [],
             flatten([
-              for r in vas.value.allowed_services :
+              for r in services.value.allowed_services :
               lookup(local.ctx.service_sets, r, [r])
             ])
           ))
-          enable_restriction = vas.value.enable_restriction
+          enable_restriction = services.value.enable_restriction
           service_patterns_enforcement_scopes = (
-            vas.value.allowed_service_patterns == null
+            services.value.allowed_service_patterns == null
             ? null
             : ["GOOGLE_APIS_VIA_PRIVATE_PATH"]
           )
           dynamic "allowed_service_patterns" {
             for_each = (
-              vas.value.allowed_service_patterns == null
+              services.value.allowed_service_patterns == null
               ? {}
-              : vas.value.allowed_service_patterns
+              : services.value.allowed_service_patterns
             )
             iterator = pattern
             content {
@@ -501,28 +501,28 @@ resource "google_access_context_manager_service_perimeter" "additive" {
           ? []
           : [status.value.vpc_accessible_services]
         )
-        iterator = vas
+        iterator = services
         content {
           allowed_services = distinct(concat(
-            vas.value.enable_restriction && vas.value.allow_all_restricted_services
+            services.value.enable_restriction && services.value.allow_all_restricted_services
             ? ["RESTRICTED-SERVICES"]
             : [],
             flatten([
-              for r in vas.value.allowed_services :
+              for r in services.value.allowed_services :
               lookup(local.ctx.service_sets, r, [r])
             ])
           ))
-          enable_restriction = vas.value.enable_restriction
+          enable_restriction = services.value.enable_restriction
           service_patterns_enforcement_scopes = (
-            vas.value.allowed_service_patterns == null
+            services.value.allowed_service_patterns == null
             ? null
             : ["GOOGLE_APIS_VIA_PRIVATE_PATH"]
           )
           dynamic "allowed_service_patterns" {
             for_each = (
-              vas.value.allowed_service_patterns == null
+              services.value.allowed_service_patterns == null
               ? {}
-              : vas.value.allowed_service_patterns
+              : services.value.allowed_service_patterns
             )
             iterator = pattern
             content {
