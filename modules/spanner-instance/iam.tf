@@ -45,14 +45,30 @@ resource "google_spanner_instance_iam_binding" "bindings" {
   instance = local.spanner_instance.id
   role     = each.value.role
   members  = each.value.members
+  dynamic "condition" {
+    for_each = each.value.condition == null ? [] : [""]
+    content {
+      expression  = each.value.condition.expression
+      title       = each.value.condition.title
+      description = each.value.condition.description
+    }
+  }
 }
 
 resource "google_spanner_instance_iam_member" "bindings" {
   for_each = var.iam_bindings_additive
-  project  = var.project_id
+  project  = local.spanner_instance.project
   instance = local.spanner_instance.id
   role     = each.value.role
   member   = each.value.member
+  dynamic "condition" {
+    for_each = each.value.condition == null ? [] : [""]
+    content {
+      expression  = each.value.condition.expression
+      title       = each.value.condition.title
+      description = each.value.condition.description
+    }
+  }
 }
 
 resource "google_spanner_database_iam_binding" "authoritative" {
