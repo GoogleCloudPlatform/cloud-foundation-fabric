@@ -297,7 +297,13 @@ variable "perimeters" {
       restricted_services = optional(list(string), [])
       resources           = optional(list(string), [])
       vpc_accessible_services = optional(object({
-        allowed_services   = list(string)
+        allow_all_restricted_services = optional(bool, true)
+        # pattern syntax is not validated as the API maintains an evolving PGA domain allowlist
+        allowed_service_patterns = optional(map(object({
+          x_goog_allowed_resources   = optional(string)
+          x_googapps_allowed_domains = optional(string)
+        })))
+        allowed_services   = optional(list(string), [])
         enable_restriction = optional(bool, true)
       }))
     }))
@@ -308,7 +314,13 @@ variable "perimeters" {
       resources           = optional(list(string), [])
       restricted_services = optional(list(string), [])
       vpc_accessible_services = optional(object({
-        allowed_services   = list(string)
+        allow_all_restricted_services = optional(bool, true)
+        # pattern syntax is not validated as the API maintains an evolving PGA domain allowlist
+        allowed_service_patterns = optional(map(object({
+          x_goog_allowed_resources   = optional(string)
+          x_googapps_allowed_domains = optional(string)
+        })))
+        allowed_services   = optional(list(string), [])
         enable_restriction = optional(bool, true)
       }))
     }))

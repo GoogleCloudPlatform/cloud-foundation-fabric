@@ -118,6 +118,14 @@ Perimeters by default manage all their attributes authoritatively. To have perim
 
 Perimeter resources and ingress/egress rule resources accept projects (`projects/NUMBER`), [folders](https://cloud.google.com/vpc-service-controls/docs/folder-membership) (`folders/NUMBER`) and organizations (`organizations/NUMBER`). Ingress and egress rules additionally accept [Private Service Connect endpoints](https://cloud.google.com/vpc-service-controls/docs/ingress-egress-rules) as sources, via the `psc_endpoints` attribute which takes forwarding rule names. All of these can be passed as literals, or via the corresponding `context` keys (`project_numbers`, `folder_ids`, `organization_ids`, `psc_endpoints`) as shown below.
 
+The `vpc_accessible_services` block restricts which Google APIs are reachable from networks inside the perimeter:
+
+- By default, setting `vpc_accessible_services = {}` enables restriction (`enable_restriction = true`) and allows all services protected by the perimeter (`allow_all_restricted_services = true`, which injects `"RESTRICTED-SERVICES"` into `allowed_services`). Additional supported services (or `$service_sets:...` context references) can be added via `allowed_services`.
+- For networks using `private.googleapis.com` or an `all-apis` Private Service Connect endpoint, `allowed_service_patterns` controls [service pattern enforcement](https://cloud.google.com/vpc-service-controls/docs/manage-service-perimeters#service-patterns-cfg) (`GOOGLE_APIS_VIA_PRIVATE_PATH`):
+  - When `allowed_service_patterns` is `null` (default), service pattern enforcement is not enabled: supported services are filtered via `allowed_services` and unsupported Google APIs are blocked, while auxiliary Private Google Access domains pass through unfiltered.
+  - When `allowed_service_patterns` is set to `{}` (empty map), `GOOGLE_APIS_VIA_PRIVATE_PATH` enforcement is enabled with no allowed patterns, blocking all unsupported APIs and auxiliary domains on the private path.
+  - When `allowed_service_patterns` is populated with URL patterns (e.g. `"admin.googleapis.com/*" = null`), `GOOGLE_APIS_VIA_PRIVATE_PATH` enforcement is enabled and matching unsupported APIs are allowed on the private path. Each pattern can optionally attach [`X-Goog-Allowed-Resources` or `X-GoogApps-Allowed-Domains` request headers](https://cloud.google.com/vpc-service-controls/docs/manage-service-perimeters#attach_headers_to_requests_for_unsupported_apis) via `x_goog_allowed_resources` and `x_googapps_allowed_domains`.
+
 ```hcl
 module "test" {
   source        = "./fabric/modules/vpc-sc"
@@ -220,8 +228,12 @@ module "test" {
           "$ingress_policies:psc-apis"
         ]
         vpc_accessible_services = {
-          allowed_services   = ["storage.googleapis.com"]
-          enable_restriction = true
+          allowed_service_patterns = {
+            "admin.googleapis.com/*" = null
+            "maps.googleapis.com/*" = {
+              x_googapps_allowed_domains = "example.com"
+            }
+          }
         }
       }
     }
@@ -339,9 +351,10 @@ status:
     - $ingress_policies:sa-tf-test-geo
     - $ingress_policies:sa-tf-test
   vpc_accessible_services:
-    allowed_services:
-      - storage.googleapis.com
-    enable_restriction: true
+    allowed_service_patterns:
+      admin.googleapis.com/*: null
+      maps.googleapis.com/*:
+        x_googapps_allowed_domains: example.com
 # tftest-file id=p1 path=data/perimeters/perimeter-north.yaml schema=perimeter.schema.json
 ```
 
@@ -443,7 +456,7 @@ to:
 | [iam_bindings_additive](variables.tf#L228) | Individual additive IAM bindings. Keys are arbitrary. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [ingress_policies](variables.tf#L243) | Ingress policy definitions that can be referenced in perimeters. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [perimeters](variables.tf#L286) | Regular service perimeters. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [project_id_search_scope](variables.tf#L320) | Set this to an organization or folder ID to use Cloud Asset Inventory to automatically translate project ids to numbers. | <code>string</code> |  | <code>null</code> |
+| [project_id_search_scope](variables.tf#L332) | Set this to an organization or folder ID to use Cloud Asset Inventory to automatically translate project ids to numbers. | <code>string</code> |  | <code>null</code> |
 
 ## Outputs
 

@@ -479,7 +479,7 @@ Some references that might be useful in setting up this stage:
 | [perimeters](variables.tf#L194) | Perimeter definitions. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |  |
 | [project_ids](variables-fast.tf#L67) | Project IDs. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-org-setup</code> |
 | [project_numbers](variables-fast.tf#L75) | Project numbers. | <code>map&#40;number&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-org-setup</code> |
-| [resource_discovery](variables.tf#L228) | Automatic discovery of perimeter projects. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |  |
+| [resource_discovery](variables.tf#L240) | Automatic discovery of perimeter projects. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |  |
 | [root_node](variables-fast.tf#L83) | Root node for the hierarchy, if running in tenant mode. | <code>string</code> |  | <code>null</code> | <code>0-org-setup</code> |
 | [service_accounts](variables-fast.tf#L97) | Org-level service accounts. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-org-setup</code> |
 | [storage_buckets](variables-fast.tf#L105) | Storage buckets created in the bootstrap stage. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-org-setup</code> |

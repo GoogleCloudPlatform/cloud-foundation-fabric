@@ -102,6 +102,34 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
+        "allow_all_restricted_services": {
+          "type": "boolean",
+          "default": true
+        },
+        "allowed_service_patterns": {
+          "type": "object",
+          "additionalProperties": {
+            "oneOf": [
+              {
+                "type": [
+                  "null"
+                ]
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "x_goog_allowed_resources": {
+                    "type": "string"
+                  },
+                  "x_googapps_allowed_domains": {
+                    "type": "string"
+                  }
+                }
+              }
+            ]
+          }
+        },
         "allowed_services": {
           "type": "array",
           "items": {
@@ -109,12 +137,10 @@
           }
         },
         "enable_restriction": {
-          "type": "boolean"
+          "type": "boolean",
+          "default": true
         }
-      },
-      "required": [
-        "allowed_services"
-      ]
+      }
     }
   }
 }
