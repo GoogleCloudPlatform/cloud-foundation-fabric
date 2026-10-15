@@ -1010,6 +1010,16 @@ values:
     condition:
     - title: audit-logs bucket writer
     role: roles/logging.bucketWriter
+  module.organization-iam[0].google_tags_tag_key_iam_binding.default["firewall:roles/resourcemanager.tagAdmin"]:
+    condition: []
+    members:
+    - group:fabric-fast-owners@google.com
+    role: roles/resourcemanager.tagAdmin
+  module.organization-iam[0].google_tags_tag_value_iam_binding.default["firewall/iap-ssh:roles/resourcemanager.tagUser"]:
+    condition: []
+    members:
+    - group:fabric-fast-owners@google.com
+    role: roles/resourcemanager.tagUser
   module.organization[0].google_logging_organization_settings.default[0]:
     organization: '1234567890'
     timeouts: null
@@ -1025,6 +1035,15 @@ values:
     purpose_data: null
     short_name: environment
     timeouts: null
+  module.organization[0].google_tags_tag_key.default["firewall"]:
+    allowed_values_regex: null
+    description: Organization-level firewall tags.
+    parent: organizations/1234567890
+    purpose: GCE_FIREWALL
+    purpose_data:
+      organization: auto
+    short_name: firewall
+    timeouts: null
   module.organization[0].google_tags_tag_value.default["environment/development"]:
     description: Development.
     short_name: development
@@ -1032,6 +1051,10 @@ values:
   module.organization[0].google_tags_tag_value.default["environment/production"]:
     description: Production.
     short_name: production
+    timeouts: null
+  module.organization[0].google_tags_tag_value.default["firewall/iap-ssh"]:
+    description: Allow IAP SSH.
+    short_name: iap-ssh
     timeouts: null
   module.vpcs.module.firewall["dev"].google_compute_firewall.custom_rules["ingress-default-allow-healthchecks"]:
     allow:
@@ -1363,11 +1386,13 @@ counts:
   google_storage_bucket_object: 4
   google_storage_project_service_account: 3
   google_tags_tag_binding: 2
-  google_tags_tag_key: 1
-  google_tags_tag_value: 2
+  google_tags_tag_key: 2
+  google_tags_tag_key_iam_binding: 1
+  google_tags_tag_value: 3
+  google_tags_tag_value_iam_binding: 1
   local_file: 3
   modules: 27
-  resources: 169
+  resources: 173
   terraform_data: 4
 
 outputs:

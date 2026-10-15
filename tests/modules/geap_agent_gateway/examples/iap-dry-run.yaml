@@ -18,7 +18,7 @@ values:
     location: europe-west1
     metadata:
       iamEnforcementMode: DRY_RUN
-      iapPolicyVersion: V1
+      iapPolicyVersion: V2
     name: my-gateway-iap
     project: my-project-id
     service: iap.googleapis.com
