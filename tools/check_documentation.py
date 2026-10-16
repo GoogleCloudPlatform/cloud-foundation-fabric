@@ -110,21 +110,21 @@ def _check_dir(dir_name, exclude_files=None, files=False, show_extra=False):
         diff = ''.join([header] + [x for x in ndiff if x[0] != ' '])
 
       elif empty := [v.name for v in newvars if not v.description]:
-        state = state.FAIL_VARIABLE_DESCRIPTION
+        state = State.FAIL_VARIABLE_DESCRIPTION
         diff = "\n".join([
             f'----- {readme_rel} variables missing description -----',
             ', '.join(empty),
         ])
 
       elif empty := [o.name for o in newouts if not o.description]:
-        state = state.FAIL_VARIABLE_DESCRIPTION
+        state = State.FAIL_OUTPUT_DESCRIPTION
         diff = "\n".join([
             f'----- {readme_rel} outputs missing description -----',
             ', '.join(empty),
         ])
 
       elif variables != sorted(variables):
-        state = state.FAIL_UNSORTED_VARS
+        state = State.FAIL_UNSORTED_VARS
         diff = "\n".join([
             f'----- {readme_rel} variables -----',
             f'variables should be in this order: ',
@@ -132,7 +132,7 @@ def _check_dir(dir_name, exclude_files=None, files=False, show_extra=False):
         ])
 
       elif outputs != sorted(outputs):
-        state = state.FAIL_UNSORTED_OUTPUTS
+        state = State.FAIL_UNSORTED_OUTPUTS
         diff = "\n".join([
             f'----- {readme_rel} outputs -----',
             f'outputs should be in this order: ',
@@ -140,21 +140,21 @@ def _check_dir(dir_name, exclude_files=None, files=False, show_extra=False):
         ])
 
       elif nc := [v.name for v in newvars if not v.description.endswith('.')]:
-        state = state.FAIL_VARIABLE_PERIOD
+        state = State.FAIL_VARIABLE_PERIOD
         diff = "\n".join([
             f'----- {readme_rel} variable descriptions missing ending period -----',
             ', '.join(nc),
         ])
 
       elif nc := [o.name for o in newouts if not o.description.endswith('.')]:
-        state = state.FAIL_OUTPUT_PERIOD
+        state = State.FAIL_OUTPUT_PERIOD
         diff = "\n".join([
             f'----- {readme_rel} output descriptions missing ending period -----',
             ', '.join(nc),
         ])
 
       elif no_types := [v.name for v in newvars if not v.type]:
-        state = state.FAIL_MISSING_TYPES
+        state = State.FAIL_MISSING_TYPES
         diff = "\n".join([
             f'----- {readme_rel} variables without types -----',
             ', '.join(no_types),
