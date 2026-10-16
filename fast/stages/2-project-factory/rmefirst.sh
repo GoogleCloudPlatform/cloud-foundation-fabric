@@ -1,57 +1,30 @@
 #!/usr/bin/env bash
-
 # Pure-bash safe script to locate and link existing Stage 0, 1, and 2 variable outputs
 
-echo "Locating Stage 0 variables..."
+set -euo pipefail
 
-# Find the full path to the Stage 0 output json
-FULL_PATH=$(find ~ -name "0-org-setup.auto.tfvars.json" 2>/dev/null | head -n 1)
+OUTPUTS_BUCKET="gs://placard-prod-iac-core-0-iac-outputs"
 
-if [ -z "$FULL_PATH" ]; then
-  echo "ERROR: Stage 0 outputs (0-org-setup.auto.tfvars.json) could not be found anywhere under your home directory."
-  echo "Please verify if Stage 0 has been applied successfully."
-  exit 1
-fi
+echo "Configuring Stage 2 Project Factory files from ${OUTPUTS_BUCKET}..."
 
-# Extract directories cleanly without complex find -exec syntax
-FOUND_DIR=$(dirname "$FULL_PATH")
-PARENT_DIR=$(dirname "$FOUND_DIR")
-
-echo "Success: Found Stage 0 outputs at: $PARENT_DIR"
-
-# Clean up existing symlinks
-echo "Cleaning existing links in fast/stages/2-project-factory..."
+# Clean up existing symlinks / stale files
 rm -f *.tfvars *.json *providers.tf
 
-# Link providers
-if [ -f "$PARENT_DIR/providers/2-project-factory-providers.tf" ]; then
-  ln -s "$PARENT_DIR/providers/2-project-factory-providers.tf" ./
-  echo "✔ Linked 2-project-factory-providers.tf"
-else
-  echo "⚠ Warning: 2-project-factory-providers.tf was not found under $PARENT_DIR/providers/"
-fi
+# 1. Copy provider configuration
+echo "Copying 2-project-factory-providers.tf..."
+gcloud storage cp "${OUTPUTS_BUCKET}/providers/2-project-factory-providers.tf" ./providers.tf
 
-# Link variable JSONs
-if [ -f "$FOUND_DIR/0-globals.auto.tfvars.json" ]; then
-  ln -s "$FOUND_DIR/0-globals.auto.tfvars.json" ./
-  echo "✔ Linked 0-globals.auto.tfvars.json"
-fi
+# 2. Copy dependencies
+echo "Copying stage input variables..."
+gcloud storage cp "${OUTPUTS_BUCKET}/tfvars/0-globals.auto.tfvars.json" ./
+gcloud storage cp "${OUTPUTS_BUCKET}/tfvars/0-org-setup.auto.tfvars.json" ./
 
-if [ -f "$FOUND_DIR/0-org-setup.auto.tfvars.json" ]; then
-  ln -s "$FOUND_DIR/0-org-setup.auto.tfvars.json" ./
-  echo "✔ Linked 0-org-setup.auto.tfvars.json"
-fi
+# 3. Copy optional networking & security inputs if they exist
+gcloud storage cp "${OUTPUTS_BUCKET}/tfvars/1-vpcsc.auto.tfvars.json" ./ 2>/dev/null || true
+gcloud storage cp "${OUTPUTS_BUCKET}/tfvars/2-networking.auto.tfvars.json" ./ 2>/dev/null || true
+gcloud storage cp "${OUTPUTS_BUCKET}/tfvars/2-security.auto.tfvars.json" ./ 2>/dev/null || true
 
-if [ -f "$FOUND_DIR/1-vpcsc.auto.tfvars.json" ]; then
-  ln -s "$FOUND_DIR/1-vpcsc.auto.tfvars.json" ./
-  echo "✔ Linked 1-vpcsc.auto.tfvars.json (VPC-SC)"
-fi
-
-if [ -f "$FOUND_DIR/2-networking.auto.tfvars.json" ]; then
-  ln -s "$FOUND_DIR/2-networking.auto.tfvars.json" ./
-  echo "✔ Linked 2-networking.auto.tfvars.json (Networking)"
-fi
-
+echo "✔ Successfully configured provider and variable files."
 echo "Done! You can now run:"
 echo "  terraform init"
-echo "  terraform apply"
+echo "  terraform plan"
