@@ -44,6 +44,12 @@ output "ids" {
   }
 }
 
+output "instance" {
+  description = "AlloyDB primary instance resource."
+  value       = google_alloydb_instance.primary
+  sensitive   = true
+}
+
 output "instances" {
   description = "AlloyDB instance resources."
   value       = local._all_instances
@@ -126,6 +132,12 @@ output "secondary_cluster_name" {
 output "secondary_id" {
   description = "Fully qualified secondary instance id."
   value       = var.cross_region_replication.enabled ? google_alloydb_instance.secondary[0].id : null
+}
+
+output "secondary_instance" {
+  description = "AlloyDB secondary instance resource."
+  value       = one(google_alloydb_instance.secondary)
+  sensitive   = true
 }
 
 output "secondary_ip" {
