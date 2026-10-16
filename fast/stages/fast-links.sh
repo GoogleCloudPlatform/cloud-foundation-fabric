@@ -71,13 +71,21 @@ if [[ ! -z ${FAST_STAGE_DEPS+x} ]]; then
 	done
 fi
 
-echo -e "\n# conventional location for this stage terraform.tfvars (manually managed)"
-echo "$CMD/${FAST_STAGE_LEVEL}-${FAST_STAGE_NAME}.auto.tfvars ./"
+echo -e "\n# conventional location for this stage terraform.tfvars (manually managed, optional)"
+if [[ "$1" == "gs://"* ]]; then
+	echo "$CMD/${FAST_STAGE_LEVEL}-${FAST_STAGE_NAME}.auto.tfvars ./ 2>/dev/null || true"
+else
+	echo "if [ -e \"$1/${FAST_STAGE_LEVEL}-${FAST_STAGE_NAME}.auto.tfvars\" ]; then $CMD/${FAST_STAGE_LEVEL}-${FAST_STAGE_NAME}.auto.tfvars ./; fi"
+fi
 
 if [[ ! -z ${FAST_STAGE_OPTIONAL+x} ]]; then
 	echo -e "\n# optional files"
 	for f in $FAST_STAGE_OPTIONAL; do
-		echo "$CMD/tfvars/$f.auto.tfvars.json ./"
+		if [[ "$1" == "gs://"* ]]; then
+			echo "$CMD/tfvars/$f.auto.tfvars.json ./ 2>/dev/null || true"
+		else
+			echo "if [ -e \"$1/tfvars/$f.auto.tfvars.json\" ]; then $CMD/tfvars/$f.auto.tfvars.json ./; fi"
+		fi
 	done
 fi
 

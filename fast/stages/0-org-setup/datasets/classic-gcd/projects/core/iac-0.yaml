@@ -25,6 +25,7 @@ iam_by_principals:
     - roles/cloudbuild.builds.viewer
     - roles/iam.serviceAccountViewer
     - roles/iam.workloadIdentityPoolViewer
+    - roles/serviceusage.serviceUsageConsumer
     - $custom_roles:storage_viewer
     - roles/viewer
   $iam_principals:service_accounts/iac-0/iac-org-rw:
@@ -32,6 +33,7 @@ iam_by_principals:
     - roles/iam.serviceAccountAdmin
     - roles/iam.workloadIdentityPoolAdmin
     - roles/owner
+    - roles/serviceusage.serviceUsageConsumer
     - roles/storage.admin
   $iam_principals:service_accounts/iac-0/iac-networking-rw:
     - roles/serviceusage.serviceUsageConsumer
@@ -49,10 +51,10 @@ services:
   - accesscontextmanager.googleapis.com
   # uncomment if you want to use Assured Workloads
   #  - assuredworkloads.googleapis.com
-  - bigquery.googleapis.com
+  # - bigquery.googleapis.com
   # The following commented services need to be commented out for GCD deployments
   # - bigqueryreservation.googleapis.com
-  - bigquerystorage.googleapis.com
+  # - bigquerystorage.googleapis.com
   # - billingbudgets.googleapis.com
   # - cloudasset.googleapis.com
   - cloudbilling.googleapis.com

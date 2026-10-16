@@ -27,8 +27,8 @@ iam_by_principals:
     - roles/storage.admin
 services:
   - accesscontextmanager.googleapis.com
-  - bigquery.googleapis.com
-  - bigquerystorage.googleapis.com
+  # - bigquery.googleapis.com
+  # - bigquerystorage.googleapis.com
   - cloudbilling.googleapis.com
   - cloudkms.googleapis.com
   - cloudresourcemanager.googleapis.com
