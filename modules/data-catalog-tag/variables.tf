@@ -32,6 +32,7 @@ variable "tags" {
     location   = string
     template   = string
     fields = map(object({
+      bool_value      = optional(bool)
       double_value    = optional(number)
       string_value    = optional(string)
       timestamp_value = optional(string)

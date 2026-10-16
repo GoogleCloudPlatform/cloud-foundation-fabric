@@ -25,7 +25,7 @@ variable "backup_schedule" {
 
   validation {
     condition = (var.backup_schedule == null ? true :
-    can(regex("\\d+s", var.backup_schedule.retention)))
+    can(regex("^\\d+s$", var.backup_schedule.retention)))
     error_message = "Retention must be specified in the following format: \\d+s."
   }
   validation {
@@ -74,11 +74,13 @@ variable "database" {
     error_message = "Invalid deletion_policy. If set, possible values are: ABANDON, DELETE."
   }
   validation {
-    condition = (try(var.database.deletion_protection_state, null) == null ? true : contains([
-      "DELETE_PROTECTION_STATE_UNSPECIFIED",
-      "DELETE_PROTECTION_ENABLED",
-      "DELETE_PROTECTION_DISABLED"
-    ], var.database.deletion_protection_state))
+    condition = (
+      try(var.database.delete_protection_state, null) == null ? true : contains([
+        "DELETE_PROTECTION_STATE_UNSPECIFIED",
+        "DELETE_PROTECTION_ENABLED",
+        "DELETE_PROTECTION_DISABLED"
+      ], var.database.delete_protection_state)
+    )
     error_message = "Invalid delete_protection_state. If set, possible values are: DELETE_PROTECTION_STATE_UNSPECIFIED, DELETE_PROTECTION_ENABLED, DELETE_PROTECTION_DISABLED."
   }
 

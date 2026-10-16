@@ -19,6 +19,12 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
+        "folder_ids": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
         "iam_principals": {
           "type": "object",
           "additionalProperties": {
@@ -34,7 +40,19 @@
             }
           }
         },
+        "organization_ids": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
         "project_numbers": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "psc_endpoints": {
           "type": "object",
           "additionalProperties": {
             "type": "string"

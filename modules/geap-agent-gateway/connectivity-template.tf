@@ -78,7 +78,7 @@ resource "google_network_services_agent_connectivity_template" "default" {
         var.networking_config.dns_peering_config == null ? [] : [""]
       )
       content {
-        domain = var.networking_config.dns_peering_config.domain
+        domains = var.networking_config.dns_peering_config.domains
         target_network = lookup(
           local.ctx.networks,
           var.networking_config.dns_peering_config.target_network,

@@ -18,20 +18,31 @@ locals {
   cas        = var.cluster_autoscaling
   cas_apd    = try(local.cas.auto_provisioning_defaults, null)
   cas_apd_us = try(local.cas_apd.upgrade_settings, null)
+  ctx = {
+    for k, v in var.context : k => {
+      for kk, vv in v : "${local.ctx_p}${k}:${kk}" => vv
+    }
+  }
+  ctx_p      = "$"
+  location   = lookup(local.ctx.locations, var.location, var.location)
+  project_id = lookup(local.ctx.project_ids, var.project_id, var.project_id)
+  region     = join("-", slice(split("-", local.location), 0, 2))
 }
 
 resource "google_container_cluster" "cluster" {
   provider    = google-beta
-  project     = var.project_id
+  project     = local.project_id
   name        = var.name
   description = var.description
-  location    = var.location
+  location    = local.location
   node_locations = (
-    length(var.node_locations) == 0 ? null : var.node_locations
+    length(var.node_locations) == 0
+    ? null
+    : [for v in var.node_locations : lookup(local.ctx.locations, v, v)]
   )
   min_master_version                       = var.min_master_version
-  network                                  = var.vpc_config.network
-  subnetwork                               = var.vpc_config.subnetwork
+  network                                  = lookup(local.ctx.networks, var.vpc_config.network, var.vpc_config.network)
+  subnetwork                               = lookup(local.ctx.subnets, var.vpc_config.subnetwork, var.vpc_config.subnetwork)
   resource_labels                          = var.labels
   default_max_pods_per_node                = var.max_pods_per_node
   enable_multi_networking                  = var.enable_features.multi_networking
@@ -47,7 +58,7 @@ resource "google_container_cluster" "cluster" {
   datapath_provider = (
     var.enable_features.dataplane_v2
     ? "ADVANCED_DATAPATH"
-    : "LEGACY_DATAPATH"
+    : null
   )
 
   dynamic "default_snat_status" {
@@ -60,12 +71,23 @@ resource "google_container_cluster" "cluster" {
   # the default node pool is deleted here, use the gke-nodepool module instead.
   # shielded nodes are controlled by the cluster-level enable_features variable
   node_config {
-    boot_disk_kms_key     = var.node_config.boot_disk_kms_key
-    service_account       = var.node_config.service_account
-    tags                  = var.node_config.tags
-    labels                = var.node_config.k8s_labels
-    resource_labels       = var.node_config.labels
-    resource_manager_tags = var.node_config.resource_manager_tags
+    boot_disk_kms_key = (
+      var.node_config.boot_disk_kms_key == null
+      ? null
+      : lookup(local.ctx.kms_keys, var.node_config.boot_disk_kms_key, var.node_config.boot_disk_kms_key)
+    )
+    service_account = (
+      var.node_config.service_account == null
+      ? null
+      : lookup(local.ctx.iam_principals, var.node_config.service_account, var.node_config.service_account)
+    )
+    tags            = var.node_config.tags
+    labels          = var.node_config.k8s_labels
+    resource_labels = var.node_config.labels
+    resource_manager_tags = {
+      for k, v in var.node_config.resource_manager_tags :
+      k => lookup(local.ctx.tag_values, v, v)
+    }
     dynamic "shielded_instance_config" {
       for_each = var.enable_features.shielded_nodes ? [""] : []
       content {
@@ -98,7 +120,10 @@ resource "google_container_cluster" "cluster" {
           tags = var.node_pool_auto_config.network_tags
         }
       }
-      resource_manager_tags = var.node_pool_auto_config.resource_manager_tags
+      resource_manager_tags = {
+        for k, v in var.node_pool_auto_config.resource_manager_tags :
+        k => lookup(local.ctx.tag_values, v, v)
+      }
       node_kubelet_config {
         insecure_kubelet_readonly_port_enabled = try(upper(var.node_pool_auto_config.kubelet_readonly_port_enabled), null)
       }
@@ -108,6 +133,12 @@ resource "google_container_cluster" "cluster" {
     }
   }
   addons_config {
+    dynamic "agent_sandbox_config" {
+      for_each = var.enable_addons.agent_sandbox != null ? [""] : []
+      content {
+        enabled = var.enable_addons.agent_sandbox
+      }
+    }
     cloudrun_config {
       disabled = !var.enable_addons.cloudrun
     }
@@ -151,10 +182,20 @@ resource "google_container_cluster" "cluster" {
       enabled = var.enable_addons.stateful_ha
     }
   }
+  dynamic "anonymous_authentication_config" {
+    for_each = var.enable_features.anonymous_authentication != null ? [""] : []
+    content {
+      mode = var.enable_features.anonymous_authentication
+    }
+  }
   dynamic "authenticator_groups_config" {
     for_each = var.enable_features.groups_for_rbac != null ? [""] : []
     content {
-      security_group = var.enable_features.groups_for_rbac
+      security_group = lookup(
+        local.ctx.email_addresses,
+        var.enable_features.groups_for_rbac,
+        var.enable_features.groups_for_rbac
+      )
     }
   }
   dynamic "binary_authorization" {
@@ -177,12 +218,20 @@ resource "google_container_cluster" "cluster" {
       dynamic "auto_provisioning_defaults" {
         for_each = local.cas_apd != null ? [""] : []
         content {
-          boot_disk_kms_key = local.cas_apd.boot_disk_kms_key
-          disk_size         = local.cas_apd.disk_size
-          disk_type         = local.cas_apd.disk_type
-          image_type        = local.cas_apd.image_type
-          oauth_scopes      = local.cas_apd.oauth_scopes
-          service_account   = local.cas_apd.service_account
+          boot_disk_kms_key = (
+            local.cas_apd.boot_disk_kms_key == null
+            ? null
+            : lookup(local.ctx.kms_keys, local.cas_apd.boot_disk_kms_key, local.cas_apd.boot_disk_kms_key)
+          )
+          disk_size    = local.cas_apd.disk_size
+          disk_type    = local.cas_apd.disk_type
+          image_type   = local.cas_apd.image_type
+          oauth_scopes = local.cas_apd.oauth_scopes
+          service_account = (
+            local.cas_apd.service_account == null
+            ? null
+            : lookup(local.ctx.iam_principals, local.cas_apd.service_account, local.cas_apd.service_account)
+          )
           dynamic "management" {
             for_each = local.cas_apd.management != null ? [""] : []
             content {
@@ -239,7 +288,11 @@ resource "google_container_cluster" "cluster" {
           }
         }
       }
-      auto_provisioning_locations = var.cluster_autoscaling.auto_provisioning_locations
+      auto_provisioning_locations = (
+        var.cluster_autoscaling.auto_provisioning_locations == null
+        ? null
+        : [for v in var.cluster_autoscaling.auto_provisioning_locations : lookup(local.ctx.locations, v, v)]
+      )
       dynamic "resource_limits" {
         for_each = local.cas.cpu_limits != null ? [""] : []
         content {
@@ -284,8 +337,12 @@ resource "google_container_cluster" "cluster" {
   dynamic "database_encryption" {
     for_each = var.enable_features.database_encryption != null ? [""] : []
     content {
-      state    = var.enable_features.database_encryption.state
-      key_name = var.enable_features.database_encryption.key_name
+      state = var.enable_features.database_encryption.state
+      key_name = lookup(
+        local.ctx.kms_keys,
+        var.enable_features.database_encryption.key_name,
+        var.enable_features.database_encryption.key_name
+      )
     }
   }
   dynamic "dns_config" {
@@ -306,7 +363,7 @@ resource "google_container_cluster" "cluster" {
   dynamic "fleet" {
     for_each = var.fleet_project != null ? [""] : []
     content {
-      project = var.fleet_project
+      project = lookup(local.ctx.project_ids, var.fleet_project, var.fleet_project)
     }
   }
   dynamic "gateway_api_config" {
@@ -315,13 +372,23 @@ resource "google_container_cluster" "cluster" {
       channel = "CHANNEL_STANDARD"
     }
   }
+  dynamic "identity_service_config" {
+    for_each = var.enable_features.identity_service ? [""] : []
+    content {
+      enabled = true
+    }
+  }
   dynamic "ip_allocation_policy" {
     for_each = var.vpc_config.secondary_range_blocks != null ? [""] : []
     content {
-      cluster_ipv4_cidr_block = (
+      cluster_ipv4_cidr_block = lookup(
+        local.ctx.cidr_ranges,
+        var.vpc_config.secondary_range_blocks.pods,
         var.vpc_config.secondary_range_blocks.pods
       )
-      services_ipv4_cidr_block = (
+      services_ipv4_cidr_block = lookup(
+        local.ctx.cidr_ranges,
+        var.vpc_config.secondary_range_blocks.services,
         var.vpc_config.secondary_range_blocks.services
       )
       stack_type = var.vpc_config.stack_type
@@ -441,10 +508,20 @@ resource "google_container_cluster" "cluster" {
         for_each = coalesce(var.access_config.ip_access.authorized_ranges, {})
         iterator = range
         content {
-          cidr_block   = range.value
+          cidr_block   = lookup(local.ctx.cidr_ranges, range.value, range.value)
           display_name = range.key
         }
       }
+    }
+  }
+  dynamic "managed_opentelemetry_config" {
+    for_each = var.enable_features.managed_opentelemetry != null ? [""] : []
+    content {
+      scope = (
+        var.enable_features.managed_opentelemetry
+        ? "COLLECTION_AND_INSTRUMENTATION_COMPONENTS"
+        : "NONE"
+      )
     }
   }
   dynamic "mesh_certificates" {
@@ -454,23 +531,23 @@ resource "google_container_cluster" "cluster" {
     }
   }
   monitoring_config {
-    enable_components = toset(compact([
+    enable_components = compact([
       # System metrics is the minimum requirement if any other metrics are enabled.
       # This is checked by input var validation.
       var.monitoring_config.enable_system_metrics ? "SYSTEM_COMPONENTS" : null,
       # Control plane metrics
       var.monitoring_config.enable_api_server_metrics ? "APISERVER" : null,
-      var.monitoring_config.enable_controller_manager_metrics ? "CONTROLLER_MANAGER" : null,
       var.monitoring_config.enable_scheduler_metrics ? "SCHEDULER" : null,
+      var.monitoring_config.enable_controller_manager_metrics ? "CONTROLLER_MANAGER" : null,
       # Kube state metrics
-      var.monitoring_config.enable_daemonset_metrics ? "DAEMONSET" : null,
-      var.monitoring_config.enable_deployment_metrics ? "DEPLOYMENT" : null,
+      var.monitoring_config.enable_storage_metrics ? "STORAGE" : null,
       var.monitoring_config.enable_hpa_metrics ? "HPA" : null,
       var.monitoring_config.enable_pod_metrics ? "POD" : null,
+      var.monitoring_config.enable_daemonset_metrics ? "DAEMONSET" : null,
+      var.monitoring_config.enable_deployment_metrics ? "DEPLOYMENT" : null,
       var.monitoring_config.enable_statefulset_metrics ? "STATEFULSET" : null,
-      var.monitoring_config.enable_storage_metrics ? "STORAGE" : null,
       var.monitoring_config.enable_cadvisor_metrics ? "CADVISOR" : null,
-    ]))
+    ])
     managed_prometheus {
       enabled = var.monitoring_config.enable_managed_prometheus
     }
@@ -515,7 +592,11 @@ resource "google_container_cluster" "cluster" {
         }
         topic = (
           try(var.enable_features.upgrade_notifications.topic_id, null) != null
-          ? var.enable_features.upgrade_notifications.topic_id
+          ? lookup(
+            local.ctx.pubsub_topics,
+            var.enable_features.upgrade_notifications.topic_id,
+            var.enable_features.upgrade_notifications.topic_id
+          )
           : google_pubsub_topic.notifications[0].id
         )
       }
@@ -528,10 +609,19 @@ resource "google_container_cluster" "cluster" {
       enable_private_endpoint = try(
         var.access_config.ip_access.disable_public_endpoint, null
       )
-      master_ipv4_cidr_block = try(var.access_config.master_ipv4_cidr_block, null)
-      private_endpoint_subnetwork = try(
-        var.access_config.ip_access.private_endpoint_config.endpoint_subnetwork,
-        null
+      master_ipv4_cidr_block = (
+        var.access_config.master_ipv4_cidr_block == null
+        ? null
+        : lookup(local.ctx.cidr_ranges, var.access_config.master_ipv4_cidr_block, var.access_config.master_ipv4_cidr_block)
+      )
+      private_endpoint_subnetwork = (
+        try(var.access_config.ip_access.private_endpoint_config.endpoint_subnetwork, null) == null
+        ? null
+        : lookup(
+          local.ctx.subnets,
+          var.access_config.ip_access.private_endpoint_config.endpoint_subnetwork,
+          var.access_config.ip_access.private_endpoint_config.endpoint_subnetwork
+        )
       )
       dynamic "master_global_access_config" {
         for_each = try(var.access_config.ip_access.private_endpoint_config.global_access, false) == true ? [""] : []
@@ -602,7 +692,11 @@ resource "google_container_cluster" "cluster" {
         var.enable_features.resource_usage_export.enable_resource_consumption_metering
       )
       bigquery_destination {
-        dataset_id = var.enable_features.resource_usage_export.dataset
+        dataset_id = lookup(
+          local.ctx.bigquery_datasets,
+          var.enable_features.resource_usage_export.dataset,
+          var.enable_features.resource_usage_export.dataset
+        )
       }
     }
   }
@@ -621,12 +715,33 @@ resource "google_container_cluster" "cluster" {
   dynamic "workload_identity_config" {
     for_each = var.enable_features.workload_identity ? [""] : []
     content {
-      workload_pool = "${var.project_id}.svc.id.goog"
+      workload_pool = "${local.project_id}.svc.id.goog"
     }
   }
   lifecycle {
     ignore_changes = [node_config]
   }
+}
+
+resource "google_gke_backup_backup_channel" "backup_channel" {
+  for_each = var.backup_configs.backup_channels
+  name     = each.key
+  project  = local.project_id
+  location = coalesce(
+    try(local.ctx.locations[each.value.region], each.value.region),
+    local.region
+  )
+  destination_project = (
+    startswith(
+      lookup(local.ctx.project_ids, each.value.destination_project, each.value.destination_project),
+      "projects/"
+    )
+    ? lookup(local.ctx.project_ids, each.value.destination_project, each.value.destination_project)
+    : "projects/${lookup(local.ctx.project_ids, each.value.destination_project, each.value.destination_project)}"
+  )
+  deletion_policy = each.value.deletion_policy
+  description     = each.value.description
+  labels          = each.value.labels
 }
 
 resource "google_gke_backup_backup_plan" "backup_plan" {
@@ -635,11 +750,16 @@ resource "google_gke_backup_backup_plan" "backup_plan" {
     ? var.backup_configs.backup_plans
     : {}
   )
-  name     = each.key
-  cluster  = google_container_cluster.cluster.id
-  location = each.value.region
-  project  = var.project_id
-  labels   = each.value.labels
+  name    = each.key
+  cluster = google_container_cluster.cluster.id
+  location = coalesce(
+    try(local.ctx.locations[each.value.region], each.value.region),
+    local.region
+  )
+  project         = local.project_id
+  deletion_policy = each.value.deletion_policy
+  description     = each.value.description
+  labels          = each.value.labels
   retention_policy {
     backup_delete_lock_days = try(each.value.retention_policy_delete_lock_days)
     backup_retain_days      = try(each.value.retention_policy_days)
@@ -659,7 +779,9 @@ resource "google_gke_backup_backup_plan" "backup_plan" {
     dynamic "encryption_key" {
       for_each = each.value.encryption_key != null ? [""] : []
       content {
-        gcp_kms_encryption_key = each.value.encryption_key
+        gcp_kms_encryption_key = lookup(
+          local.ctx.kms_keys, each.value.encryption_key, each.value.encryption_key
+        )
       }
     }
     all_namespaces = (
@@ -686,7 +808,174 @@ resource "google_gke_backup_backup_plan" "backup_plan" {
           }
         }
       }
+    }
+  }
+}
 
+resource "google_gke_backup_restore_channel" "restore_channel" {
+  for_each = var.backup_configs.restore_channels
+  name     = each.key
+  project  = local.project_id
+  location = coalesce(
+    try(local.ctx.locations[each.value.region], each.value.region),
+    local.region
+  )
+  destination_project = (
+    startswith(
+      lookup(local.ctx.project_ids, each.value.destination_project, each.value.destination_project),
+      "projects/"
+    )
+    ? lookup(local.ctx.project_ids, each.value.destination_project, each.value.destination_project)
+    : "projects/${lookup(local.ctx.project_ids, each.value.destination_project, each.value.destination_project)}"
+  )
+  deletion_policy = each.value.deletion_policy
+  description     = each.value.description
+  labels          = each.value.labels
+}
+
+resource "google_gke_backup_restore_plan" "restore_plan" {
+  for_each = (
+    var.backup_configs.enable_backup_agent
+    ? var.backup_configs.restore_plans
+    : {}
+  )
+  name    = each.key
+  cluster = google_container_cluster.cluster.id
+  location = coalesce(
+    try(local.ctx.locations[each.value.region], each.value.region),
+    local.region
+  )
+  project = local.project_id
+  backup_plan = try(
+    google_gke_backup_backup_plan.backup_plan[each.value.backup_plan].id,
+    each.value.backup_plan
+  )
+  deletion_policy = each.value.deletion_policy
+  description     = each.value.description
+  labels          = each.value.labels
+  restore_config {
+    all_namespaces = (
+      each.value.namespaced_restore_scope.all_namespaces == true || (
+        each.value.namespaced_restore_scope.no_namespaces != true &&
+        each.value.namespaced_restore_scope.selected_namespaces == null &&
+        each.value.namespaced_restore_scope.excluded_namespaces == null &&
+        each.value.namespaced_restore_scope.applications == null
+      ) ? true : null
+    )
+    no_namespaces                    = each.value.namespaced_restore_scope.no_namespaces
+    namespaced_resource_restore_mode = each.value.namespaced_restore_scope.restore_mode
+    cluster_resource_conflict_policy = try(
+      each.value.cluster_resource_restore_scope.conflict_policy, null
+    )
+    volume_data_restore_policy = try(each.value.volume_data_restore.policy, null)
+    dynamic "cluster_resource_restore_scope" {
+      for_each = each.value.cluster_resource_restore_scope != null ? [""] : []
+      content {
+        all_group_kinds = each.value.cluster_resource_restore_scope.all_group_kinds
+        no_group_kinds  = each.value.cluster_resource_restore_scope.no_group_kinds
+        dynamic "excluded_group_kinds" {
+          for_each = coalesce(
+            each.value.cluster_resource_restore_scope.excluded_group_kinds, []
+          )
+          content {
+            resource_group = excluded_group_kinds.value.resource_group
+            resource_kind  = excluded_group_kinds.value.resource_kind
+          }
+        }
+        dynamic "selected_group_kinds" {
+          for_each = coalesce(
+            each.value.cluster_resource_restore_scope.selected_group_kinds, []
+          )
+          content {
+            resource_group = selected_group_kinds.value.resource_group
+            resource_kind  = selected_group_kinds.value.resource_kind
+          }
+        }
+      }
+    }
+    dynamic "excluded_namespaces" {
+      for_each = each.value.namespaced_restore_scope.excluded_namespaces != null ? [""] : []
+      content {
+        namespaces = each.value.namespaced_restore_scope.excluded_namespaces
+      }
+    }
+    dynamic "selected_namespaces" {
+      for_each = each.value.namespaced_restore_scope.selected_namespaces != null ? [""] : []
+      content {
+        namespaces = each.value.namespaced_restore_scope.selected_namespaces
+      }
+    }
+    dynamic "selected_applications" {
+      for_each = each.value.namespaced_restore_scope.applications != null ? [""] : []
+      content {
+        dynamic "namespaced_names" {
+          for_each = flatten([
+            for k, vs in each.value.namespaced_restore_scope.applications : [
+              for v in vs : { namespace = k, name = v }
+            ]
+          ])
+          content {
+            namespace = namespaced_names.value.namespace
+            name      = namespaced_names.value.name
+          }
+        }
+      }
+    }
+    dynamic "restore_order" {
+      for_each = each.value.restore_order != null ? [""] : []
+      content {
+        dynamic "group_kind_dependencies" {
+          for_each = each.value.restore_order
+          content {
+            requiring {
+              resource_group = group_kind_dependencies.value.requiring.resource_group
+              resource_kind  = group_kind_dependencies.value.requiring.resource_kind
+            }
+            satisfying {
+              resource_group = group_kind_dependencies.value.satisfying.resource_group
+              resource_kind  = group_kind_dependencies.value.satisfying.resource_kind
+            }
+          }
+        }
+      }
+    }
+    dynamic "transformation_rules" {
+      for_each = coalesce(each.value.transformation_rules, [])
+      content {
+        description = transformation_rules.value.description
+        dynamic "field_actions" {
+          for_each = transformation_rules.value.field_actions
+          content {
+            from_path = field_actions.value.from_path
+            op        = field_actions.value.op
+            path      = field_actions.value.path
+            value     = field_actions.value.value
+          }
+        }
+        dynamic "resource_filter" {
+          for_each = transformation_rules.value.resource_filter != null ? [""] : []
+          content {
+            json_path  = transformation_rules.value.resource_filter.json_path
+            namespaces = transformation_rules.value.resource_filter.namespaces
+            dynamic "group_kinds" {
+              for_each = coalesce(
+                transformation_rules.value.resource_filter.group_kinds, []
+              )
+              content {
+                resource_group = group_kinds.value.resource_group
+                resource_kind  = group_kinds.value.resource_kind
+              }
+            }
+          }
+        }
+      }
+    }
+    dynamic "volume_data_restore_policy_bindings" {
+      for_each = try(each.value.volume_data_restore.bindings, {})
+      content {
+        volume_type = volume_data_restore_policy_bindings.key
+        policy      = volume_data_restore_policy_bindings.value
+      }
     }
   }
 }
@@ -696,10 +985,18 @@ resource "google_pubsub_topic" "notifications" {
     try(var.enable_features.upgrade_notifications, null) != null &&
     try(var.enable_features.upgrade_notifications.topic_id, null) == null ? 1 : 0
   )
-  project = var.project_id
+  project = local.project_id
   name    = "gke-pubsub-notifications"
   labels = {
     content = "gke-notifications"
   }
-  kms_key_name = try(var.enable_features.upgrade_notifications.kms_key_name, null)
+  kms_key_name = (
+    try(var.enable_features.upgrade_notifications.kms_key_name, null) == null
+    ? null
+    : lookup(
+      local.ctx.kms_keys,
+      var.enable_features.upgrade_notifications.kms_key_name,
+      var.enable_features.upgrade_notifications.kms_key_name
+    )
+  )
 }

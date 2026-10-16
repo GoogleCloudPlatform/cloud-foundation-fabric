@@ -96,15 +96,15 @@ resource "google_looker_instance" "looker" {
         day   = var.maintenance_config.deny_maintenance_period.start_date.day
       }
       end_date {
-        year  = var.maintenance_config.deny_maintenance_period.start_date.year
-        month = var.maintenance_config.deny_maintenance_period.start_date.month
-        day   = var.maintenance_config.deny_maintenance_period.start_date.day
+        year  = var.maintenance_config.deny_maintenance_period.end_date.year
+        month = var.maintenance_config.deny_maintenance_period.end_date.month
+        day   = var.maintenance_config.deny_maintenance_period.end_date.day
       }
       time {
-        hours   = var.maintenance_config.deny_maintenance_period.start_times.hours
-        minutes = var.maintenance_config.deny_maintenance_period.start_times.minutes
-        seconds = var.maintenance_config.deny_maintenance_period.start_times.seconds
-        nanos   = var.maintenance_config.deny_maintenance_period.start_times.nanos
+        hours   = var.maintenance_config.deny_maintenance_period.start_time.hours
+        minutes = var.maintenance_config.deny_maintenance_period.start_time.minutes
+        seconds = var.maintenance_config.deny_maintenance_period.start_time.seconds
+        nanos   = var.maintenance_config.deny_maintenance_period.start_time.nanos
       }
     }
   }

@@ -20,7 +20,7 @@ users:
 
 write_files:
   - path: /var/lib/docker/daemon.json
-    permissions: 0644
+    permissions: "0644"
     owner: root
     content: |
       {
@@ -31,13 +31,13 @@ write_files:
         }
       }
   - path: /run/mysql/secrets/mysql-passwd${kms_config == null ? "" : "-cipher"}.txt
-    permissions: 0600
+    permissions: "0600"
     owner: root
     content: |
       ${password}
   %{~ if kms_config != null ~}
   - path: /run/mysql/passwd.sh
-    permissions: 0700
+    permissions: "0700"
     owner: root
     content: |
       #!/bin/bash
@@ -52,14 +52,14 @@ write_files:
   %{~ endif ~}
   %{~ if mysql_config != null ~}
   - path: /run/mysql/etc/my.cnf
-    permissions: 0644
+    permissions: "0644"
     owner: mysql
     content: |
       ${indent(6, mysql_config)}
   %{~ endif ~}
   %{~ if mysql_data_disk != null ~}
   - path: /etc/systemd/system/mysql-data.service
-    permissions: 0644
+    permissions: "0644"
     owner: root
     content: |
       [Unit]
@@ -81,7 +81,7 @@ write_files:
       RemainAfterExit=true
   %{~ endif ~}
   - path: /etc/systemd/system/mysql.service
-    permissions: 0644
+    permissions: "0644"
     owner: root
     content: |
       [Unit]

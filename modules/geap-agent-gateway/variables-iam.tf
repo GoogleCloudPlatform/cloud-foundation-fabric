@@ -14,72 +14,73 @@
  * limitations under the License.
  */
 
-# tfdoc:file:description Agent Registry IAM variables.
+# tfdoc:file:description IAM Unified Access Policy variables.
 
-variable "registry_iam" {
-  description = "Agent Registry IAM bindings in {ROLE => [MEMBERS]} format, applied to every registry governed by the gateway."
-  type        = map(list(string))
-  nullable    = false
-  default     = {}
-}
-
-variable "registry_iam_bindings" {
-  description = "Authoritative Agent Registry IAM bindings in {KEY => {role = ROLE, members = [], condition = {}}} format. Set at most one of the '*_id' attributes to scope the binding to a single registered resource, or none to target the whole registry. Location defaults to the gateway region. Keys are arbitrary."
+variable "access_policies" {
+  description = "IAM v3 Unified Access Policies (UAPs) and their bindings, keyed by policy ID. Set 'rules' to create a project access policy and bind it, or 'policy_reuse' to bind an existing access policy."
   type = map(object({
-    members       = list(string)
-    role          = string
-    agent_id      = optional(string)
-    endpoint_id   = optional(string)
-    location      = optional(string)
-    mcp_server_id = optional(string)
-    condition = optional(object({
+    annotations  = optional(map(string))
+    bind         = optional(bool, true)
+    binding_id   = optional(string)
+    display_name = optional(string)
+    policy_reuse = optional(string)
+    # 'project' binds to the gateway project, 'gateway' binds to this
+    # Agent Gateway, or pass a full '//...' resource URI.
+    target_resource = optional(string, "project")
+    binding_condition = optional(object({
       expression  = string
-      title       = string
+      title       = optional(string)
       description = optional(string)
+      location    = optional(string)
     }))
+    rules = optional(map(object({
+      principals           = list(string)
+      agent_id             = optional(string)
+      condition            = optional(string)
+      condition_service    = optional(string, "iap.googleapis.com")
+      description          = optional(string)
+      effect               = optional(string, "ALLOW")
+      endpoint_id          = optional(string)
+      excluded_permissions = optional(list(string), [])
+      excluded_principals  = optional(list(string), [])
+      location             = optional(string)
+      mcp_server_id        = optional(string)
+      permissions = optional(
+        list(string), ["iap.googleapis.com/resources.egressViaIAP"]
+      )
+      registry = optional(bool, false)
+    })), {})
   }))
   nullable = false
   default  = {}
 
   validation {
     condition = alltrue([
-      for k, v in var.registry_iam_bindings :
-      length(compact([v.agent_id, v.endpoint_id, v.mcp_server_id])) <= 1
+      for k, v in var.access_policies :
+      (v.policy_reuse == null && length(v.rules) > 0)
+      || (v.policy_reuse != null && length(v.rules) == 0)
     ])
-    error_message = "Set at most one of 'agent_id', 'endpoint_id', 'mcp_server_id'."
+    error_message = "Each access policy must either define at least one rule in 'rules' or set 'policy_reuse' (not both)."
   }
-}
-
-variable "registry_iam_bindings_additive" {
-  description = "Additive Agent Registry IAM bindings. Set at most one of the '*_id' attributes to scope the binding to a single registered resource, or none to target the whole registry. Location defaults to the gateway region. Keys are arbitrary."
-  type = map(object({
-    member        = string
-    role          = string
-    agent_id      = optional(string)
-    endpoint_id   = optional(string)
-    location      = optional(string)
-    mcp_server_id = optional(string)
-    condition = optional(object({
-      expression  = string
-      title       = string
-      description = optional(string)
-    }))
-  }))
-  nullable = false
-  default  = {}
 
   validation {
-    condition = alltrue([
-      for k, v in var.registry_iam_bindings_additive :
-      length(compact([v.agent_id, v.endpoint_id, v.mcp_server_id])) <= 1
-    ])
-    error_message = "Set at most one of 'agent_id', 'endpoint_id', 'mcp_server_id'."
+    condition = alltrue(flatten([
+      for k, v in var.access_policies : [
+        for rk, rv in v.rules : contains(["ALLOW", "DENY"], rv.effect)
+      ]
+    ]))
+    error_message = "Rule effect must be 'ALLOW' or 'DENY'."
   }
-}
 
-variable "registry_iam_by_principals" {
-  description = "Authoritative Agent Registry IAM bindings in {PRINCIPAL => [ROLES]} format. Principals need to be statically defined to avoid errors. Merged internally with the 'registry_iam' variable."
-  type        = map(list(string))
-  nullable    = false
-  default     = {}
+  validation {
+    condition = alltrue(flatten([
+      for k, v in var.access_policies : [
+        for rk, rv in v.rules : (
+          length(compact([rv.agent_id, rv.endpoint_id, rv.mcp_server_id]))
+          + (rv.registry ? 1 : 0)
+        ) <= 1
+      ]
+    ]))
+    error_message = "Set at most one of 'agent_id', 'endpoint_id', 'mcp_server_id', or 'registry' per rule."
+  }
 }

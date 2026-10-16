@@ -375,6 +375,9 @@
         "org_policies": {
           "type": "string"
         },
+        "pam_entitlements": {
+          "type": "string"
+        },
         "quotas": {
           "type": "string"
         },
@@ -605,6 +608,9 @@
     "labels": {
       "$ref": "#/$defs/labels"
     },
+    "lien_reason": {
+      "type": "string"
+    },
     "pam_entitlements": {
       "$ref": "#/$defs/pam_entitlements"
     },
@@ -615,6 +621,36 @@
         "^[a-zA-Z0-9_-]+$": {
           "$ref": "#/$defs/log_bucket"
         }
+      }
+    },
+    "log_scopes": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[a-zA-Z0-9_-]+$": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "resource_names"
+          ],
+          "properties": {
+            "description": {
+              "type": "string"
+            },
+            "resource_names": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "logging_exclusions": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
       }
     },
     "logging_sinks": {
@@ -672,8 +708,9 @@
       "type": "object",
       "additionalProperties": false,
       "patternProperties": {
-        "^[a-z]+\\.": {
+        "^(dry_run:)?[a-z-]+[a-zA-Z0-9\\.]+$": {
           "type": "object",
+          "additionalProperties": false,
           "properties": {
             "inherit_from_parent": {
               "type": "boolean"
@@ -737,6 +774,9 @@
                         "type": "string"
                       }
                     }
+                  },
+                  "parameters": {
+                    "type": "string"
                   }
                 }
               }

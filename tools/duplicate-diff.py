@@ -151,6 +151,14 @@ duplicates = [
         "modules/cloud-function-v2/vpcconnector.tf",
         "modules/cloud-run-v2/vpcconnector.tf",
     ],
+    # route policies
+    [
+        "modules/ncc-spoke-ra/route-policies.tf",
+        "modules/net-ipsec-over-interconnect/route-policies.tf",
+        "modules/net-vlan-attachment/route-policies.tf",
+        "modules/net-vpn-dynamic/route-policies.tf",
+        "modules/net-vpn-ha/route-policies.tf",
+    ],
 ]
 
 

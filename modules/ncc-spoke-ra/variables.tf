@@ -50,10 +50,12 @@ variable "region" {
 }
 
 variable "router_appliances" {
-  description = "List of router appliances this spoke is associated with."
+  description = "List of router appliances this spoke is associated with. Import and export policies are applied to the BGP peers connecting the VPC Cloud Router to the NCC router appliances."
   type = list(object({
-    internal_ip  = string
-    vm_self_link = string
+    internal_ip     = string
+    vm_self_link    = string
+    import_policies = optional(list(string))
+    export_policies = optional(list(string))
   }))
 }
 
@@ -65,12 +67,56 @@ variable "router_config" {
       all_subnets = bool
       ip_ranges   = map(string)
     }))
-    ip_interface0   = string
-    ip_interface1   = string
-    keepalive       = optional(number)
-    peer_asn        = number
+    ip_interface0 = string
+    ip_interface1 = string
+    keepalive     = optional(number)
+    peer_asn      = number
+    route_policies = optional(map(object({
+      type = string
+      terms = list(object({
+        priority = number
+        match = object({
+          expression  = string
+          title       = optional(string)
+          description = optional(string)
+          location    = optional(string)
+        })
+        actions = list(object({
+          expression  = string
+          title       = optional(string)
+          description = optional(string)
+          location    = optional(string)
+        }))
+      }))
+    })), {})
     routes_priority = optional(number, 100)
   })
+
+  validation {
+    condition = alltrue(flatten([
+      for k, v in var.router_config.route_policies : [
+        for t in v.terms :
+        t.priority >= 0 && t.priority < 2147483648
+      ]
+    ]))
+    error_message = "Route policy term priority must be between 0 (inclusive) and 2147483648 (exclusive)."
+  }
+
+  validation {
+    condition = alltrue([
+      for k, v in var.router_config.route_policies :
+      length(v.terms) == length(distinct([for t in v.terms : t.priority]))
+    ])
+    error_message = "Route policy term priority must be unique within the policy."
+  }
+
+  validation {
+    condition = alltrue([
+      for k, v in var.router_config.route_policies :
+      contains(["IMPORT", "EXPORT"], v.type)
+    ])
+    error_message = "Route policy type must be IMPORT or EXPORT."
+  }
 }
 
 variable "vpc_config" {

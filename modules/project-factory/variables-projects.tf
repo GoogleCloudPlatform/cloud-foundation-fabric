@@ -440,7 +440,8 @@ variable "projects" {
         })), {})
       })), {})
     }), {})
-    labels = optional(map(string), {})
+    labels      = optional(map(string), {})
+    lien_reason = optional(string)
     log_buckets = optional(map(object({
       description  = optional(string)
       kms_key_name = optional(string)
@@ -477,7 +478,12 @@ variable "projects" {
         })), {})
       })), {})
     })), {})
-    metric_scopes = optional(list(string), [])
+    log_scopes = optional(map(object({
+      description    = optional(string)
+      resource_names = list(string)
+    })), {})
+    logging_exclusions = optional(map(string), {})
+    metric_scopes      = optional(list(string), [])
     pam_entitlements = optional(map(object({
       max_request_duration = string
       eligible_users       = list(string)

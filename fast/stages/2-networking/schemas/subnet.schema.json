@@ -64,7 +64,7 @@
     },
     "reserved_internal_range": {
       "type": "string",
-      "description": "Name of the internal range to use for this subnet. Mutually exclusive with ip_cidr_range and ip_collection."
+      "description": "Name of the internal range to use for this subnet. Mutually exclusive with ip_collection."
     },
     "ipv6": {
       "type": "object",
@@ -96,30 +96,22 @@
     "secondary_ip_ranges": {
       "type": "object",
       "additionalProperties": {
-        "oneOf": [
-          {
+        "type": "object",
+        "additionalProperties": false,
+        "anyOf": [
+          {"required": ["ip_cidr_range"]},
+          {"required": ["reserved_internal_range"]}
+        ],
+        "properties": {
+          "ip_cidr_range": {
             "type": "string",
-            "description": "IP CIDR range for backward compatibility"
+            "description": "IP CIDR range for this secondary range"
           },
-          {
-            "type": "object",
-            "additionalProperties": false,
-            "anyOf": [
-              {"required": ["ip_cidr_range"]},
-              {"required": ["reserved_internal_range"]}
-            ],
-            "properties": {
-              "ip_cidr_range": {
-                "type": "string",
-                "description": "IP CIDR range for this secondary range"
-              },
-              "reserved_internal_range": {
-                "type": "string",
-                "description": "Name of the internal range to use for this secondary range"
-              }
-            }
+          "reserved_internal_range": {
+            "type": "string",
+            "description": "Name of the internal range to use for this secondary range"
           }
-        ]
+        }
       }
     },
     "iam": {

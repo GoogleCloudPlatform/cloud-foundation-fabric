@@ -17,8 +17,11 @@
 from:
   identities:
     - $identity_sets:test
+  psc_endpoints:
+    - $psc_endpoints:test
   resources:
     - $project_numbers:test-0
+    - $folder_ids:test
     - $resource_sets:test
 to:
   operations:
@@ -27,4 +30,5 @@ to:
         - "*"
   resources:
     - $project_numbers:test-0
+    - $organization_ids:test
     - $resource_sets:test

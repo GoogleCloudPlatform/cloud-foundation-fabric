@@ -27,7 +27,7 @@ git pull
 Identify the **latest released version** by extracting it from the `default-versions.tf` file:
 
 ```bash
-LATEST_RELEASE=$(grep -oP '(?<=# Fabric release: ).*' default-versions.tf)
+LATEST_RELEASE=$(sed -n 's/^# Fabric release: //p' default-versions.tf)
 echo "Latest release is: $LATEST_RELEASE"
 ```
 
@@ -48,10 +48,12 @@ uv run tools/changelog.py --release-from $LATEST_RELEASE --bump $BUMP_TYPE --wri
 
 **Review the changes:**
 Run `git diff CHANGELOG.md` and carefully inspect the output. Look for:
+
 - PRs missing labels (they will appear under a "no subsection" or similar area).
 - Weird or unclear names in PR titles.
 
 **If you find issues:**
+
 1. Click the PR link in the diff.
 2. Manually fix the labels or title on GitHub.
 3. Re-run the `changelog.py` command above.
@@ -62,7 +64,7 @@ Run `git diff CHANGELOG.md` and carefully inspect the output. Look for:
 Once the changelog is correct, extract the newly generated release version from the top of the changelog and bump the repository versions:
 
 ```bash
-NEW_RELEASE=$(grep -oP '(?<=^## \[).*(?=\] - )' CHANGELOG.md | head -n 1)
+NEW_RELEASE=$(sed -n 's/^## \[\([^]]*\)\].* - .*/\1/p' CHANGELOG.md | head -n 1)
 # Ensure it has the 'v' prefix
 if [[ $NEW_RELEASE != v* ]]; then NEW_RELEASE="v$NEW_RELEASE"; fi
 echo "New release is: $NEW_RELEASE"
@@ -74,19 +76,37 @@ uv run tools/versions.py --fabric-release $NEW_RELEASE --write-defaults
 ./tools/versions.py --fabric-release $NEW_RELEASE --write-defaults
 ```
 
-## 4. Commit and Push
+## 4. Commit, Open PR, and Merge
 
-Commit the prepared release files and push to `master`:
+Because `master` is protected and requires pull requests via the merge queue, create a branch, stage all updated files (`CHANGELOG.md`, `default-versions.tf`, `default-versions.tofu`, `fast_version.txt`, and module `versions.tf`/`versions.tofu` files), and open a PR:
 
 ```bash
-git add CHANGELOG.md default-versions.tf
+BRANCH_NAME="$(gh api user -q .login)/prep-$NEW_RELEASE"
+git checkout -b "$BRANCH_NAME"
+git add -u
 git commit -m "prep $NEW_RELEASE"
-git push origin master
+git push -u origin "$BRANCH_NAME"
+
+gh pr create \
+  --title "Prep $NEW_RELEASE" \
+  --label "on:FAST,on:modules,on:tools" \
+  --body "Release preparation for $NEW_RELEASE:
+
+- \`CHANGELOG.md\`: generated with \`tools/changelog.py --release-from $LATEST_RELEASE --bump $BUMP_TYPE\`
+- version strings bumped to \`$NEW_RELEASE\` with \`tools/versions.py --fabric-release $NEW_RELEASE --write-defaults\`
+
+No functional changes; every non-CHANGELOG diff is the release string only."
+
+# Queue the PR for auto-merge once approved and checks pass
+gh pr merge --auto
 ```
 
-**Important:** Wait for the GitHub Actions workflows on `master` to finish successfully before proceeding to the next step. You can monitor the progress directly from your terminal:
+Once the PR is approved and merged into `master`, switch back to `master`, pull the merged commit, and wait for the GitHub Actions workflows on `master` to finish successfully before proceeding to the next step:
 
 ```bash
+git checkout master
+git pull
+
 # Watch the latest workflow run on the master branch
 gh run watch $(gh run list --branch master --limit 1 --json databaseId -q '.[0].databaseId')
 ```
@@ -102,7 +122,7 @@ This script extracts any "BREAKING CHANGES" from the changelog and converts the 
 ```bash
 # 1. Extract the section for the new release from CHANGELOG.md
 # We use awk to grab everything from the new release header until the next release header
-RELEASE_NOTES=$(awk "/^## \[v$NEW_RELEASE\]/{flag=1; next} /^## \[v/{flag=0} flag" CHANGELOG.md)
+RELEASE_NOTES=$(awk "/^## \[$NEW_RELEASE\]/{flag=1; next} /^## \[v/{flag=0} flag" CHANGELOG.md)
 
 # 2. Extract just the BREAKING CHANGES section (if any)
 BREAKING_CHANGES=$(echo "$RELEASE_NOTES" | awk '/^### BREAKING CHANGES/{flag=1; print; next} /^### /{flag=0} flag')
@@ -120,11 +140,13 @@ fi
 Once approved, run the appropriate command to create the release.
 
 If there were breaking changes:
+
 ```bash
 gh release create "$NEW_RELEASE" --title "$NEW_RELEASE" --generate-notes --notes "$FORMATTED_BREAKING_CHANGES"
 ```
 
 If there were no breaking changes:
+
 ```bash
 gh release create "$NEW_RELEASE" --title "$NEW_RELEASE" --generate-notes
 ```

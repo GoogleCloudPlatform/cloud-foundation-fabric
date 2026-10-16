@@ -47,9 +47,17 @@ auto_instance_config:
         - 10.73.0.0/16
 
 ilb_config:
+  # A single health check is created and shared by all ILBs of this NVA.
   health_check:
     tcp:
       port: 22
+  # Defaults keep connection tracking consistent across all ILBs, uncomment
+  # to override them.
+  # connection_tracking:
+  #   idle_timeout_sec: 600
+  #   persist_conn_on_unhealthy: NEVER_PERSIST
+  #   track_per_session: false
+  # session_affinity: NONE
   instance_groups:
     # Keyed by zone
     b:

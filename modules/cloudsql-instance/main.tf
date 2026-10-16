@@ -109,6 +109,7 @@ resource "google_sql_database_instance" "primary" {
     collation                   = var.collation
     connector_enforcement       = var.connector_enforcement
     data_api_access             = var.data_api_access
+    enable_dataplex_integration = var.enable_dataplex_integration
     time_zone                   = var.time_zone
     retain_backups_on_delete    = try(var.backup_configuration.retain_backups_on_delete, null)
 

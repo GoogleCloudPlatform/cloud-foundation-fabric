@@ -262,6 +262,7 @@ resource "google_compute_instance" "default" {
     iterator = config
     content {
       interface = config.value
+      size      = var.scratch_disks.size
     }
   }
 

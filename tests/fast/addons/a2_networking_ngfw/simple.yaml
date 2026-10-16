@@ -133,7 +133,7 @@ values:
     contexts: []
     customer_encryption: []
     deletion_policy: DELETE
-    detect_md5hash: different hash
+    detect_md5hash: null
     event_based_hold: null
     force_empty_content_type: null
     metadata: null
