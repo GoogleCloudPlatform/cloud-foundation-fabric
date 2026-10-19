@@ -22,6 +22,7 @@ from pathlib import Path
 
 import click
 import marko
+import marko.md_renderer
 
 # Add fabric root to sys.path to import from tests
 FABRIC_ROOT = Path(__file__).resolve().parents[1]
@@ -55,7 +56,7 @@ def find_examples(content):
   index = 0
   for child in doc.children:
     if isinstance(child, marko.block.Heading):
-      last_header = child.children[0].children
+      last_header = marko.md_renderer.MarkdownRenderer().render_children(child)
       index = 0
       continue
     if not isinstance(child, marko.block.FencedCode):
@@ -92,7 +93,7 @@ def replace_examples(content, formatted_examples):
     if original_code != formatted_code:
       old_block = f'```{lang}\n{original_code}```'
       new_block = f'```{lang}\n{formatted_code}```'
-      new_content = new_content.replace(old_block, new_block)
+      new_content = new_content.replace(old_block, new_block, 1)
   return new_content
 
 
