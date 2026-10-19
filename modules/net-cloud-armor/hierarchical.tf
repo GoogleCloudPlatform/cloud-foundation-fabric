@@ -40,7 +40,7 @@ resource "google_compute_organization_security_policy" "hierarchical" {
   parent      = local.parent_id
   short_name  = var.name
   description = var.description
-  type        = "CLOUD_ARMOR"
+  type        = var.type
 
   dynamic "advanced_options_config" {
     for_each = var.advanced_options_config == null ? [] : [""]

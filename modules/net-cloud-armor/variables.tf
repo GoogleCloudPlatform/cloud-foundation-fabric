@@ -138,7 +138,7 @@ variable "ddos_protection" {
 }
 
 variable "default_rule_config" {
-  description = "Configuration for the default rule with lowest priority, which is always present in a policy. Ignored by hierarchical policies, which keep the 'goto_next' default rule created by the API."
+  description = "Configuration for the default rule with lowest priority, which is always present in a policy. Not supported by hierarchical policies, which keep the 'goto_next' default rule created by the API."
   type = object({
     action      = optional(string, "allow")
     description = optional(string, "Default rule.")
@@ -203,7 +203,7 @@ variable "recaptcha_options_config" {
 }
 
 variable "region" {
-  description = "Policy region. Leave null or set to 'global' for a global policy. Ignored by hierarchical policies."
+  description = "Policy region. Leave null or set to 'global' for a global or hierarchical policy."
   type        = string
   default     = null
 }
@@ -365,7 +365,7 @@ variable "rules" {
 }
 
 variable "type" {
-  description = "Policy type. Global policies support CLOUD_ARMOR, CLOUD_ARMOR_EDGE and CLOUD_ARMOR_INTERNAL_SERVICE, regional policies support CLOUD_ARMOR and CLOUD_ARMOR_NETWORK. Rules for types other than CLOUD_ARMOR only support the 'allow' and 'deny' actions. Ignored by hierarchical policies, which are always of type CLOUD_ARMOR."
+  description = "Policy type. Global policies support CLOUD_ARMOR, CLOUD_ARMOR_EDGE and CLOUD_ARMOR_INTERNAL_SERVICE, regional policies support CLOUD_ARMOR and CLOUD_ARMOR_NETWORK. Rules for types other than CLOUD_ARMOR only support the 'allow' and 'deny' actions. Hierarchical policies only support CLOUD_ARMOR."
   type        = string
   default     = "CLOUD_ARMOR"
   nullable    = false
