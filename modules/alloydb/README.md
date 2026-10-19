@@ -217,6 +217,9 @@ In a cross-region replication scenario (like in the previous example) this modul
 
 * aligning an existing cluster after switchover via the `var.cross_region_replication.switchover_mode` flag.
 
+Note: the `instances` output (and other plural map outputs) depends on both the primary and secondary instances being created before available. Using the `instance` output allows for access to the primary instance resource before 
+the secondary cluster/instance is created.
+
 ### Cross region replication with primary and secondary cluster read pool
 
 ```hcl
@@ -529,18 +532,20 @@ module "alloydb" {
 | [psc_dns_name](outputs.tf#L89) | AlloyDB Primary instance PSC DNS name. |  |
 | [psc_dns_names](outputs.tf#L94) | AlloyDB instances PSC DNS names. |  |
 | [public_ip](outputs.tf#L101) | Public IP address of the primary instance. |  |
-| [read_pool_ids](outputs.tf#L106) | Fully qualified ids of all primary read poll instances. |  |
-| [read_pool_ips](outputs.tf#L114) | IP addresses of all primary read poll instances. |  |
-| [secondary_cluster_id](outputs.tf#L122) | Fully qualified secondary cluster id. |  |
-| [secondary_cluster_name](outputs.tf#L127) | Name of the secondary cluster. |  |
-| [secondary_id](outputs.tf#L132) | Fully qualified secondary instance id. |  |
-| [secondary_instance](outputs.tf#L137) | AlloyDB secondary instance resource. | ✓ |
-| [secondary_ip](outputs.tf#L143) | IP address of the secondary instance. |  |
-| [secondary_outbound_public_ips](outputs.tf#L148) | Public IP addresses of the primary instance. |  |
-| [secondary_public_ip](outputs.tf#L153) | Public IP address of the secondary instance. |  |
-| [secondary_read_pool_ids](outputs.tf#L158) | Fully qualified ids of all secondary read poll instances. |  |
-| [secondary_read_pool_ips](outputs.tf#L166) | IP addresses of all secondary read poll instances. |  |
-| [service_attachment](outputs.tf#L174) | AlloyDB Primary instance service attachment. |  |
-| [service_attachments](outputs.tf#L179) | AlloyDB instances service attachment. |  |
-| [user_passwords](outputs.tf#L186) | Map of containing the password of all users created through terraform. | ✓ |
+| [read_pool_ids](outputs.tf#L106) | Fully qualified ids of all primary read pool instances. |  |
+| [read_pool_ips](outputs.tf#L114) | IP addresses of all primary read pool instances. |  |
+| [read_pools](outputs.tf#L122) | Primary read pool resources. |  |
+| [secondary_cluster_id](outputs.tf#L127) | Fully qualified secondary cluster id. |  |
+| [secondary_cluster_name](outputs.tf#L132) | Name of the secondary cluster. |  |
+| [secondary_id](outputs.tf#L137) | Fully qualified secondary instance id. |  |
+| [secondary_instance](outputs.tf#L142) | AlloyDB secondary instance resource. | ✓ |
+| [secondary_ip](outputs.tf#L148) | IP address of the secondary instance. |  |
+| [secondary_outbound_public_ips](outputs.tf#L153) | Public IP addresses of the primary instance. |  |
+| [secondary_public_ip](outputs.tf#L158) | Public IP address of the secondary instance. |  |
+| [secondary_read_pool_ids](outputs.tf#L163) | Fully qualified ids of all secondary read pool instances. |  |
+| [secondary_read_pool_ips](outputs.tf#L171) | IP addresses of all secondary read pool instances. |  |
+| [secondary_read_pools](outputs.tf#L179) | Secondary read pool resources. |  |
+| [service_attachment](outputs.tf#L184) | AlloyDB Primary instance service attachment. |  |
+| [service_attachments](outputs.tf#L189) | AlloyDB instances service attachment. |  |
+| [user_passwords](outputs.tf#L196) | Map of containing the password of all users created through terraform. | ✓ |
 <!-- END TFDOC -->
