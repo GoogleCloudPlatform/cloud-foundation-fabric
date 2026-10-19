@@ -1,10 +1,10 @@
 # Cloud Armor Security Policy
 
-This module provisions and configures [Cloud Armor security policies](https://cloud.google.com/armor/docs/security-policy-overview) along with their rules. It handles both global and regional policies through a unified interface, validating at plan time that all requested features are compatible with the selected policy scope and type.
+This module provisions and configures [Cloud Armor security policies](https://cloud.google.com/armor/docs/security-policy-overview) along with their rules. It handles global, regional and [hierarchical](#hierarchical-policy) policies through a unified interface, validating at plan time that all requested features are compatible with the selected policy scope and type.
 
 Attach the policy to load balancers using the `id` output, which can be passed to the `security_policy` attribute of backend services managed by the `net-lb-app-ext`, `net-lb-app-ext-regional`, `net-lb-app-int` and `net-lb-ext` modules, or to the `edge_security_policy` attribute of backend buckets managed by `net-lb-app-ext`. Those modules also accept a `security_policies` key in their `context` variable, so policies can be referenced symbolically as `$security_policies:name`. Regional external passthrough Network Load Balancers managed by `net-lb-ext` only accept network edge policies of type `CLOUD_ARMOR_NETWORK`. Cloud Armor also protects global external proxy Network Load Balancers via backend policies, for which no module exists. Cross-region internal Application Load Balancers, internal proxy Network Load Balancers, and internal passthrough Network Load Balancers do not support Cloud Armor.
 
-The baseline rule at priority `2147483647` is always managed by the module via the `default_rule_config` variable and cannot be defined in `rules`.
+The baseline rule at priority `2147483647` cannot be defined in `rules`. In project policies it is always managed by the module via the `default_rule_config` variable, while hierarchical policies keep the `goto_next` default rule created by the API.
 
 Rules are keyed by name in Terraform state, while the API identifies them by priority. Renaming a rule without changing its priority plans a create and a destroy for the same API resource, so use a `moved` block for renames, or change the priority at the same time.
 
@@ -16,6 +16,7 @@ Rules are keyed by name in Terraform state, while the API identifies them by pri
   - [Regional backend policy](#regional-backend-policy)
   - [Network edge policy](#network-edge-policy)
   - [Edge policy for backend buckets](#edge-policy-for-backend-buckets)
+  - [Hierarchical policy](#hierarchical-policy)
   - [Rules factory](#rules-factory)
 - [Scope and type support matrix](#scope-and-type-support-matrix)
 - [Recipes](#recipes)
@@ -286,6 +287,81 @@ module "cloud-armor" {
 # tftest modules=1 resources=3 inventory=edge.yaml
 ```
 
+### Hierarchical policy
+
+Setting `parent_id` to an organization or folder instead of `project_id` creates a [hierarchical security policy](https://cloud.google.com/armor/docs/hierarchical-policies-overview), which applies to all projects below the organization or folders listed in `attachments`. Hierarchical policies are evaluated from the organization down through folders, before project-level and service-level policies. The `goto_next` action, only available in hierarchical policies, stops evaluating the current policy and hands the request to the next one, and is also the action of the default rule that the API creates at priority `2147483647`.
+
+Hierarchical policies are always global and of type `CLOUD_ARMOR`, so the module ignores the `type`, `region` and `default_rule_config` variables. Rules support the `allow`, `deny`, `goto_next` and `redirect` (`EXTERNAL_302` only) actions, `header_action` and `preconfigured_waf_config`, while rate limiting and reCAPTCHA are rejected at plan time. The `advanced_options_config` variable applies to hierarchical policies too.
+
+Projects that inherit a hierarchical policy are automatically enrolled in [Cloud Armor Enterprise](https://cloud.google.com/armor/docs/armor-enterprise-overview), which is billed per project. Exclusions in `attachments` (`excluded_folders` and `excluded_projects`, the latter using project numbers) keep projects out of the policy, so define them before attaching it.
+
+This example also shows how to use the `context` variable to resolve folder ids, project numbers and IP ranges.
+
+```hcl
+module "cloud-armor" {
+  source    = "./fabric/modules/net-cloud-armor"
+  parent_id = "$folder_ids:teams"
+  name      = "teams-baseline"
+  context = {
+    cidr_ranges_sets = {
+      blocked = ["192.0.2.0/24", "198.51.100.0/24"]
+      trusted = ["10.0.0.0/8"]
+    }
+    folder_ids = {
+      teams = var.folder_id
+    }
+    project_numbers = {
+      sandbox = var.project_number
+    }
+  }
+  attachments = {
+    teams = {
+      id                = "$folder_ids:teams"
+      excluded_projects = ["$project_numbers:sandbox"]
+    }
+  }
+  advanced_options_config = {
+    json_parsing = "STANDARD"
+  }
+  rules = {
+    trusted = {
+      priority = 10
+      action   = "goto_next"
+      match = {
+        src_ip_ranges = ["$cidr_ranges_sets:trusted"]
+      }
+    }
+    deny-blocked = {
+      priority = 100
+      action   = "deny(403)"
+      match = {
+        src_ip_ranges = ["$cidr_ranges_sets:blocked"]
+      }
+    }
+    owasp-sqli = {
+      priority = 1000
+      action   = "deny(403)"
+      preview  = true
+      match = {
+        expression = "evaluatePreconfiguredWaf('sqli-v33-stable')"
+      }
+    }
+    legacy-paths = {
+      priority = 2000
+      action   = "redirect"
+      match = {
+        expression = "request.path.startsWith('/legacy/')"
+      }
+      redirect_options = {
+        type   = "EXTERNAL_302"
+        target = "https://www.example.com/"
+      }
+    }
+  }
+}
+# tftest modules=1 resources=6 inventory=hierarchical.yaml
+```
+
 ### Rules factory
 
 Rules may be defined in an external YAML file matching the [rules schema](./schemas/rules.schema.md), which the module automatically combines with rules supplied in the `rules` variable. Rules from the `rules` variable take precedence when the same key is defined in both, and priorities must be unique across both sources. All plan-time consistency checks apply to factory rules too.
@@ -342,16 +418,19 @@ throttle:
 
 ## Scope and type support matrix
 
-| Feature | Global `CLOUD_ARMOR` | Global `CLOUD_ARMOR_EDGE` | Global `CLOUD_ARMOR_INTERNAL_SERVICE` | Regional `CLOUD_ARMOR` | Regional `CLOUD_ARMOR_NETWORK` |
-|---|:---:|:---:|:---:|:---:|:---:|
-| Attachment | global external ALB backend services (`net-lb-app-ext`), global external proxy NLB (no module) | global external ALB backend buckets (`net-lb-app-ext`) and CDN-enabled backend services (not exposed by the module) | Cloud Service Mesh endpoint policies | regional external ALB (`net-lb-app-ext-regional`), regional internal ALB (`net-lb-app-int`) | regional external passthrough NLB (`net-lb-ext`) |
-| `match` (IP ranges, CEL expressions) | ✓ | ✓ (subset of attributes) | ✓ | ✓ | |
-| `network_match`, `user_defined_fields`, `ddos_protection` | | | | | ✓ |
-| `allow`, `deny` actions | ✓ | ✓ | ✓ | ✓ | ✓ (no status code) |
-| `throttle`, `rate_based_ban` actions, `preconfigured_waf_config` | ✓ | | | ✓ | |
-| `redirect` action, `header_action`, `exceed_redirect_options`, `recaptcha_options` | ✓ | | | | |
-| `adaptive_protection_config`, `recaptcha_options_config` | ✓ | | | | |
-| `labels` | ✓ | ✓ | ✓ | | |
+| Feature | Global `CLOUD_ARMOR` | Global `CLOUD_ARMOR_EDGE` | Global `CLOUD_ARMOR_INTERNAL_SERVICE` | Regional `CLOUD_ARMOR` | Regional `CLOUD_ARMOR_NETWORK` | Hierarchical |
+|---|:---:|:---:|:---:|:---:|:---:|:---:|
+| Attachment | global external ALB backend services (`net-lb-app-ext`), global external proxy NLB (no module) | global external ALB backend buckets (`net-lb-app-ext`) and CDN-enabled backend services (not exposed by the module) | Cloud Service Mesh endpoint policies | regional external ALB (`net-lb-app-ext-regional`), regional internal ALB (`net-lb-app-int`) | regional external passthrough NLB (`net-lb-ext`) | organization or folders (`attachments`) |
+| `match` (IP ranges, CEL expressions) | ✓ | ✓ (subset of attributes) | ✓ | ✓ | | ✓ |
+| `network_match`, `user_defined_fields`, `ddos_protection` | | | | | ✓ | |
+| `allow`, `deny` actions | ✓ | ✓ | ✓ | ✓ | ✓ (no status code) | ✓ |
+| `goto_next` action | | | | | | ✓ |
+| `throttle`, `rate_based_ban` actions | ✓ | | | ✓ | | |
+| `preconfigured_waf_config` | ✓ | | | ✓ | | ✓ |
+| `redirect` action, `header_action` | ✓ | | | | | ✓ (`EXTERNAL_302` only) |
+| `exceed_redirect_options`, `recaptcha_options` | ✓ | | | | | |
+| `adaptive_protection_config`, `recaptcha_options_config` | ✓ | | | | | |
+| `labels` | ✓ | ✓ | ✓ | | | |
 
 Incompatible feature and policy combinations fail validation at plan time.
 
@@ -372,6 +451,7 @@ Internal service policies are in preview and their `fairshare` action is not ava
 |---|---|---|
 | [factory.tf](./factory.tf) | Rules factory. |  |
 | [global.tf](./global.tf) | Global security policy and rules. | <code>google_compute_security_policy</code> · <code>google_compute_security_policy_rule</code> |
+| [hierarchical.tf](./hierarchical.tf) | Hierarchical security policy, rules and associations. | <code>google_compute_organization_security_policy</code> · <code>google_compute_organization_security_policy_association</code> · <code>google_compute_organization_security_policy_rule</code> |
 | [main.tf](./main.tf) | Module-level locals and resources. |  |
 | [outputs.tf](./outputs.tf) | Module outputs. |  |
 | [regional.tf](./regional.tf) | Regional security policy and rules. | <code>google_compute_region_security_policy</code> · <code>google_compute_region_security_policy_rule</code> |
@@ -382,26 +462,29 @@ Internal service policies are in preview and their `fairshare` action is not ava
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [name](variables.tf#L154) | Policy name. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L160) | Project id where the policy will be created. | <code>string</code> | ✓ |  |
+| [name](variables.tf#L179) | Policy name. | <code>string</code> | ✓ |  |
 | [adaptive_protection_config](variables.tf#L17) | Adaptive Protection configuration. Only supported by global CLOUD_ARMOR policies. Cloud Armor Standard only receives basic alerts, attack signatures and suggested rules require Cloud Armor Enterprise. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [advanced_options_config](variables.tf#L61) | Advanced options configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [ddos_protection](variables.tf#L102) | DDoS protection level. Only supported by regional policies of type CLOUD_ARMOR_NETWORK. | <code>string</code> |  | <code>null</code> |
-| [default_rule_config](variables.tf#L115) | Configuration for the default rule with lowest priority, which is always present in a policy. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [description](variables.tf#L132) | Policy description. | <code>string</code> |  | <code>&#34;Terraform managed.&#34;</code> |
-| [factories_config](variables.tf#L138) | Paths to data files and folders that enable factory functionality. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [labels](variables.tf#L147) | Policy labels. Only supported by global policies. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [recaptcha_options_config](variables.tf#L166) | reCAPTCHA configuration options. Only supported by global CLOUD_ARMOR policies. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [region](variables.tf#L174) | Policy region. Leave null or set to 'global' for a global policy. | <code>string</code> |  | <code>null</code> |
-| [rules](variables.tf#L180) | Policy rules, merged with factory rules. Use `match` for CLOUD_ARMOR, CLOUD_ARMOR_EDGE and CLOUD_ARMOR_INTERNAL_SERVICE policies, `network_match` for CLOUD_ARMOR_NETWORK policies. Consistency with the policy scope and type is checked at plan time. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [type](variables.tf#L336) | Policy type. Global policies support CLOUD_ARMOR, CLOUD_ARMOR_EDGE and CLOUD_ARMOR_INTERNAL_SERVICE, regional policies support CLOUD_ARMOR and CLOUD_ARMOR_NETWORK. Rules for types other than CLOUD_ARMOR only support the 'allow' and 'deny' actions. | <code>string</code> |  | <code>&#34;CLOUD_ARMOR&#34;</code> |
-| [user_defined_fields](variables.tf#L353) | User-defined fields for CLOUD_ARMOR_NETWORK policies, keyed by field name. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [attachments](variables.tf#L102) | Organization or folders a hierarchical policy is attached to, keyed by association name suffix. Excluded folders and projects use the `folders/nnn` and `projects/nnn` (project number) formats. Only supported by hierarchical policies. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [context](variables.tf#L113) | Context-specific interpolations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [ddos_protection](variables.tf#L127) | DDoS protection level. Only supported by regional policies of type CLOUD_ARMOR_NETWORK. | <code>string</code> |  | <code>null</code> |
+| [default_rule_config](variables.tf#L140) | Configuration for the default rule with lowest priority, which is always present in a policy. Ignored by hierarchical policies, which keep the 'goto_next' default rule created by the API. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [description](variables.tf#L157) | Policy description. | <code>string</code> |  | <code>&#34;Terraform managed.&#34;</code> |
+| [factories_config](variables.tf#L163) | Paths to data files and folders that enable factory functionality. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [labels](variables.tf#L172) | Policy labels. Only supported by global policies. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [parent_id](variables.tf#L185) | Organization or folder where a hierarchical policy will be created, in `organizations/nnn` or `folders/nnn` format. Exactly one of `parent_id` and `project_id` must be set. | <code>string</code> |  | <code>null</code> |
+| [project_id](variables.tf#L191) | Project id where the policy will be created. Exactly one of `parent_id` and `project_id` must be set. | <code>string</code> |  | <code>null</code> |
+| [recaptcha_options_config](variables.tf#L197) | reCAPTCHA configuration options. Only supported by global CLOUD_ARMOR policies. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [region](variables.tf#L205) | Policy region. Leave null or set to 'global' for a global policy. Ignored by hierarchical policies. | <code>string</code> |  | <code>null</code> |
+| [rules](variables.tf#L211) | Policy rules, merged with factory rules. Use `match` for CLOUD_ARMOR, CLOUD_ARMOR_EDGE, CLOUD_ARMOR_INTERNAL_SERVICE and hierarchical policies, `network_match` for CLOUD_ARMOR_NETWORK policies. The 'goto_next' action is only supported by hierarchical policies. Consistency with the policy scope and type is checked at plan time. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [type](variables.tf#L367) | Policy type. Global policies support CLOUD_ARMOR, CLOUD_ARMOR_EDGE and CLOUD_ARMOR_INTERNAL_SERVICE, regional policies support CLOUD_ARMOR and CLOUD_ARMOR_NETWORK. Rules for types other than CLOUD_ARMOR only support the 'allow' and 'deny' actions. Ignored by hierarchical policies, which are always of type CLOUD_ARMOR. | <code>string</code> |  | <code>&#34;CLOUD_ARMOR&#34;</code> |
+| [user_defined_fields](variables.tf#L384) | User-defined fields for CLOUD_ARMOR_NETWORK policies, keyed by field name. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
 
 | name | description | sensitive |
 |---|---|:---:|
 | [id](outputs.tf#L17) | Fully qualified security policy id. |  |
-| [name](outputs.tf#L32) | Security policy name. |  |
-| [self_link](outputs.tf#L41) | Security policy self link. |  |
+| [name](outputs.tf#L36) | Security policy name. |  |
+| [self_link](outputs.tf#L46) | Security policy self link. Null for hierarchical policies. |  |
 <!-- END TFDOC -->

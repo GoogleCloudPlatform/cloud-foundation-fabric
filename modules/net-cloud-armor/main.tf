@@ -15,13 +15,53 @@
  */
 
 locals {
-  is_backend        = var.type == "CLOUD_ARMOR"
-  is_global         = var.region == null || var.region == "global"
+  ctx = {
+    for k, v in var.context : k => {
+      for kk, vv in v : "${local.ctx_p}${k}:${kk}" => vv
+    }
+  }
+  ctx_p = "$"
+  # hierarchical policies are always of type CLOUD_ARMOR and ignore region
+  is_backend = local.is_hierarchical || var.type == "CLOUD_ARMOR"
+  is_global = (
+    !local.is_hierarchical
+    && (var.region == null || var.region == "global")
+  )
   is_global_backend = local.is_global && local.is_backend
+  is_hierarchical   = var.parent_id != null
   is_l7             = !local.is_network
-  is_network        = var.type == "CLOUD_ARMOR_NETWORK"
-  region            = local.is_global ? null : var.region
-  rules             = merge(local.factory_rules, var.rules)
+  is_network        = !local.is_hierarchical && var.type == "CLOUD_ARMOR_NETWORK"
+  is_regional       = !local.is_hierarchical && !local.is_global
+  parent_id = (
+    var.parent_id == null
+    ? null
+    : lookup(local.ctx.folder_ids, var.parent_id, var.parent_id)
+  )
+  project_id = (
+    var.project_id == null
+    ? null
+    : lookup(local.ctx.project_ids, var.project_id, var.project_id)
+  )
+  region = (
+    local.is_regional
+    ? lookup(local.ctx.locations, var.region, var.region)
+    : null
+  )
+  rules = merge(local.factory_rules, var.rules)
+  # rule IP ranges with context interpolations expanded
+  rule_ranges = {
+    for k, v in local.rules : k => {
+      for kk, vv in {
+        match_src   = try(v.match.src_ip_ranges, null)
+        network_dst = try(v.network_match.dest_ip_ranges, null)
+        network_src = try(v.network_match.src_ip_ranges, null)
+        } : kk => vv == null ? null : distinct(flatten([
+          for r in vv : try(
+            local.ctx.cidr_ranges_sets[r], local.ctx.cidr_ranges[r], r
+          )
+      ]))
+    }
+  }
   # rule-level consistency checks, evaluated on the merged rule set so
   # that factory rules are covered too, and surfaced via preconditions
   # in the rule resources; the first failing check wins
@@ -29,7 +69,11 @@ locals {
     for k, v in local.rules : k => compact([
       # checks that do not depend on scope or type
       v.priority == 2147483647
-      ? "Priority 2147483647 is reserved for the default rule, use the 'default_rule_config' variable instead."
+      ? (
+        local.is_hierarchical
+        ? "Priority 2147483647 is reserved for the default rule."
+        : "Priority 2147483647 is reserved for the default rule, use the 'default_rule_config' variable instead."
+      )
       : null,
       v.match != null && v.network_match != null
       ? "Rules cannot specify both 'match' and 'network_match'."
@@ -37,7 +81,7 @@ locals {
       v.match != null && (v.match.src_ip_ranges == null) == (v.match.expression == null)
       ? "Rule match must specify exactly one of 'src_ip_ranges' or 'expression'."
       : null,
-      length(coalesce(try(v.match.src_ip_ranges, null), [])) > 10
+      length(coalesce(local.rule_ranges[k].match_src, [])) > 10
       ? "Rule match 'src_ip_ranges' supports at most 10 ranges, split them across multiple rules."
       : null,
       try(v.match.recaptcha_options, null) != null && try(v.match.expression, null) == null
@@ -89,11 +133,23 @@ locals {
       ? "'preconfigured_waf_config' is only supported for CLOUD_ARMOR policies."
       : null,
       # checks depending on policy scope
-      !local.is_global_backend && v.action == "redirect"
-      ? "'redirect' action is only supported in global CLOUD_ARMOR policies."
+      !local.is_hierarchical && v.action == "goto_next"
+      ? "'goto_next' action is only supported in hierarchical policies."
       : null,
-      !local.is_global_backend && length(v.header_action) > 0
-      ? "'header_action' is only supported in global CLOUD_ARMOR policies."
+      local.is_hierarchical && contains(["throttle", "rate_based_ban"], v.action)
+      ? "'throttle' and 'rate_based_ban' actions are not supported in hierarchical policies."
+      : null,
+      local.is_hierarchical && try(v.redirect_options.type, null) == "GOOGLE_RECAPTCHA"
+      ? "Only 'EXTERNAL_302' redirects are supported in hierarchical policies."
+      : null,
+      !local.is_global_backend && !local.is_hierarchical && v.action == "redirect"
+      ? "'redirect' action is only supported in global CLOUD_ARMOR and hierarchical policies."
+      : null,
+      (
+        !local.is_global_backend && !local.is_hierarchical
+        && length(v.header_action) > 0
+      )
+      ? "'header_action' is only supported in global CLOUD_ARMOR and hierarchical policies."
       : null,
       !local.is_global_backend && try(v.rate_limit_options.exceed_redirect_options, null) != null
       ? "'exceed_redirect_options' is only supported in global CLOUD_ARMOR policies."
@@ -110,13 +166,19 @@ locals {
   # in the policy resources
   _rule_priorities = [for k, v in local.rules : v.priority]
   policy_errors = compact([
+    (var.parent_id == null) == (var.project_id == null)
+    ? "Exactly one of 'parent_id' and 'project_id' must be set."
+    : null,
+    !local.is_hierarchical && length(var.attachments) > 0
+    ? "'attachments' are only supported for hierarchical policies."
+    : null,
     local.is_global && local.is_network
     ? "CLOUD_ARMOR_NETWORK is only supported for regional policies."
     : null,
-    !local.is_global && var.type == "CLOUD_ARMOR_INTERNAL_SERVICE"
+    local.is_regional && var.type == "CLOUD_ARMOR_INTERNAL_SERVICE"
     ? "CLOUD_ARMOR_INTERNAL_SERVICE is only supported for global policies."
     : null,
-    !local.is_global && var.type == "CLOUD_ARMOR_EDGE"
+    local.is_regional && var.type == "CLOUD_ARMOR_EDGE"
     ? "CLOUD_ARMOR_EDGE is only supported for global policies."
     : null,
     !local.is_global_backend && var.adaptive_protection_config != null
@@ -128,8 +190,8 @@ locals {
     !local.is_global && length(var.labels) > 0
     ? "'labels' are only supported for global policies."
     : null,
-    !local.is_global && try(var.advanced_options_config.request_body_inspection_size, null) != null
-    ? "'request_body_inspection_size' is only supported for global policies."
+    local.is_regional && try(var.advanced_options_config.request_body_inspection_size, null) != null
+    ? "'request_body_inspection_size' is only supported for global and hierarchical policies."
     : null,
     !local.is_network && var.ddos_protection != null
     ? "'ddos_protection' is only supported for CLOUD_ARMOR_NETWORK policies."
