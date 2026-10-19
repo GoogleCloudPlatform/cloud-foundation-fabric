@@ -95,7 +95,7 @@ OUT_RE = re.compile(r'''(?smx)
     # anything else
     (?:^(.*?)$)
 ''')
-OUT_TEMPLATE = ('description', 'value', 'sensitive')
+OUT_TEMPLATE = ('description', 'value', 'sensitive', 'ephemeral')
 RECIPE_RE = re.compile(r'(?sm)^#\s*(.*?)$')
 REPO_ROOT = os.path.dirname(os.path.dirname(__file__))
 REPO_URL = 'https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/blob/master'
@@ -119,7 +119,8 @@ VAR_RE = re.compile(r'''(?smx)
     (?:^(.*?)$)
 ''')
 VAR_RE_TYPE = re.compile(r'([\(\{\}\)])')
-VAR_TEMPLATE = ('default', 'description', 'type', 'nullable', 'sensitive')
+VAR_TEMPLATE = ('default', 'description', 'type', 'nullable', 'sensitive',
+                'ephemeral')
 
 Document = collections.namedtuple('Document',
                                   'content files variables outputs recipes',
