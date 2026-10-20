@@ -2378,6 +2378,99 @@ values:
     resource_types:
     - accesscontextmanager.googleapis.com/ServicePerimeter
     timeouts: null
+  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.alloydbDisablePublicIp"]:
+    action_type: DENY
+    condition: 'has(resource.networkConfig) &&
+
+      has(resource.networkConfig.enablePublicIp) &&
+
+      resource.networkConfig.enablePublicIp == true'
+    description: Ensure that AlloyDB instances do not have public IP addresses enabled
+    display_name: Disable public IP addresses on AlloyDB instances
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.alloydbDisablePublicIp
+    parent: organizations/1234567890
+    resource_types:
+    - alloydb.googleapis.com/Instance
+    timeouts: null
+  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.alloydbRequireAutomatedBackup"]:
+    action_type: DENY
+    condition: '!has(resource.secondaryConfig) &&
+
+      has(resource.automatedBackupPolicy) &&
+
+      resource.automatedBackupPolicy.enabled == false'
+    description: Ensure that AlloyDB clusters have automated backups enabled
+    display_name: Require AlloyDB clusters to have automated backups enabled
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.alloydbRequireAutomatedBackup
+    parent: organizations/1234567890
+    resource_types:
+    - alloydb.googleapis.com/Cluster
+    timeouts: null
+  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.alloydbRequireContinuousBackup"]:
+    action_type: DENY
+    condition: '!has(resource.secondaryConfig) &&
+
+      has(resource.continuousBackupConfig) &&
+
+      resource.continuousBackupConfig.enabled == false'
+    description: Ensure that AlloyDB clusters have continuous backup and recovery
+      enabled
+    display_name: Require AlloyDB clusters to have continuous backup enabled
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.alloydbRequireContinuousBackup
+    parent: organizations/1234567890
+    resource_types:
+    - alloydb.googleapis.com/Cluster
+    timeouts: null
+  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.alloydbRequireDatabaseFlags"]:
+    action_type: DENY
+    condition: "has(resource.databaseFlags) && (\n  ('log_error_verbosity' in resource.databaseFlags\
+      \ &&\n    resource.databaseFlags['log_error_verbosity'] == 'terse') ||\n  ('log_min_error_statement'\
+      \ in resource.databaseFlags &&\n    resource.databaseFlags['log_min_error_statement']\
+      \ in ['log', 'fatal', 'panic']) ||\n  ('log_min_messages' in resource.databaseFlags\
+      \ &&\n    resource.databaseFlags['log_min_messages'] in ['error', 'log', 'fatal',\
+      \ 'panic'])\n)"
+    description: Ensure AlloyDB instance logging database flags are set correctly
+      (log_error_verbosity, log_min_error_statement, log_min_messages)
+    display_name: Require AlloyDB instance database flags to be configured correctly
+      (log_error_verbosity, log_min_error_statement, log_min_messages)
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.alloydbRequireDatabaseFlags
+    parent: organizations/1234567890
+    resource_types:
+    - alloydb.googleapis.com/Instance
+    timeouts: null
+  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.alloydbRequireSSLConnection"]:
+    action_type: DENY
+    condition: 'has(resource.clientConnectionConfig) &&
+
+      has(resource.clientConnectionConfig.sslConfig) &&
+
+      has(resource.clientConnectionConfig.sslConfig.sslMode) &&
+
+      resource.clientConnectionConfig.sslConfig.sslMode != ''ENCRYPTED_ONLY'''
+    description: Ensure that AlloyDB instances are configured to allow only connections
+      that are encrypted with SSL/TLS
+    display_name: Require AlloyDB instances to allow only connections that are encrypted
+      with SSL/TLS
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.alloydbRequireSSLConnection
+    parent: organizations/1234567890
+    resource_types:
+    - alloydb.googleapis.com/Instance
+    timeouts: null
   module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.cloudbuildDisableWorkerPoolExternalIP"]:
     action_type: DENY
     condition: (resource.privatePoolV1Config.networkConfig.egressOption != "NO_PUBLIC_EGRESS")
@@ -2417,6 +2510,21 @@ values:
     - CREATE
     - UPDATE
     name: custom.cloudkmsAllowedProtectionLevel
+    parent: organizations/1234567890
+    resource_types:
+    - cloudkms.googleapis.com/CryptoKey
+    timeouts: null
+  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.cloudkmsAllowedPurpose"]:
+    action_type: DENY
+    condition: 'has(resource.purpose) &&
+
+      !(resource.purpose in [''ENCRYPT_DECRYPT'', ''ASYMMETRIC_SIGN'', ''ASYMMETRIC_DECRYPT''])'
+    description: Ensure the purpose for Cloud KMS keys is configured for approved
+      encryption or signing operations
+    display_name: Restrict Cloud KMS keys to approved purposes
+    method_types:
+    - CREATE
+    name: custom.cloudkmsAllowedPurpose
     parent: organizations/1234567890
     resource_types:
     - cloudkms.googleapis.com/CryptoKey
@@ -2694,6 +2802,22 @@ values:
     parent: organizations/1234567890
     resource_types:
     - sqladmin.googleapis.com/Instance
+    timeouts: null
+  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.dataprocAllowedImageVersions"]:
+    action_type: DENY
+    condition: "has(resource.config.softwareConfig.imageVersion) && (\n  resource.config.softwareConfig.imageVersion.startsWith('1.')\
+      \ ||\n  resource.config.softwareConfig.imageVersion.startsWith('2.0') ||\n \
+      \ resource.config.softwareConfig.imageVersion.startsWith('2.1')\n)"
+    description: Ensure Dataproc clusters do not use unsupported image versions (1.x,
+      2.0, 2.1)
+    display_name: Require Dataproc clusters to use supported image versions
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.dataprocAllowedImageVersions
+    parent: organizations/1234567890
+    resource_types:
+    - dataproc.googleapis.com/Cluster
     timeouts: null
   module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.dataprocDisableDefaultServiceAccount"]:
     action_type: DENY
@@ -3810,6 +3934,39 @@ values:
     resource_types:
     - compute.googleapis.com/Subnetwork
     timeouts: null
+  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.storageAllowedStorageClasses"]:
+    action_type: DENY
+    condition: "(has(resource.storageClass) &&\n  !(resource.storageClass in ['STANDARD',\
+      \ 'NEARLINE', 'COLDLINE', 'ARCHIVE'])) ||\n(has(resource.lifecycle) &&\n  has(resource.lifecycle.rule)\
+      \ &&\n  resource.lifecycle.rule.exists(r,\n    has(r.action) &&\n    r.action.type\
+      \ == 'SetStorageClass' &&\n    has(r.action.storageClass) &&\n    !(r.action.storageClass\
+      \ in ['STANDARD', 'NEARLINE', 'COLDLINE', 'ARCHIVE'])\n  ))"
+    description: Enforce that Cloud Storage buckets and SetStorageClass lifecycle
+      rules use an approved storage class (STANDARD, NEARLINE, COLDLINE, or ARCHIVE)
+    display_name: Restrict Cloud Storage bucket storage classes
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.storageAllowedStorageClasses
+    parent: organizations/1234567890
+    resource_types:
+    - storage.googleapis.com/Bucket
+    timeouts: null
+  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.storageRequireBucketLogging"]:
+    action_type: DENY
+    condition: '!has(resource.logging) || !has(resource.logging.logBucket) || resource.logging.logBucket
+      == '''''
+    description: Enforce that Cloud Storage buckets have access and storage logging
+      configured
+    display_name: Require logging on Cloud Storage buckets
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.storageRequireBucketLogging
+    parent: organizations/1234567890
+    resource_types:
+    - storage.googleapis.com/Bucket
+    timeouts: null
   module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.storageRequireBucketObjectVersionning"]:
     action_type: DENY
     condition: resource.versioning.enabled == false
@@ -3822,6 +3979,60 @@ values:
     parent: organizations/1234567890
     resource_types:
     - storage.googleapis.com/Bucket
+    timeouts: null
+  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.storageRequireBucketRetentionPolicy"]:
+    action_type: DENY
+    condition: '!has(resource.retentionPolicy) ||
+
+      !has(resource.retentionPolicy.retentionPeriod) ||
+
+      int(resource.retentionPolicy.retentionPeriod) < 7776000'
+    description: Enforce that Cloud Storage buckets have a retention policy of at
+      least 90 days configured
+    display_name: Require retention policy on Cloud Storage buckets
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.storageRequireBucketRetentionPolicy
+    parent: organizations/1234567890
+    resource_types:
+    - storage.googleapis.com/Bucket
+    timeouts: null
+  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.storageRequireSetStorageClassLifecycle"]:
+    action_type: DENY
+    condition: '!has(resource.lifecycle) ||
+
+      !has(resource.lifecycle.rule) ||
+
+      !resource.lifecycle.rule.exists(r, has(r.action) && r.action.type == ''SetStorageClass'')'
+    description: Enforce that Cloud Storage buckets configure a SetStorageClass lifecycle
+      management rule
+    display_name: Require SetStorageClass lifecycle rule on Cloud Storage buckets
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.storageRequireSetStorageClassLifecycle
+    parent: organizations/1234567890
+    resource_types:
+    - storage.googleapis.com/Bucket
+    timeouts: null
+  module.organization-iam[0].google_org_policy_policy.default["ainotebooks.accessMode"]:
+    dry_run_spec: []
+    name: organizations/1234567890/policies/ainotebooks.accessMode
+    parent: organizations/1234567890
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: null
+        parameters: null
+        values:
+        - allowed_values:
+          - service-account
+          denied_values: null
     timeouts: null
   module.organization-iam[0].google_org_policy_policy.default["ainotebooks.disableFileDownloads"]:
     dry_run_spec: []
@@ -4655,6 +4866,81 @@ values:
         parameters: null
         values: []
     timeouts: null
+  module.organization-iam[0].google_org_policy_policy.default["custom.alloydbDisablePublicIp"]:
+    dry_run_spec: []
+    name: organizations/1234567890/policies/custom.alloydbDisablePublicIp
+    parent: organizations/1234567890
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+    timeouts: null
+  module.organization-iam[0].google_org_policy_policy.default["custom.alloydbRequireAutomatedBackup"]:
+    dry_run_spec: []
+    name: organizations/1234567890/policies/custom.alloydbRequireAutomatedBackup
+    parent: organizations/1234567890
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+    timeouts: null
+  module.organization-iam[0].google_org_policy_policy.default["custom.alloydbRequireContinuousBackup"]:
+    dry_run_spec: []
+    name: organizations/1234567890/policies/custom.alloydbRequireContinuousBackup
+    parent: organizations/1234567890
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+    timeouts: null
+  module.organization-iam[0].google_org_policy_policy.default["custom.alloydbRequireDatabaseFlags"]:
+    dry_run_spec: []
+    name: organizations/1234567890/policies/custom.alloydbRequireDatabaseFlags
+    parent: organizations/1234567890
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+    timeouts: null
+  module.organization-iam[0].google_org_policy_policy.default["custom.alloydbRequireSSLConnection"]:
+    dry_run_spec: []
+    name: organizations/1234567890/policies/custom.alloydbRequireSSLConnection
+    parent: organizations/1234567890
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+    timeouts: null
   module.organization-iam[0].google_org_policy_policy.default["custom.cloudbuildDisableWorkerPoolExternalIP"]:
     dry_run_spec: []
     name: organizations/1234567890/policies/custom.cloudbuildDisableWorkerPoolExternalIP
@@ -4688,6 +4974,21 @@ values:
   module.organization-iam[0].google_org_policy_policy.default["custom.cloudkmsAllowedProtectionLevel"]:
     dry_run_spec: []
     name: organizations/1234567890/policies/custom.cloudkmsAllowedProtectionLevel
+    parent: organizations/1234567890
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+    timeouts: null
+  module.organization-iam[0].google_org_policy_policy.default["custom.cloudkmsAllowedPurpose"]:
+    dry_run_spec: []
+    name: organizations/1234567890/policies/custom.cloudkmsAllowedPurpose
     parent: organizations/1234567890
     spec:
     - inherit_from_parent: null
@@ -4943,6 +5244,21 @@ values:
   module.organization-iam[0].google_org_policy_policy.default["custom.cloudsqlRequireSSLConnection"]:
     dry_run_spec: []
     name: organizations/1234567890/policies/custom.cloudsqlRequireSSLConnection
+    parent: organizations/1234567890
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+    timeouts: null
+  module.organization-iam[0].google_org_policy_policy.default["custom.dataprocAllowedImageVersions"]:
+    dry_run_spec: []
+    name: organizations/1234567890/policies/custom.dataprocAllowedImageVersions
     parent: organizations/1234567890
     spec:
     - inherit_from_parent: null
@@ -8480,8 +8796,8 @@ counts:
   google_logging_project_bucket_config: 6
   google_logging_project_settings: 3
   google_monitoring_alert_policy: 10
-  google_org_policy_custom_constraint: 89
-  google_org_policy_policy: 167
+  google_org_policy_custom_constraint: 100
+  google_org_policy_policy: 175
   google_organization_iam_audit_config: 1
   google_organization_iam_binding: 40
   google_organization_iam_custom_role: 14
@@ -8506,7 +8822,7 @@ counts:
   google_tags_tag_value_iam_binding: 4
   local_file: 9
   modules: 54
-  resources: 671
+  resources: 690
   terraform_data: 4
 
 outputs:

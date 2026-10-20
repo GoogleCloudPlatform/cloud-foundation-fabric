@@ -61,6 +61,7 @@ In that case, the controls placed in the `organization/scc-sha-custom-modules` f
 
 | Policy | Description | Compliance Mapping |
 |---|---|---|
+| `ainotebooks.accessMode` | Restrict the access mode for new Vertex AI Workbench notebooks and instances. | **CIS Controls 8.0** |
 | `ainotebooks.disableFileDownloads` | Prevent file downloads on new Vertex AI Workbench instances. |  |
 | `ainotebooks.disableRootAccess` | Prevent root access on new Vertex AI Workbench user-managed notebooks and instances. |  |
 | `ainotebooks.restrictPublicIp` | Restrict public IP access on new Vertex AI Workbench notebooks and instances. |  |
@@ -147,9 +148,15 @@ In that case, the controls placed in the `organization/scc-sha-custom-modules` f
 | Constraint | Description | Compliance Mapping |
 |---|---|---|
 | `accesscontextmanagerDisableBridgePerimeters` | Ensure no perimeter bridges are used. Instead, use ingress and egress rules. |  |
+| `alloydbDisablePublicIp` | Prevent AlloyDB instances from having public IP addresses. | **CIS Controls 8.0** |
+| `alloydbRequireAutomatedBackup` | Ensure AlloyDB clusters are configured with automated backups enabled. | **CIS Controls 8.0** |
+| `alloydbRequireContinuousBackup` | Ensure AlloyDB clusters are configured with continuous backups enabled. | **CIS Controls 8.0** |
+| `alloydbRequireDatabaseFlags` | Ensure AlloyDB instance database logging flags (`log_error_verbosity`, `log_min_error_statement`, `log_min_messages`) are configured correctly. | **CIS Controls 8.0** |
+| `alloydbRequireSSLConnection` | Enforce SSL encryption (`ENCRYPTED_ONLY`) for all AlloyDB instance client connections. | **CIS Controls 8.0** |
 | `cloudbuildDisableWorkerPoolExternalIP` | Prevent the configuration of Cloud Build worker pools with external IP addresses. |  |
 | `cloudkmsAllowedAlgorithms` | Ensure the algorithm used for Cloud KMS keys is configured correctly. |  |
 | `cloudkmsAllowedProtectionLevel` | Ensure Cloud KMS keys are configured with the correct protection level. |  |
+| `cloudkmsAllowedPurpose` | Ensure Cloud KMS crypto keys are created with an approved purpose (ENCRYPT_DECRYPT, ASYMMETRIC_SIGN, or ASYMMETRIC_DECRYPT). | **CIS Controls 8.0** |
 | `cloudkmsAllowedRotationPeriod` | Ensure Cloud KMS keys have the correct rotation period configured. | **CIS for GCP 3.0**: 1.10<br>**CIS Controls 8.0**: 3.11<br>**PCI-DSS 4.0**: 3.1.1, 3.3.2, 3.3.3, 3.5.1, 3.5.1.2, 3.5.1.3, 8.3.2<br>**NIST 800-53 R4**: SC-12<br>**NIST 800-53 R5**: IA-5, SC-28<br>**ISO-2700-1 v2013**: A.10.1.2<br>**ISO-2700-1 v2022**: A.5.33<br>**SOC2 v2017**: CC6.1.10, CC6.1.3<br>**HIPAA**: 164.312(a)(2)(iv), 164.312(e)(2)(ii)<br>**Cloud Controls Matrix 4**: CEK-03 |
 | `cloudrunDisableEnvironmentVariablePattern` | Prevent secrets from being stored in Cloud Run environment variables. | **CIS for GCP 3.0**: 1.17 |
 | `cloudrunJobDisableDefaultServiceAccount` | Ensure all Cloud Run jobs use a non-default service account. |  |
@@ -167,6 +174,7 @@ In that case, the controls placed in the `organization/scc-sha-custom-modules` f
 | `cloudsqlRequireRootPassword` | Ensure That a MySQL Database Instance Does Not Allow Anyone To Connect With Administrative Privileges | **CIS for GCP 3.0**: 6.1.1<br>**NIST 800-53 R4**: AC-3<br>**ISO-2700-1 v2013**: A.8.2.3, A.9.4.2<br>**ISO-2700-1 v2022**: A.8.5 |
 | `cloudsqlRequireSQLServerDatabaseFlags` | Ensure 'external scripts enabled' database flag for Cloud SQL SQL Server instance is set to 'off' | **CIS for GCP 3.0**: 6.3.1<br>**CIS Controls 8.0**: 2.7<br>**PCI-DSS 4.0**: 1.2.5, 2.2.4, 6.4.3<br>**NIST 800-53 R5**: CM-7, SI-7<br>**NIST Cybersecurity Framework 1.0**: PR-IP-1, PR-PT-3<br>**SOC2 v2017**: CC5.2.1, CC5.2.2, CC5.2.3, CC5.2.4 |
 | `cloudsqlRequireSSLConnection` | Ensure That the Cloud SQL Database Instance Requires All Incoming Connections To Use SSL | **CIS for GCP 3.0**: 6.4<br>**NIST 800-53 R4**: SC-7<br>**ISO-2700-1 v2013**: A.13.2.1, A.14.1.3, A.8.2.3 |
+| `dataprocAllowedImageVersions` | Prevent Dataproc clusters from using unsupported image versions (1.x, 2.0, 2.1). | **CIS Controls 8.0** |
 | `dataprocDisableDefaultServiceAccount` | Prevent Dataproc VMs from using default user-managed service accounts. |  |
 | `dataprocRequireDiskCmekEncryption` | Enforce encryption of Dataproc clusters with a Customer-Managed Encryption Key (CMEK). | **CIS for GCP 3.0**: 8.1<br>**CIS Controls 8.0**: 3.11<br>**PCI-DSS 4.0**:  3.1.1, 3.3.2, 3.3.3, 3.5.1, 3.5.1.2, 3.5.1.3, 8.3.2<br>**NIST 800-53 R5**: IA-5, SC-28<br>**NIST Cybersecurity Framework 1.0**: PR-DS-1<br>**ISO-2700-1 v2013**: A.5.33<br>**SOC2 v2017**: CC6.1.10, CC6.1.3<br>**HIPAA**: 164.312(a)(2)(iv), 164.312(e)(2)(ii)<br>**Cloud Controls Matrix 4**: CEK-03 |
 | `dataprocRequireInternalIp` | Enforce the use of internal IP addresses only for Dataproc clusters. |  |
@@ -234,7 +242,11 @@ In that case, the controls placed in the `organization/scc-sha-custom-modules` f
 | `networkRequireBackendServiceLogging` | Enforce the enablement of logging for all HTTP(S) load balancers. | **CIS for GCP 3.0**: 2.16<br>**CIS Controls 8.0**: 8.2<br>**PCI-DSS 4.0**: 10.2.1, 10.2.1.1, 10.2.1.2, 10.2.1.3, 10.2.1.4, 10.2.1.5, 10.2.1.6, 10.2.1.7, 10.2.2, 5.3.4, 6.4.1, 6.4.2<br>**NIST 800-53 R5**: AU-12, AU-2, AU-7<br>**NIST Cybersecurity Framework 1.0**: DE-AE-3, PR-PT-1<br>**ISO-2700-1 v2022**: A.8.15, A.8.20<br>**HIPAA**: 164.312(b) |
 | `networkRequireCustomModeVpc` | Ensure That the Default Network Does Not Exist in a Project | **CIS for GCP 3.0**: 3.1<br>**CIS Controls 8.0**: 4.2<br>**PCI-DSS 4.0**: 1.1.1, 1.2.1, 1.2.6, 1.2.7, 1.4.2, 1.5.1, 2.1.1, 2.2.1<br>**NIST 800-53 R5**: AC-18, CM-2, CM-6, CM-7, CM-9<br>**NIST Cybersecurity Framework 1.0**: PR-IP-1<br>**ISO-2700-1 v2022**: A.8.9<br>**SOC2 v2017**: CC5.2.2<br>**Cloud Controls Matrix 4**: ISV-04 |
 | `networkRequireSubnetPrivateGoogleAccess` | Enforce Private Google Access for all VPC network subnets. |  |
+| `storageAllowedStorageClasses` | Restrict Cloud Storage buckets and SetStorageClass lifecycle rules to approved storage classes (STANDARD, NEARLINE, COLDLINE, ARCHIVE). | **CIS Controls 8.0** |
+| `storageRequireBucketLogging` | Enforce access and storage logging on Cloud Storage buckets. | **CIS Controls 8.0** |
 | `storageRequireBucketObjectVersionning` | Enforce the enablement of versioning to Cloud Storage buckets where sinks are configured. | **NIST 800-53 R4**: AU-11<br>**ISO-2700-1 v2022**: A.12.4.2, A.18.1.3 |
+| `storageRequireBucketRetentionPolicy` | Enforce a minimum retention period on Cloud Storage buckets. | **CIS Controls 8.0** |
+| `storageRequireSetStorageClassLifecycle` | Enforce a `SetStorageClass` lifecycle management rule on Cloud Storage buckets. | **CIS Controls 8.0** |
 
 ### Detective Controls
 
