@@ -15,6 +15,7 @@
  */
 
 # TODO: add project sa to context
+# TODO: support referencing project numbers / workload_identity_pools in principalSet IAM members via context
 
 locals {
   # project data from folders tree
