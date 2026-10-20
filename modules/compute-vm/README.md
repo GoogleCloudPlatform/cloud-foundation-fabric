@@ -643,7 +643,7 @@ module "vm-psc-interface" {
 
 ### Metadata
 
-You can define labels and custom metadata values. Metadata can be leveraged, for example, to define a custom startup script.
+You can define labels and custom metadata values. Labels are applied to the instance and to its boot and attached disks. Metadata can be leveraged, for example, to define a custom startup script.
 
 ```hcl
 module "vm-metadata-example" {
