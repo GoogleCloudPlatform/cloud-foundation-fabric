@@ -42,8 +42,13 @@ locals {
       },
       local._ctx.iam_principals
     )
-    kms_keys        = merge(var.kms_keys, local._ctx.kms_keys)
-    project_ids     = merge(var.project_ids, local._ctx.project_ids)
+    kms_keys = merge(var.kms_keys, local._ctx.kms_keys)
+    project_ids = merge(
+      var.project_ids, local._ctx.project_ids
+    )
+    security_profile_groups = merge(
+      var.security_profile_groups, local._ctx.security_profile_groups
+    )
     storage_buckets = merge(var.storage_buckets, local._ctx.storage_buckets)
     tag_keys        = merge(var.tag_keys, local._ctx.tag_keys)
     tag_values      = merge(var.tag_values, local._ctx.tag_values)

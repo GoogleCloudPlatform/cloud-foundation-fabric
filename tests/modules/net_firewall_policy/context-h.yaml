@@ -23,7 +23,7 @@ values:
     name: test-1-test
     timeouts: null
   google_compute_firewall_policy_rule.hierarchical["egress/smtp"]:
-    action: deny
+    action: apply_security_profile_group
     description: null
     direction: EGRESS
     disabled: false
@@ -50,7 +50,7 @@ values:
       src_secure_tags: []
       src_threat_intelligences: null
     priority: 900
-    security_profile_group: null
+    security_profile_group: //networksecurity.googleapis.com/organizations/1234567890/locations/global/securityProfileGroups/test
     target_resources: null
     target_secure_tags: []
     target_service_accounts: null
