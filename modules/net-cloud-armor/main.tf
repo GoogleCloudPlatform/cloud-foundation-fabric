@@ -170,9 +170,6 @@ locals {
     (var.parent_id == null) == (var.project_id == null)
     ? "Exactly one of 'parent_id' and 'project_id' must be set."
     : null,
-    !local.is_hierarchical && length(var.attachments) > 0
-    ? "'attachments' are only supported for hierarchical policies."
-    : null,
     local.is_hierarchical && var.type != "CLOUD_ARMOR"
     ? "'type' must be CLOUD_ARMOR for hierarchical policies."
     : null,

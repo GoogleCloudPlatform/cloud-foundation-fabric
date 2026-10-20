@@ -24,7 +24,6 @@ output "id" {
     : google_compute_region_security_policy.regional[0].id
   )
   depends_on = [
-    google_compute_organization_security_policy_association.hierarchical,
     google_compute_organization_security_policy_rule.hierarchical,
     google_compute_security_policy_rule.global,
     google_compute_security_policy_rule.global_default,

@@ -21,16 +21,6 @@ values:
     short_name: test-h
     timeouts: null
     type: CLOUD_ARMOR
-  google_compute_organization_security_policy_association.hierarchical["test"]:
-    attachment_id: folders/1234567890
-    excluded_folders:
-    - folders/2222222222
-    - folders/4444444444
-    excluded_projects:
-    - projects/3333333333
-    - projects/5555555555
-    name: test-h-test
-    timeouts: null
   google_compute_organization_security_policy_rule.hierarchical["deny-internal"]:
     action: deny(403)
     description: null
@@ -53,10 +43,9 @@ values:
 
 counts:
   google_compute_organization_security_policy: 1
-  google_compute_organization_security_policy_association: 1
   google_compute_organization_security_policy_rule: 1
   modules: 0
-  resources: 3
+  resources: 2
 
 outputs:
   id: __missing__

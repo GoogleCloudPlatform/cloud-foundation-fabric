@@ -26,13 +26,6 @@ values:
     short_name: teams-baseline
     timeouts: null
     type: CLOUD_ARMOR
-  module.cloud-armor.google_compute_organization_security_policy_association.hierarchical["teams"]:
-    attachment_id: folders/1122334455
-    excluded_folders: []
-    excluded_projects:
-    - projects/123
-    name: teams-baseline-teams
-    timeouts: null
   module.cloud-armor.google_compute_organization_security_policy_rule.hierarchical["deny-blocked"]:
     action: deny(403)
     description: null
@@ -101,9 +94,8 @@ values:
 
 counts:
   google_compute_organization_security_policy: 1
-  google_compute_organization_security_policy_association: 1
   google_compute_organization_security_policy_rule: 4
   modules: 1
-  resources: 6
+  resources: 5
 
 outputs: {}
