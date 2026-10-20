@@ -35,3 +35,32 @@ ainotebooks.restrictVpcNetworks:
     - allow:
         values:
           - "under:organizations/${organization.id}"
+
+# prevent disabling computer use tool safety policies in generative AI APIs
+vertexai.configurableComputerUseToolSafetyPolicies:
+  rules:
+    - deny:
+        all: true
+
+# allow only reviewed models, one entry per model and action (predict, deploy,
+# tune); wildcards are not supported, avoid preview and -latest aliases
+# vertexai.allowedModels:
+#   rules:
+#     - allow:
+#         values:
+#           - "publishers/google/models/MODEL_ID:predict"
+
+# typically applied at the production folder rather than the organization
+# vertexai.disableGenAIGoogleSearchGrounding:
+#   rules:
+#     - enforce: true
+
+# valid values: GoogleMaps, VertexAiSearch, VertexRagStore, EnterpriseWebSearch,
+# ExternalApiSimpleSearch, ExternalApiElasticSearch, UrlContext,
+# ParallelAiSearch, ExaAiSearch
+# vertexai.genAIGroundingSources:
+#   rules:
+#     - allow:
+#         values:
+#           - "VertexAiSearch"
+#           - "VertexRagStore"
