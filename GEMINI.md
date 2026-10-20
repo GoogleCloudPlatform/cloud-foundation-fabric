@@ -108,11 +108,11 @@ module "my-module" {
 *   **Legacy Tests:** Python-based tests using `pytest` and `tftest` are supported but example-based tests should be used whenever possible.
 
 ```bash
-# Run all tests
-pytest tests
+# Run all tests (parallelized via pytest-xdist, matching CI)
+pytest -n auto tests
 
 # Run specific module examples
-pytest -k 'modules and <module-name>:' tests/examples
+pytest -n auto -k 'modules and <module-name>:' tests/examples
 
 # Run a single specific example test (useful for debugging)
 pytest -s 'tests/examples/test_plan.py::test_example[terraform:modules/<module-name>:Heading Name:Index]'
