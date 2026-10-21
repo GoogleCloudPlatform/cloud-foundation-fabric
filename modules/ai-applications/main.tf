@@ -30,6 +30,23 @@ locals {
   }
 }
 
+resource "google_discovery_engine_cmek_config" "default" {
+  count          = var.encryption_config == null ? 0 : 1
+  project        = var.project_id
+  location       = coalesce(var.encryption_config.location, var.location)
+  cmek_config_id = var.name
+  kms_key        = var.encryption_config.kms_key_name
+  set_default    = var.encryption_config.set_default
+
+  dynamic "single_region_keys" {
+    for_each = var.encryption_config.single_region_kms_key_names
+
+    content {
+      kms_key = single_region_keys.value
+    }
+  }
+}
+
 resource "google_discovery_engine_data_store" "default" {
   for_each                     = var.data_stores_configs
   data_store_id                = "${var.name}-${each.key}"
@@ -40,6 +57,7 @@ resource "google_discovery_engine_data_store" "default" {
   solution_types               = each.value.solution_types
   create_advanced_site_search  = each.value.create_advanced_site_search
   skip_default_schema_creation = each.value.skip_default_schema_creation
+  kms_key_name                 = each.value.kms_key_name
   display_name = coalesce(
     each.value.display_name, "${var.name}-${each.key}"
   )
@@ -160,6 +178,9 @@ resource "google_discovery_engine_data_store" "default" {
       }
     }
   }
+
+  # CMEK has to be registered before data stores are created
+  depends_on = [google_discovery_engine_cmek_config.default]
 }
 
 resource "google_discovery_engine_schema" "default" {

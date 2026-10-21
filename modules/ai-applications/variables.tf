@@ -337,6 +337,7 @@ variable "data_stores_configs" {
     }))
     industry_vertical            = optional(string, "GENERIC")
     json_schema                  = optional(string)
+    kms_key_name                 = optional(string)
     location                     = optional(string)
     skip_default_schema_creation = optional(bool)
     solution_types               = optional(list(string))
@@ -404,6 +405,28 @@ variable "data_stores_configs" {
       ]
     ]))
     error_message = "data_store_configs.sites_search_config.target_sites.*.type must be one of [EXCLUDE, INCLUDE]."
+  }
+}
+
+variable "encryption_config" {
+  description = "Register a CMEK key for the project and location (us or eu, defaults to var.location). Data stores and engines are created after the key is registered. KMS name format: 'projects/[PROJECT]/locations/[LOCATION]/keyRings/[RING]/cryptoKeys/[KEY_NAME]'."
+  type = object({
+    kms_key_name                = string
+    location                    = optional(string)
+    set_default                 = optional(bool, true)
+    single_region_kms_key_names = optional(list(string), [])
+  })
+  default = null
+  validation {
+    condition = (
+      var.encryption_config == null
+      ? true
+      : contains(
+        ["eu", "us"],
+        coalesce(var.encryption_config.location, var.location)
+      )
+    )
+    error_message = "encryption_config.location (or var.location when not set) must be one of [eu, us]."
   }
 }
 

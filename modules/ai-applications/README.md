@@ -14,6 +14,7 @@ This module handles the creation of [AI Applications](https://cloud.google.com/g
     * [Using multiple data stores](#using-multiple-data-stores)
     * [Set data store schemas](#set-data-store-schemas)
     * [Back data stores with websites data](#back-data-stores-with-websites-data)
+    * [CMEK](#cmek)
   * [Variables](#variables)
   * [Outputs](#outputs)
 <!-- TOC -->
@@ -320,17 +321,45 @@ module "ai-applications" {
 }
 # tftest modules=1 resources=5
 ```
+
+### CMEK
+
+Use `encryption_config` to register a Customer-Managed Encryption Key for a multi-region location (`us` or `eu`). The module creates data stores and engines only after the key is registered, as resources created before registration stay encrypted with Google-managed keys. With `set_default` (the default), new data stores in that location use the registered key. Use `kms_key_name` in a data store configuration to set its key explicitly.
+
+```hcl
+module "ai-applications" {
+  source     = "./fabric/modules/ai-applications"
+  name       = "my-search-app"
+  project_id = var.project_id
+  location   = "eu"
+  encryption_config = {
+    kms_key_name = "projects/my-kms-project/locations/eu/keyRings/my-keyring/cryptoKeys/my-key"
+  }
+  data_stores_configs = {
+    data-store-1 = {
+      kms_key_name   = "projects/my-kms-project/locations/eu/keyRings/my-keyring/cryptoKeys/my-key"
+      solution_types = ["SOLUTION_TYPE_SEARCH"]
+    }
+  }
+  engines_configs = {
+    data_store_ids       = ["data-store-1"]
+    search_engine_config = {}
+  }
+}
+# tftest modules=1 resources=3 inventory=cmek.yaml
+```
 <!-- BEGIN TFDOC -->
 ## Variables
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [name](variables.tf#L483) | The name of the resources. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L489) | The ID of the project where the data stores and the agents will be created. | <code>string</code> | ✓ |  |
+| [name](variables.tf#L506) | The name of the resources. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L512) | The ID of the project where the data stores and the agents will be created. | <code>string</code> | ✓ |  |
 | [chat_agent_security_configs](variables.tf#L17) | The DLP security configurations for (Dialogflow CX) chat agents. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [data_stores_configs](variables.tf#L305) | The ai-applications datastore configurations. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [engines_configs](variables.tf#L410) | The AI applications engines configurations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [location](variables.tf#L477) | Location where the data stores and agents will be created. | <code>string</code> |  | <code>&#34;global&#34;</code> |
+| [encryption_config](variables.tf#L411) | Register a CMEK key for the project and location (us or eu, defaults to var.location). Data stores and engines are created after the key is registered. KMS name format: 'projects/[PROJECT]/locations/[LOCATION]/keyRings/[RING]/cryptoKeys/[KEY_NAME]'. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [engines_configs](variables.tf#L433) | The AI applications engines configurations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [location](variables.tf#L500) | Location where the data stores and agents will be created. | <code>string</code> |  | <code>&#34;global&#34;</code> |
 
 ## Outputs
 

@@ -59,6 +59,9 @@ resource "google_discovery_engine_chat_engine" "default" {
       company_name = var.engines_configs.chat_engine_config.company_name
     }
   }
+
+  # CMEK has to be registered before engines are created
+  depends_on = [google_discovery_engine_cmek_config.default]
 }
 
 resource "google_discovery_engine_search_engine" "default" {
@@ -88,4 +91,7 @@ resource "google_discovery_engine_search_engine" "default" {
     search_add_ons = var.engines_configs.search_engine_config.search_add_ons
     search_tier    = var.engines_configs.search_engine_config.search_tier
   }
+
+  # CMEK has to be registered before engines are created
+  depends_on = [google_discovery_engine_cmek_config.default]
 }
