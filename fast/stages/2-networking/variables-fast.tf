@@ -90,6 +90,14 @@ variable "project_ids" {
   default     = {}
 }
 
+variable "security_profile_groups" {
+  # tfdoc:variable:source 2-networking-ngfw
+  description = "Security profile group ids."
+  type        = map(string)
+  nullable    = false
+  default     = {}
+}
+
 variable "service_accounts" {
   # tfdoc:variable:source 0-org-setup
   description = "Service accounts created in the bootstrap stage."
