@@ -364,7 +364,7 @@ module "vm-disk-options-example" {
   project_id   = var.project_id
   zone         = "${var.region}-c"
   name         = "test"
-  machine_type = "c4d-standard-2"
+  machine_type = "n4-standard-2"
   network_interfaces = [
     {
       network    = var.vpc.self_link
