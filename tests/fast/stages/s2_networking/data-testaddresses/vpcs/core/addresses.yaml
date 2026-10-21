@@ -50,6 +50,8 @@ psc:
     address: "10.0.0.33"
     service_attachment:
       psc_service_attachment_link: projects/producer-project/global/serviceAttachments/my-global-sa
+      service_directory_registration:
+        region: $locations:primary
 
 network_attachments:
   # 5. PSC Network Attachment (Producer side)
