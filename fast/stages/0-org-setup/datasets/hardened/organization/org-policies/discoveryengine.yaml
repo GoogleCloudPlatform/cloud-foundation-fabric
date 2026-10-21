@@ -18,23 +18,6 @@
 
 # yaml-language-server: $schema=../../../../schemas/org-policies.schema.json
 
-# custom MCP server connectors are blocked by Google by default, declaring the
-# policy makes the posture explicit and prevents silent drift
 discoveryengine.managed.disableCustomMcpServerConnector:
   rules:
     - enforce: true
-
-# the two constraints below are applied automatically to data connectors in
-# VPC-SC protected projects: Gemini Enterprise connectors are blocked there
-# until the allowlists are populated; use enforcedProjects to also apply them
-# to projects outside the perimeter, in the "projects/PROJECT_ID/" format
-
-# discoveryengine.managed.allowedDataSources:
-#   rules:
-#     - enforce: true
-#       parameters: '{"allowedDataSources": ["bigquery", "jira"], "enforcedProjects": []}'
-
-# discoveryengine.managed.allowedEgressFqdns:
-#   rules:
-#     - enforce: true
-#       parameters: '{"allowedEgressFqdns": ["my-jira.example.com"], "enforcedProjects": []}'

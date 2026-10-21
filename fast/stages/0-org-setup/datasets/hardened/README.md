@@ -145,8 +145,6 @@ In that case, the controls placed in the `organization/scc-sha-custom-modules` f
 | `storage.uniformBucketLevelAccess` | Enforce the enablement of uniform bucket-level access to Cloud Storage buckets. | **CIS for GCP 3.0**: 5.2<br>**CIS Controls 8.0**: 3.3<br>**PCI-DSS 4.0**: 1.3.1<br>**NIST 800-53 R5**: AC-3, AC-5, AC-6, MP-2<br>**NIST Cybersecurity Framework 1.0**: PR-AC-4<br>**ISO-2700-1 v2022**: A.5.10, A.5.15, A.8.3, A.8.4<br>**SOC2 v2017**: CC5.2.3, CC6.1.3, CC6.1.7<br>**HIPAA**: 164.308(a)(3)(i), 164.308(a)(3)(ii), 164.312(a)(1)<br>**Cloud Controls Matrix 4**: DSP-17 |
 | `vertexai.configurableComputerUseToolSafetyPolicies` | Prevent disabling computer use tool safety policies in Vertex AI generative AI APIs. |  |
 
-Additional AI controls are provided commented out, as their values depend on each organization: `vertexai.allowedModels`, `vertexai.disableGenAIGoogleSearchGrounding` and `vertexai.genAIGroundingSources` in `vertexai.yaml`, `discoveryengine.managed.allowedDataSources` and `discoveryengine.managed.allowedEgressFqdns` in `discoveryengine.yaml`. The two `discoveryengine.managed` allowlists are applied automatically to data connectors in VPC-SC protected projects, so Gemini Enterprise connectors in those projects are blocked until the allowlists are populated.
-
 #### Custom Constraints
 
 | Constraint | Description | Compliance Mapping |
