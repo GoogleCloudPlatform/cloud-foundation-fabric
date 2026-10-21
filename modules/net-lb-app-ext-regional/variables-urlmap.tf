@@ -115,6 +115,18 @@ variable "urlmap_config" {
         response_code = optional(string)
         strip_query   = optional(bool)
       }))
+      header_action = optional(object({
+        request_add = optional(map(object({
+          value   = string
+          replace = optional(bool, true)
+        })))
+        request_remove = optional(list(string))
+        response_add = optional(map(object({
+          value   = string
+          replace = optional(bool, true)
+        })))
+        response_remove = optional(list(string))
+      }))
       path_rules = optional(list(object({
         paths   = list(string)
         service = optional(string)
@@ -232,8 +244,8 @@ variable "urlmap_config" {
             allow_credentials    = optional(bool)
             allow_headers        = optional(list(string))
             allow_methods        = optional(list(string))
-            allow_origin_regexes = list(string)
-            allow_origins        = list(string)
+            allow_origin_regexes = optional(list(string))
+            allow_origins        = optional(list(string))
             disabled             = optional(bool)
             expose_headers       = optional(list(string))
             max_age              = optional(string)
