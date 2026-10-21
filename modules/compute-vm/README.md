@@ -364,7 +364,7 @@ module "vm-disk-options-example" {
   project_id   = var.project_id
   zone         = "${var.region}-c"
   name         = "test"
-  machine_type = "c4d-standard-2"
+  machine_type = "n4-standard-2"
   network_interfaces = [
     {
       network    = var.vpc.self_link
@@ -643,7 +643,7 @@ module "vm-psc-interface" {
 
 ### Metadata
 
-You can define labels and custom metadata values. Metadata can be leveraged, for example, to define a custom startup script.
+You can define labels and custom metadata values. Labels are applied to the instance and to its boot and attached disks. Metadata can be leveraged, for example, to define a custom startup script.
 
 ```hcl
 module "vm-metadata-example" {

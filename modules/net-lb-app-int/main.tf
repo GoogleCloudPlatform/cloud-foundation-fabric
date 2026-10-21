@@ -132,7 +132,7 @@ resource "google_compute_region_target_http_proxy" "default" {
   count       = var.protocol == "HTTPS" ? 0 : 1
   project     = local.project_id
   region      = local.region
-  name        = coalesce(var.https_proxy_config.name, var.name)
+  name        = coalesce(var.http_proxy_config.name, var.name)
   description = var.http_proxy_config.description
   url_map     = google_compute_region_url_map.default.id
 }
