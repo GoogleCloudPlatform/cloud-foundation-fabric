@@ -114,6 +114,18 @@ variable "urlmap_config" {
         response_code = optional(string)
         strip_query   = optional(bool)
       }))
+      header_action = optional(object({
+        request_add = optional(map(object({
+          value   = string
+          replace = optional(bool, true)
+        })))
+        request_remove = optional(list(string))
+        response_add = optional(map(object({
+          value   = string
+          replace = optional(bool, true)
+        })))
+        response_remove = optional(list(string))
+      }))
       path_rules = optional(list(object({
         paths   = list(string)
         service = optional(string)
