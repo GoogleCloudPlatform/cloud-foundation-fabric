@@ -14,6 +14,13 @@
 
 values:
   module.vm-metadata-example.google_compute_instance.default[0]:
+    boot_disk:
+      - initialize_params:
+          - labels:
+              disk_name: boot
+              disk_type: pd-balanced
+              env: dev
+              system: crm
     metadata:
       startup-script: |
         #! /bin/bash
