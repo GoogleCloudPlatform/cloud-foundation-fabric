@@ -29,8 +29,7 @@ values:
     port_range: null
     project: project-id
     service_directory_registrations:
-    - namespace: null
-      service_directory_region: europe-west8
+    - service_directory_region: europe-west8
     source_ip_ranges: null
     target: all-apis
 
