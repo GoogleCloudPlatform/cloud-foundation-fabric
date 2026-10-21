@@ -109,7 +109,15 @@
             "required": ["psc_service_attachment_link"],
             "properties": {
               "psc_service_attachment_link": { "type": "string" },
-              "global_access": { "type": "boolean" }
+              "global_access": { "type": "boolean" },
+              "service_directory_registration": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "namespace": { "type": "string" },
+                  "region": { "type": "string" }
+                }
+              }
             }
           }
         }

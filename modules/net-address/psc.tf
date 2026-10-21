@@ -99,6 +99,25 @@ resource "google_compute_global_forwarding_rule" "psc_consumer" {
   # forwarding rules. This parameter is included for potential future
   # compatibility.
   allow_psc_global_access = each.value.service_attachment.global_access
+  dynamic "service_directory_registrations" {
+    for_each = (
+      each.value.service_attachment.service_directory_registration == null
+      ? []
+      : [each.value.service_attachment.service_directory_registration]
+    )
+    content {
+      namespace = service_directory_registrations.value.namespace
+      service_directory_region = (
+        service_directory_registrations.value.region == null
+        ? null
+        : lookup(
+          local.ctx.locations,
+          service_directory_registrations.value.region,
+          service_directory_registrations.value.region
+        )
+      )
+    }
+  }
 }
 
 # regional PSC services

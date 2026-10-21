@@ -65,28 +65,29 @@ It currently implements the following:
 
 ### Defaults file
 
-Configurations defaults are stored in the `defaults.yaml` file in the selected dataset. Relocating the defaults file is good practice to avoid accidental changes from upstream, this is done via the `factories_config.default` variable attribute.
+Configurations defaults are stored in the `defaults.yaml` file in the selected dataset. Relocating the defaults file is good practice to avoid accidental changes from upstream, this is done via the `factories_config.paths.defaults` variable attribute.
 
-Once a suitable place has been found for the file, edit it to match the desired configuration. Several pieces of information coming from the previous stage (prefix, billing account, etc.) are pre-populated in the project defaults so they don't need to be explicitly set.
+Once a suitable place has been found for the file, edit it to match the desired configuration (including `output_files` to configure GCS and optional local output file generation). Several pieces of information coming from the previous stage (prefix, billing account, etc.) are pre-populated in the project defaults so they don't need to be explicitly set.
 
 ### Terraform variables configuration
 
-A tfvars file allows you to control paths for the project factories data and to enable local output files generation. This example shows how to override all the factory paths and how to enable output files.
+A tfvars file allows you to select the dataset and override paths for the factories data. This example shows how to configure `factories_config`:
 
 ```hcl
 factories_config = {
-  defaults              = "/some/path/data/defaults.yaml"
-  dns                   = "/some/path/data/dns/zones"
-  dns-response-policies = "/some/path/data/dns/response-policies"
-  firewall-policies     = "/some/path/data/firewall-policies"
-  folders               = "/some/path/data/folders"
-  interconnect          = "/some/path/data/interconnect"
-  ncc-hubs              = "/some/path/data/ncc-hubs"
-  nvas                  = "/some/path/data/nvas"
-  projects              = "/some/path/data/projects"
-  vpcs                  = "/some/path/data/vpcs"
+  dataset = "datasets/hub-and-spokes-peerings"
+  paths = {
+    defaults              = "/some/path/data/defaults.yaml"
+    dns                   = "/some/path/data/dns/zones"
+    dns_response_policies = "/some/path/data/dns/response-policies"
+    firewall_policies     = "/some/path/data/firewall-policies"
+    folders               = "/some/path/data/folders"
+    ncc_hubs              = "/some/path/data/ncc-hubs"
+    nvas                  = "/some/path/data/nvas"
+    projects              = "/some/path/data/projects"
+    vpcs                  = "/some/path/data/vpcs"
+  }
 }
-outputs_location = "~/fast-config"
 ```
 
 ### Linking FAST output files
@@ -205,7 +206,7 @@ The spoke VPCs have their own private zones for subdomains (e.g., `dev.test.`) a
 
 The factory also supports delegating public zones, which is useful for scenarios where a parent public zone is managed in one project, and you want to delegate a subdomain to a different project.
 
-To configure this, you first define the parent public zone. Then, for the delegated zone, you specify `delegation_config` pointing to the parent zone. This automatically creates the necessary `NS` (and `DS` records if you are using DNSSEC) records in the parent zone.
+To configure this, you first define the parent public zone and specify `delegations` pointing to the delegated child zone. This automatically creates the necessary `NS` (and `DS` records if you are using DNSSEC) records in the parent zone.
 
 Here's an example of how to set this up:
 
@@ -261,7 +262,7 @@ recordsets:
 In this example:
 - A public zone for `gcp.example.com.` is created in the `net-core-0` project.
 - A separate public zone for `dev.gcp.example.com.` is created in the `net-dev-0` project.
-- The `delegation_config` in the parent zone tells the factory to find the child zone named `pub-dev-gcp-example-com` in the `net-dev-0` project and create the necessary `NS` and `DS` records to make the delegation effective.
+- The `delegations` attribute in the parent zone tells the factory to find the child zone named `pub-dev-gcp-example-com` in the `net-dev-0` project and create the necessary `NS` and `DS` records to make the delegation effective.
 
 ### Firewall Policies
 
@@ -442,18 +443,19 @@ Internally created resources are mapped to context namespaces, and use specific 
 | [prefix](variables-fast.tf#L75) | Prefix used for resources that need unique names. Use a maximum of 9 chars for organizations, and 11 chars for tenants. | <code>string</code> | ✓ |  |
 | [context](variables.tf#L17) | Context-specific interpolations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [custom_roles](variables-fast.tf#L25) | Custom roles defined at the org level, in key => id format. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [factories_config](variables.tf#L41) | Configuration for the resource factories or external data. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [factories_config](variables.tf#L42) | Configuration for the resource factories or external data. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [folder_ids](variables-fast.tf#L33) | Folders created in the bootstrap stage. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam_principals](variables-fast.tf#L41) | IAM-format principals. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 | [kms_keys](variables-fast.tf#L50) | KMS key ids. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 | [perimeters](variables-fast.tf#L67) | Optional VPC-SC perimeter ids. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 | [project_ids](variables-fast.tf#L85) | Projects created in the bootstrap stage. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [service_accounts](variables-fast.tf#L93) | Service accounts created in the bootstrap stage. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [storage_buckets](variables-fast.tf#L101) | Storage buckets created in the bootstrap stage. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [tag_keys](variables-fast.tf#L109) | FAST-managed resource manager tag keys. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [tag_values](variables-fast.tf#L117) | FAST-managed resource manager tag values. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [tag_vars](variables-fast.tf#L125) | FAST-managed resource manager tag key namespaced names. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [universe](variables-fast.tf#L136) | GCP universe where to deploy projects. The prefix will be prepended to the project id. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [security_profile_groups](variables-fast.tf#L93) | Security profile group ids. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [service_accounts](variables-fast.tf#L101) | Service accounts created in the bootstrap stage. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [storage_buckets](variables-fast.tf#L109) | Storage buckets created in the bootstrap stage. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [tag_keys](variables-fast.tf#L117) | FAST-managed resource manager tag keys. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [tag_values](variables-fast.tf#L125) | FAST-managed resource manager tag values. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [tag_vars](variables-fast.tf#L133) | FAST-managed resource manager tag key namespaced names. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [universe](variables-fast.tf#L144) | GCP universe where to deploy projects. The prefix will be prepended to the project id. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 
 ## Outputs
 

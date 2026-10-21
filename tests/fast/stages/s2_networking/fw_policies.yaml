@@ -19,6 +19,41 @@ values:
     name: global-policy
     project: folders/12345
     timeouts: null
+  module.firewall-policies["global-policy"].google_compute_network_firewall_policy_rule.net_global["ingress/inspect"]:
+    action: apply_security_profile_group
+    deletion_policy: DELETE
+    description: null
+    direction: INGRESS
+    disabled: false
+    enable_logging: null
+    firewall_policy: global-policy
+    match:
+    - dest_address_groups: null
+      dest_fqdns: null
+      dest_ip_ranges: null
+      dest_region_codes: null
+      dest_threat_intelligences: null
+      layer4_configs:
+      - ip_protocol: tcp
+        ports:
+        - '80'
+      src_address_groups: null
+      src_fqdns: null
+      src_ip_ranges:
+      - 10.0.0.0/8
+      src_networks: null
+      src_region_codes: null
+      src_secure_tags: []
+      src_threat_intelligences: null
+    priority: 1000
+    project: folders/12345
+    rule_name: inspect
+    security_profile_group: //networksecurity.googleapis.com/organizations/123456789012/locations/global/securityProfileGroups/ngfw-0
+    target_forwarding_rules: null
+    target_secure_tags: []
+    target_service_accounts: null
+    timeouts: null
+    tls_inspect: null
   module.firewall-policies["global-policy"].google_tags_location_tag_binding.binding["foo"]:
     deletion_policy: DELETE
     location: global
@@ -42,10 +77,11 @@ values:
 
 counts:
   google_compute_network_firewall_policy: 1
+  google_compute_network_firewall_policy_rule: 1
   google_compute_region_network_firewall_policy: 1
   google_tags_location_tag_binding: 1
   modules: 3
-  resources: 5
+  resources: 6
   terraform_data: 2
 
 outputs:

@@ -18,6 +18,12 @@
 
 # yaml-language-server: $schema=../../../../schemas/org-policies.schema.json
 
+ainotebooks.accessMode:
+  rules:
+    - allow:
+        values:
+          - "service-account"
+
 ainotebooks.disableFileDownloads:
   rules:
     - enforce: true

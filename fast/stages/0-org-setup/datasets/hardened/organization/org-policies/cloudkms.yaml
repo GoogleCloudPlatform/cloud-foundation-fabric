@@ -26,6 +26,10 @@ custom.cloudkmsAllowedProtectionLevel:
   rules:
     - enforce: true
 
+custom.cloudkmsAllowedPurpose:
+  rules:
+    - enforce: true
+
 custom.cloudkmsAllowedRotationPeriod:
   rules:
     - enforce: true

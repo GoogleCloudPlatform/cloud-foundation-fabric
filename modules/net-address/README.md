@@ -143,7 +143,7 @@ module "addresses" {
 # tftest modules=2 resources=3 fixtures=fixtures/cloudsql-instance.tf inventory=psc-service-attachment.yaml e2e
 ```
 
-Specify `vpc-sc` or `all-apis` in `psc_service_attachment_link` to targe Google APIs.
+Specify `vpc-sc` or `all-apis` in `psc_service_attachment_link` to target Google APIs, and optionally configure `service_directory_registration`.
 
 ```hcl
 module "addresses" {
@@ -155,6 +155,9 @@ module "addresses" {
       network = var.vpc.self_link
       service_attachment = {
         psc_service_attachment_link = "all-apis"
+        service_directory_registration = {
+          region = var.region
+        }
       }
     }
   }

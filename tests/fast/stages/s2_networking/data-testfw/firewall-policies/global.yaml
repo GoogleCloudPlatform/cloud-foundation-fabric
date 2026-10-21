@@ -15,5 +15,15 @@
 name: global-policy
 parent_id: folders/12345
 region: global
+ingress_rules:
+  inspect:
+    priority: 1000
+    action: apply_security_profile_group
+    security_profile_group: $security_profile_groups:ngfw-0
+    match:
+      source_ranges: ["10.0.0.0/8"]
+      layer4_configs:
+        - protocol: tcp
+          ports: ["80"]
 tag_bindings:
   foo: tagValues/12345
