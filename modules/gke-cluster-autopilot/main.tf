@@ -40,6 +40,7 @@ resource "google_container_cluster" "cluster" {
   min_master_version                       = var.min_master_version
   network                                  = lookup(local.ctx.networks, var.vpc_config.network, var.vpc_config.network)
   subnetwork                               = lookup(local.ctx.subnets, var.vpc_config.subnetwork, var.vpc_config.subnetwork)
+  disable_l4_lb_firewall_reconciliation    = var.vpc_config.disable_l4_lb_firewall_reconciliation
   resource_labels                          = var.labels
   enable_multi_networking                  = var.enable_features.multi_networking
   enable_l4_ilb_subsetting                 = var.enable_features.l4_ilb_subsetting
