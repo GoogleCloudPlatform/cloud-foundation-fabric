@@ -75,7 +75,7 @@ resource "google_compute_region_target_http_proxy" "default" {
   region                      = local.region
   name                        = coalesce(var.http_proxy_config.name, var.name)
   description                 = var.http_proxy_config.description
-  http_keep_alive_timeout_sec = var.https_proxy_config.http_keepalive_timeout
+  http_keep_alive_timeout_sec = var.http_proxy_config.http_keepalive_timeout
   url_map                     = google_compute_region_url_map.default.id
 }
 
