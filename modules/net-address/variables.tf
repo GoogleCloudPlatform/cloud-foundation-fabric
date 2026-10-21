@@ -134,6 +134,10 @@ variable "psc_addresses" {
     service_attachment = optional(object({
       psc_service_attachment_link = string
       global_access               = optional(bool)
+      service_directory_registration = optional(object({
+        namespace = optional(string)
+        region    = optional(string)
+      }))
     }))
   }))
   default = {}
