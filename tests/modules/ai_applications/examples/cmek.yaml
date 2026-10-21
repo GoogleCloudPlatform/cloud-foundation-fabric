@@ -13,10 +13,17 @@
 # limitations under the License.
 
 values:
-  module.ai-applications.google_discovery_engine_cmek_config.default[0]:
+  module.ai-applications.google_discovery_engine_cmek_config.default["eu"]:
     cmek_config_id: my-search-app
     kms_key: projects/my-kms-project/locations/eu/keyRings/my-keyring/cryptoKeys/my-key
     location: eu
+    project: project-id
+    set_default: true
+    single_region_keys: []
+  module.ai-applications.google_discovery_engine_cmek_config.default["us"]:
+    cmek_config_id: my-search-app
+    kms_key: projects/my-kms-project/locations/us/keyRings/my-keyring/cryptoKeys/my-key
+    location: us
     project: project-id
     set_default: true
     single_region_keys: []
@@ -33,8 +40,8 @@ values:
     project: project-id
 
 counts:
-  google_discovery_engine_cmek_config: 1
+  google_discovery_engine_cmek_config: 2
   google_discovery_engine_data_store: 1
   google_discovery_engine_search_engine: 1
   modules: 1
-  resources: 3
+  resources: 4
