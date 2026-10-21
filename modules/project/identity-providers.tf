@@ -38,6 +38,10 @@ resource "google_iam_workload_identity_pool" "default" {
   display_name              = each.value.display_name
   description               = each.value.description
   disabled                  = each.value.disabled
+  depends_on = [
+    google_org_policy_policy.default,
+    google_project_service.project_services
+  ]
 }
 
 resource "google_iam_workload_identity_pool_provider" "default" {

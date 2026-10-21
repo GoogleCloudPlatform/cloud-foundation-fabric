@@ -25,6 +25,9 @@ context = {
   project_ids = {
     test = "foo-test-0"
   }
+  security_profile_groups = {
+    test = "//networksecurity.googleapis.com/organizations/1234567890/locations/global/securityProfileGroups/test"
+  }
   tag_values = {
     "test" = "tagValues/1234567890"
   }
@@ -38,6 +41,8 @@ attachments = {
 egress_rules = {
   smtp = {
     priority                = 900
+    action                  = "apply_security_profile_group"
+    security_profile_group  = "$security_profile_groups:test"
     target_service_accounts = ["$iam_principals:test"]
     match = {
       destination_ranges = ["$cidr_ranges_sets:rfc1918", "10.0.0.1/32", "$cidr_ranges:test", "10.0.0.0/8"]
