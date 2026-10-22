@@ -18,7 +18,6 @@ This diagram shows the resources used by this add-on, and their relationships wi
   - [Using add-on resources from the networking stage](#using-add-on-resources-from-the-networking-stage)
 - [Files](#files)
 - [Variables](#variables)
-- [Outputs](#outputs)
 <!-- END TOC -->
 
 ## Design overview and choices
@@ -157,6 +156,11 @@ certificate_authorities = {
   # if CA pools defined in the security stage are used this is optional
   ngfw-0 = {
     location = "europe-west8"
+    ca_pool_config = {
+      create_pool = {
+        enterprise_tier = true
+      }
+    }
     ca_configs = {
       ca-0 = {
         deletion_protection = false
@@ -164,6 +168,10 @@ certificate_authorities = {
           common_name  = "example.org"
           organization = "Test Organization"
         }
+        # optional: sign this CA as a subordinate of a 2-security or local Root CA
+        # subordinate_config = {
+        #   root_ca_id = "$ca_ids:prod-ca-0-prod-ca-0-0"
+        # }
       }
     }
   }
@@ -275,24 +283,19 @@ Security profiles group defined here are exported via output variable file, and 
 |---|---|:---:|:---:|:---:|:---:|
 | [automation](variables-fast.tf#L29) | Automation resources created by the bootstrap stage. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>0-bootstrap</code> |
 | [ngfw_config](variables.tf#L136) | Configuration for NGFW Enterprise endpoints. Billing project defaults to the automation project. Network and TLS inspection policy ids support interpolation. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |  |
-| [organization](variables-fast.tf#L57) | Organization details. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>0-globals</code> |
+| [organization](variables-fast.tf#L61) | Organization details. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>0-globals</code> |
 | [project_id](variables.tf#L157) | Project where the network security resources will be created. | <code>string</code> | ✓ |  |  |
 | [_fast_debug](variables-fast.tf#L20) | Internal FAST variable used for testing and debugging. Do not use. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |  |
-| [ca_pools](variables-fast.tf#L37) | Certificate authority pools. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> | <code>2-security</code> |
+| [ca_ids](variables-fast.tf#L37) | Certificate authority ids. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>2-security</code> |
+| [ca_pools](variables-fast.tf#L45) | Certificate authority pool ids. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>2-security</code> |
 | [certificate_authorities](variables.tf#L17) | Certificate Authority Service pool and CAs. If host project ids is null identical pools and CAs are created in every host project. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |  |
 | [context](variables.tf#L102) | Context-specific interpolations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |  |
 | [enable_services](variables.tf#L120) | Configure project by enabling services required for this add-on. | <code>bool</code> |  | <code>true</code> |  |
-| [host_project_ids](variables-fast.tf#L49) | Networking stage host project id aliases. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>2-networking</code> |
+| [host_project_ids](variables-fast.tf#L53) | Networking stage host project id aliases. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>2-networking</code> |
 | [names](variables.tf#L127) | Configuration for names used for output files. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |  |
 | [outputs_location](variables.tf#L151) | Path where providers and tfvars files for the following stages are written. Leave empty to disable. | <code>string</code> |  | <code>null</code> |  |
 | [security_profiles](variables.tf#L163) | Security profile groups for Layer 7 inspection. Null environment list means all environments. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#8230;&#125;</code> |  |
 | [tls_inspection_policies](variables.tf#L246) | TLS inspection policies configuration. CA pools, trust configs and host project ids support interpolation. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |  |
 | [trust_configs](variables.tf#L288) | Certificate Manager trust configurations for TLS inspection policies. Project ids and region can reference keys in the relevant FAST variables. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#8230;&#125;</code> |  |
-| [vpc_self_links](variables-fast.tf#L67) | VPC network self links. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>2-networking</code> |
-
-## Outputs
-
-| name | description | sensitive | consumers |
-|---|---|:---:|---|
-| [ca_chains](outputs.tf#L53) | Certificate Authority Service CA chains in PEM format. |  |  |
+| [vpc_self_links](variables-fast.tf#L71) | VPC network self links. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>2-networking</code> |
 <!-- END TFDOC -->

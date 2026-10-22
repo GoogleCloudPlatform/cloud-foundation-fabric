@@ -124,6 +124,42 @@ values:
     project: xxx-prod-net-landing-0
     timeouts: null
     tls_feature_profile: PROFILE_UNSPECIFIED
+  google_storage_bucket_object.ca_chains["ngfw-0-ca-0"]:
+    bucket: test
+    cache_control: null
+    content_disposition: null
+    content_encoding: null
+    content_language: null
+    contexts: []
+    customer_encryption: []
+    deletion_policy: DELETE
+    detect_md5hash: null
+    event_based_hold: null
+    force_empty_content_type: null
+    metadata: null
+    name: ca-chains/2-networking-ngfw/ngfw-0-ca-0.pem
+    retention: []
+    source: null
+    temporary_hold: null
+    timeouts: null
+  google_storage_bucket_object.ca_chains["ngfw-root-root-ca-0"]:
+    bucket: test
+    cache_control: null
+    content_disposition: null
+    content_encoding: null
+    content_language: null
+    contexts: []
+    customer_encryption: []
+    deletion_policy: DELETE
+    detect_md5hash: null
+    event_based_hold: null
+    force_empty_content_type: null
+    metadata: null
+    name: ca-chains/2-networking-ngfw/ngfw-root-root-ca-0.pem
+    retention: []
+    source: null
+    temporary_hold: null
+    timeouts: null
   google_storage_bucket_object.tfvars:
     bucket: test
     cache_control: null
@@ -142,7 +178,7 @@ values:
     source: null
     temporary_hold: null
     timeouts: null
-  module.cas["ngfw-0"].google_privateca_ca_pool.default[0]:
+  module.cas-subordinate["ngfw-0"].google_privateca_ca_pool.default[0]:
     deletion_policy: DELETE
     effective_labels:
       goog-terraform-provisioned: 'true'
@@ -157,7 +193,7 @@ values:
       goog-terraform-provisioned: 'true'
     tier: ENTERPRISE
     timeouts: null
-  module.cas["ngfw-0"].google_privateca_certificate_authority.default["ca-0"]:
+  module.cas-subordinate["ngfw-0"].google_privateca_certificate_authority.default["ca-0"]:
     certificate_authority_id: ca-0
     config:
     - subject_config:
@@ -224,6 +260,87 @@ values:
     timeouts: null
     type: SUBORDINATE
     user_defined_access_urls: []
+  module.cas["ngfw-root"].google_privateca_ca_pool.default[0]:
+    deletion_policy: DELETE
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    encryption_spec: []
+    issuance_policy: []
+    labels: null
+    location: europe-west8
+    name: ngfw-root
+    project: xxx-prod-net-landing-0
+    publishing_options: []
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    tier: DEVOPS
+    timeouts: null
+  module.cas["ngfw-root"].google_privateca_certificate_authority.default["root-ca-0"]:
+    certificate_authority_id: root-ca-0
+    config:
+    - subject_config:
+      - subject:
+        - common_name: test.example.com
+          country_code: null
+          locality: null
+          organization: Test Example
+          organizational_unit: null
+          postal_code: null
+          province: null
+          street_address: null
+        subject_alt_name: []
+      subject_key_id: []
+      x509_config:
+      - additional_extensions: []
+        aia_ocsp_servers: null
+        ca_options:
+        - is_ca: true
+          max_issuer_path_length: null
+          non_ca: null
+          zero_max_issuer_path_length: null
+        key_usage:
+        - base_key_usage:
+          - cert_sign: true
+            content_commitment: false
+            crl_sign: true
+            data_encipherment: false
+            decipher_only: false
+            digital_signature: false
+            encipher_only: false
+            key_agreement: false
+            key_encipherment: true
+          extended_key_usage:
+          - client_auth: false
+            code_signing: false
+            email_protection: false
+            ocsp_signing: false
+            server_auth: true
+            time_stamping: false
+          unknown_extended_key_usages: []
+        name_constraints: []
+        policy_ids: []
+    deletion_policy: DELETE
+    deletion_protection: false
+    desired_state: null
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    gcs_bucket: null
+    ignore_active_certificates_on_deletion: false
+    key_spec:
+    - algorithm: RSA_PKCS1_2048_SHA256
+      cloud_kms_key_version: null
+    labels: null
+    lifetime: 315360000s
+    location: europe-west8
+    pem_ca_certificate: null
+    project: xxx-prod-net-landing-0
+    skip_grace_period: true
+    subordinate_config: []
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+    type: SELF_SIGNED
+    user_defined_access_urls: []
 
 counts:
   google_certificate_manager_trust_config: 1
@@ -232,11 +349,10 @@ counts:
   google_network_security_security_profile: 2
   google_network_security_security_profile_group: 1
   google_network_security_tls_inspection_policy: 1
-  google_privateca_ca_pool: 1
-  google_privateca_certificate_authority: 1
-  google_storage_bucket_object: 1
-  modules: 1
-  resources: 10
+  google_privateca_ca_pool: 2
+  google_privateca_certificate_authority: 2
+  google_storage_bucket_object: 3
+  modules: 2
+  resources: 14
 
-outputs:
-  ca_chains: __missing__
+outputs: {}
