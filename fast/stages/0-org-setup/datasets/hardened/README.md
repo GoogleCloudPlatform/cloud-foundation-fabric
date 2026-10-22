@@ -128,6 +128,7 @@ In that case, the controls placed in the `organization/scc-sha-custom-modules` f
 | `container.managed.enableShieldedNodes` | Enforce that GKE nodes is configured with shielded GKE nodes | **CIS for GKE 1.5**: 5.5.5 |
 | `container.managed.enableWorkloadIdentityFederation` | Enforce that GKE clusters are enabled with Workload Identity  | **CIS for GKE 1.5**: 5.2.2<br>**PCI-DSS 4.0**: 7.2.2 |
 | `container.restrictNoncompliantDiagnosticDataAccess` | Restrict non-compliant diagnostic data access on GKE clusters. | **IL4**<br>**ITAR**<br>**Assured Workloads Data Boundary** |
+| `discoveryengine.managed.disableCustomMcpServerConnector` | Prevent the creation of Gemini Enterprise data connectors that use a custom MCP server as data source. |  |
 | `essentialcontacts.allowedContactDomains` | Restrict essential contact domains to an authorized list. |  |
 | `firestore.managed.disableEnhancedTextSearch` | Disable enhanced text search in Cloud Firestore. | **FedRAMP 20x** |
 | `gcp.resourceLocations` | Restrict resource locations. |  |
@@ -171,6 +172,7 @@ In that case, the controls placed in the `organization/scc-sha-custom-modules` f
 | `vertexai.allowOnlyAllCompliantAPIs` | Restrict Vertex AI usage to FedRAMP High, IL4, and CJIS compliant APIs. | **FedRAMP 20x** |
 | `vertexai.allowOnlyIL5CompliantAPIs` | Restrict Vertex AI usage to DoD Impact Level 5 (IL5) compliant APIs. | **IL5**<br>**Assured Workloads Data Boundary** |
 | `vertexai.allowOnlyITARCompliantAPIs` | Restrict Vertex AI usage to ITAR compliant APIs. | **ITAR** |
+| `vertexai.configurableComputerUseToolSafetyPolicies` | Prevent disabling computer use tool safety policies in Vertex AI generative AI APIs. |  |
 
 #### Custom Constraints
 

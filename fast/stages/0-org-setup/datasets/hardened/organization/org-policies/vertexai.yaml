@@ -107,3 +107,8 @@ custom.vertexaiWorkbenchRequireVtpm:
 # vertexai.allowOnlyITARCompliantAPIs:
 #   rules:
 #     - enforce: true
+
+vertexai.configurableComputerUseToolSafetyPolicies:
+  rules:
+    - deny:
+        all: true

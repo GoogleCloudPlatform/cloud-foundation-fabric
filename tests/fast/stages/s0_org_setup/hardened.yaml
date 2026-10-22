@@ -7542,6 +7542,21 @@ values:
         parameters: null
         values: []
     timeouts: null
+  module.organization-iam[0].google_org_policy_policy.default["discoveryengine.managed.disableCustomMcpServerConnector"]:
+    dry_run_spec: []
+    name: organizations/1234567890/policies/discoveryengine.managed.disableCustomMcpServerConnector
+    parent: organizations/1234567890
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+    timeouts: null
   module.organization-iam[0].google_org_policy_policy.default["essentialcontacts.allowedContactDomains"]:
     dry_run_spec: []
     name: organizations/1234567890/policies/essentialcontacts.allowedContactDomains
@@ -8220,6 +8235,21 @@ values:
         condition: []
         deny_all: null
         enforce: 'TRUE'
+        parameters: null
+        values: []
+    timeouts: null
+  module.organization-iam[0].google_org_policy_policy.default["vertexai.configurableComputerUseToolSafetyPolicies"]:
+    dry_run_spec: []
+    name: organizations/1234567890/policies/vertexai.configurableComputerUseToolSafetyPolicies
+    parent: organizations/1234567890
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: 'TRUE'
+        enforce: null
         parameters: null
         values: []
     timeouts: null
@@ -10171,7 +10201,7 @@ counts:
   google_logging_project_settings: 3
   google_monitoring_alert_policy: 10
   google_org_policy_custom_constraint: 136
-  google_org_policy_policy: 204
+  google_org_policy_policy: 206
   google_organization_iam_audit_config: 1
   google_organization_iam_binding: 40
   google_organization_iam_custom_role: 14
@@ -10196,7 +10226,7 @@ counts:
   google_tags_tag_value_iam_binding: 4
   local_file: 9
   modules: 54
-  resources: 755
+  resources: 757
   terraform_data: 4
 
 outputs:
