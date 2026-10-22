@@ -263,6 +263,8 @@ terraform apply
 
 Security profiles group defined here are exported via output variable file, and can be consumed in the firewall policies defined in the networking stage.
 
+When removing a `url_filtering_profile` from an existing entry in `security_profiles`, Terraform schedules destruction of the `URL_FILTERING` security profile before the in-place update of the parent `google_network_security_security_profile_group`, which the API rejects with `Error 400: Resource is already being used`. Detach the profile from the security profile group first with `gcloud network-security security-profile-groups update <NAME> --location=global --organization=<ORG_ID> --clear-url-filtering-profile` and then run `terraform apply`.
+
 <!-- TFDOC OPTS files:1 show_extra:1 exclude:2-networking-ngfw-providers.tf -->
 <!-- BEGIN TFDOC -->
 ## Files

@@ -72,6 +72,17 @@ security_profiles = {
         }
       }
     }
+    url_filtering_profile = {
+      allow-example = {
+        action   = "ALLOW"
+        priority = 100
+        urls     = ["example.com"]
+      }
+      deny-all = {
+        action   = "DENY"
+        priority = 200
+      }
+    }
   }
 }
 tls_inspection_policies = {
