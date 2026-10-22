@@ -155,7 +155,7 @@ values:
     publishing_options: []
     terraform_labels:
       goog-terraform-provisioned: 'true'
-    tier: DEVOPS
+    tier: ENTERPRISE
     timeouts: null
   module.cas["ngfw-0"].google_privateca_certificate_authority.default["ca-0"]:
     certificate_authority_id: ca-0
@@ -217,11 +217,12 @@ values:
     pem_ca_certificate: null
     project: xxx-prod-net-landing-0
     skip_grace_period: true
-    subordinate_config: []
+    subordinate_config:
+    - certificate_authority: projects/xxx-prod-sec-core-0/locations/europe-west8/caPools/root-pool/certificateAuthorities/root-ca-0
     terraform_labels:
       goog-terraform-provisioned: 'true'
     timeouts: null
-    type: SELF_SIGNED
+    type: SUBORDINATE
     user_defined_access_urls: []
 
 counts:
@@ -237,4 +238,5 @@ counts:
   modules: 1
   resources: 10
 
-outputs: {}
+outputs:
+  ca_chains: __missing__
