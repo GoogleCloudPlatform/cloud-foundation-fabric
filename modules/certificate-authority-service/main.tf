@@ -67,7 +67,7 @@ resource "google_privateca_certificate_authority" "default" {
   project                  = local.project_id
   location                 = local.location
   type = (
-    each.value.is_self_signed == true
+    each.value.is_self_signed == true && each.value.subordinate_config == null
     ? "SELF_SIGNED"
     : "SUBORDINATE"
   )

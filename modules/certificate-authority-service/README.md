@@ -58,11 +58,19 @@ module "cas" {
         server_auth = true
       }
     }
-    root_ca_2 = {
+    sub_ca_1 = {
       subject = {
         common_name  = "test2.example.com"
         organization = "Example"
       }
+      subordinate_config = {
+        root_ca_id = "$ca_ids:root-ca"
+      }
+    }
+  }
+  context = {
+    ca_ids = {
+      root-ca = "projects/my-project/locations/europe-west1/caPools/root-ca/certificateAuthorities/root-ca-1"
     }
   }
 }

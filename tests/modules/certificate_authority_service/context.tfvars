@@ -49,7 +49,6 @@ ca_configs = {
     }
   }
   sub_ca_1 = {
-    is_self_signed = false
     subordinate_config = {
       root_ca_id = "$ca_ids:root-ca"
     }

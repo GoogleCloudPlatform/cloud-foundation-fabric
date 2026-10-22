@@ -17,10 +17,18 @@
 # tfdoc:file:description TLS inspection policies and supporting resources.
 
 locals {
+  _cas_is_subordinate = {
+    for k, v in var.certificate_authorities : k => anytrue([
+      for ck, cv in v.ca_configs : (
+        cv.is_self_signed == false || cv.subordinate_config != null
+      )
+    ])
+  }
+  _cas_modules = merge(module.cas, module.cas-subordinate)
   ca_pool_ids = merge(
     local.ctx_lookup.ca_pools,
-    { for k, v in module.cas : k => v.ca_pool_id },
-    { for k, v in module.cas : "$ca_pools:${k}" => v.ca_pool_id }
+    { for k, v in local._cas_modules : k => v.ca_pool_id },
+    { for k, v in local._cas_modules : "$ca_pools:${k}" => v.ca_pool_id }
   )
   trust_config_ids = {
     for k, v in google_certificate_manager_trust_config.default : k => v.id
@@ -28,8 +36,11 @@ locals {
 }
 
 module "cas" {
-  source     = "../../../modules/certificate-authority-service"
-  for_each   = var.certificate_authorities
+  source = "../../../modules/certificate-authority-service"
+  for_each = {
+    for k, v in var.certificate_authorities :
+    k => v if !local._cas_is_subordinate[k]
+  }
   project_id = local.project_id
   ca_configs = each.value.ca_configs
   ca_pool_config = {
@@ -65,6 +76,63 @@ module "cas" {
   )
   iam_by_principals = each.value.iam_by_principals
   location          = each.value.location
+}
+
+module "cas-subordinate" {
+  source = "../../../modules/certificate-authority-service"
+  for_each = {
+    for k, v in var.certificate_authorities :
+    k => v if local._cas_is_subordinate[k]
+  }
+  project_id = local.project_id
+  ca_configs = each.value.ca_configs
+  ca_pool_config = {
+    create_pool = (
+      try(each.value.ca_pool_config.use_pool.id, null) != null
+      ? null
+      : {
+        enterprise_tier = try(
+          each.value.ca_pool_config.create_pool.enterprise_tier, false
+        )
+        name = coalesce(
+          try(each.value.ca_pool_config.create_pool.name, null),
+          each.key
+        )
+        publishing_options = try(
+          each.value.ca_pool_config.create_pool.publishing_options, null
+        )
+      }
+    )
+    use_pool = try(each.value.ca_pool_config.use_pool, null)
+  }
+  context = merge(local.ctx, {
+    ca_ids = merge(
+      local.ctx.ca_ids,
+      merge([
+        for pk, pv in module.cas : {
+          for ck, cv in pv.ca_ids : "${pk}-${ck}" => cv
+        }
+      ]...)
+    )
+    ca_pools = merge(
+      local.ctx.ca_pools,
+      { for k, v in module.cas : k => v.ca_pool_id }
+    )
+  })
+  iam          = each.value.iam
+  iam_bindings = each.value.iam_bindings
+  iam_bindings_additive = merge(
+    each.value.iam_bindings_additive,
+    var._fast_debug.skip_datasources == true ? {} : {
+      nsec_certificate_manager = {
+        member = module.project[0].service_agents["networksecurity"].iam_email
+        role   = "roles/privateca.certificateManager"
+      }
+    }
+  )
+  iam_by_principals = each.value.iam_by_principals
+  location          = each.value.location
+  depends_on        = [module.cas]
 }
 
 resource "google_certificate_manager_trust_config" "default" {
