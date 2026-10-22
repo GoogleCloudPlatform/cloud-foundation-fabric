@@ -1,4 +1,7 @@
 context = {
+  ca_ids = {
+    root-ca = "projects/test-0/locations/europe-west8/caPools/root-pool/certificateAuthorities/root-ca"
+  }
   condition_vars = {
     organization = {
       id = 1234567890
@@ -43,6 +46,12 @@ ca_configs = {
     gcs_bucket = "$storage_buckets:test"
     key_spec = {
       kms_key_id = "$kms_keys:prod-default"
+    }
+  }
+  sub_ca_1 = {
+    is_self_signed = false
+    subordinate_config = {
+      root_ca_id = "$ca_ids:root-ca"
     }
   }
 }

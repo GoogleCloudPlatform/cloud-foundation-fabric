@@ -15,11 +15,15 @@
  */
 
 locals {
+  ca_chains = {
+    for k, v in module.cas : k => v.ca_chains
+  }
   security_profile_group_ids = {
     for k, v in google_network_security_security_profile_group.default :
     k => "//networksecurity.googleapis.com/${v.id}"
   }
   tfvars = {
+    ca_chains = local.ca_chains
     ngfw = {
       associations = {
         for k, v in google_network_security_firewall_endpoint_association.default :
@@ -44,4 +48,9 @@ resource "google_storage_bucket_object" "tfvars" {
   bucket  = var.automation.outputs_bucket
   name    = "tfvars/${var.names.output_files_prefix}.auto.tfvars.json"
   content = jsonencode(local.tfvars)
+}
+
+output "ca_chains" {
+  description = "Certificate Authority Service CA chains in PEM format."
+  value       = local.ca_chains
 }

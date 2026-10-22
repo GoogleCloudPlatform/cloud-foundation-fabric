@@ -34,7 +34,7 @@ variable "automation" {
   })
 }
 
-variable "certificate_authority_pools" {
+variable "ca_pools" {
   # tfdoc:variable:source 2-security
   description = "Certificate authority pools."
   type = map(object({
