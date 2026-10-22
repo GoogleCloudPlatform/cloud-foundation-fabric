@@ -74,6 +74,10 @@ container.managed.enableWorkloadIdentityFederation:
   rules:
     - enforce: true
 
+# container.restrictNoncompliantDiagnosticDataAccess:
+#   rules:
+#     - enforce: true
+
 custom.gkeAllowedNodePoolImages:
   rules:
     - enforce: true
@@ -122,6 +126,10 @@ custom.gkeRequireIntraNodeVisibility:
   rules:
     - enforce: true
 
+# custom.gkeRequireMaintenanceWindow:
+#   rules:
+#     - enforce: true
+
 custom.gkeRequireMasterAuthorizedNetworks:
   rules:
     - enforce: true
@@ -137,6 +145,10 @@ custom.gkeRequireNodePoolAutoRepair:
 custom.gkeRequireNodePoolAutoUpgrade:
   rules:
     - enforce: true
+
+# custom.gkeRequireNodePoolAutoscaling:
+#   rules:
+#     - enforce: true
 
 custom.gkeRequireNodePoolCMEKEncryption:
   rules:
@@ -155,6 +167,10 @@ custom.gkeRequireRegionalClusters:
     - enforce: true
 
 custom.gkeRequireSecureBoot:
+  rules:
+    - enforce: true
+
+custom.gkeRequireSecurityPosture:
   rules:
     - enforce: true
 

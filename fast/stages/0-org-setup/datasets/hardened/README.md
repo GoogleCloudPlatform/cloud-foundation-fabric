@@ -64,6 +64,9 @@ In that case, the controls placed in the `organization/scc-sha-custom-modules` f
 | `ainotebooks.accessMode` | Restrict the access mode for new Vertex AI Workbench notebooks and instances. | **CIS Controls 8.0** |
 | `ainotebooks.disableFileDownloads` | Prevent file downloads on new Vertex AI Workbench instances. |  |
 | `ainotebooks.disableRootAccess` | Prevent root access on new Vertex AI Workbench user-managed notebooks and instances. |  |
+| `ainotebooks.disableTerminal` | Prevent terminal access on new Vertex AI Workbench instances. | **Cloud Controls Matrix 4**<br>**ISO-2700-1 v2022**<br>**NIST Cybersecurity Framework 1.0**<br>**PCI-DSS 4.0**<br>**SOC2 v2017** |
+| `ainotebooks.environmentOptions` | Restrict VM and container image options when creating new Vertex AI Workbench notebooks and instances. | **Assured Workloads Data Boundary** |
+| `ainotebooks.requireAutoUpgradeSchedule` | Require automatic scheduled upgrades on new Vertex AI Workbench notebooks and instances. | **ISO-2700-1 v2022**<br>**PCI-DSS 4.0**<br>**SOC2 v2017** |
 | `ainotebooks.restrictPublicIp` | Restrict public IP access on new Vertex AI Workbench notebooks and instances. |  |
 | `ainotebooks.restrictVpcNetworks` | Restrict VPC networks on new Vertex AI Workbench instances. |  |
 | `appengine.disableCodeDownload` | Prevent the download of source code from App Engine. |  |
@@ -75,15 +78,24 @@ In that case, the controls placed in the `organization/scc-sha-custom-modules` f
 | `cloudfunctions.allowedIngressSettings` | Ensure Cloud Functions Gen1 only allows internal and load balancer traffic. |  |
 | `cloudfunctions.allowedVpcConnectorEgressSettings` | Ensure Cloud Functions v1 Egress VPC Connector settings are configured correctly. |  |
 | `cloudfunctions.requireVPCConnector` | Ensure Cloud Functions v1 are configured with a VPC connector. |  |
+| `cloudfunctions.restrictAllowedGenerations` | Restrict Cloud Functions deployments to approved generations (such as 2nd Gen). | **Cloud Controls Matrix 4**<br>**NIST 800-53 R5** |
+| `compute.disableGlobalCloudArmorPolicy` | Prevent the creation of global Cloud Armor security policies. | **CJIS**<br>**FedRAMP High**<br>**IL2**<br>**IL4**<br>**IL5**<br>**ITAR**<br>**Assured Workloads Data Boundary** |
+| `compute.disableGlobalLoadBalancing` | Prevent the creation of global load balancing resources. | **FedRAMP High**<br>**IL2**<br>**IL4**<br>**IL5**<br>**ITAR**<br>**Assured Workloads Data Boundary** |
+| `compute.disableGlobalSelfManagedSslCertificate` | Prevent the creation of global self-managed SSL certificates. | **ITAR**<br>**Assured Workloads Data Boundary** |
 | `compute.disableGuestAttributesAccess` | Prevent the use of Guest Attributes for Compute Engine instance metadata. |  |
+| `compute.disableInstanceDataAccessApis` | Disable Compute Engine instance data access APIs (GetSerialPortOutput and GetScreenshot). | **CJIS**<br>**IL4**<br>**IL5**<br>**ITAR**<br>**Assured Workloads Data Boundary** |
 | `compute.disableInternetNetworkEndpointGroup` | Prevent configuration of internet network endpoint groups. |  |
 | `compute.disableNestedVirtualization` | Prevent the creation of Compute Engine instances with nested virtualization enabled. |  |
+| `compute.disableNonFIPSMachineTypes` | Restrict Compute Engine VM instances to FIPS-compliant machine types. | **FedRAMP 20x** |
 | `compute.disableSerialPortAccess` | Prevent the enablement of serial port access for VM instances. | **CIS for GCP 3.0**: 4.5<br>**CIS Controls 8.0**: 4.8<br>**PCI-DSS 4.0**: 1.2.1, 1.4.1<br>**NIST 800-53 R5**: CM-6, CM-7<br>**ISO-2700-1 v2022**: A.8.9<br>**SOC2 v2017**: CC6.6.1, CC6.6.3, CC6.6.4 |
+| `compute.disableSshInBrowser` | Disable SSH-in-Browser access to Compute Engine VM instances. | **FedRAMP 20x** |
 | `compute.disableVpcExternalIpv6` | Prevent configuration of subnets with external IPv6 ranges. |  |
 | `compute.disableVpcInternalIpv6` | Enforce the block of VPC subnetworks from using internal IPv6 addresses. A subnetwork with an internal IPv6 address might be exposed to potential risks due to its current limited support. |  |
+| `compute.enableComplianceMemoryProtection` | Enable compliance memory protection to restrict direct access to VM core memory. | **FedRAMP 20x** |
 | `compute.managed.blockPreviewFeatures` | Ensures that preview feature updates are blocked unless explicitly allowed |  |
 | `compute.managed.disableSerialPortLogging` | Prevent serial port logging to Cloud Logging for VMs. |  |
 | `compute.managed.vmCanIpForward` | Prevent IP forwarding from being enabled on Compute Engine instances. | **CIS for GCP 3.0**: 4.6<br>**CIS Controls 8.0**: 4.4, 4.5<br>**NIST 800-53 R5**: CA-9, SC-7<br>**SOC2 v2017**: CC6.6.1, CC6.6.4 |
+| `compute.requireOsConfig` | Require the OS Config agent on Compute Engine VM instances. | **FedRAMP 20x** |
 | `compute.requireOsLogin` | Enforce the use of OS Login for all Compute Engine instances. | **CIS for GCP 3.0**: 4.4<br>**CIS Controls 8.0**: 5.6, 6.7<br>**PCI-DSS 4.0**: 1.2.5,<br>2.2.4<br>6.4.1<br>**NIST 800-53 R5**: AC-2<br>**ISO-2700-1 v2022**: A.5.15<br>**SOC2 v2017**: CC6.1.4, CC6.1.6, CC6.1.8, CC6.1.9 |
 | `compute.requireShieldedVm` | Enforce the use of Shielded VM for all Compute Engine instances. | **CIS for GCP 3.0**: 4.8 |
 | `compute.requireSslPolicy` | Prevent the use of weak cipher suites and TLS versions on HTTPS and SSL Proxy load balancers. | **CIS for GCP 3.0**: 3.9<br>**NIST 800-53 R4**: SC-7<br>**ISO-2700-1 v2013**: A.14.1.3 |
@@ -115,9 +127,12 @@ In that case, the controls placed in the `organization/scc-sha-custom-modules` f
 | `container.managed.enableSecurityBulletinNotifications` | Require enabling Security Bulletin Notifications in GKE clusters. |  |
 | `container.managed.enableShieldedNodes` | Enforce that GKE nodes is configured with shielded GKE nodes | **CIS for GKE 1.5**: 5.5.5 |
 | `container.managed.enableWorkloadIdentityFederation` | Enforce that GKE clusters are enabled with Workload Identity  | **CIS for GKE 1.5**: 5.2.2<br>**PCI-DSS 4.0**: 7.2.2 |
+| `container.restrictNoncompliantDiagnosticDataAccess` | Restrict non-compliant diagnostic data access on GKE clusters. | **IL4**<br>**ITAR**<br>**Assured Workloads Data Boundary** |
 | `essentialcontacts.allowedContactDomains` | Restrict essential contact domains to an authorized list. |  |
+| `firestore.managed.disableEnhancedTextSearch` | Disable enhanced text search in Cloud Firestore. | **FedRAMP 20x** |
 | `gcp.resourceLocations` | Restrict resource locations. |  |
 | `gcp.restrictCmekCryptoKeyProjects` | Prevent the use of CMEKs from unauthorized projects. |  |
+| `gcp.restrictEndpointUsage` | Restrict usage of global service endpoints in favor of regional endpoints. | **Assured Workloads Data Boundary** |
 | `gcp.restrictNonCmekServices` | Ensure That All BigQuery Tables Are Encrypted With Customer-Managed Encryption Key (CMEK) | **CIS for GCP 3.0**: 7.2<br>**CIS Controls 8.0**: 3.11<br>**PCI-DSS 4.0**: 3.1.1, 3.3.2, 3.3.3, 3.5.1, 3.5.1.2, 3.5.1.3, 8.3.2<br>**NIST 800-53 R5**: IA-5, SC-28<br>**NIST Cybersecurity Framework 1.0**: PR-DS-1<br>**ISO-2700-1 v2022**: A.5.33<br>**HIPAA**: 164.312(a)(2)(iv), 164.312(e)(2)(ii)<br>**Cloud Controls Matrix 4**: CEK-03 |
 | `gcp.restrictServiceUsage` | Restrict the list of services that can be enabled in the organization. |  |
 | `gcp.restrictTLSCipherSuites` | Prevent the use of weak cipher suites and TLS versions on HTTPS and SSL Proxy load balancers. | **CIS for GCP 3.0**: 3.9<br>**NIST 800-53 R4**: SC-7<br>**ISO-2700-1 v2013**: A.14.1.3 |
@@ -132,16 +147,30 @@ In that case, the controls placed in the `organization/scc-sha-custom-modules` f
 | `iam.serviceAccountKeyExposureResponse` | Enforce Google to disable the service keys if a service account linked key is detected to be exposed publicly. |  |
 | `iam.workloadIdentityPoolAwsAccounts` | Prevent creation of workload identity pools using AWS accounts, except if explicitly allowed. |  |
 | `iam.workloadIdentityPoolProviders` | Prevent creation of any workload identity pools except if explicitly allowed. |  |
+| `managedkafka.managed.disableKafkaConnectClusterCreateAndUpdate` | Disable the creation and update of Managed Service for Apache Kafka Connect clusters. | **Assured Workloads Data Boundary** |
+| `pubsub.enforceInTransitRegions` | Enforce that Pub/Sub message routing stays within allowed regions in transit. | **ITAR**<br>**Assured Workloads Data Boundary** |
+| `pubsub.managed.disableSubscriptionMessageTransforms` | Disable single-message transforms (SMTs) on Pub/Sub subscriptions. | **CJIS**<br>**FedRAMP High**<br>**IL2**<br>**IL4**<br>**IL5**<br>**ITAR**<br>**Assured Workloads Data Boundary** |
+| `pubsub.managed.disableTopicMessageTransforms` | Disable single-message transforms (SMTs) on Pub/Sub topics. | **CJIS**<br>**FedRAMP High**<br>**IL2**<br>**IL4**<br>**IL5**<br>**ITAR**<br>**Assured Workloads Data Boundary** |
 | `run.allowedBinaryAuthorizationPolicies` | Restrict Cloud Run services and jobs to an authorized list of Binary Authorization policies. |  |
 | `run.allowedIngress` | Ensure Cloud Run services only allow internal and load balancer traffic. |  |
 | `run.allowedVPCEgress` | Ensure all egress traffic from Cloud Run services and jobs is routed through a VPC network. |  |
+| `run.managed.disableEphemeralDisk` | Disable unencrypted ephemeral disk storage on Cloud Run services. | **FedRAMP 20x** |
+| `run.managed.disableJobsEphemeralDisk` | Disable unencrypted ephemeral disk storage on Cloud Run jobs. | **FedRAMP 20x** |
+| `run.managed.disableWorkerPoolsEphemeralDisk` | Disable unencrypted ephemeral disk storage on Cloud Run worker pools. | **FedRAMP 20x** |
 | `run.managed.requireInvokerIam` | Enforce an IAM invoker check for Cloud Run services. |  |
+| `spanner.assuredWorkloadsAdvancedServiceControls` | Enable Assured Workloads advanced service controls for Cloud Spanner. | **ITAR**<br>**Assured Workloads Data Boundary** |
+| `spanner.disableMultiRegionInstanceIfNoLocationSelected` | Prevent the creation of multi-region Cloud Spanner instances when no location is restricted. | **FedRAMP 20x** |
 | `sql.restrictAuthorizedNetworks` | Prevent the ability to add Authorized Networks for unproxied database access to Cloud SQL instances. |  |
+| `sql.restrictNoncompliantDiagnosticDataAccess` | Restrict non-compliant diagnostic data access on Cloud SQL instances. | **IL5**<br>**Assured Workloads Data Boundary** |
+| `sql.restrictNoncompliantResourceCreation` | Restrict the creation of non-compliant Cloud SQL resources. | **IL5**<br>**Assured Workloads Data Boundary** |
 | `sql.restrictPublicIp` | Ensure That Cloud SQL Database Instances Do Not Have Public IPs | **CIS for GCP 3.0**: 6.6<br>**CIS Controls 8.0**: 3.3, 4.6<br>**PCI-DSS 4.0**: 1.3.1<br>**NIST 800-53 R5**: AC-3, AC-5, AC-6, MA-4, MP-2<br>**NIST Cybersecurity Framework 1.0**: PR-AC-4<br>**ISO-2700-1 v2022**: A.5.10, A.5.15, A.8.3, A.8.4<br>**SOC2 v2017**: CC5.2.2, CC5.2.3, CC6.1.3, CC6.1.7<br>**HIPAA**: 164.308(a)(3)(i), 164.308(a)(3)(ii), 164.312(a)(1)<br>**Cloud Controls Matrix 4**: DSP-17 |
 | `storage.publicAccessPrevention` | Prevent anonymous or public access to Cloud Storage buckets. | **CIS for GCP 3.0**: 5.1<br>**CIS Controls 8.0**: 3.3<br>**PCI-DSS 4.0**: 1.3.1<br>**NIST 800-53 R4**: AC-2<br>**NIST 800-53 R5**: AC-3, AC-5, AC-6, MP-2<br>**NIST Cybersecurity Framework 1.0**: PR-AC-4<br>**ISO-2700-1 v2013**: A.14.1.3, A.8.2.3<br>**ISO-2700-1 v2022**: A.5.10, A.5.15, A.8.3, A.8.4<br>**SOC2 v2017**: CC5.2.3, CC6.1.3, CC6.1.7<br>**HIPAA**: 164.308(a)(3)(i), 164.308(a)(3)(ii), 164.312(a)(1)<br>**Cloud Controls Matrix 4**: DSP-17 |
 | `storage.restrictAuthTypes` | Restrict authentication types for Cloud Storage. |  |
 | `storage.secureHttpTransport` | Restrict unencrypted HTTP access to Cloud Storage. |  |
 | `storage.uniformBucketLevelAccess` | Enforce the enablement of uniform bucket-level access to Cloud Storage buckets. | **CIS for GCP 3.0**: 5.2<br>**CIS Controls 8.0**: 3.3<br>**PCI-DSS 4.0**: 1.3.1<br>**NIST 800-53 R5**: AC-3, AC-5, AC-6, MP-2<br>**NIST Cybersecurity Framework 1.0**: PR-AC-4<br>**ISO-2700-1 v2022**: A.5.10, A.5.15, A.8.3, A.8.4<br>**SOC2 v2017**: CC5.2.3, CC6.1.3, CC6.1.7<br>**HIPAA**: 164.308(a)(3)(i), 164.308(a)(3)(ii), 164.312(a)(1)<br>**Cloud Controls Matrix 4**: DSP-17 |
+| `vertexai.allowOnlyAllCompliantAPIs` | Restrict Vertex AI usage to FedRAMP High, IL4, and CJIS compliant APIs. | **FedRAMP 20x** |
+| `vertexai.allowOnlyIL5CompliantAPIs` | Restrict Vertex AI usage to DoD Impact Level 5 (IL5) compliant APIs. | **IL5**<br>**Assured Workloads Data Boundary** |
+| `vertexai.allowOnlyITARCompliantAPIs` | Restrict Vertex AI usage to ITAR compliant APIs. | **ITAR** |
 
 #### Custom Constraints
 
@@ -153,6 +182,12 @@ In that case, the controls placed in the `organization/scc-sha-custom-modules` f
 | `alloydbRequireContinuousBackup` | Ensure AlloyDB clusters are configured with continuous backups enabled. | **CIS Controls 8.0** |
 | `alloydbRequireDatabaseFlags` | Ensure AlloyDB instance database logging flags (`log_error_verbosity`, `log_min_error_statement`, `log_min_messages`) are configured correctly. | **CIS Controls 8.0** |
 | `alloydbRequireSSLConnection` | Enforce SSL encryption (`ENCRYPTED_ONLY`) for all AlloyDB instance client connections. | **CIS Controls 8.0** |
+| `apikeysDisableKeyCreation` | Ensure API keys cannot be created or updated. | **CIS for GCP 3.0**: 1.12 |
+| `apikeysRequireApiTargetRestrictions` | Ensure API keys are restricted to specific required APIs and do not allow `cloudapis.googleapis.com`. | **CIS for GCP 3.0**<br>**CIS Controls 8.0**<br>**Cloud Controls Matrix 4**<br>**ISO-2700-1 v2022**<br>**NIST Cybersecurity Framework 1.0**<br>**PCI-DSS 4.0**<br>**SOC2 v2017** |
+| `apikeysRequireApplicationRestrictions` | Ensure API keys configure application restrictions without broad wildcards or `0.0.0.0/0`. | **CIS for GCP 3.0**<br>**CIS Controls 8.0**<br>**Cloud Controls Matrix 4**<br>**ISO-2700-1 v2022**<br>**NIST 800-53 R5**<br>**NIST Cybersecurity Framework 1.0**<br>**PCI-DSS 4.0**<br>**SOC2 v2017** |
+| `artifactregistryRequireCleanupPolicies` | Ensure that Artifact Registry repositories define at least one cleanup policy with dry-run disabled | **DORA**<br>**FedRAMP 20x** |
+| `cloudArmorRequireCveCanaryRule` | Ensure Cloud Armor backend security policies include a rule evaluating the `cve-canary` WAF expression. | **FedRAMP 20x** |
+| `cloudArmorRequireLayer7DdosDefense` | Ensure Cloud Armor backend security policies have Adaptive Protection Layer 7 DDoS Defense enabled. | **FedRAMP 20x** |
 | `cloudbuildDisableWorkerPoolExternalIP` | Prevent the configuration of Cloud Build worker pools with external IP addresses. |  |
 | `cloudkmsAllowedAlgorithms` | Ensure the algorithm used for Cloud KMS keys is configured correctly. |  |
 | `cloudkmsAllowedProtectionLevel` | Ensure Cloud KMS keys are configured with the correct protection level. |  |
@@ -163,22 +198,31 @@ In that case, the controls placed in the `organization/scc-sha-custom-modules` f
 | `cloudrunJobRequireBinaryAuthorization` | Enforce all Cloud Run jobs use binary authorization. |  |
 | `cloudrunServiceDisableDefaultServiceAccount` | Ensure all Cloud Run services use a non-default service account. |  |
 | `cloudrunServiceRequireBinaryAuthorization` | Enforce all Cloud Run services use binary authorization. |  |
+| `cloudsqlDisablePostgreSQLLogHostnameFlag` | Ensure Cloud SQL for PostgreSQL instances do not enable the `log_hostname` database flag. | **CIS Controls 8.0**<br>**Cloud Controls Matrix 4**<br>**ISO-2700-1 v2022**<br>**NIST 800-53 R5**<br>**NIST Cybersecurity Framework 1.0**<br>**PCI-DSS 4.0**<br>**SOC2 v2017** |
+| `cloudsqlDisablePostgreSQLLogParserStatsFlag` | Ensure Cloud SQL for PostgreSQL instances do not enable the `log_parser_stats` database flag. | **CIS Controls 8.0**<br>**Cloud Controls Matrix 4**<br>**ISO-2700-1 v2022**<br>**NIST Cybersecurity Framework 1.0**<br>**PCI-DSS 4.0**<br>**SOC2 v2017** |
+| `cloudsqlDisablePostgreSQLLogPlannerStatsFlag` | Ensure Cloud SQL for PostgreSQL instances do not enable the `log_planner_stats` database flag. | **CIS Controls 8.0**<br>**Cloud Controls Matrix 4**<br>**ISO-2700-1 v2022**<br>**NIST Cybersecurity Framework 1.0**<br>**PCI-DSS 4.0**<br>**SOC2 v2017** |
+| `cloudsqlDisablePostgreSQLLogStatementStatsFlag` | Ensure Cloud SQL for PostgreSQL instances do not enable the `log_statement_stats` database flag. | **CIS Controls 8.0**<br>**Cloud Controls Matrix 4**<br>**ISO-2700-1 v2022**<br>**NIST Cybersecurity Framework 1.0**<br>**PCI-DSS 4.0**<br>**SOC2 v2017** |
 | `cloudsqlDisablePublicAuthorizedNetworks` | Ensure That Cloud SQL Database Instances Do Not Implicitly Whitelist All Public IP Addresses | **CIS for GCP 3.0**: 6.5<br>**CIS Controls 8.0**: 3.3<br>**PCI-DSS 4.0**: 1.3.1<br>**NIST 800-53 R4**: CA-3, SC-7<br>**NIST 800-53 R5**: AC-3, AC-5, AC-6, MP-2<br>**NIST Cybersecurity Framework 1.0**: PR-AC-4<br>**ISO-2700-1 v2013**: A.13.1.3, A.14.1.3, A.8.2.3<br>**ISO-2700-1 v2022**: A.5.10, A.5.15, A.8.3, A.8.4<br>**SOC2 v2017**: CC5.2.3, CC6.1.3, CC6.1.7<br>**HIPAA**: 164.308(a)(3)(i), 164.308(a)(3)(ii), 164.312(a)(1)<br>**Cloud Controls Matrix 4**: DSP-17 |
 | `cloudsqlEnforcePasswordComplexity` | Enforce password complexity for Cloud SQL instance users. |  |
 | `cloudsqlRequireAutomatedBackup` | Ensure That Cloud SQL Database Instances Are Configured With Automated Backups | **CIS for GCP 3.0**: 6.7<br>**CIS Controls 8.0**: 11.2<br>**NIST 800-53 R4**: CP-9<br>**NIST 800-53 R5**: CP-10, CP-9<br>**NIST Cybersecurity Framework 1.0**: PR-IP-4<br>**ISO-2700-1 v2013**: A.12.3.1<br>**ISO-2700-1 v2022**: A.8.13<br>**HIPAA**: 164.308(a)(7)(ii) |
 | `cloudsqlRequireHighAvailability` | Ensure Cloud SQL instances are configured for high availability. |  |
+| `cloudsqlRequireMaintenanceWindow` | Ensure Cloud SQL instances have a maintenance window day configured. | **Cloud Controls Matrix 4** |
 | `cloudsqlRequireMySQLDatabaseFlags` | Ensure ‘Skip_show_database’ Database Flag for Cloud SQL MySQL Instance Is Set to ‘On’ | **CIS for GCP 3.0**: 6.1.2<br>**CIS Controls 8.0**: 3.3<br>**PCI-DSS 4.0**: 1.3.1<br>**NIST 800-53 R5**: AC-3, AC-5, AC-6, MP-2<br>**NIST Cybersecurity Framework 1.0**: PR-AC-4<br>**ISO-2700-1 v2022**: A.5.10, A.5.15, A.8.3, A.8.4<br>**SOC2 v2017**: CC5.2.3, CC6.1.3, CC6.1.7<br>**HIPAA**: 164.308(a)(3)(i), 164.308(a)(3)(ii), 164.312(a)(1)<br>**Cloud Controls Matrix 4**: DSP-17 |
 | `cloudsqlRequirePointInTimeRecovery` | Enforce point-in-time recovery for all Cloud SQL backup configurations. |  |
 | `cloudsqlRequirePostgreSQLDatabaseAdditionalFlags` | Ensure Cloud SQL for PostgreSQL instance database flags are set correctly (e.g log_checkpoints, log_executor_stats, log_lock_waits). |  |
 | `cloudsqlRequirePostgreSQLDatabaseFlags` | Ensure That the ‘Log_connections’ Database Flag for Cloud SQL PostgreSQL Instance Is Set to ‘On’ | **CIS for GCP 3.0**: 6.2.2<br>**CIS Controls 8.0**: 8.5<br>**PCI-DSS 4.0**: 10.2.1, 10.2.1.2, 10.2.1.5, 9.4.5<br>**NIST 800-53 R5**: AU-12, AU-3, AU-7<br>**NIST Cybersecurity Framework 1.0**: DE-AE-3, DE-CM-1<br>**ISO-2700-1 v2022**: A.5.28, A.8.15<br>**SOC2 v2017**: CC5.2.3, CC7.2.1, CC7.2.2, CC7.2.3<br>**Cloud Controls Matrix 4**: DSP-17 |
+| `cloudsqlRequirePostgreSQLLogDurationFlag` | Ensure Cloud SQL for PostgreSQL instances have the `log_duration` database flag set to `on`. | **CIS Controls 8.0**<br>**Cloud Controls Matrix 4**<br>**ISO-2700-1 v2022**<br>**NIST 800-53 R5**<br>**NIST Cybersecurity Framework 1.0**<br>**PCI-DSS 4.0**<br>**SOC2 v2017** |
+| `cloudsqlRequirePostgreSQLLogTempFilesFlag` | Ensure Cloud SQL for PostgreSQL instances have the `log_temp_files` database flag set to `0`. | **CIS Controls 8.0**<br>**Cloud Controls Matrix 4**<br>**ISO-2700-1 v2022**<br>**NIST Cybersecurity Framework 1.0**<br>**PCI-DSS 4.0**<br>**SOC2 v2017** |
 | `cloudsqlRequireRootPassword` | Ensure That a MySQL Database Instance Does Not Allow Anyone To Connect With Administrative Privileges | **CIS for GCP 3.0**: 6.1.1<br>**NIST 800-53 R4**: AC-3<br>**ISO-2700-1 v2013**: A.8.2.3, A.9.4.2<br>**ISO-2700-1 v2022**: A.8.5 |
 | `cloudsqlRequireSQLServerDatabaseFlags` | Ensure 'external scripts enabled' database flag for Cloud SQL SQL Server instance is set to 'off' | **CIS for GCP 3.0**: 6.3.1<br>**CIS Controls 8.0**: 2.7<br>**PCI-DSS 4.0**: 1.2.5, 2.2.4, 6.4.3<br>**NIST 800-53 R5**: CM-7, SI-7<br>**NIST Cybersecurity Framework 1.0**: PR-IP-1, PR-PT-3<br>**SOC2 v2017**: CC5.2.1, CC5.2.2, CC5.2.3, CC5.2.4 |
 | `cloudsqlRequireSSLConnection` | Ensure That the Cloud SQL Database Instance Requires All Incoming Connections To Use SSL | **CIS for GCP 3.0**: 6.4<br>**NIST 800-53 R4**: SC-7<br>**ISO-2700-1 v2013**: A.13.2.1, A.14.1.3, A.8.2.3 |
+| `composerRequireMaintenanceWindow` | Ensure Cloud Composer environments have a maintenance window recurrence configured. | **Cloud Controls Matrix 4** |
 | `dataprocAllowedImageVersions` | Prevent Dataproc clusters from using unsupported image versions (1.x, 2.0, 2.1). | **CIS Controls 8.0** |
 | `dataprocDisableDefaultServiceAccount` | Prevent Dataproc VMs from using default user-managed service accounts. |  |
 | `dataprocRequireDiskCmekEncryption` | Enforce encryption of Dataproc clusters with a Customer-Managed Encryption Key (CMEK). | **CIS for GCP 3.0**: 8.1<br>**CIS Controls 8.0**: 3.11<br>**PCI-DSS 4.0**:  3.1.1, 3.3.2, 3.3.3, 3.5.1, 3.5.1.2, 3.5.1.3, 8.3.2<br>**NIST 800-53 R5**: IA-5, SC-28<br>**NIST Cybersecurity Framework 1.0**: PR-DS-1<br>**ISO-2700-1 v2013**: A.5.33<br>**SOC2 v2017**: CC6.1.10, CC6.1.3<br>**HIPAA**: 164.312(a)(2)(iv), 164.312(e)(2)(ii)<br>**Cloud Controls Matrix 4**: CEK-03 |
 | `dataprocRequireInternalIp` | Enforce the use of internal IP addresses only for Dataproc clusters. |  |
 | `dataprocRequireKerberos` | Enforce the use of Kerberos for secure authentication on all Dataproc clusters. |  |
+| `discoveryengineDisableNonGcpDataStores` | Ensure Vertex AI Agent Builder (Discovery Engine) data stores only use standard GCP content configurations (`NO_CONTENT` or `CONTENT_REQUIRED`). | **FedRAMP 20x** |
 | `dnsAllowedSigningAlgorithms` | Prevent the use of the RSASHA1 algorithm for the Key-Signing Key in Cloud DNS DNSSEC. | **CIS for GCP 3.0**: 3.4<br>**PCI-DSS 4.0**: 1.1.1, 1.2.1, 1.2.6, 1.2.7, 1.4.2, 1.5.1, 2.1.1, 2.2.1<br>**NIST 800-53 R4**: 4.2<br>**NIST 800-53 R5**: AC-18, CM-2, CM-6, CM-7, CM-9<br>**NIST Cybersecurity Framework 1.0**: PR-IP-1<br>**ISO-2700-1 v2022**: A.8.9<br>**SOC2 v2017**: CC5.2.2<br>**Cloud Controls Matrix 4**: IVS-04 |
 | `dnsRequireManageZoneDNSSEC` | Enforce the enablement of DNSSEC for all Cloud DNS zones. | **CIS for GCP 3.0**: 3.3<br>**CIS Controls 8.0**: 4.2<br>**PCI-DSS 4.0**: 1.1.1, 1.2.1, 1.2.6, 1.2.7, 1.4.2, 1.5.1, 2.1.1, 2.2.1<br>**NIST 800-53 R5**: AC-18, CM-2, CM-6, CM-7, CM-9<br>**NIST Cybersecurity Framework 1.0**: PR-IP-1<br>**ISO-2700-1 v2013**: A.8.2.3<br>**ISO-2700-1 v2022**: A.8.9<br>**SOC2 v2017**: CC5.2.2<br>**Cloud Controls Matrix 4**: ISV-04 |
 | `dnsRequirePolicyLogging` | Enforce the enablement of Cloud DNS logging for all VPC networks. | **CIS for GCP 3.0**: 2.12<br>**PCI-DSS 4.0**: 10.4.1, 10.4.1.1, 10.4.2, 10.4.3<br>**NIST 800-53 R5**: AU-6, AU-7<br>**NIST Cybersecurity Framework 1.0**: DE-AE-2, PR-PT-1, RS-AN-1<br>**ISO-2700-1 v2022**: A.5.25<br>**SOC2 v2017**: CC4.1.1, CC4.1.2, CC4.1.3, CC4.1.4, CC4.1.5, CC4.1.6, CC4.1.7, CC4.1.8, CC7.3.1, CC7.3.2, CC7.3.3, CC7.3.4, CC7.3.5<br>**HIPAA**: 164.308(a)(1)(ii), 164.312(b)<br>**Cloud Controls Matrix 4**: LOG-05 |
@@ -221,15 +265,18 @@ In that case, the controls placed in the `organization/scc-sha-custom-modules` f
 | `gkeRequireGKEMetadataServer` | Enforce that GKE clusters are configured with GKE metadata server enabled | **CIS for GKE 1.5**: 5.4.2 |
 | `gkeRequireIntegrityMonitoring` | Enforce that GKE nodes are configured with integrity monitoring enabled | **CIS for GKE 1.5**: 5.5.6 |
 | `gkeRequireIntraNodeVisibility` | Enforce that GKE clusters intranode visibility is enabled | **CIS for GKE 1.5**: 5.6.1<br>**PCI-DSS 4.0**: 10.2 |
+| `gkeRequireMaintenanceWindow` | Ensure GKE clusters have a daily or recurring maintenance window configured. | **Cloud Controls Matrix 4** |
 | `gkeRequireMasterAuthorizedNetworks` | Restrict network access to GKE control planes using master authorized networks with authorized CIDR IP ranges. | **CIS for GKE 1.5**: 5.6.3<br>**PCI-DSS 4.0**: 1.2.5 |
 | `gkeRequireMonitoring` | Enforce that GKE clusters monitoring is enabled | **CIS for GKE 1.5**: 5.7.1<br>**PCI-DSS 4.0**: 10.2 |
 | `gkeRequireNodePoolAutoRepair` | Enforce that GKE clusters are configured with node auto-repair enabled | **CIS for GKE 1.5**: 5.5.2<br>**PCI-DSS 4.0**: 2.2.6 |
 | `gkeRequireNodePoolAutoUpgrade` | Enforce that GKE clusters are configured with node auto-upgrade enabled  | **CIS for GKE 1.5**: 5.5.3<br>**PCI-DSS 4.0**: 2.2.6 |
+| `gkeRequireNodePoolAutoscaling` | Ensure GKE standard cluster node pools have cluster autoscaler enabled. | **FedRAMP 20x** |
 | `gkeRequireNodePoolCMEKEncryption` | Enforce that GKE nodes are configured with CMEK Encryption | **CIS for GKE 1.5**: 5.9.1<br>**PCI-DSS 4.0**: 3.6 |
 | `gkeRequireNodePoolSandbox` | Enforce that the GKE clusters nodes are isolated using GKE sandbox | **CIS for GKE 1.5**: 5.10.3<br>**PCI-DSS 4.0**: 6.2.1 |
 | `gkeRequirePrivateEndpoint` | Enforce that GKE clusters are created as private clusters with public endpoint disabled | **CIS for GKE 1.5**: 5.6.4<br>**PCI-DSS 4.0**: 1.3.1 |
 | `gkeRequireRegionalClusters` | Enforce the creation of regional GKE clusters |  |
 | `gkeRequireSecureBoot` | Enforce that GKE nodes are configured with secure boot enabled | **CIS for GKE 1.5**: 5.5.7 |
+| `gkeRequireSecurityPosture` | Ensure GKE clusters have Security Posture mode set to `BASIC` or `ENTERPRISE`. | **CIS for GKE 1.7**<br>**PCI-DSS 4.0**<br>**SOC2 v2017** |
 | `gkeRequireVPCNativeCluster` | Enforce that GKE clusters are created with VPC-native  | **CIS for GKE 1.5**: 5.6.2<br>**PCI-DSS 4.0**: 1.4.3 |
 | `iamAllowedMembers` | Ensure no bindings are done with members outside the organization domain. |  |
 | `iamDisableAdminServiceAccount` | Ensure no use of the legacy basic roles (owner and editor), basic roles (admin, writer) and usage of admin roles for service account. |  |
@@ -237,16 +284,34 @@ In that case, the controls placed in the `organization/scc-sha-custom-modules` f
 | `iamDisableProjectServiceAccountImpersonationRoles` | Ensure that IAM Users are not assigned the service account user or service account token creator roles. |  |
 | `iamDisablePublicBindings` | Ensure That BigQuery Datasets Are Not Anonymously or Publicly Accessible | **CIS for GCP 3.0**: 7.1<br>**CIS Controls 8.0**: 3.3<br>**PCI-DSS 4.0**: 1.3.1<br>**NIST 800-53 R4**: AC-2<br>**NIST 800-53 R5**: AC-3, AC-5, AC-6, MP-2<br>**NIST Cybersecurity Framework 1.0**: PR-AC-4<br>**ISO-2700-1 v2013**: A.14.1.3, A.8.2.3<br>**ISO-2700-1 v2022**: A.5.10, A.5.15, A.8.3, A.8.4<br>**SOC2 v2017**: CC5.2.3, CC6.1.3, CC6.1.7<br>**HIPAA**: 164.308(a)(3)(i), 164.308(a)(3)(ii), 164.312(a)(1)<br>**Cloud Controls Matrix 4**: DSP-17 |
 | `iamDisableRedisAdminRoles` | Ensure no use of the basic roles (viewer, editor and owner). |  |
+| `iamLimitKmsCryptoKeyUsers` | Ensure IAM policy updates for Cloud KMS crypto key roles do not grant more than 3 principals in a single binding change | **DORA** |
+| `iamRestrictFirestoreServiceAccountAccess` | Ensure IAM roles containing `firestore` or `datastore` are not granted to service accounts other than the Firestore service agent. | **DORA** |
+| `loggingRequireLogBucketRetention90Days` | Ensure Cloud Logging log buckets are configured with a retention period of at least 90 days. | **CIS Controls 8.0**<br>**Cloud Controls Matrix 4**<br>**ISO-2700-1 v2022**<br>**NIST 800-53 R5**<br>**NIST Cybersecurity Framework 1.0**<br>**PCI-DSS 4.0** |
 | `networkDisableTargetHTTPProxy` | Prevent the use of weak SSL policies on HTTPS and SSL Proxy load balancers. | **CIS for GCP 3.0**: 3.9 |
 | `networkDisableWeakSSLPolicy` | Prevent the use of weak SSL policies on HTTPS and SSL Proxy load balancers. | **CIS for GCP 3.0**: 3.9 |
 | `networkRequireBackendServiceLogging` | Enforce the enablement of logging for all HTTP(S) load balancers. | **CIS for GCP 3.0**: 2.16<br>**CIS Controls 8.0**: 8.2<br>**PCI-DSS 4.0**: 10.2.1, 10.2.1.1, 10.2.1.2, 10.2.1.3, 10.2.1.4, 10.2.1.5, 10.2.1.6, 10.2.1.7, 10.2.2, 5.3.4, 6.4.1, 6.4.2<br>**NIST 800-53 R5**: AU-12, AU-2, AU-7<br>**NIST Cybersecurity Framework 1.0**: DE-AE-3, PR-PT-1<br>**ISO-2700-1 v2022**: A.8.15, A.8.20<br>**HIPAA**: 164.312(b) |
 | `networkRequireCustomModeVpc` | Ensure That the Default Network Does Not Exist in a Project | **CIS for GCP 3.0**: 3.1<br>**CIS Controls 8.0**: 4.2<br>**PCI-DSS 4.0**: 1.1.1, 1.2.1, 1.2.6, 1.2.7, 1.4.2, 1.5.1, 2.1.1, 2.2.1<br>**NIST 800-53 R5**: AC-18, CM-2, CM-6, CM-7, CM-9<br>**NIST Cybersecurity Framework 1.0**: PR-IP-1<br>**ISO-2700-1 v2022**: A.8.9<br>**SOC2 v2017**: CC5.2.2<br>**Cloud Controls Matrix 4**: ISV-04 |
 | `networkRequireSubnetPrivateGoogleAccess` | Enforce Private Google Access for all VPC network subnets. |  |
+| `redisRequireMaintenancePolicy` | Ensure Memorystore for Redis instances have a weekly maintenance window configured. | **Cloud Controls Matrix 4** |
 | `storageAllowedStorageClasses` | Restrict Cloud Storage buckets and SetStorageClass lifecycle rules to approved storage classes (STANDARD, NEARLINE, COLDLINE, ARCHIVE). | **CIS Controls 8.0** |
 | `storageRequireBucketLogging` | Enforce access and storage logging on Cloud Storage buckets. | **CIS Controls 8.0** |
 | `storageRequireBucketObjectVersionning` | Enforce the enablement of versioning to Cloud Storage buckets where sinks are configured. | **NIST 800-53 R4**: AU-11<br>**ISO-2700-1 v2022**: A.12.4.2, A.18.1.3 |
 | `storageRequireBucketRetentionPolicy` | Enforce a minimum retention period on Cloud Storage buckets. | **CIS Controls 8.0** |
+| `storageRequireDeleteLifecycleIsLive` | Ensure that Cloud Storage buckets configure a lifecycle Delete rule with isLive set to true | **FedRAMP 20x** |
+| `storageRequireLabels` | Ensure that Cloud Storage buckets are configured with at least one resource label for classification and inventory | **FedRAMP 20x** |
+| `storageRequireOwnerLabel` | Ensure that Cloud Storage buckets define a non-empty owner label | **DORA** |
+| `storageRequireRegionalLocation` | Ensure Cloud Storage buckets are deployed in a single region rather than multi-region or dual-region locations. | **FedRAMP 20x** |
+| `storageRequireRetentionOrSoftDelete` | Ensure Cloud Storage buckets have a non-zero soft delete policy or both object versioning and object retention enabled. | **Cloud Controls Matrix 4** |
 | `storageRequireSetStorageClassLifecycle` | Enforce a `SetStorageClass` lifecycle management rule on Cloud Storage buckets. | **CIS Controls 8.0** |
+| `vertexaiRuntimeTemplateDisableInternetAccess` | Prevent Vertex AI Colab Enterprise runtime templates from having public internet access enabled. | **AI Essentials** |
+| `vertexaiRuntimeTemplateRequireIdleShutdown` | Enforce that Vertex AI Colab Enterprise runtime templates have automatic idle shutdown enabled. | **AI Essentials** |
+| `vertexaiRuntimeTemplateRequireSecureBoot` | Enforce that Vertex AI Colab Enterprise runtime templates have Secure Boot enabled. | **AI Essentials** |
+| `vertexaiWorkbenchDisableDefaultServiceAccount` | Prevent Vertex AI Workbench instances from using the default Compute Engine service account. | **AI Essentials** |
+| `vertexaiWorkbenchRequireAutoUpgrade` | Enforce that Vertex AI Workbench instances have an automatic upgrade schedule configured. | **AI Essentials** |
+| `vertexaiWorkbenchRequireDeleteToTrash` | Enforce that Vertex AI Workbench instances have the delete to trash feature enabled. | **AI Essentials** |
+| `vertexaiWorkbenchRequireIntegrityMonitoring` | Enforce that Vertex AI Workbench instances are configured with integrity monitoring enabled. | **AI Essentials** |
+| `vertexaiWorkbenchRequireSecureBoot` | Enforce that Vertex AI Workbench instances are configured with Secure Boot enabled. | **AI Essentials** |
+| `vertexaiWorkbenchRequireVtpm` | Enforce that Vertex AI Workbench instances are configured with virtual Trusted Platform Module (vTPM) enabled. | **AI Essentials** |
 
 ### Detective Controls
 
@@ -348,6 +413,15 @@ compute.restrictVpcPeering:
 ```
 
 * The `compute.managed.disableSerialPortLogging` policy is enabled by default in the hardened datasets to prevent sensitive information leakage. However, this policy must be disabled (set to enforce: false) for projects hosting Google Kubernetes Engine (GKE) clusters. Indeed, GKE requires serial port logging to be enabled to successfully create clusters and manage low-level troubleshooting.
+
+* The `custom.alloydbRequireAutomatedBackup` policy is enabled by default in the hardened dataset. Because AlloyDB defaults `automatedBackupPolicy.enabled` to `false` when omitted, any AlloyDB primary cluster (including deployments using `modules/alloydb`, which defaults `automated_backup_configuration.enabled = false`) must explicitly configure an automated backup schedule.
+
+* Several custom constraints and built-in organization policies are defined in the dataset but **commented out (opt-in)** in `organization/org-policies/*.yaml` so they do not break FAST stage bootstrap resources, regional services, or workload defaults unless explicitly enabled:
+  * **Cloud Storage governance (`storage.yaml`):** `custom.storageAllowedStorageClasses`, `custom.storageRequireBucketLogging`, `custom.storageRequireBucketObjectVersionning`, `custom.storageRequireBucketRetentionPolicy`, `custom.storageRequireDeleteLifecycleIsLive`, `custom.storageRequireLabels`, `custom.storageRequireOwnerLabel`, `custom.storageRequireRegionalLocation`, and `custom.storageRequireSetStorageClassLifecycle` require pre-existing log sink buckets, 90-day object locks, or mandatory lifecycle/label payloads that conflict with FAST Stage 0 state/outputs buckets unless exempted.
+  * **API Keys (`apikeys.yaml`):** `custom.apikeysDisableKeyCreation` and `custom.apikeysRequireApplicationRestrictions` are opt-in because FAST Stage 3 (`3-secops-dev`) provisions a Chronicle feed API key that only supports API target restrictions.
+  * **Cloud Armor (`compute.yaml`):** `custom.cloudArmorRequireCveCanaryRule` and `custom.cloudArmorRequireLayer7DdosDefense` are opt-in because Cloud Armor Adaptive Protection (`layer7DdosDefenseConfig`) is only supported on global `CLOUD_ARMOR` security policies and is rejected by the API on regional security policies.
+  * **Maintenance windows, autoscaling, retention & cleanup (`composer.yaml`, `gke.yaml`, `redis.yaml`, `sql.yaml`, `logging.yaml`, `artifactregistry.yaml`, `iam.yaml`):** `custom.composerRequireMaintenanceWindow`, `custom.gkeRequireMaintenanceWindow`, `custom.gkeRequireNodePoolAutoscaling`, `custom.redisRequireMaintenancePolicy`, `custom.cloudsqlRequireMaintenanceWindow`, `custom.loggingRequireLogBucketRetention90Days`, `custom.artifactregistryRequireCleanupPolicies`, `custom.iamLimitKmsCryptoKeyUsers`, and `custom.iamRestrictFirestoreServiceAccountAccess` require explicit resource attributes not set by default CLI/Terraform calls.
+  * **Assured Workloads, sovereign data boundaries & regional/FIPS restrictions (`compute.yaml`, `gcp.yaml`, `gke.yaml`, `managedkafka.yaml`, `pubsub.yaml`, `serverless.yaml`, `spanner.yaml`, `sql.yaml`, `vertexai.yaml`):** `ainotebooks.environmentOptions`, `cloudfunctions.restrictAllowedGenerations`, `compute.disableGlobalCloudArmorPolicy`, `compute.disableGlobalLoadBalancing`, `compute.disableGlobalSelfManagedSslCertificate`, `compute.disableInstanceDataAccessApis` (must be enforced at folder/org level before Compute Engine is initialized on a project), `compute.disableNonFIPSMachineTypes`, `compute.enableComplianceMemoryProtection`, `container.restrictNoncompliantDiagnosticDataAccess`, `gcp.restrictEndpointUsage`, `managedkafka.managed.disableKafkaConnectClusterCreateAndUpdate`, `pubsub.enforceInTransitRegions` (requires `gcp.resourceLocations`), `spanner.assuredWorkloadsAdvancedServiceControls`, `spanner.disableMultiRegionInstanceIfNoLocationSelected`, `sql.restrictNoncompliantDiagnosticDataAccess`, `sql.restrictNoncompliantResourceCreation`, `vertexai.allowOnlyAllCompliantAPIs`, `vertexai.allowOnlyIL5CompliantAPIs`, and `vertexai.allowOnlyITARCompliantAPIs`.
 
 ## Troubleshooting
 
