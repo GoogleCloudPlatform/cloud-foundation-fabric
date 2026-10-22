@@ -78,15 +78,24 @@ In that case, the controls placed in the `organization/scc-sha-custom-modules` f
 | `cloudfunctions.allowedIngressSettings` | Ensure Cloud Functions Gen1 only allows internal and load balancer traffic. |  |
 | `cloudfunctions.allowedVpcConnectorEgressSettings` | Ensure Cloud Functions v1 Egress VPC Connector settings are configured correctly. |  |
 | `cloudfunctions.requireVPCConnector` | Ensure Cloud Functions v1 are configured with a VPC connector. |  |
+| `cloudfunctions.restrictAllowedGenerations` | Restrict Cloud Functions deployments to approved generations (such as 2nd Gen). | **Cloud Controls Matrix 4**<br>**NIST 800-53 R5** |
+| `compute.disableGlobalCloudArmorPolicy` | Prevent the creation of global Cloud Armor security policies. | **CJIS**<br>**FedRAMP High**<br>**IL2**<br>**IL4**<br>**IL5**<br>**ITAR**<br>**Assured Workloads Data Boundary** |
+| `compute.disableGlobalLoadBalancing` | Prevent the creation of global load balancing resources. | **FedRAMP High**<br>**IL2**<br>**IL4**<br>**IL5**<br>**ITAR**<br>**Assured Workloads Data Boundary** |
+| `compute.disableGlobalSelfManagedSslCertificate` | Prevent the creation of global self-managed SSL certificates. | **ITAR**<br>**Assured Workloads Data Boundary** |
 | `compute.disableGuestAttributesAccess` | Prevent the use of Guest Attributes for Compute Engine instance metadata. |  |
+| `compute.disableInstanceDataAccessApis` | Disable Compute Engine instance data access APIs (GetSerialPortOutput and GetScreenshot). | **CJIS**<br>**IL4**<br>**IL5**<br>**ITAR**<br>**Assured Workloads Data Boundary** |
 | `compute.disableInternetNetworkEndpointGroup` | Prevent configuration of internet network endpoint groups. |  |
 | `compute.disableNestedVirtualization` | Prevent the creation of Compute Engine instances with nested virtualization enabled. |  |
+| `compute.disableNonFIPSMachineTypes` | Restrict Compute Engine VM instances to FIPS-compliant machine types. | **FedRAMP 20x** |
 | `compute.disableSerialPortAccess` | Prevent the enablement of serial port access for VM instances. | **CIS for GCP 3.0**: 4.5<br>**CIS Controls 8.0**: 4.8<br>**PCI-DSS 4.0**: 1.2.1, 1.4.1<br>**NIST 800-53 R5**: CM-6, CM-7<br>**ISO-2700-1 v2022**: A.8.9<br>**SOC2 v2017**: CC6.6.1, CC6.6.3, CC6.6.4 |
+| `compute.disableSshInBrowser` | Disable SSH-in-Browser access to Compute Engine VM instances. | **FedRAMP 20x** |
 | `compute.disableVpcExternalIpv6` | Prevent configuration of subnets with external IPv6 ranges. |  |
 | `compute.disableVpcInternalIpv6` | Enforce the block of VPC subnetworks from using internal IPv6 addresses. A subnetwork with an internal IPv6 address might be exposed to potential risks due to its current limited support. |  |
+| `compute.enableComplianceMemoryProtection` | Enable compliance memory protection to restrict direct access to VM core memory. | **FedRAMP 20x** |
 | `compute.managed.blockPreviewFeatures` | Ensures that preview feature updates are blocked unless explicitly allowed |  |
 | `compute.managed.disableSerialPortLogging` | Prevent serial port logging to Cloud Logging for VMs. |  |
 | `compute.managed.vmCanIpForward` | Prevent IP forwarding from being enabled on Compute Engine instances. | **CIS for GCP 3.0**: 4.6<br>**CIS Controls 8.0**: 4.4, 4.5<br>**NIST 800-53 R5**: CA-9, SC-7<br>**SOC2 v2017**: CC6.6.1, CC6.6.4 |
+| `compute.requireOsConfig` | Require the OS Config agent on Compute Engine VM instances. | **FedRAMP 20x** |
 | `compute.requireOsLogin` | Enforce the use of OS Login for all Compute Engine instances. | **CIS for GCP 3.0**: 4.4<br>**CIS Controls 8.0**: 5.6, 6.7<br>**PCI-DSS 4.0**: 1.2.5,<br>2.2.4<br>6.4.1<br>**NIST 800-53 R5**: AC-2<br>**ISO-2700-1 v2022**: A.5.15<br>**SOC2 v2017**: CC6.1.4, CC6.1.6, CC6.1.8, CC6.1.9 |
 | `compute.requireShieldedVm` | Enforce the use of Shielded VM for all Compute Engine instances. | **CIS for GCP 3.0**: 4.8 |
 | `compute.requireSslPolicy` | Prevent the use of weak cipher suites and TLS versions on HTTPS and SSL Proxy load balancers. | **CIS for GCP 3.0**: 3.9<br>**NIST 800-53 R4**: SC-7<br>**ISO-2700-1 v2013**: A.14.1.3 |
@@ -118,9 +127,12 @@ In that case, the controls placed in the `organization/scc-sha-custom-modules` f
 | `container.managed.enableSecurityBulletinNotifications` | Require enabling Security Bulletin Notifications in GKE clusters. |  |
 | `container.managed.enableShieldedNodes` | Enforce that GKE nodes is configured with shielded GKE nodes | **CIS for GKE 1.5**: 5.5.5 |
 | `container.managed.enableWorkloadIdentityFederation` | Enforce that GKE clusters are enabled with Workload Identity  | **CIS for GKE 1.5**: 5.2.2<br>**PCI-DSS 4.0**: 7.2.2 |
+| `container.restrictNoncompliantDiagnosticDataAccess` | Restrict non-compliant diagnostic data access on GKE clusters. | **IL4**<br>**ITAR**<br>**Assured Workloads Data Boundary** |
 | `essentialcontacts.allowedContactDomains` | Restrict essential contact domains to an authorized list. |  |
+| `firestore.managed.disableEnhancedTextSearch` | Disable enhanced text search in Cloud Firestore. | **FedRAMP 20x** |
 | `gcp.resourceLocations` | Restrict resource locations. |  |
 | `gcp.restrictCmekCryptoKeyProjects` | Prevent the use of CMEKs from unauthorized projects. |  |
+| `gcp.restrictEndpointUsage` | Restrict usage of global service endpoints in favor of regional endpoints. | **Assured Workloads Data Boundary** |
 | `gcp.restrictNonCmekServices` | Ensure That All BigQuery Tables Are Encrypted With Customer-Managed Encryption Key (CMEK) | **CIS for GCP 3.0**: 7.2<br>**CIS Controls 8.0**: 3.11<br>**PCI-DSS 4.0**: 3.1.1, 3.3.2, 3.3.3, 3.5.1, 3.5.1.2, 3.5.1.3, 8.3.2<br>**NIST 800-53 R5**: IA-5, SC-28<br>**NIST Cybersecurity Framework 1.0**: PR-DS-1<br>**ISO-2700-1 v2022**: A.5.33<br>**HIPAA**: 164.312(a)(2)(iv), 164.312(e)(2)(ii)<br>**Cloud Controls Matrix 4**: CEK-03 |
 | `gcp.restrictServiceUsage` | Restrict the list of services that can be enabled in the organization. |  |
 | `gcp.restrictTLSCipherSuites` | Prevent the use of weak cipher suites and TLS versions on HTTPS and SSL Proxy load balancers. | **CIS for GCP 3.0**: 3.9<br>**NIST 800-53 R4**: SC-7<br>**ISO-2700-1 v2013**: A.14.1.3 |
@@ -135,16 +147,30 @@ In that case, the controls placed in the `organization/scc-sha-custom-modules` f
 | `iam.serviceAccountKeyExposureResponse` | Enforce Google to disable the service keys if a service account linked key is detected to be exposed publicly. |  |
 | `iam.workloadIdentityPoolAwsAccounts` | Prevent creation of workload identity pools using AWS accounts, except if explicitly allowed. |  |
 | `iam.workloadIdentityPoolProviders` | Prevent creation of any workload identity pools except if explicitly allowed. |  |
+| `managedkafka.managed.disableKafkaConnectClusterCreateAndUpdate` | Disable the creation and update of Managed Service for Apache Kafka Connect clusters. | **Assured Workloads Data Boundary** |
+| `pubsub.enforceInTransitRegions` | Enforce that Pub/Sub message routing stays within allowed regions in transit. | **ITAR**<br>**Assured Workloads Data Boundary** |
+| `pubsub.managed.disableSubscriptionMessageTransforms` | Disable single-message transforms (SMTs) on Pub/Sub subscriptions. | **CJIS**<br>**FedRAMP High**<br>**IL2**<br>**IL4**<br>**IL5**<br>**ITAR**<br>**Assured Workloads Data Boundary** |
+| `pubsub.managed.disableTopicMessageTransforms` | Disable single-message transforms (SMTs) on Pub/Sub topics. | **CJIS**<br>**FedRAMP High**<br>**IL2**<br>**IL4**<br>**IL5**<br>**ITAR**<br>**Assured Workloads Data Boundary** |
 | `run.allowedBinaryAuthorizationPolicies` | Restrict Cloud Run services and jobs to an authorized list of Binary Authorization policies. |  |
 | `run.allowedIngress` | Ensure Cloud Run services only allow internal and load balancer traffic. |  |
 | `run.allowedVPCEgress` | Ensure all egress traffic from Cloud Run services and jobs is routed through a VPC network. |  |
+| `run.managed.disableEphemeralDisk` | Disable unencrypted ephemeral disk storage on Cloud Run services. | **FedRAMP 20x** |
+| `run.managed.disableJobsEphemeralDisk` | Disable unencrypted ephemeral disk storage on Cloud Run jobs. | **FedRAMP 20x** |
+| `run.managed.disableWorkerPoolsEphemeralDisk` | Disable unencrypted ephemeral disk storage on Cloud Run worker pools. | **FedRAMP 20x** |
 | `run.managed.requireInvokerIam` | Enforce an IAM invoker check for Cloud Run services. |  |
+| `spanner.assuredWorkloadsAdvancedServiceControls` | Enable Assured Workloads advanced service controls for Cloud Spanner. | **ITAR**<br>**Assured Workloads Data Boundary** |
+| `spanner.disableMultiRegionInstanceIfNoLocationSelected` | Prevent the creation of multi-region Cloud Spanner instances when no location is restricted. | **FedRAMP 20x** |
 | `sql.restrictAuthorizedNetworks` | Prevent the ability to add Authorized Networks for unproxied database access to Cloud SQL instances. |  |
+| `sql.restrictNoncompliantDiagnosticDataAccess` | Restrict non-compliant diagnostic data access on Cloud SQL instances. | **IL5**<br>**Assured Workloads Data Boundary** |
+| `sql.restrictNoncompliantResourceCreation` | Restrict the creation of non-compliant Cloud SQL resources. | **IL5**<br>**Assured Workloads Data Boundary** |
 | `sql.restrictPublicIp` | Ensure That Cloud SQL Database Instances Do Not Have Public IPs | **CIS for GCP 3.0**: 6.6<br>**CIS Controls 8.0**: 3.3, 4.6<br>**PCI-DSS 4.0**: 1.3.1<br>**NIST 800-53 R5**: AC-3, AC-5, AC-6, MA-4, MP-2<br>**NIST Cybersecurity Framework 1.0**: PR-AC-4<br>**ISO-2700-1 v2022**: A.5.10, A.5.15, A.8.3, A.8.4<br>**SOC2 v2017**: CC5.2.2, CC5.2.3, CC6.1.3, CC6.1.7<br>**HIPAA**: 164.308(a)(3)(i), 164.308(a)(3)(ii), 164.312(a)(1)<br>**Cloud Controls Matrix 4**: DSP-17 |
 | `storage.publicAccessPrevention` | Prevent anonymous or public access to Cloud Storage buckets. | **CIS for GCP 3.0**: 5.1<br>**CIS Controls 8.0**: 3.3<br>**PCI-DSS 4.0**: 1.3.1<br>**NIST 800-53 R4**: AC-2<br>**NIST 800-53 R5**: AC-3, AC-5, AC-6, MP-2<br>**NIST Cybersecurity Framework 1.0**: PR-AC-4<br>**ISO-2700-1 v2013**: A.14.1.3, A.8.2.3<br>**ISO-2700-1 v2022**: A.5.10, A.5.15, A.8.3, A.8.4<br>**SOC2 v2017**: CC5.2.3, CC6.1.3, CC6.1.7<br>**HIPAA**: 164.308(a)(3)(i), 164.308(a)(3)(ii), 164.312(a)(1)<br>**Cloud Controls Matrix 4**: DSP-17 |
 | `storage.restrictAuthTypes` | Restrict authentication types for Cloud Storage. |  |
 | `storage.secureHttpTransport` | Restrict unencrypted HTTP access to Cloud Storage. |  |
 | `storage.uniformBucketLevelAccess` | Enforce the enablement of uniform bucket-level access to Cloud Storage buckets. | **CIS for GCP 3.0**: 5.2<br>**CIS Controls 8.0**: 3.3<br>**PCI-DSS 4.0**: 1.3.1<br>**NIST 800-53 R5**: AC-3, AC-5, AC-6, MP-2<br>**NIST Cybersecurity Framework 1.0**: PR-AC-4<br>**ISO-2700-1 v2022**: A.5.10, A.5.15, A.8.3, A.8.4<br>**SOC2 v2017**: CC5.2.3, CC6.1.3, CC6.1.7<br>**HIPAA**: 164.308(a)(3)(i), 164.308(a)(3)(ii), 164.312(a)(1)<br>**Cloud Controls Matrix 4**: DSP-17 |
+| `vertexai.allowOnlyAllCompliantAPIs` | Restrict Vertex AI usage to FedRAMP High, IL4, and CJIS compliant APIs. | **FedRAMP 20x** |
+| `vertexai.allowOnlyIL5CompliantAPIs` | Restrict Vertex AI usage to DoD Impact Level 5 (IL5) compliant APIs. | **IL5**<br>**Assured Workloads Data Boundary** |
+| `vertexai.allowOnlyITARCompliantAPIs` | Restrict Vertex AI usage to ITAR compliant APIs. | **ITAR** |
 
 #### Custom Constraints
 

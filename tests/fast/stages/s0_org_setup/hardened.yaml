@@ -5208,6 +5208,21 @@ values:
         parameters: null
         values: []
     timeouts: null
+  module.organization-iam[0].google_org_policy_policy.default["compute.disableSshInBrowser"]:
+    dry_run_spec: []
+    name: organizations/1234567890/policies/compute.disableSshInBrowser
+    parent: organizations/1234567890
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+    timeouts: null
   module.organization-iam[0].google_org_policy_policy.default["compute.disableVpcExternalIpv6"]:
     dry_run_spec: []
     name: organizations/1234567890/policies/compute.disableVpcExternalIpv6
@@ -5271,6 +5286,21 @@ values:
   module.organization-iam[0].google_org_policy_policy.default["compute.managed.vmCanIpForward"]:
     dry_run_spec: []
     name: organizations/1234567890/policies/compute.managed.vmCanIpForward
+    parent: organizations/1234567890
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+    timeouts: null
+  module.organization-iam[0].google_org_policy_policy.default["compute.requireOsConfig"]:
+    dry_run_spec: []
+    name: organizations/1234567890/policies/compute.requireOsConfig
     parent: organizations/1234567890
     spec:
     - inherit_from_parent: null
@@ -7486,6 +7516,21 @@ values:
         parameters: null
         values: []
     timeouts: null
+  module.organization-iam[0].google_org_policy_policy.default["firestore.managed.disableEnhancedTextSearch"]:
+    dry_run_spec: []
+    name: organizations/1234567890/policies/firestore.managed.disableEnhancedTextSearch
+    parent: organizations/1234567890
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+    timeouts: null
   module.organization-iam[0].google_org_policy_policy.default["gcp.restrictCmekCryptoKeyProjects"]:
     dry_run_spec: []
     name: organizations/1234567890/policies/gcp.restrictCmekCryptoKeyProjects
@@ -7879,6 +7924,36 @@ values:
         parameters: null
         values: []
     timeouts: null
+  module.organization-iam[0].google_org_policy_policy.default["pubsub.managed.disableSubscriptionMessageTransforms"]:
+    dry_run_spec: []
+    name: organizations/1234567890/policies/pubsub.managed.disableSubscriptionMessageTransforms
+    parent: organizations/1234567890
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+    timeouts: null
+  module.organization-iam[0].google_org_policy_policy.default["pubsub.managed.disableTopicMessageTransforms"]:
+    dry_run_spec: []
+    name: organizations/1234567890/policies/pubsub.managed.disableTopicMessageTransforms
+    parent: organizations/1234567890
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+    timeouts: null
   module.organization-iam[0].google_org_policy_policy.default["run.allowedBinaryAuthorizationPolicies"]:
     dry_run_spec: []
     name: organizations/1234567890/policies/run.allowedBinaryAuthorizationPolicies
@@ -7932,6 +8007,51 @@ values:
         - allowed_values:
           - all-traffic
           denied_values: null
+    timeouts: null
+  module.organization-iam[0].google_org_policy_policy.default["run.managed.disableEphemeralDisk"]:
+    dry_run_spec: []
+    name: organizations/1234567890/policies/run.managed.disableEphemeralDisk
+    parent: organizations/1234567890
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+    timeouts: null
+  module.organization-iam[0].google_org_policy_policy.default["run.managed.disableJobsEphemeralDisk"]:
+    dry_run_spec: []
+    name: organizations/1234567890/policies/run.managed.disableJobsEphemeralDisk
+    parent: organizations/1234567890
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+    timeouts: null
+  module.organization-iam[0].google_org_policy_policy.default["run.managed.disableWorkerPoolsEphemeralDisk"]:
+    dry_run_spec: []
+    name: organizations/1234567890/policies/run.managed.disableWorkerPoolsEphemeralDisk
+    parent: organizations/1234567890
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
     timeouts: null
   module.organization-iam[0].google_org_policy_policy.default["run.managed.requireInvokerIam"]:
     dry_run_spec: []
@@ -9989,7 +10109,7 @@ counts:
   google_logging_project_settings: 3
   google_monitoring_alert_policy: 10
   google_org_policy_custom_constraint: 132
-  google_org_policy_policy: 196
+  google_org_policy_policy: 204
   google_organization_iam_audit_config: 1
   google_organization_iam_binding: 40
   google_organization_iam_custom_role: 14
@@ -10014,7 +10134,7 @@ counts:
   google_tags_tag_value_iam_binding: 4
   local_file: 9
   modules: 54
-  resources: 743
+  resources: 751
   terraform_data: 4
 
 outputs:

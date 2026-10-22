@@ -18,9 +18,25 @@
 
 # yaml-language-server: $schema=../../../../schemas/org-policies.schema.json
 
+# compute.disableGlobalCloudArmorPolicy:
+#   rules:
+#     - enforce: true
+
+# compute.disableGlobalLoadBalancing:
+#   rules:
+#     - enforce: true
+
+# compute.disableGlobalSelfManagedSslCertificate:
+#   rules:
+#     - enforce: true
+
 compute.disableGuestAttributesAccess:
   rules:
     - enforce: true
+
+# compute.disableInstanceDataAccessApis:
+#   rules:
+#     - enforce: true
 
 compute.disableInternetNetworkEndpointGroup:
   rules:
@@ -30,13 +46,25 @@ compute.disableNestedVirtualization:
   rules:
     - enforce: true
 
+# compute.disableNonFIPSMachineTypes:
+#   rules:
+#     - enforce: true
+
 compute.disableSerialPortAccess:
+  rules:
+    - enforce: true
+
+compute.disableSshInBrowser:
   rules:
     - enforce: true
 
 compute.disableVpcExternalIpv6:
   rules:
     - enforce: true
+
+# compute.enableComplianceMemoryProtection:
+#   rules:
+#     - enforce: true
 
 compute.managed.blockPreviewFeatures:
   rules:
@@ -47,6 +75,10 @@ compute.managed.disableSerialPortLogging:
     - enforce: true
 
 compute.managed.vmCanIpForward:
+  rules:
+    - enforce: true
+
+compute.requireOsConfig:
   rules:
     - enforce: true
 

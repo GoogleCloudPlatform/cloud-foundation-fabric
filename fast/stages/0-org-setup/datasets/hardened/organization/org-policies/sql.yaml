@@ -94,6 +94,14 @@ sql.restrictAuthorizedNetworks:
   rules:
     - enforce: true
 
+# sql.restrictNoncompliantDiagnosticDataAccess:
+#   rules:
+#     - enforce: true
+
+# sql.restrictNoncompliantResourceCreation:
+#   rules:
+#     - enforce: true
+
 sql.restrictPublicIp:
   rules:
     - enforce: true

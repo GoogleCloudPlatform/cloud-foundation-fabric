@@ -74,6 +74,10 @@ container.managed.enableWorkloadIdentityFederation:
   rules:
     - enforce: true
 
+# container.restrictNoncompliantDiagnosticDataAccess:
+#   rules:
+#     - enforce: true
+
 custom.gkeAllowedNodePoolImages:
   rules:
     - enforce: true

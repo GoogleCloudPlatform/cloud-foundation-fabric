@@ -95,3 +95,15 @@ custom.vertexaiWorkbenchRequireSecureBoot:
 custom.vertexaiWorkbenchRequireVtpm:
   rules:
     - enforce: true
+
+# vertexai.allowOnlyAllCompliantAPIs:
+#   rules:
+#     - enforce: true
+
+# vertexai.allowOnlyIL5CompliantAPIs:
+#   rules:
+#     - enforce: true
+
+# vertexai.allowOnlyITARCompliantAPIs:
+#   rules:
+#     - enforce: true
