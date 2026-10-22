@@ -18,8 +18,9 @@
 
 locals {
   ca_pool_ids = merge(
-    { for k, v in var.certificate_authority_pools : k => v.id },
-    { for k, v in module.cas : k => v.ca_pool_id }
+    local.ctx_lookup.ca_pools,
+    { for k, v in module.cas : k => v.ca_pool_id },
+    { for k, v in module.cas : "$ca_pools:${k}" => v.ca_pool_id }
   )
   trust_config_ids = {
     for k, v in google_certificate_manager_trust_config.default : k => v.id
@@ -31,15 +32,26 @@ module "cas" {
   for_each   = var.certificate_authorities
   project_id = local.project_id
   ca_configs = each.value.ca_configs
-  ca_pool_config = (
-    each.value.ca_pool_config != null
-    ? each.value.ca_pool_config
-    : {
-      create_pool = {
-        name = each.key
+  ca_pool_config = {
+    create_pool = (
+      try(each.value.ca_pool_config.use_pool.id, null) != null
+      ? null
+      : {
+        enterprise_tier = try(
+          each.value.ca_pool_config.create_pool.enterprise_tier, false
+        )
+        name = coalesce(
+          try(each.value.ca_pool_config.create_pool.name, null),
+          each.key
+        )
+        publishing_options = try(
+          each.value.ca_pool_config.create_pool.publishing_options, null
+        )
       }
-    }
-  )
+    )
+    use_pool = try(each.value.ca_pool_config.use_pool, null)
+  }
+  context      = local.ctx
   iam          = each.value.iam
   iam_bindings = each.value.iam_bindings
   iam_bindings_additive = merge(
@@ -60,7 +72,9 @@ resource "google_certificate_manager_trust_config" "default" {
   project     = local.project_id
   name        = each.key
   description = each.value.description
-  location    = each.value.location
+  location = lookup(
+    local.ctx_lookup.locations, each.value.location, each.value.location
+  )
   dynamic "allowlisted_certificates" {
     for_each = each.value.allowlisted_certificates
     content {
@@ -87,10 +101,12 @@ resource "google_certificate_manager_trust_config" "default" {
 }
 
 resource "google_network_security_tls_inspection_policy" "default" {
-  for_each              = var.tls_inspection_policies
-  project               = local.project_id
-  name                  = each.key
-  location              = each.value.location
+  for_each = var.tls_inspection_policies
+  project  = local.project_id
+  name     = each.key
+  location = lookup(
+    local.ctx_lookup.locations, each.value.location, each.value.location
+  )
   exclude_public_ca_set = each.value.exclude_public_ca_set
   ca_pool = lookup(
     local.ca_pool_ids, each.value.ca_pool_id, each.value.ca_pool_id

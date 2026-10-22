@@ -34,6 +34,18 @@ variable "automation" {
   })
 }
 
+variable "ca_pools" {
+  # tfdoc:variable:source 2-security
+  description = "Certificate authority pools."
+  type = map(object({
+    id       = string
+    ca_ids   = map(string)
+    location = string
+  }))
+  nullable = false
+  default  = {}
+}
+
 variable "host_project_ids" {
   # tfdoc:variable:source 2-networking
   description = "Networking stage host project id aliases."

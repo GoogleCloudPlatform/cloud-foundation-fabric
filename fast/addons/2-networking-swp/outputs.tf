@@ -16,6 +16,9 @@
 
 locals {
   tfvars = {
+    swp_ca_chains = {
+      for k, v in module.cas : k => v.ca_chains
+    }
     swp_cas_pool_ids = {
       for k, v in module.cas : k => v.ca_pool_id
     }
@@ -29,6 +32,11 @@ locals {
       for k, v in module.swp : k => v.service_attachment
     }
   }
+}
+
+output "ca_chains" {
+  description = "Certificate Authority Service CA chains in PEM format."
+  value       = local.tfvars.swp_ca_chains
 }
 
 output "cas_pool_ids" {

@@ -78,7 +78,12 @@ module "cas" {
   location   = "europe-west1"
   ca_pool_config = {
     use_pool = {
-      id = var.ca_pool_id
+      id = "$ca_pools:default"
+    }
+  }
+  context = {
+    ca_pools = {
+      default = var.ca_pool_id
     }
   }
 }
@@ -119,8 +124,8 @@ module "cas" {
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
 | [ca_pool_config](variables.tf#L105) | The CA pool config. Either use_pool or create_pool need to be used. Use pool takes precedence if both are defined. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
-| [location](variables.tf#L149) | The location of the CAs. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L154) | Project id. | <code>string</code> | ✓ |  |
+| [location](variables.tf#L151) | The location of the CAs. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L156) | Project id. | <code>string</code> | ✓ |  |
 | [ca_configs](variables.tf#L17) | The CA configurations. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#8230;&#125;</code> |
 | [context](variables.tf#L134) | Context-specific interpolations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam](variables-iam.tf#L17) | IAM bindings in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
