@@ -2846,6 +2846,23 @@ values:
     resource_types:
     - apikeys.googleapis.com/Key
     timeouts: null
+  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.artifactregistryRequireCleanupPolicies"]:
+    action_type: ALLOW
+    condition: 'resource.cleanupPolicies.size() > 0 &&
+
+      resource.cleanupPolicyDryRun == false'
+    description: Ensure that Artifact Registry repositories define at least one cleanup
+      policy with dry-run disabled
+    display_name: Require Artifact Registry repositories to configure active cleanup
+      policies
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.artifactregistryRequireCleanupPolicies
+    parent: organizations/1234567890
+    resource_types:
+    - artifactregistry.googleapis.com/Repository
+    timeouts: null
   module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.cloudArmorRequireCveCanaryRule"]:
     action_type: DENY
     condition: "(resource.type == '' || resource.type == 'CLOUD_ARMOR') &&\n!resource.rules.exists(rule,\n\
@@ -4669,6 +4686,51 @@ values:
     - CREATE
     - UPDATE
     name: custom.storageRequireBucketRetentionPolicy
+    parent: organizations/1234567890
+    resource_types:
+    - storage.googleapis.com/Bucket
+    timeouts: null
+  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.storageRequireDeleteLifecycleIsLive"]:
+    action_type: ALLOW
+    condition: "has(resource.lifecycle) &&\nresource.lifecycle.rule.exists(\n  r,\n\
+      \  r.action.type == 'Delete' && r.condition.isLive == true\n)"
+    description: Ensure that Cloud Storage buckets configure a lifecycle Delete rule
+      with isLive set to true
+    display_name: Require Cloud Storage buckets to have a Delete lifecycle rule with
+      isLive enabled
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.storageRequireDeleteLifecycleIsLive
+    parent: organizations/1234567890
+    resource_types:
+    - storage.googleapis.com/Bucket
+    timeouts: null
+  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.storageRequireLabels"]:
+    action_type: ALLOW
+    condition: resource.labels.size() > 0
+    description: Ensure that Cloud Storage buckets are configured with at least one
+      resource label for classification and inventory
+    display_name: Require Cloud Storage buckets to have labels
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.storageRequireLabels
+    parent: organizations/1234567890
+    resource_types:
+    - storage.googleapis.com/Bucket
+    timeouts: null
+  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.storageRequireOwnerLabel"]:
+    action_type: ALLOW
+    condition: '''owner'' in resource.labels &&
+
+      resource.labels[''owner''] != '''''
+    description: Ensure that Cloud Storage buckets define a non-empty owner label
+    display_name: Require Cloud Storage buckets to have a non-empty owner label
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.storageRequireOwnerLabel
     parent: organizations/1234567890
     resource_types:
     - storage.googleapis.com/Bucket
@@ -10108,7 +10170,7 @@ counts:
   google_logging_project_bucket_config: 6
   google_logging_project_settings: 3
   google_monitoring_alert_policy: 10
-  google_org_policy_custom_constraint: 132
+  google_org_policy_custom_constraint: 136
   google_org_policy_policy: 204
   google_organization_iam_audit_config: 1
   google_organization_iam_binding: 40
@@ -10134,7 +10196,7 @@ counts:
   google_tags_tag_value_iam_binding: 4
   local_file: 9
   modules: 54
-  resources: 751
+  resources: 755
   terraform_data: 4
 
 outputs:
