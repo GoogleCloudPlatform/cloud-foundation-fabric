@@ -15,6 +15,12 @@
  */
 
 locals {
+  ctx = {
+    for k, v in var.context : k => {
+      for kk, vv in v : "${local.ctx_p}${k}:${kk}" => vv
+    }
+  }
+  ctx_p = "$"
   data_stores_target_sites = {
     for item in flatten([
       for data_store_id, data_store_config in var.data_stores_configs :
@@ -28,18 +34,50 @@ locals {
       ]
     ]) : item.key => item
   }
+  location   = lookup(local.ctx.locations, var.location, var.location)
+  project_id = lookup(local.ctx.project_ids, var.project_id, var.project_id)
+}
+
+resource "google_discovery_engine_cmek_config" "default" {
+  for_each       = var.encryption_configs
+  project        = local.project_id
+  location       = lookup(local.ctx.locations, each.key, each.key)
+  cmek_config_id = var.name
+  kms_key = lookup(
+    local.ctx.kms_keys, each.value.kms_key, each.value.kms_key
+  )
+  set_default = each.value.set_default
+
+  dynamic "single_region_keys" {
+    for_each = each.value.single_region_keys
+
+    content {
+      kms_key = lookup(
+        local.ctx.kms_keys, single_region_keys.value, single_region_keys.value
+      )
+    }
+  }
 }
 
 resource "google_discovery_engine_data_store" "default" {
-  for_each                     = var.data_stores_configs
-  data_store_id                = "${var.name}-${each.key}"
-  project                      = var.project_id
-  location                     = coalesce(each.value.location, var.location)
+  for_each      = var.data_stores_configs
+  data_store_id = "${var.name}-${each.key}"
+  project       = local.project_id
+  location = (
+    each.value.location == null
+    ? local.location
+    : lookup(local.ctx.locations, each.value.location, each.value.location)
+  )
   industry_vertical            = each.value.industry_vertical
   content_config               = each.value.content_config
   solution_types               = each.value.solution_types
   create_advanced_site_search  = each.value.create_advanced_site_search
   skip_default_schema_creation = each.value.skip_default_schema_creation
+  kms_key_name = (
+    each.value.kms_key == null
+    ? null
+    : lookup(local.ctx.kms_keys, each.value.kms_key, each.value.kms_key)
+  )
   display_name = coalesce(
     each.value.display_name, "${var.name}-${each.key}"
   )
@@ -160,6 +198,9 @@ resource "google_discovery_engine_data_store" "default" {
       }
     }
   }
+
+  # CMEK has to be registered before data stores are created
+  depends_on = [google_discovery_engine_cmek_config.default]
 }
 
 resource "google_discovery_engine_schema" "default" {
@@ -168,7 +209,7 @@ resource "google_discovery_engine_schema" "default" {
     : k => v if try(v.json_schema, null) != null
   })
   schema_id     = "${var.name}-${each.key}"
-  project       = var.project_id
+  project       = local.project_id
   location      = google_discovery_engine_data_store.default[each.key].location
   data_store_id = google_discovery_engine_data_store.default[each.key].data_store_id
   json_schema   = each.value.json_schema
@@ -179,7 +220,7 @@ resource "google_discovery_engine_sitemap" "default" {
     for k, v in var.data_stores_configs
     : k => v if try(v.sites_search_config.sitemap_uri, null) != null
   })
-  project       = var.project_id
+  project       = local.project_id
   location      = google_discovery_engine_data_store.default[each.key].location
   data_store_id = google_discovery_engine_data_store.default[each.key].data_store_id
   uri           = each.value.sites_search_config.sitemap_uri
@@ -187,7 +228,7 @@ resource "google_discovery_engine_sitemap" "default" {
 
 resource "google_discovery_engine_target_site" "default" {
   for_each             = local.data_stores_target_sites
-  project              = var.project_id
+  project              = local.project_id
   location             = google_discovery_engine_data_store.default[each.value.data_store_id].location
   data_store_id        = google_discovery_engine_data_store.default[each.value.data_store_id].data_store_id
   provided_uri_pattern = each.value.provided_uri_pattern

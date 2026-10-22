@@ -243,7 +243,8 @@ variable "network_config" {
           consumer_network            = string
           consumer_service_project_id = optional(string)
         })))
-        psc_auto_dns_enabled           = optional(bool)
+        psc_auto_dns_enabled = optional(bool)
+        # only supported for ENTERPRISE_PLUS primary instances
         psc_write_endpoint_dns_enabled = optional(bool)
       }))
       enable_private_path_for_services = optional(bool, false)

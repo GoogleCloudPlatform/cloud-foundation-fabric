@@ -19,7 +19,7 @@ resource "google_discovery_engine_chat_engine" "default" {
   engine_id     = var.name
   display_name  = var.name
   collection_id = var.engines_configs.collection_id
-  project       = var.project_id
+  project       = local.project_id
   data_store_ids = [
     for ds in var.engines_configs.data_store_ids
     : coalesce(
@@ -33,9 +33,13 @@ resource "google_discovery_engine_chat_engine" "default" {
     "GENERIC"
   )
   location = coalesce(
-    try(var.engines_configs.location, null),
+    try(lookup(
+      local.ctx.locations,
+      var.engines_configs.location,
+      var.engines_configs.location
+    ), null),
     try(google_discovery_engine_data_store.default[var.engines_configs.data_store_ids[0]].location, null),
-    var.location
+    local.location
   )
 
   chat_engine_config {
@@ -59,6 +63,9 @@ resource "google_discovery_engine_chat_engine" "default" {
       company_name = var.engines_configs.chat_engine_config.company_name
     }
   }
+
+  # CMEK has to be registered before engines are created
+  depends_on = [google_discovery_engine_cmek_config.default]
 }
 
 resource "google_discovery_engine_search_engine" "default" {
@@ -66,7 +73,7 @@ resource "google_discovery_engine_search_engine" "default" {
   engine_id     = var.name
   display_name  = var.name
   collection_id = var.engines_configs.collection_id
-  project       = var.project_id
+  project       = local.project_id
   data_store_ids = [
     for ds in var.engines_configs.data_store_ids
     : coalesce(
@@ -80,12 +87,19 @@ resource "google_discovery_engine_search_engine" "default" {
     "GENERIC"
   )
   location = coalesce(
-    try(var.engines_configs.location, null),
+    try(lookup(
+      local.ctx.locations,
+      var.engines_configs.location,
+      var.engines_configs.location
+    ), null),
     try(google_discovery_engine_data_store.default[var.engines_configs.data_store_ids[0]].location, null),
-    var.location
+    local.location
   )
   search_engine_config {
     search_add_ons = var.engines_configs.search_engine_config.search_add_ons
     search_tier    = var.engines_configs.search_engine_config.search_tier
   }
+
+  # CMEK has to be registered before engines are created
+  depends_on = [google_discovery_engine_cmek_config.default]
 }
