@@ -34,6 +34,14 @@
 #   rules:
 #     - enforce: true
 
+# custom.storageRequireRegionalLocation:
+#   rules:
+#     - enforce: true
+
+custom.storageRequireRetentionOrSoftDelete:
+  rules:
+    - enforce: true
+
 # custom.storageRequireSetStorageClassLifecycle:
 #   rules:
 #     - enforce: true

@@ -2846,6 +2846,39 @@ values:
     resource_types:
     - apikeys.googleapis.com/Key
     timeouts: null
+  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.cloudArmorRequireCveCanaryRule"]:
+    action_type: DENY
+    condition: "(resource.type == '' || resource.type == 'CLOUD_ARMOR') &&\n!resource.rules.exists(rule,\n\
+      \  has(rule.match) && (\n    rule.match.versionedExpr == 'cve-canary' ||\n \
+      \   (has(rule.match.expr) && rule.match.expr.expression.contains('cve-canary'))\n\
+      \  )\n)"
+    description: Ensure Cloud Armor backend security policies include a rule evaluating
+      the cve-canary WAF expression
+    display_name: Require cve-canary WAF rule in Cloud Armor security policies
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.cloudArmorRequireCveCanaryRule
+    parent: organizations/1234567890
+    resource_types:
+    - compute.googleapis.com/SecurityPolicy
+    timeouts: null
+  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.cloudArmorRequireLayer7DdosDefense"]:
+    action_type: DENY
+    condition: "(resource.type == '' || resource.type == 'CLOUD_ARMOR') && (\n  !has(resource.adaptiveProtectionConfig)\
+      \ ||\n  !has(resource.adaptiveProtectionConfig.layer7DdosDefenseConfig) ||\n\
+      \  !resource.adaptiveProtectionConfig.layer7DdosDefenseConfig.enable\n)"
+    description: Ensure Cloud Armor backend security policies have Adaptive Protection
+      Layer 7 DDoS Defense enabled
+    display_name: Require Layer 7 DDoS Defense on Cloud Armor security policies
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.cloudArmorRequireLayer7DdosDefense
+    parent: organizations/1234567890
+    resource_types:
+    - compute.googleapis.com/SecurityPolicy
+    timeouts: null
   module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.cloudbuildDisableWorkerPoolExternalIP"]:
     action_type: DENY
     condition: (resource.privatePoolV1Config.networkConfig.egressOption != "NO_PUBLIC_EGRESS")
@@ -3117,6 +3150,25 @@ values:
     resource_types:
     - sqladmin.googleapis.com/Instance
     timeouts: null
+  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.cloudsqlRequireMaintenanceWindow"]:
+    action_type: DENY
+    condition: '!has(resource.settings) ||
+
+      !has(resource.settings.maintenanceWindow) ||
+
+      !has(resource.settings.maintenanceWindow.day) ||
+
+      resource.settings.maintenanceWindow.day <= 0'
+    description: Ensure Cloud SQL instances have a maintenance window day configured
+    display_name: Require maintenance window on Cloud SQL instances
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.cloudsqlRequireMaintenanceWindow
+    parent: organizations/1234567890
+    resource_types:
+    - sqladmin.googleapis.com/Instance
+    timeouts: null
   module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.cloudsqlRequireMySQLDatabaseFlags"]:
     action_type: DENY
     condition: "resource.databaseVersion.startsWith('MYSQL') && (\n  !resource.settings.databaseFlags.exists(flag,\n\
@@ -3280,6 +3332,24 @@ values:
     resource_types:
     - sqladmin.googleapis.com/Instance
     timeouts: null
+  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.composerRequireMaintenanceWindow"]:
+    action_type: DENY
+    condition: '!has(resource.config) ||
+
+      !has(resource.config.maintenanceWindow) ||
+
+      resource.config.maintenanceWindow.recurrence == '''''
+    description: Ensure Cloud Composer environments have a maintenance window recurrence
+      configured
+    display_name: Require maintenance window on Cloud Composer environments
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.composerRequireMaintenanceWindow
+    parent: organizations/1234567890
+    resource_types:
+    - composer.googleapis.com/Environment
+    timeouts: null
   module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.dataprocAllowedImageVersions"]:
     action_type: DENY
     condition: "has(resource.config.softwareConfig.imageVersion) && (\n  resource.config.softwareConfig.imageVersion.startsWith('1.')\
@@ -3351,6 +3421,21 @@ values:
     parent: organizations/1234567890
     resource_types:
     - dataproc.googleapis.com/Cluster
+    timeouts: null
+  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.discoveryengineDisableNonGcpDataStores"]:
+    action_type: ALLOW
+    condition: "resource.contentConfig in [\n  '',\n  'CONTENT_CONFIG_UNSPECIFIED',\n\
+      \  'NO_CONTENT',\n  'CONTENT_REQUIRED'\n]"
+    description: Ensure Vertex AI Agent Builder (Discovery Engine) data stores only
+      use standard GCP content configurations (NO_CONTENT or CONTENT_REQUIRED)
+    display_name: Restrict Discovery Engine data stores to GCP content configurations
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.discoveryengineDisableNonGcpDataStores
+    parent: organizations/1234567890
+    resource_types:
+    - discoveryengine.googleapis.com/DataStore
     timeouts: null
   module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.dnsAllowedSigningAlgorithms"]:
     action_type: DENY
@@ -4095,6 +4180,22 @@ values:
     resource_types:
     - container.googleapis.com/Cluster
     timeouts: null
+  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.gkeRequireMaintenanceWindow"]:
+    action_type: DENY
+    condition: "!has(resource.maintenancePolicy) ||\n!has(resource.maintenancePolicy.window)\
+      \ || (\n  !has(resource.maintenancePolicy.window.dailyMaintenanceWindow) &&\n\
+      \  !has(resource.maintenancePolicy.window.recurringWindow)\n)"
+    description: Ensure GKE clusters have a daily or recurring maintenance window
+      configured
+    display_name: Require maintenance window on GKE clusters
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.gkeRequireMaintenanceWindow
+    parent: organizations/1234567890
+    resource_types:
+    - container.googleapis.com/Cluster
+    timeouts: null
   module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.gkeRequireMasterAuthorizedNetworks"]:
     action_type: DENY
     condition: resource.masterAuthorizedNetworksConfig.enabled == false
@@ -4144,6 +4245,22 @@ values:
     - CREATE
     - UPDATE
     name: custom.gkeRequireNodePoolAutoUpgrade
+    parent: organizations/1234567890
+    resource_types:
+    - container.googleapis.com/NodePool
+    timeouts: null
+  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.gkeRequireNodePoolAutoscaling"]:
+    action_type: DENY
+    condition: '(!has(resource.autopilotConfig) || !resource.autopilotConfig.enabled)
+      &&
+
+      (!has(resource.autoscaling) || !resource.autoscaling.enabled)'
+    description: Ensure GKE standard cluster node pools have cluster autoscaler enabled
+    display_name: Require autoscaling enabled on GKE node pools
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.gkeRequireNodePoolAutoscaling
     parent: organizations/1234567890
     resource_types:
     - container.googleapis.com/NodePool
@@ -4352,6 +4469,42 @@ values:
     resource_types:
     - iam.googleapis.com/AllowPolicy
     timeouts: null
+  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.iamLimitKmsCryptoKeyUsers"]:
+    action_type: DENY
+    condition: "resource.bindings.exists(binding,\n  RoleNameMatches(binding.role,\
+      \ [\n    'roles/cloudkms.cryptoKeyEncrypterDecrypter',\n    'roles/cloudkms.cryptoKeyEncrypter',\n\
+      \    'roles/cloudkms.cryptoKeyDecrypter',\n    'roles/cloudkms.signer',\n  \
+      \  'roles/cloudkms.signerVerifier'\n  ]) &&\n  binding.members.size() > 3\n)"
+    description: Ensure IAM policy updates for Cloud KMS crypto key roles do not grant
+      more than 3 principals in a single binding change
+    display_name: Limit Cloud KMS crypto key role bindings to at most 3 principals
+      per policy change
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.iamLimitKmsCryptoKeyUsers
+    parent: organizations/1234567890
+    resource_types:
+    - iam.googleapis.com/AllowPolicy
+    timeouts: null
+  ? module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.iamRestrictFirestoreServiceAccountAccess"]
+  : action_type: DENY
+    condition: "resource.bindings.exists(binding,\n  RoleNameContains(binding.role,\
+      \ ['firestore', 'datastore']) &&\n  binding.members.exists(member,\n    MemberSubjectStartsWith(member,\
+      \ ['serviceAccount:']) &&\n    !MemberSubjectEndsWith(member, ['@gcp-sa-firestore.iam.gserviceaccount.com'])\n\
+      \  )\n)"
+    description: Ensure IAM roles containing firestore or datastore are not granted
+      to service accounts other than the Firestore service agent
+    display_name: Restrict Firestore and Datastore roles on service accounts to the
+      Firestore service agent
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.iamRestrictFirestoreServiceAccountAccess
+    parent: organizations/1234567890
+    resource_types:
+    - iam.googleapis.com/AllowPolicy
+    timeouts: null
   module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.loggingRequireLogBucketRetention90Days"]:
     action_type: DENY
     condition: resource.retentionDays < 90
@@ -4440,6 +4593,22 @@ values:
     resource_types:
     - compute.googleapis.com/Subnetwork
     timeouts: null
+  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.redisRequireMaintenancePolicy"]:
+    action_type: DENY
+    condition: '!has(resource.maintenancePolicy) ||
+
+      resource.maintenancePolicy.weeklyMaintenanceWindow.size() == 0'
+    description: Ensure Memorystore for Redis instances have a weekly maintenance
+      window configured
+    display_name: Require maintenance policy on Memorystore for Redis instances
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.redisRequireMaintenancePolicy
+    parent: organizations/1234567890
+    resource_types:
+    - redis.googleapis.com/Instance
+    timeouts: null
   module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.storageAllowedStorageClasses"]:
     action_type: DENY
     condition: "(has(resource.storageClass) &&\n  !(resource.storageClass in ['STANDARD',\
@@ -4500,6 +4669,41 @@ values:
     - CREATE
     - UPDATE
     name: custom.storageRequireBucketRetentionPolicy
+    parent: organizations/1234567890
+    resource_types:
+    - storage.googleapis.com/Bucket
+    timeouts: null
+  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.storageRequireRegionalLocation"]:
+    action_type: DENY
+    condition: '(has(resource.customPlacementConfig) && resource.customPlacementConfig.dataLocations.size()
+      > 0) ||
+
+      !resource.location.matches(''^[a-zA-Z]+-[a-zA-Z]+[0-9]+$'')'
+    description: Ensure Cloud Storage buckets are deployed in a single region rather
+      than multi-region or dual-region locations
+    display_name: Require regional deployment for Cloud Storage buckets
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.storageRequireRegionalLocation
+    parent: organizations/1234567890
+    resource_types:
+    - storage.googleapis.com/Bucket
+    timeouts: null
+  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.storageRequireRetentionOrSoftDelete"]:
+    action_type: DENY
+    condition: "has(resource.softDeletePolicy) &&\nresource.softDeletePolicy.retentionDurationSeconds\
+      \ <= 0 &&\n!(\n  has(resource.versioning) &&\n  resource.versioning.enabled\
+      \ &&\n  has(resource.objectRetention) &&\n  resource.objectRetention.mode ==\
+      \ 'Enabled'\n)"
+    description: Ensure Cloud Storage buckets have a non-zero soft delete policy or
+      both object versioning and object retention enabled
+    display_name: Require soft delete policy or object versioning with object retention
+      on Cloud Storage buckets
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.storageRequireRetentionOrSoftDelete
     parent: organizations/1234567890
     resource_types:
     - storage.googleapis.com/Bucket
@@ -6139,6 +6343,21 @@ values:
         parameters: null
         values: []
     timeouts: null
+  module.organization-iam[0].google_org_policy_policy.default["custom.discoveryengineDisableNonGcpDataStores"]:
+    dry_run_spec: []
+    name: organizations/1234567890/policies/custom.discoveryengineDisableNonGcpDataStores
+    parent: organizations/1234567890
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+    timeouts: null
   module.organization-iam[0].google_org_policy_policy.default["custom.dnsAllowedSigningAlgorithms"]:
     dry_run_spec: []
     name: organizations/1234567890/policies/custom.dnsAllowedSigningAlgorithms
@@ -7069,6 +7288,21 @@ values:
   module.organization-iam[0].google_org_policy_policy.default["custom.networkRequireSubnetPrivateGoogleAccess"]:
     dry_run_spec: []
     name: organizations/1234567890/policies/custom.networkRequireSubnetPrivateGoogleAccess
+    parent: organizations/1234567890
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+    timeouts: null
+  module.organization-iam[0].google_org_policy_policy.default["custom.storageRequireRetentionOrSoftDelete"]:
+    dry_run_spec: []
+    name: organizations/1234567890/policies/custom.storageRequireRetentionOrSoftDelete
     parent: organizations/1234567890
     spec:
     - inherit_from_parent: null
@@ -9754,8 +9988,8 @@ counts:
   google_logging_project_bucket_config: 6
   google_logging_project_settings: 3
   google_monitoring_alert_policy: 10
-  google_org_policy_custom_constraint: 120
-  google_org_policy_policy: 194
+  google_org_policy_custom_constraint: 132
+  google_org_policy_policy: 196
   google_organization_iam_audit_config: 1
   google_organization_iam_binding: 40
   google_organization_iam_custom_role: 14
@@ -9780,7 +10014,7 @@ counts:
   google_tags_tag_value_iam_binding: 4
   local_file: 9
   modules: 54
-  resources: 729
+  resources: 743
   terraform_data: 4
 
 outputs:

@@ -126,6 +126,14 @@ compute.vmExternalIpAccess:
     - deny:
         all: true
 
+# custom.cloudArmorRequireCveCanaryRule:
+#   rules:
+#     - enforce: true
+
+# custom.cloudArmorRequireLayer7DdosDefense:
+#   rules:
+#     - enforce: true
+
 custom.networkRequireSubnetPrivateGoogleAccess:
   rules:
     - enforce: true

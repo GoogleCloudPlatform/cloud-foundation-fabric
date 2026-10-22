@@ -122,6 +122,10 @@ custom.gkeRequireIntraNodeVisibility:
   rules:
     - enforce: true
 
+# custom.gkeRequireMaintenanceWindow:
+#   rules:
+#     - enforce: true
+
 custom.gkeRequireMasterAuthorizedNetworks:
   rules:
     - enforce: true
@@ -137,6 +141,10 @@ custom.gkeRequireNodePoolAutoRepair:
 custom.gkeRequireNodePoolAutoUpgrade:
   rules:
     - enforce: true
+
+# custom.gkeRequireNodePoolAutoscaling:
+#   rules:
+#     - enforce: true
 
 custom.gkeRequireNodePoolCMEKEncryption:
   rules:

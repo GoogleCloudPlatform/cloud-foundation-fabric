@@ -56,6 +56,10 @@ ainotebooks.restrictVpcNetworks:
         values:
           - "under:organizations/${organization.id}"
 
+custom.discoveryengineDisableNonGcpDataStores:
+  rules:
+    - enforce: true
+
 custom.vertexaiRuntimeTemplateDisableInternetAccess:
   rules:
     - enforce: true

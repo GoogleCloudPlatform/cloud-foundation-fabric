@@ -50,6 +50,10 @@ custom.cloudsqlRequireHighAvailability:
   rules:
     - enforce: true
 
+# custom.cloudsqlRequireMaintenanceWindow:
+#   rules:
+#     - enforce: true
+
 custom.cloudsqlRequireMySQLDatabaseFlags:
   rules:
     - enforce: true
