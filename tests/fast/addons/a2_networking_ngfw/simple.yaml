@@ -98,7 +98,16 @@ values:
     threat_prevention_profile: []
     timeouts: null
     type: URL_FILTERING
-    url_filtering_profile: []
+    url_filtering_profile:
+    - url_filters:
+      - filtering_action: ALLOW
+        priority: 100
+        urls:
+        - example.com
+      - filtering_action: DENY
+        priority: 200
+        urls:
+        - '*'
   google_network_security_security_profile_group.default["ngfw-0"]:
     custom_intercept_profile: null
     custom_mirroring_profile: null
