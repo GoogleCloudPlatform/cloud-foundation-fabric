@@ -4,15 +4,37 @@ _fast_debug = {
 automation = {
   outputs_bucket = "test"
 }
+ca_ids = {
+  root-pool-root-ca-0 = "projects/xxx-prod-sec-core-0/locations/europe-west8/caPools/root-pool/certificateAuthorities/root-ca-0"
+}
+ca_pools = {
+  root-pool = "projects/xxx-prod-sec-core-0/locations/europe-west8/caPools/root-pool"
+}
 certificate_authorities = {
+  ngfw-root = {
+    location = "europe-west8"
+    ca_configs = {
+      root-ca-0 = {
+        deletion_protection = false
+      }
+    }
+  }
   ngfw-0 = {
     location = "europe-west8"
+    ca_pool_config = {
+      create_pool = {
+        enterprise_tier = true
+      }
+    }
     ca_configs = {
       ca-0 = {
         deletion_protection = false
         subject = {
           common_name  = "fast.example.com"
           organization = "FAST Test"
+        }
+        subordinate_config = {
+          root_ca_id = "$ca_ids:root-pool-root-ca-0"
         }
       }
     }
