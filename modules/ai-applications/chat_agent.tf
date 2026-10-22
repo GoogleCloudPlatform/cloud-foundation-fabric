@@ -21,16 +21,20 @@ resource "google_dialogflow_cx_agent" "default" {
     ? 1 : 0
   )
   display_name             = var.name
-  project                  = var.project_id
+  project                  = local.project_id
   description              = var.engines_configs.chat_engine_config.agent_config.description
   default_language_code    = coalesce(var.engines_configs.chat_engine_config.agent_config.default_language_code, "en")
   time_zone                = coalesce(var.engines_configs.chat_engine_config.agent_config.time_zone, "America/Los_Angeles")
   supported_language_codes = var.engines_configs.chat_engine_config.agent_config.supported_language_codes
   avatar_uri               = var.engines_configs.chat_engine_config.agent_config.avatar_uri
   location = coalesce(
-    try(var.engines_configs.chat_engine_config.agent_config.location, null),
+    try(lookup(
+      local.ctx.locations,
+      var.engines_configs.chat_engine_config.agent_config.location,
+      var.engines_configs.chat_engine_config.agent_config.location
+    ), null),
     try(google_discovery_engine_data_store.default[var.engines_configs.data_store_ids[0]].location, null),
-    var.location
+    local.location
   )
   security_settings = try(
     coalesce(
@@ -47,9 +51,16 @@ resource "google_dialogflow_cx_security_settings" "default" {
     && try(var.engines_configs.chat_engine_config.agent_config.security_settings_config.create, false)
     ? 1 : 0
   )
-  display_name          = var.name
-  project               = var.project_id
-  location              = coalesce(var.chat_agent_security_configs.location, var.location)
+  display_name = var.name
+  project      = local.project_id
+  location = coalesce(
+    try(lookup(
+      local.ctx.locations,
+      var.chat_agent_security_configs.location,
+      var.chat_agent_security_configs.location
+    ), null),
+    local.location
+  )
   redaction_strategy    = var.chat_agent_security_configs.redaction_strategy
   redaction_scope       = var.chat_agent_security_configs.redaction_scope
   inspect_template      = try(google_data_loss_prevention_inspect_template.default[0].id, null)
@@ -97,15 +108,19 @@ module "audio-export-settings-bucket" {
     || try(var.chat_agent_security_configs.audio_export_settings.id, null) != null
   ) ? 0 : 1
   source     = "../gcs"
-  project_id = var.project_id
+  project_id = local.project_id
   prefix     = var.chat_agent_security_configs.audio_export_settings.gcs_bucket_config.prefix
   name = try(
     var.chat_agent_security_configs.audio_export_settings.gcs_bucket_config.prefix,
     var.name
   )
   location = coalesce(
-    try(var.chat_agent_security_configs.audio_export_settings.gcs_bucket_config.location),
-    var.location
+    try(lookup(
+      local.ctx.locations,
+      var.chat_agent_security_configs.audio_export_settings.gcs_bucket_config.location,
+      var.chat_agent_security_configs.audio_export_settings.gcs_bucket_config.location
+    ), null),
+    local.location
   )
   versioning = var.chat_agent_security_configs.audio_export_settings.gcs_bucket_config.versioning
 }
@@ -120,7 +135,7 @@ resource "google_data_loss_prevention_inspect_template" "default" {
   description  = var.chat_agent_security_configs.dlp_inspect_template.description
   parent = coalesce(
     var.chat_agent_security_configs.dlp_inspect_template.parent,
-    "projects/${var.project_id}"
+    "projects/${local.project_id}"
   )
 
   inspect_config {
@@ -408,7 +423,7 @@ resource "google_data_loss_prevention_deidentify_template" "default" {
   )
   parent = coalesce(
     var.chat_agent_security_configs.dlp_deidentify_template.parent,
-    "projects/${var.project_id}"
+    "projects/${local.project_id}"
   )
   display_name = var.name
   description  = var.chat_agent_security_configs.dlp_deidentify_template.description
