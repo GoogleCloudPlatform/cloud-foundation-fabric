@@ -158,6 +158,10 @@ custom.gkeRequireSecureBoot:
   rules:
     - enforce: true
 
+custom.gkeRequireSecurityPosture:
+  rules:
+    - enforce: true
+
 custom.gkeRequireVPCNativeCluster:
   rules:
     - enforce: true
