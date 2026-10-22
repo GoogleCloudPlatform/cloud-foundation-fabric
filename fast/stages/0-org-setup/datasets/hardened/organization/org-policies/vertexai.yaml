@@ -32,6 +32,20 @@ ainotebooks.disableRootAccess:
   rules:
     - enforce: true
 
+ainotebooks.disableTerminal:
+  rules:
+    - enforce: true
+
+# ainotebooks.environmentOptions:
+#   rules:
+#     - allow:
+#         values:
+#           - "ainotebooks-container/gcr.io/deeplearning-platform-release/workbench-container:latest"
+
+ainotebooks.requireAutoUpgradeSchedule:
+  rules:
+    - enforce: true
+
 ainotebooks.restrictPublicIp:
   rules:
     - enforce: true
@@ -41,3 +55,39 @@ ainotebooks.restrictVpcNetworks:
     - allow:
         values:
           - "under:organizations/${organization.id}"
+
+custom.vertexaiRuntimeTemplateDisableInternetAccess:
+  rules:
+    - enforce: true
+
+custom.vertexaiRuntimeTemplateRequireIdleShutdown:
+  rules:
+    - enforce: true
+
+custom.vertexaiRuntimeTemplateRequireSecureBoot:
+  rules:
+    - enforce: true
+
+custom.vertexaiWorkbenchDisableDefaultServiceAccount:
+  rules:
+    - enforce: true
+
+custom.vertexaiWorkbenchRequireAutoUpgrade:
+  rules:
+    - enforce: true
+
+custom.vertexaiWorkbenchRequireDeleteToTrash:
+  rules:
+    - enforce: true
+
+custom.vertexaiWorkbenchRequireIntegrityMonitoring:
+  rules:
+    - enforce: true
+
+custom.vertexaiWorkbenchRequireSecureBoot:
+  rules:
+    - enforce: true
+
+custom.vertexaiWorkbenchRequireVtpm:
+  rules:
+    - enforce: true

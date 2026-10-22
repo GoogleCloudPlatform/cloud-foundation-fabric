@@ -4016,6 +4016,173 @@ values:
     resource_types:
     - storage.googleapis.com/Bucket
     timeouts: null
+  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.vertexaiRuntimeTemplateDisableInternetAccess"]:
+    action_type: DENY
+    condition: 'has(resource.networkSpec) &&
+
+      has(resource.networkSpec.enableInternetAccess) &&
+
+      resource.networkSpec.enableInternetAccess == true'
+    description: Prevent Vertex AI Colab Enterprise runtime templates from having
+      public internet access enabled
+    display_name: Disable internet access on Vertex AI runtime templates
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.vertexaiRuntimeTemplateDisableInternetAccess
+    parent: organizations/1234567890
+    resource_types:
+    - aiplatform.googleapis.com/NotebookRuntimeTemplate
+    timeouts: null
+  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.vertexaiRuntimeTemplateRequireIdleShutdown"]:
+    action_type: DENY
+    condition: 'has(resource.idleShutdownConfig) &&
+
+      has(resource.idleShutdownConfig.idleShutdownDisabled) &&
+
+      resource.idleShutdownConfig.idleShutdownDisabled == true'
+    description: Enforce that Vertex AI Colab Enterprise runtime templates have automatic
+      idle shutdown enabled
+    display_name: Require idle shutdown on Vertex AI runtime templates
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.vertexaiRuntimeTemplateRequireIdleShutdown
+    parent: organizations/1234567890
+    resource_types:
+    - aiplatform.googleapis.com/NotebookRuntimeTemplate
+    timeouts: null
+  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.vertexaiRuntimeTemplateRequireSecureBoot"]:
+    action_type: DENY
+    condition: '!has(resource.shieldedVmConfig) ||
+
+      !has(resource.shieldedVmConfig.enableSecureBoot) ||
+
+      resource.shieldedVmConfig.enableSecureBoot == false'
+    description: Enforce that Vertex AI Colab Enterprise runtime templates have Secure
+      Boot enabled
+    display_name: Enable Secure Boot on Vertex AI runtime templates
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.vertexaiRuntimeTemplateRequireSecureBoot
+    parent: organizations/1234567890
+    resource_types:
+    - aiplatform.googleapis.com/NotebookRuntimeTemplate
+    timeouts: null
+  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.vertexaiWorkbenchDisableDefaultServiceAccount"]:
+    action_type: DENY
+    condition: "!has(resource.gceSetup) ||\n!has(resource.gceSetup.serviceAccounts)\
+      \ ||\nresource.gceSetup.serviceAccounts.size() == 0 ||\nresource.gceSetup.serviceAccounts.exists(\n\
+      \  sa,\n  sa.email == '' ||\n  sa.email == 'default' ||\n  sa.email.endsWith('-compute@developer.gserviceaccount.com')\n\
+      )"
+    description: Prevent Vertex AI Workbench instances from using the default Compute
+      Engine service account
+    display_name: Disable default service account on Vertex AI Workbench instances
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.vertexaiWorkbenchDisableDefaultServiceAccount
+    parent: organizations/1234567890
+    resource_types:
+    - notebooks.googleapis.com/Instance
+    timeouts: null
+  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.vertexaiWorkbenchRequireAutoUpgrade"]:
+    action_type: DENY
+    condition: '!has(resource.gceSetup) ||
+
+      !has(resource.gceSetup.systemMetadata) ||
+
+      !(''notebook-upgrade-schedule'' in resource.gceSetup.systemMetadata) ||
+
+      resource.gceSetup.systemMetadata[''notebook-upgrade-schedule''] == '''''
+    description: Enforce that Vertex AI Workbench instances have an automatic upgrade
+      schedule configured
+    display_name: Require automatic upgrades on Vertex AI Workbench instances
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.vertexaiWorkbenchRequireAutoUpgrade
+    parent: organizations/1234567890
+    resource_types:
+    - notebooks.googleapis.com/Instance
+    timeouts: null
+  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.vertexaiWorkbenchRequireDeleteToTrash"]:
+    action_type: DENY
+    condition: '!has(resource.gceSetup) ||
+
+      !has(resource.gceSetup.systemMetadata) ||
+
+      !(''notebook-enable-delete-to-trash'' in resource.gceSetup.systemMetadata) ||
+
+      resource.gceSetup.systemMetadata[''notebook-enable-delete-to-trash''] != ''true'''
+    description: Enforce that Vertex AI Workbench instances have the delete to trash
+      feature enabled
+    display_name: Enable delete to trash on Vertex AI Workbench instances
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.vertexaiWorkbenchRequireDeleteToTrash
+    parent: organizations/1234567890
+    resource_types:
+    - notebooks.googleapis.com/Instance
+    timeouts: null
+  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.vertexaiWorkbenchRequireIntegrityMonitoring"]:
+    action_type: DENY
+    condition: 'has(resource.gceSetup) &&
+
+      has(resource.gceSetup.shieldedInstanceConfig) &&
+
+      resource.gceSetup.shieldedInstanceConfig.enableIntegrityMonitoring == false'
+    description: Enforce that Vertex AI Workbench instances are configured with integrity
+      monitoring enabled
+    display_name: Enable integrity monitoring on Vertex AI Workbench instances
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.vertexaiWorkbenchRequireIntegrityMonitoring
+    parent: organizations/1234567890
+    resource_types:
+    - notebooks.googleapis.com/Instance
+    timeouts: null
+  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.vertexaiWorkbenchRequireSecureBoot"]:
+    action_type: DENY
+    condition: '!has(resource.gceSetup) ||
+
+      !has(resource.gceSetup.shieldedInstanceConfig) ||
+
+      !has(resource.gceSetup.shieldedInstanceConfig.enableSecureBoot) ||
+
+      resource.gceSetup.shieldedInstanceConfig.enableSecureBoot == false'
+    description: Enforce that Vertex AI Workbench instances are configured with Secure
+      Boot enabled
+    display_name: Enable Secure Boot on Vertex AI Workbench instances
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.vertexaiWorkbenchRequireSecureBoot
+    parent: organizations/1234567890
+    resource_types:
+    - notebooks.googleapis.com/Instance
+    timeouts: null
+  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.vertexaiWorkbenchRequireVtpm"]:
+    action_type: DENY
+    condition: 'has(resource.gceSetup) &&
+
+      has(resource.gceSetup.shieldedInstanceConfig) &&
+
+      resource.gceSetup.shieldedInstanceConfig.enableVtpm == false'
+    description: Enforce that Vertex AI Workbench instances are configured with virtual
+      Trusted Platform Module (vTPM) enabled
+    display_name: Enable vTPM on Vertex AI Workbench instances
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.vertexaiWorkbenchRequireVtpm
+    parent: organizations/1234567890
+    resource_types:
+    - notebooks.googleapis.com/Instance
+    timeouts: null
   module.organization-iam[0].google_org_policy_policy.default["ainotebooks.accessMode"]:
     dry_run_spec: []
     name: organizations/1234567890/policies/ainotebooks.accessMode
@@ -4052,6 +4219,36 @@ values:
   module.organization-iam[0].google_org_policy_policy.default["ainotebooks.disableRootAccess"]:
     dry_run_spec: []
     name: organizations/1234567890/policies/ainotebooks.disableRootAccess
+    parent: organizations/1234567890
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+    timeouts: null
+  module.organization-iam[0].google_org_policy_policy.default["ainotebooks.disableTerminal"]:
+    dry_run_spec: []
+    name: organizations/1234567890/policies/ainotebooks.disableTerminal
+    parent: organizations/1234567890
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+    timeouts: null
+  module.organization-iam[0].google_org_policy_policy.default["ainotebooks.requireAutoUpgradeSchedule"]:
+    dry_run_spec: []
+    name: organizations/1234567890/policies/ainotebooks.requireAutoUpgradeSchedule
     parent: organizations/1234567890
     spec:
     - inherit_from_parent: null
@@ -6246,6 +6443,141 @@ values:
   module.organization-iam[0].google_org_policy_policy.default["custom.networkRequireSubnetPrivateGoogleAccess"]:
     dry_run_spec: []
     name: organizations/1234567890/policies/custom.networkRequireSubnetPrivateGoogleAccess
+    parent: organizations/1234567890
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+    timeouts: null
+  module.organization-iam[0].google_org_policy_policy.default["custom.vertexaiRuntimeTemplateDisableInternetAccess"]:
+    dry_run_spec: []
+    name: organizations/1234567890/policies/custom.vertexaiRuntimeTemplateDisableInternetAccess
+    parent: organizations/1234567890
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+    timeouts: null
+  module.organization-iam[0].google_org_policy_policy.default["custom.vertexaiRuntimeTemplateRequireIdleShutdown"]:
+    dry_run_spec: []
+    name: organizations/1234567890/policies/custom.vertexaiRuntimeTemplateRequireIdleShutdown
+    parent: organizations/1234567890
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+    timeouts: null
+  module.organization-iam[0].google_org_policy_policy.default["custom.vertexaiRuntimeTemplateRequireSecureBoot"]:
+    dry_run_spec: []
+    name: organizations/1234567890/policies/custom.vertexaiRuntimeTemplateRequireSecureBoot
+    parent: organizations/1234567890
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+    timeouts: null
+  module.organization-iam[0].google_org_policy_policy.default["custom.vertexaiWorkbenchDisableDefaultServiceAccount"]:
+    dry_run_spec: []
+    name: organizations/1234567890/policies/custom.vertexaiWorkbenchDisableDefaultServiceAccount
+    parent: organizations/1234567890
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+    timeouts: null
+  module.organization-iam[0].google_org_policy_policy.default["custom.vertexaiWorkbenchRequireAutoUpgrade"]:
+    dry_run_spec: []
+    name: organizations/1234567890/policies/custom.vertexaiWorkbenchRequireAutoUpgrade
+    parent: organizations/1234567890
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+    timeouts: null
+  module.organization-iam[0].google_org_policy_policy.default["custom.vertexaiWorkbenchRequireDeleteToTrash"]:
+    dry_run_spec: []
+    name: organizations/1234567890/policies/custom.vertexaiWorkbenchRequireDeleteToTrash
+    parent: organizations/1234567890
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+    timeouts: null
+  module.organization-iam[0].google_org_policy_policy.default["custom.vertexaiWorkbenchRequireIntegrityMonitoring"]:
+    dry_run_spec: []
+    name: organizations/1234567890/policies/custom.vertexaiWorkbenchRequireIntegrityMonitoring
+    parent: organizations/1234567890
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+    timeouts: null
+  module.organization-iam[0].google_org_policy_policy.default["custom.vertexaiWorkbenchRequireSecureBoot"]:
+    dry_run_spec: []
+    name: organizations/1234567890/policies/custom.vertexaiWorkbenchRequireSecureBoot
+    parent: organizations/1234567890
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+    timeouts: null
+  module.organization-iam[0].google_org_policy_policy.default["custom.vertexaiWorkbenchRequireVtpm"]:
+    dry_run_spec: []
+    name: organizations/1234567890/policies/custom.vertexaiWorkbenchRequireVtpm
     parent: organizations/1234567890
     spec:
     - inherit_from_parent: null
@@ -8796,8 +9128,8 @@ counts:
   google_logging_project_bucket_config: 6
   google_logging_project_settings: 3
   google_monitoring_alert_policy: 10
-  google_org_policy_custom_constraint: 100
-  google_org_policy_policy: 175
+  google_org_policy_custom_constraint: 109
+  google_org_policy_policy: 186
   google_organization_iam_audit_config: 1
   google_organization_iam_binding: 40
   google_organization_iam_custom_role: 14
@@ -8822,7 +9154,7 @@ counts:
   google_tags_tag_value_iam_binding: 4
   local_file: 9
   modules: 54
-  resources: 690
+  resources: 710
   terraform_data: 4
 
 outputs:
