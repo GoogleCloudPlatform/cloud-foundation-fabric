@@ -42,6 +42,7 @@ To manage organization policies, the `orgpolicy.googleapis.com` service should b
 - [Workforce Identity](#workforce-identity)
 - [IAM Deny Policies](#iam-deny-policies)
 - [Context-Aware Access](#context-aware-access)
+- [Model Armor Floor Settings](#model-armor-floor-settings)
 - [Files](#files)
 - [Variables](#variables)
 - [Outputs](#outputs)
@@ -1114,6 +1115,44 @@ module "org" {
 # tftest modules=1 resources=2 inventory=context-aware-access.yaml
 ```
 
+## Model Armor Floor Settings
+
+A [Model Armor floor setting](https://docs.cloud.google.com/model-armor/configure-floor-settings) defines the minimum filters that Model Armor templates in the organization must apply, and can screen Vertex AI and Google Cloud MCP server traffic inline. It is managed via the `model_armor_floor_setting` variable. The `modelarmor.googleapis.com` service needs to be enabled in the quota project.
+
+Each `integrated_services` entry also adds the service to the floor setting's integrated services, and `mode` selects between `inspect_only` (default) and `inspect_and_block`. Enforcement is enabled by default when the variable is set.
+
+The floor setting is a singleton that always exists: removing the variable only removes the resource from the Terraform state, and does not reset the floor setting in GCP.
+
+```hcl
+module "org" {
+  source          = "./fabric/modules/organization"
+  organization_id = var.organization_id
+  model_armor_floor_setting = {
+    filters = {
+      malicious_uris = true
+      pi_and_jailbreak = {
+        confidence_level = "MEDIUM_AND_ABOVE"
+      }
+      rai = {
+        DANGEROUS         = "MEDIUM_AND_ABOVE"
+        HARASSMENT        = "MEDIUM_AND_ABOVE"
+        HATE_SPEECH       = "MEDIUM_AND_ABOVE"
+        SEXUALLY_EXPLICIT = "MEDIUM_AND_ABOVE"
+      }
+      sdp = {
+        basic = true
+      }
+    }
+    integrated_services = {
+      ai_platform = {
+        cloud_logging = true
+      }
+    }
+  }
+}
+# tftest modules=1 resources=1 inventory=model-armor-floor-setting.yaml
+```
+
 <!-- TFDOC OPTS files:1 -->
 <!-- BEGIN TFDOC -->
 ## Files
@@ -1127,6 +1166,7 @@ module "org" {
 | [identity-providers.tf](./identity-providers.tf) | Workforce Identity Federation provider definitions. | <code>google_iam_workforce_pool</code> · <code>google_iam_workforce_pool_provider</code> · <code>google_iam_workforce_pool_provider_scim_tenant</code> |
 | [logging.tf](./logging.tf) | Log sinks and data access logs. | <code>google_bigquery_dataset_iam_member</code> · <code>google_logging_organization_exclusion</code> · <code>google_logging_organization_settings</code> · <code>google_logging_organization_sink</code> · <code>google_organization_iam_audit_config</code> · <code>google_project_iam_member</code> · <code>google_pubsub_topic_iam_member</code> · <code>google_storage_bucket_iam_member</code> |
 | [main.tf](./main.tf) | Module-level locals and resources. | <code>google_compute_firewall_policy_association</code> · <code>google_essential_contacts_contact</code> |
+| [model-armor.tf](./model-armor.tf) | Model Armor floor setting. | <code>google_model_armor_floorsetting</code> |
 | [org-policy-custom-constraints.tf](./org-policy-custom-constraints.tf) | None | <code>google_org_policy_custom_constraint</code> |
 | [organization-policies.tf](./organization-policies.tf) | Organization-level organization policies. | <code>google_org_policy_policy</code> |
 | [outputs.tf](./outputs.tf) | Module outputs. |  |
@@ -1138,6 +1178,7 @@ module "org" {
 | [variables-iam.tf](./variables-iam.tf) | None |  |
 | [variables-identity-providers.tf](./variables-identity-providers.tf) | None |  |
 | [variables-logging.tf](./variables-logging.tf) | None |  |
+| [variables-model-armor.tf](./variables-model-armor.tf) | None |  |
 | [variables-pam.tf](./variables-pam.tf) | None |  |
 | [variables-scc.tf](./variables-scc.tf) | None |  |
 | [variables-tags.tf](./variables-tags.tf) | None |  |
@@ -1170,6 +1211,7 @@ module "org" {
 | [logging_exclusions](variables-logging.tf#L28) | Logging exclusions for this organization in the form {NAME -> FILTER}. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 | [logging_settings](variables-logging.tf#L35) | Default settings for logging resources. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [logging_sinks](variables-logging.tf#L45) | Logging sinks to create for the organization. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [model_armor_floor_setting](variables-model-armor.tf#L17) | Model Armor floor setting for this resource. Removing it does not reset the floor setting in GCP. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [network_tags](variables-tags.tf#L17) | Network tags by key name. If `id` is provided, key creation is skipped. The `iam` attribute behaves like the similarly named one at module level. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [org_policies](variables.tf#L275) | Organization policies applied to this organization keyed by policy name. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [org_policy_custom_constraints](variables.tf#L303) | Organization policy custom constraints keyed by constraint name. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
