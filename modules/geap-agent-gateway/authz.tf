@@ -47,7 +47,6 @@ locals {
 }
 
 resource "google_network_services_authz_extension" "iap" {
-  provider  = google-beta
   count     = var.iap_config == null ? 0 : 1
   project   = local.project_id
   location  = local.location
@@ -64,7 +63,6 @@ resource "google_network_services_authz_extension" "iap" {
 }
 
 resource "google_network_security_authz_policy" "iap" {
-  provider       = google-beta
   count          = var.iap_config == null ? 0 : 1
   project        = local.project_id
   location       = local.location
@@ -84,7 +82,6 @@ resource "google_network_security_authz_policy" "iap" {
 }
 
 resource "google_network_services_authz_extension" "model_armor" {
-  provider  = google-beta
   count     = var.model_armor_config == null ? 0 : 1
   project   = local.project_id
   location  = local.location
@@ -98,7 +95,6 @@ resource "google_network_services_authz_extension" "model_armor" {
 }
 
 resource "google_network_security_authz_policy" "model_armor" {
-  provider       = google-beta
   count          = var.model_armor_config == null ? 0 : 1
   project        = local.project_id
   location       = local.location
