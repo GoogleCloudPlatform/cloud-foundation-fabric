@@ -22,7 +22,7 @@ locals {
       for z in coalesce(v.zones, var.ngfw_config.endpoint_zones) : merge(v, {
         key      = "${z}-${k}"
         location = z
-        vpc_id   = lookup(var.vpc_self_links, v.vpc_id, v.vpc_id)
+        vpc_id   = lookup(local.ctx_lookup.vpcs, v.vpc_id, v.vpc_id)
       })
     ]
   ])

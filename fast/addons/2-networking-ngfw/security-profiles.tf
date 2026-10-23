@@ -27,7 +27,7 @@ locals {
   }
   url_filtering_profiles = {
     for k, v in var.security_profiles : k => v.url_filtering_profile
-    if v.url_filtering_profile != {}
+    if length(v.url_filtering_profile) > 0
   }
 }
 

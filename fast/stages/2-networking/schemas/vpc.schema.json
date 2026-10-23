@@ -55,6 +55,9 @@
         "REGIONAL"
       ]
     },
+    "service_connection_policies": {
+      "$ref": "#/$defs/service_connection_policies"
+    },
     "firewall_policy_enforcement_order": {
       "type": "string",
       "enum": [
@@ -615,6 +618,69 @@
         },
         "global": {
           "type": "boolean"
+        }
+      }
+    },
+    "service_connection_policies": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[a-z0-9-]+$": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "location",
+            "service_class",
+            "psc_config"
+          ],
+          "properties": {
+            "location": {
+              "type": "string"
+            },
+            "service_class": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            },
+            "labels": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string"
+              }
+            },
+            "psc_config": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "subnetworks"
+              ],
+              "properties": {
+                "subnetworks": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "limit": {
+                  "type": "number"
+                },
+                "producer_instance_location": {
+                  "type": "string",
+                  "enum": [
+                    "CUSTOM_RESOURCE_HIERARCHY_LEVELS"
+                  ]
+                },
+                "nodes": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "pattern": "^(projects|folders|organizations)/[a-zA-Z0-9-]+$"
+                  }
+                }
+              }
+            }
+          }
         }
       }
     }
