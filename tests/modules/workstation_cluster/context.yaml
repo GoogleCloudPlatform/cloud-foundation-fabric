@@ -78,7 +78,10 @@ values:
     workstation_cluster_id: test-0
     workstation_config_id: my-workstation-config
   google_workstations_workstation_config_iam_binding.bindings["my-workstation-config-workstations-config-viewer"]:
-    condition: []
+    condition:
+    - description: null
+      expression: resource.name.startsWith('my-')
+      title: limited-access
     location: europe-west8
     members:
     - user:test-user@example.com
@@ -87,7 +90,10 @@ values:
     workstation_cluster_id: test-0
     workstation_config_id: my-workstation-config
   google_workstations_workstation_config_iam_member.bindings["my-workstation-config-workstations-config-editor"]:
-    condition: []
+    condition:
+    - description: null
+      expression: resource.name.startsWith('myid-')
+      title: limited-access
     location: europe-west8
     member: group:group3@my-org.com
     project: dev-test-0

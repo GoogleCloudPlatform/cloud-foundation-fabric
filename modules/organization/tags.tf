@@ -55,13 +55,16 @@ locals {
         for ik, iv in v.iam : ik => coalesce(iv, [])
       }
       iam_bindings = var.tags_config.ignore_iam == true ? {} : {
-        for ik, iv in v.iam_bindings : ik => merge(iv, {
-          members = coalesce(iv.members, [])
-        })
+        for ik, iv in v.iam_bindings : ik => merge(
+          { condition = null },
+          iv,
+          { members = coalesce(iv.members, []) }
+        )
       }
-      iam_bindings_additive = (
-        var.tags_config.ignore_iam == true ? {} : v.iam_bindings_additive
-      )
+      iam_bindings_additive = var.tags_config.ignore_iam == true ? {} : {
+        for ik, iv in v.iam_bindings_additive :
+        ik => merge({ condition = null }, iv)
+      }
       network = lookup(v, "network", null)
       values = {
         for vk, vv in v.values : vk => {
@@ -73,13 +76,16 @@ locals {
             for ik, iv in vv.iam : ik => coalesce(iv, [])
           }
           iam_bindings = var.tags_config.ignore_iam == true ? {} : {
-            for ik, iv in vv.iam_bindings : ik => merge(iv, {
-              members = coalesce(iv.members, [])
-            })
+            for ik, iv in vv.iam_bindings : ik => merge(
+              { condition = null },
+              iv,
+              { members = coalesce(iv.members, []) }
+            )
           }
-          iam_bindings_additive = (
-            var.tags_config.ignore_iam == true ? {} : vv.iam_bindings_additive
-          )
+          iam_bindings_additive = var.tags_config.ignore_iam == true ? {} : {
+            for ik, iv in vv.iam_bindings_additive :
+            ik => merge({ condition = null }, iv)
+          }
         }
       }
     }
@@ -230,9 +236,21 @@ resource "google_tags_tag_key_iam_binding" "bindings" {
   dynamic "condition" {
     for_each = local.tags[each.value.tag]["iam_bindings"][each.value.binding].condition == null ? [] : [""]
     content {
-      expression  = local.tags[each.value.tag]["iam_bindings"][each.value.binding].condition.expression
-      title       = local.tags[each.value.tag]["iam_bindings"][each.value.binding].condition.title
-      description = local.tags[each.value.tag]["iam_bindings"][each.value.binding].condition.description
+      expression = templatestring(
+        local.tags[each.value.tag]["iam_bindings"][
+          each.value.binding
+        ].condition.expression,
+        var.context.condition_vars
+      )
+      title = local.tags[each.value.tag]["iam_bindings"][
+        each.value.binding
+      ].condition.title
+      description = try(
+        local.tags[each.value.tag]["iam_bindings"][
+          each.value.binding
+        ].condition.description,
+        null
+      )
     }
   }
 }
@@ -253,9 +271,21 @@ resource "google_tags_tag_key_iam_member" "bindings" {
   dynamic "condition" {
     for_each = local.tags[each.value.tag]["iam_bindings_additive"][each.value.binding].condition == null ? [] : [""]
     content {
-      expression  = local.tags[each.value.tag]["iam_bindings_additive"][each.value.binding].condition.expression
-      title       = local.tags[each.value.tag]["iam_bindings_additive"][each.value.binding].condition.title
-      description = local.tags[each.value.tag]["iam_bindings_additive"][each.value.binding].condition.description
+      expression = templatestring(
+        local.tags[each.value.tag]["iam_bindings_additive"][
+          each.value.binding
+        ].condition.expression,
+        var.context.condition_vars
+      )
+      title = local.tags[each.value.tag]["iam_bindings_additive"][
+        each.value.binding
+      ].condition.title
+      description = try(
+        local.tags[each.value.tag]["iam_bindings_additive"][
+          each.value.binding
+        ].condition.description,
+        null
+      )
     }
   }
 }
@@ -304,9 +334,21 @@ resource "google_tags_tag_value_iam_binding" "bindings" {
   dynamic "condition" {
     for_each = local.tags[each.value.tag]["values"][each.value.name]["iam_bindings"][each.value.binding].condition == null ? [] : [""]
     content {
-      expression  = local.tags[each.value.tag]["values"][each.value.name]["iam_bindings"][each.value.binding].condition.expression
-      title       = local.tags[each.value.tag]["values"][each.value.name]["iam_bindings"][each.value.binding].condition.title
-      description = local.tags[each.value.tag]["values"][each.value.name]["iam_bindings"][each.value.binding].condition.description
+      expression = templatestring(
+        local.tags[each.value.tag]["values"][each.value.name][
+          "iam_bindings"
+        ][each.value.binding].condition.expression,
+        var.context.condition_vars
+      )
+      title = local.tags[each.value.tag]["values"][each.value.name][
+        "iam_bindings"
+      ][each.value.binding].condition.title
+      description = try(
+        local.tags[each.value.tag]["values"][each.value.name][
+          "iam_bindings"
+        ][each.value.binding].condition.description,
+        null
+      )
     }
   }
 }
@@ -329,9 +371,21 @@ resource "google_tags_tag_value_iam_member" "bindings" {
   dynamic "condition" {
     for_each = local.tags[each.value.tag]["values"][each.value.name]["iam_bindings_additive"][each.value.binding].condition == null ? [] : [""]
     content {
-      expression  = local.tags[each.value.tag]["values"][each.value.name]["iam_bindings_additive"][each.value.binding].condition.expression
-      title       = local.tags[each.value.tag]["values"][each.value.name]["iam_bindings_additive"][each.value.binding].condition.title
-      description = local.tags[each.value.tag]["values"][each.value.name]["iam_bindings_additive"][each.value.binding].condition.description
+      expression = templatestring(
+        local.tags[each.value.tag]["values"][each.value.name][
+          "iam_bindings_additive"
+        ][each.value.binding].condition.expression,
+        var.context.condition_vars
+      )
+      title = local.tags[each.value.tag]["values"][each.value.name][
+        "iam_bindings_additive"
+      ][each.value.binding].condition.title
+      description = try(
+        local.tags[each.value.tag]["values"][each.value.name][
+          "iam_bindings_additive"
+        ][each.value.binding].condition.description,
+        null
+      )
     }
   }
 }

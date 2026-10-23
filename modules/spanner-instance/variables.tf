@@ -72,6 +72,11 @@ variable "iam_bindings" {
   type = map(object({
     members = list(string)
     role    = string
+    condition = optional(object({
+      expression  = string
+      title       = string
+      description = optional(string)
+    }))
   }))
   nullable = false
   default  = {}
@@ -82,6 +87,11 @@ variable "iam_bindings_additive" {
   type = map(object({
     member = string
     role   = string
+    condition = optional(object({
+      expression  = string
+      title       = string
+      description = optional(string)
+    }))
   }))
   nullable = false
   default  = {}
