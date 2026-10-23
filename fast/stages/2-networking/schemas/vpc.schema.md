@@ -153,15 +153,54 @@
     - **tags**: *array*
       - items: *string*
 - **routers**<a name="refs-routers"></a>: *object*
+  <br>*additional properties: false*
   - **`^[a-z0-9-]+$`**: *object*
     <br>*additional properties: false*
     - ⁺**region**: *string*
     - ⁺**asn**: *number*
     - **custom_advertise**: *object*
+      <br>*additional properties: false*
       - **all_subnets**: *boolean*
       - **ip_ranges**: *object*
         - **`.*`**: *string*
     - **route_policies**: *reference([route_policies](#refs-route_policies))*
+    - **keepalive**: *number*
+    - **interfaces**: *object*
+      <br>*additional properties: false*
+      - **`^[a-z0-9-]+$`**: *object*
+        <br>*additional properties: false*
+        - ⁺**subnet**: *string*
+        - ⁺**ip_address**: *string*
+        - **redundant_interface**: *string*
+    - **peers**: *object*
+      <br>*additional properties: false*
+      - **`^[a-z0-9-]+$`**: *object*
+        <br>*additional properties: false*
+        - ⁺**interface**: *string*
+        - ⁺**asn**: *number*
+        - **nva**: *string*
+        - **address**: *string*
+        - **router_appliance_instance**: *string*
+        - **route_priority**: *number*
+        - **custom_advertise**: *object*
+          <br>*additional properties: false*
+          - **all_subnets**: *boolean*
+          - **ip_ranges**: *object*
+            <br>*additional properties: string*
+        - **custom_learned_ip_ranges**: *object*
+          <br>*additional properties: false*
+          - **route_priority**: *number*
+          - ⁺**ip_ranges**: *object*
+            <br>*additional properties: string*
+        - **md5_authentication_key**: *object*
+          <br>*additional properties: false*
+          - ⁺**name**: *string*
+          - **key**: *string*
+        - **enable**: *boolean*
+        - **export_policies**: *array*
+          - items: *string*
+        - **import_policies**: *array*
+          - items: *string*
 - **simple_subnet**<a name="refs-simple_subnet"></a>: *object*
   - ⁺**name**: *string*
   - ⁺**ip_cidr_range**: *string*
