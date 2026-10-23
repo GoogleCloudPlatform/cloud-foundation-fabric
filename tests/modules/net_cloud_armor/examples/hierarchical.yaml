@@ -1,0 +1,101 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.cloud-armor.google_compute_organization_security_policy.hierarchical[0]:
+    advanced_options_config:
+    - json_custom_config: []
+      json_parsing: STANDARD
+      log_level: null
+      request_body_inspection_size: null
+      user_ip_request_headers: null
+    description: Terraform managed.
+    display_name: null
+    parent: folders/1122334455
+    short_name: teams-baseline
+    timeouts: null
+    type: CLOUD_ARMOR
+  module.cloud-armor.google_compute_organization_security_policy_rule.hierarchical["deny-blocked"]:
+    action: deny(403)
+    description: null
+    header_action: []
+    match:
+    - config:
+      - src_ip_ranges:
+        - 192.0.2.0/24
+        - 198.51.100.0/24
+      description: null
+      expr: []
+      versioned_expr: SRC_IPS_V1
+    preconfigured_waf_config: []
+    preview: false
+    priority: 100
+    redirect_options: []
+    timeouts: null
+  module.cloud-armor.google_compute_organization_security_policy_rule.hierarchical["legacy-paths"]:
+    action: redirect
+    description: null
+    header_action: []
+    match:
+    - config: []
+      description: null
+      expr:
+      - expression: request.path.startsWith('/legacy/')
+      versioned_expr: ''
+    preconfigured_waf_config: []
+    preview: false
+    priority: 2000
+    redirect_options:
+    - target: https://www.example.com/
+      type: EXTERNAL_302
+    timeouts: null
+  module.cloud-armor.google_compute_organization_security_policy_rule.hierarchical["owasp-sqli"]:
+    action: deny(403)
+    description: null
+    header_action: []
+    match:
+    - config: []
+      description: null
+      expr:
+      - expression: evaluatePreconfiguredWaf('sqli-v33-stable')
+      versioned_expr: ''
+    preconfigured_waf_config: []
+    preview: true
+    priority: 1000
+    redirect_options: []
+    timeouts: null
+  module.cloud-armor.google_compute_organization_security_policy_rule.hierarchical["trusted"]:
+    action: goto_next
+    description: null
+    header_action: []
+    match:
+    - config:
+      - src_ip_ranges:
+        - 10.0.0.0/8
+      description: null
+      expr: []
+      versioned_expr: SRC_IPS_V1
+    preconfigured_waf_config: []
+    preview: false
+    priority: 10
+    redirect_options: []
+    timeouts: null
+
+counts:
+  google_compute_organization_security_policy: 1
+  google_compute_organization_security_policy_rule: 4
+  modules: 1
+  resources: 5
+
+outputs: {}
