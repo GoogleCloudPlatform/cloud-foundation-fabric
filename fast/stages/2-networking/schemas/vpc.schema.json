@@ -532,14 +532,177 @@
                     }
                   }
                 }
-              }
+              },
+              "additionalProperties": false
             },
             "route_policies": {
               "$ref": "#/$defs/route_policies"
+            },
+            "keepalive": {
+              "type": "number"
+            },
+            "interfaces": {
+              "type": "object",
+              "description": "Cloud Router interfaces, required for router appliance BGP peers. Addresses must be literal so that NVA guest BGP configuration can be rendered.",
+              "patternProperties": {
+                "^[a-z0-9-]+$": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "subnet",
+                    "ip_address"
+                  ],
+                  "properties": {
+                    "subnet": {
+                      "type": "string"
+                    },
+                    "ip_address": {
+                      "type": "string"
+                    },
+                    "redundant_interface": {
+                      "type": "string",
+                      "description": "Key of the primary interface this interface is redundant to."
+                    }
+                  }
+                }
+              },
+              "additionalProperties": false
+            },
+            "peers": {
+              "type": "object",
+              "additionalProperties": false,
+              "description": "BGP peers, using the same attributes as VPN and VLAN attachment peers. Set `nva` (NVA key) to fan out one peer per instance of that NVA's router appliance spoke in this VPC, or `address` (literal or `$nva_addresses:<instance>/<vpc>`) with an optional `router_appliance_instance` (self link or `$nva_instances:<instance>`).",
+              "patternProperties": {
+                "^[a-z0-9-]+$": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "interface",
+                    "asn"
+                  ],
+                  "oneOf": [
+                    {
+                      "required": [
+                        "nva"
+                      ],
+                      "not": {
+                        "anyOf": [
+                          {
+                            "required": [
+                              "address"
+                            ]
+                          },
+                          {
+                            "required": [
+                              "router_appliance_instance"
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "required": [
+                        "address"
+                      ],
+                      "not": {
+                        "required": [
+                          "nva"
+                        ]
+                      }
+                    }
+                  ],
+                  "properties": {
+                    "interface": {
+                      "type": "string",
+                      "description": "Key of the router interface."
+                    },
+                    "asn": {
+                      "type": "number"
+                    },
+                    "nva": {
+                      "type": "string",
+                      "description": "NVA key, fans out across the instances of its router appliance spoke in this VPC."
+                    },
+                    "address": {
+                      "type": "string"
+                    },
+                    "router_appliance_instance": {
+                      "type": "string"
+                    },
+                    "route_priority": {
+                      "type": "number"
+                    },
+                    "custom_advertise": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "all_subnets": {
+                          "type": "boolean"
+                        },
+                        "ip_ranges": {
+                          "type": "object",
+                          "additionalProperties": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    },
+                    "custom_learned_ip_ranges": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "ip_ranges"
+                      ],
+                      "properties": {
+                        "route_priority": {
+                          "type": "number"
+                        },
+                        "ip_ranges": {
+                          "type": "object",
+                          "additionalProperties": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    },
+                    "md5_authentication_key": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "name"
+                      ],
+                      "properties": {
+                        "name": {
+                          "type": "string"
+                        },
+                        "key": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "enable": {
+                      "type": "boolean"
+                    },
+                    "export_policies": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "import_policies": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
             }
           }
         }
-      }
+      },
+      "additionalProperties": false
     },
     "simple_subnet": {
       "type": "object",

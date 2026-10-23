@@ -1,0 +1,1068 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  google_compute_router.default["trusted/ra"]:
+    bgp:
+    - advertise_mode: DEFAULT
+      advertised_groups: []
+      advertised_ip_ranges: []
+      asn: 64515
+      keepalive_interval: 20
+    deletion_policy: DELETE
+    description: null
+    encrypted_interconnect_router: null
+    md5_authentication_keys: []
+    name: trusted-ra
+    ncc_gateway: null
+    params: []
+    project: fast-prod-net-core-0
+    region: europe-west1
+    timeouts: null
+  google_compute_router.default["untrusted/ra"]:
+    bgp:
+    - advertise_mode: DEFAULT
+      advertised_groups: []
+      advertised_ip_ranges: []
+      asn: 64512
+      keepalive_interval: 20
+    deletion_policy: DELETE
+    description: null
+    encrypted_interconnect_router: null
+    md5_authentication_keys: []
+    name: untrusted-ra
+    ncc_gateway: null
+    params: []
+    project: fast-prod-net-core-0
+    region: europe-west1
+    timeouts: null
+  google_compute_router_interface.primary["trusted/ra/intf-0"]:
+    deletion_policy: DELETE
+    interconnect_attachment: null
+    name: intf-0
+    private_ip_address: 10.0.1.252
+    project: fast-prod-net-core-0
+    region: europe-west1
+    router: trusted-ra
+    timeouts: null
+    vpn_tunnel: null
+  google_compute_router_interface.primary["untrusted/ra/intf-0"]:
+    deletion_policy: DELETE
+    interconnect_attachment: null
+    name: intf-0
+    private_ip_address: 10.0.0.252
+    project: fast-prod-net-core-0
+    region: europe-west1
+    router: untrusted-ra
+    timeouts: null
+    vpn_tunnel: null
+  google_compute_router_interface.redundant["trusted/ra/intf-1"]:
+    deletion_policy: DELETE
+    interconnect_attachment: null
+    name: intf-1
+    private_ip_address: 10.0.1.253
+    project: fast-prod-net-core-0
+    redundant_interface: intf-0
+    region: europe-west1
+    router: trusted-ra
+    timeouts: null
+    vpn_tunnel: null
+  google_compute_router_interface.redundant["untrusted/ra/intf-1"]:
+    deletion_policy: DELETE
+    interconnect_attachment: null
+    name: intf-1
+    private_ip_address: 10.0.0.253
+    project: fast-prod-net-core-0
+    redundant_interface: intf-0
+    region: europe-west1
+    router: untrusted-ra
+    timeouts: null
+    vpn_tunnel: null
+  google_compute_router_peer.default["trusted/ra/fw-0/fw-a"]:
+    advertise_mode: DEFAULT
+    advertised_groups: []
+    advertised_ip_ranges: []
+    advertised_route_priority: null
+    custom_learned_ip_ranges: []
+    custom_learned_route_priority: null
+    deletion_policy: DELETE
+    enable: true
+    enable_ipv6: false
+    export_policies: []
+    import_policies: []
+    interface: intf-0
+    md5_authentication_key: []
+    name: fw-0-fw-a
+    peer_asn: 64513
+    peer_ip_address: 10.0.1.10
+    project: fast-prod-net-core-0
+    region: europe-west1
+    router: trusted-ra
+    router_appliance_instance: projects/my-project/zones/europe-west1-b/instances/fw-a
+    timeouts: null
+    zero_advertised_route_priority: null
+    zero_custom_learned_route_priority: false
+  google_compute_router_peer.default["trusted/ra/fw-0/fw-b"]:
+    advertise_mode: DEFAULT
+    advertised_groups: []
+    advertised_ip_ranges: []
+    advertised_route_priority: null
+    custom_learned_ip_ranges: []
+    custom_learned_route_priority: null
+    deletion_policy: DELETE
+    enable: true
+    enable_ipv6: false
+    export_policies: []
+    import_policies: []
+    interface: intf-0
+    md5_authentication_key: []
+    name: fw-0-fw-b
+    peer_asn: 64513
+    peer_ip_address: 10.0.1.11
+    project: fast-prod-net-core-0
+    region: europe-west1
+    router: trusted-ra
+    router_appliance_instance: projects/my-project/zones/europe-west1-c/instances/fw-b
+    timeouts: null
+    zero_advertised_route_priority: null
+    zero_custom_learned_route_priority: false
+  google_compute_router_peer.default["trusted/ra/managed-0/managed-b-0"]:
+    advertise_mode: DEFAULT
+    advertised_groups: []
+    advertised_ip_ranges: []
+    advertised_route_priority: null
+    custom_learned_ip_ranges: []
+    custom_learned_route_priority: null
+    deletion_policy: DELETE
+    enable: true
+    enable_ipv6: false
+    export_policies: []
+    import_policies: []
+    interface: intf-0
+    md5_authentication_key: []
+    name: managed-0-managed-b-0
+    peer_asn: 64514
+    project: fast-prod-net-core-0
+    region: europe-west1
+    router: trusted-ra
+    timeouts: null
+    zero_advertised_route_priority: null
+    zero_custom_learned_route_priority: false
+  google_compute_router_peer.default["untrusted/ra/fw-a-0"]:
+    advertise_mode: CUSTOM
+    advertised_groups:
+    - ALL_SUBNETS
+    advertised_ip_ranges:
+    - description: default
+      range: 0.0.0.0/0
+    advertised_route_priority: 100
+    custom_learned_ip_ranges: []
+    custom_learned_route_priority: null
+    deletion_policy: DELETE
+    enable: true
+    enable_ipv6: false
+    export_policies: []
+    import_policies:
+    - prefer-primary
+    interface: intf-0
+    md5_authentication_key:
+    - key: secret
+      name: fw-a
+    name: fw-a-0
+    peer_asn: 64513
+    peer_ip_address: 10.0.0.10
+    project: fast-prod-net-core-0
+    region: europe-west1
+    router: untrusted-ra
+    router_appliance_instance: projects/my-project/zones/europe-west1-b/instances/fw-a
+    timeouts: null
+    zero_advertised_route_priority: null
+    zero_custom_learned_route_priority: false
+  google_compute_router_peer.default["untrusted/ra/fw-b-0"]:
+    advertise_mode: DEFAULT
+    advertised_groups: []
+    advertised_ip_ranges: []
+    advertised_route_priority: null
+    custom_learned_ip_ranges:
+    - range: 192.168.0.0/16
+    custom_learned_route_priority: 200
+    deletion_policy: DELETE
+    enable: true
+    enable_ipv6: false
+    export_policies: []
+    import_policies: []
+    interface: intf-0
+    md5_authentication_key: []
+    name: fw-b-0
+    peer_asn: 64513
+    peer_ip_address: 10.0.0.11
+    project: fast-prod-net-core-0
+    region: europe-west1
+    router: untrusted-ra
+    router_appliance_instance: projects/my-project/zones/europe-west1-c/instances/fw-b
+    timeouts: null
+    zero_advertised_route_priority: null
+    zero_custom_learned_route_priority: false
+  google_compute_router_peer.default["untrusted/ra/managed-0/managed-b-0"]:
+    advertise_mode: DEFAULT
+    advertised_groups: []
+    advertised_ip_ranges: []
+    advertised_route_priority: null
+    custom_learned_ip_ranges: []
+    custom_learned_route_priority: null
+    deletion_policy: DELETE
+    enable: true
+    enable_ipv6: false
+    export_policies: []
+    import_policies: []
+    interface: intf-0
+    md5_authentication_key: []
+    name: managed-0-managed-b-0
+    peer_asn: 64514
+    project: fast-prod-net-core-0
+    region: europe-west1
+    router: untrusted-ra
+    timeouts: null
+    zero_advertised_route_priority: null
+    zero_custom_learned_route_priority: false
+  google_compute_router_peer.default["untrusted/ra/managed-1"]:
+    advertise_mode: DEFAULT
+    advertised_groups: []
+    advertised_ip_ranges: []
+    advertised_route_priority: null
+    custom_learned_ip_ranges: []
+    custom_learned_route_priority: null
+    deletion_policy: DELETE
+    enable: true
+    enable_ipv6: false
+    export_policies: []
+    import_policies: []
+    interface: intf-1
+    md5_authentication_key: []
+    name: managed-1
+    peer_asn: 64514
+    project: fast-prod-net-core-0
+    region: europe-west1
+    router: untrusted-ra
+    timeouts: null
+    zero_advertised_route_priority: null
+    zero_custom_learned_route_priority: false
+  google_compute_router_route_policy.default["untrusted/ra/prefer-primary"]:
+    deletion_policy: DELETE
+    name: prefer-primary
+    project: fast-prod-net-core-0
+    region: europe-west1
+    router: untrusted-ra
+    terms:
+    - actions:
+      - description: null
+        expression: med.set(50)
+        location: null
+        title: null
+      match:
+      - description: null
+        expression: 'true'
+        location: null
+        title: null
+      priority: 10
+    timeouts: null
+    type: ROUTE_POLICY_TYPE_IMPORT
+  google_network_connectivity_hub.default["hub"]:
+    deletion_policy: DELETE
+    description: Terraform-managed
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    export_psc: true
+    labels: null
+    name: hub
+    preset_topology: MESH
+    project: fast-prod-net-core-0
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+  google_network_connectivity_spoke.router_appliances["trusted/byo"]:
+    deletion_policy: DELETE
+    description: Terraform-managed.
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    gateway: []
+    labels: null
+    linked_interconnect_attachments: []
+    linked_producer_vpc_network: []
+    linked_router_appliance_instances:
+    - exclude_export_ranges: null
+      exclude_import_ranges:
+      - 10.99.0.0/16
+      include_export_ranges: null
+      include_import_ranges:
+      - ALL_IPV4_RANGES
+      instances:
+      - ip_address: 10.0.1.10
+        virtual_machine: projects/my-project/zones/europe-west1-b/instances/fw-a
+      - ip_address: 10.0.1.11
+        virtual_machine: projects/my-project/zones/europe-west1-c/instances/fw-b
+      site_to_site_data_transfer: true
+    linked_vpc_network: []
+    linked_vpn_tunnels: []
+    location: europe-west1
+    name: ra-trusted-byo
+    project: fast-prod-net-core-0
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+  google_network_connectivity_spoke.router_appliances["trusted/managed"]:
+    deletion_policy: DELETE
+    description: Terraform-managed.
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    gateway: []
+    labels: null
+    linked_interconnect_attachments: []
+    linked_producer_vpc_network: []
+    linked_router_appliance_instances:
+    - exclude_export_ranges: null
+      exclude_import_ranges: null
+      include_export_ranges: null
+      include_import_ranges:
+      - ALL_IPV4_RANGES
+      instances:
+      - {}
+      site_to_site_data_transfer: true
+    linked_vpc_network: []
+    linked_vpn_tunnels: []
+    location: europe-west1
+    name: ra-trusted-managed
+    project: fast-prod-net-core-0
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+  google_network_connectivity_spoke.router_appliances["untrusted/byo"]:
+    deletion_policy: DELETE
+    description: Terraform-managed.
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    gateway: []
+    labels: null
+    linked_interconnect_attachments: []
+    linked_producer_vpc_network: []
+    linked_router_appliance_instances:
+    - exclude_export_ranges: null
+      exclude_import_ranges: null
+      include_export_ranges: null
+      include_import_ranges:
+      - ALL_IPV4_RANGES
+      instances:
+      - ip_address: 10.0.0.10
+        virtual_machine: projects/my-project/zones/europe-west1-b/instances/fw-a
+      - ip_address: 10.0.0.11
+        virtual_machine: projects/my-project/zones/europe-west1-c/instances/fw-b
+      site_to_site_data_transfer: false
+    linked_vpc_network: []
+    linked_vpn_tunnels: []
+    location: europe-west1
+    name: ra-untrusted-byo
+    project: fast-prod-net-core-0
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+  google_network_connectivity_spoke.router_appliances["untrusted/managed"]:
+    deletion_policy: DELETE
+    description: Terraform-managed.
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    gateway: []
+    labels: null
+    linked_interconnect_attachments: []
+    linked_producer_vpc_network: []
+    linked_router_appliance_instances:
+    - exclude_export_ranges: null
+      exclude_import_ranges: null
+      include_export_ranges: null
+      include_import_ranges:
+      - ALL_IPV4_RANGES
+      instances:
+      - {}
+      site_to_site_data_transfer: true
+    linked_vpc_network: []
+    linked_vpn_tunnels: []
+    location: europe-west1
+    name: ra-untrusted-managed
+    project: fast-prod-net-core-0
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+  google_storage_bucket_object.tfvars[0]:
+    bucket: test
+    cache_control: null
+    content_disposition: null
+    content_encoding: null
+    content_language: null
+    contexts: []
+    customer_encryption: []
+    deletion_policy: DELETE
+    detect_md5hash: null
+    event_based_hold: null
+    force_empty_content_type: null
+    metadata: null
+    name: tfvars/2-networking.auto.tfvars.json
+    retention: []
+    source: null
+    temporary_hold: null
+    timeouts: null
+  google_storage_bucket_object.version[0]:
+    bucket: test
+    cache_control: null
+    content_disposition: null
+    content_encoding: null
+    content_language: null
+    contexts: []
+    customer_encryption: []
+    deletion_policy: DELETE
+    detect_md5hash: null
+    event_based_hold: null
+    force_empty_content_type: null
+    metadata: null
+    name: versions/2-networking-version.txt
+    retention: []
+    source: fast_version.txt
+    temporary_hold: null
+    timeouts: null
+  module.nva-instance["managed-b-0"].google_compute_instance.default[0]:
+    advanced_machine_features: []
+    allow_stopping_for_update: true
+    attached_disk: []
+    boot_disk:
+    - auto_delete: true
+      disk_encryption_key_raw: null
+      disk_encryption_key_rsa: null
+      disk_encryption_service_account: null
+      force_attach: null
+      initialize_params:
+      - enable_confidential_compute: null
+        image: projects/cos-cloud/global/images/family/cos-stable
+        labels:
+          disk_name: boot
+          disk_type: pd-ssd
+        replica_zones: null
+        resource_manager_tags: null
+        size: 10
+        source_image_encryption_key: []
+        source_snapshot_encryption_key: []
+        storage_pool: null
+        type: pd-ssd
+      interface: null
+      mode: READ_WRITE
+    can_ip_forward: true
+    deletion_policy: DELETE
+    deletion_protection: false
+    description: Managed by the compute-vm Terraform module.
+    desired_status: null
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    enable_display: false
+    erase_windows_vss_signature: false
+    hostname: null
+    instance_encryption_key: []
+    key_revocation_action_type: null
+    labels: null
+    machine_type: e2-standard-2
+    metadata:
+      google-logging-enabled: 'true'
+      nva-frr-config: "frr defaults traditional\nhostname nva-managed-b-0\nlog stdout\
+        \ informational\nip forwarding\n!\n! routes learned on this NIC are tagged\
+        \ so that they are not sent back to it\nbgp community-list standard CL-NIC0-LEARNED\
+        \ seq 5 permit 64514:100\nip prefix-list PL-NIC1-DENY seq 5 permit 0.0.0.0/0\n\
+        ! routes learned on this NIC are tagged so that they are not sent back to\
+        \ it\nbgp community-list standard CL-NIC1-LEARNED seq 5 permit 64514:101\n\
+        !\nroute-map RM-NIC0-IN permit 20\n set community 64514:100 additive\n!\n\
+        route-map RM-NIC0-OUT deny 20\n match community CL-NIC0-LEARNED\n!\nroute-map\
+        \ RM-NIC0-OUT permit 100\n!\nroute-map RM-NIC1-IN deny 10\n match ip address\
+        \ prefix-list PL-NIC1-DENY\n!\nroute-map RM-NIC1-IN permit 20\n set community\
+        \ 64514:101 additive\n!\nroute-map RM-NIC1-OUT deny 20\n match community CL-NIC1-LEARNED\n\
+        !\nroute-map RM-NIC1-OUT permit 100\n!\nrouter bgp 64514\n bgp router-id ROUTER_ID\n\
+        \ bgp log-neighbor-changes\n no bgp ebgp-requires-policy\n no bgp network\
+        \ import-check\n bgp bestpath as-path multipath-relax\n timers bgp 3 9\n !\
+        \ GCE assigns /32 addresses, so Cloud Router interfaces are reached via the\n\
+        \ ! subnet gateway and fail FRR's eBGP connected check\n neighbor 10.0.1.252\
+        \ remote-as 64515\n neighbor 10.0.1.252 description trusted-ra\n neighbor\
+        \ 10.0.1.252 update-source eth1\n neighbor 10.0.1.252 disable-connected-check\n\
+        \ neighbor 10.0.0.252 remote-as 64512\n neighbor 10.0.0.252 description untrusted-ra\n\
+        \ neighbor 10.0.0.252 update-source eth0\n neighbor 10.0.0.252 disable-connected-check\n\
+        \ neighbor 10.0.0.253 remote-as 64512\n neighbor 10.0.0.253 description untrusted-ra\n\
+        \ neighbor 10.0.0.253 update-source eth0\n neighbor 10.0.0.253 disable-connected-check\n\
+        \ !\n address-family ipv4 unicast\n  ! originated toward every neighbor; the\
+        \ kernel route comes from the NIC\n  ! `routes` (static via the subnet gateway),\
+        \ not from BGP\n  network 10.128.0.0/9\n  neighbor 10.0.1.252 soft-reconfiguration\
+        \ inbound\n  ! MED neutral: FRR strips the MED toward eBGP peers by default,\
+        \ pass the\n  ! Cloud Router value through instead; priorities are set by\
+        \ Cloud Router\n  ! import policies\n  neighbor 10.0.1.252 attribute-unchanged\
+        \ med\n  neighbor 10.0.1.252 route-map RM-NIC1-IN in\n  neighbor 10.0.1.252\
+        \ route-map RM-NIC1-OUT out\n  neighbor 10.0.0.252 soft-reconfiguration inbound\n\
+        \  ! MED neutral: FRR strips the MED toward eBGP peers by default, pass the\n\
+        \  ! Cloud Router value through instead; priorities are set by Cloud Router\n\
+        \  ! import policies\n  neighbor 10.0.0.252 attribute-unchanged med\n  neighbor\
+        \ 10.0.0.252 route-map RM-NIC0-IN in\n  neighbor 10.0.0.252 route-map RM-NIC0-OUT\
+        \ out\n  neighbor 10.0.0.253 soft-reconfiguration inbound\n  ! MED neutral:\
+        \ FRR strips the MED toward eBGP peers by default, pass the\n  ! Cloud Router\
+        \ value through instead; priorities are set by Cloud Router\n  ! import policies\n\
+        \  neighbor 10.0.0.253 attribute-unchanged med\n  neighbor 10.0.0.253 route-map\
+        \ RM-NIC0-IN in\n  neighbor 10.0.0.253 route-map RM-NIC0-OUT out\n exit-address-family\n\
+        !\nline vty\n!\n"
+      user-data: "#cloud-config\n\n# NVA startup for the NCC router appliance mode:\
+        \ static per-NIC routes and\n# optional masquerade as in the ILB sandwich\
+        \ template, plus a containerized FRR\n# instance peering via eBGP with the\
+        \ Cloud Router interfaces of every VPC the\n# NVA is attached to. The FRR\
+        \ configuration is rendered by the factory into the\n# `nva-frr-config` metadata\
+        \ key and reloaded whenever it changes.\n\nwrite_files:\n  - path: /etc/frr/daemons\n\
+        \    permissions: \"0644\"\n    content: |\n      bgpd=yes\n      zebra=yes\n\
+        \      vtysh_enable=yes\n      zebra_options=\"  -A 127.0.0.1 -s 90000000\"\
+        \n      bgpd_options=\"   -A 127.0.0.1\"\n  - path: /etc/frr/vtysh.conf\n\
+        \    permissions: \"0644\"\n    content: |\n      service integrated-vtysh-config\n\
+        \  - path: /var/run/nva/update-pbrs.sh\n    permissions: \"0755\"\n    content:\
+        \ |\n      #!/bin/bash\n      # Continuous update of PBRs for an interface\
+        \ (needed when an NVA mixes\n      # NCC Router Appliance spokes on some NICs\
+        \ with ILB backends on others).\n      set -e\n\n      IF_INDEX=$1\n     \
+        \ METADATA_URL=\"http://metadata.google.internal/computeMetadata/v1/instance/network-interfaces\"\
+        \n      METADATA_HEADER=\"Metadata-Flavor: Google\"\n      IF_NAME=\"eth${IF_INDEX}\"\
+        \n      TABLE_ID=$((110 + IF_INDEX))\n\n      GATEWAY=$(curl -s -H \"${METADATA_HEADER}\"\
+        \ \"${METADATA_URL}/${IF_INDEX}/gateway\")\n      NIC_IP=$(curl -s -H \"${METADATA_HEADER}\"\
+        \ \"${METADATA_URL}/${IF_INDEX}/ip\")\n      if [ -z \"${GATEWAY}\" ]; then\n\
+        \        echo \"Could not retrieve gateway. Exiting.\"\n        exit 1\n \
+        \     fi\n\n      while true; do\n        ip route replace default via ${GATEWAY}\
+        \ dev ${IF_NAME} onlink table ${TABLE_ID} || true\n        FORWARDED_IPS_LIST=()\n\
+        \        if [ -n \"${NIC_IP}\" ]; then\n          FORWARDED_IPS_LIST+=(\"\
+        ${NIC_IP}\")\n        fi\n        FORWARDED_IP_IDS=$(curl -s -H \"${METADATA_HEADER}\"\
+        \ \"${METADATA_URL}/${IF_INDEX}/forwarded-ips/\")\n        for ID in ${FORWARDED_IP_IDS};\
+        \ do\n          IP=$(curl -s -H \"${METADATA_HEADER}\" \"${METADATA_URL}/${IF_INDEX}/forwarded-ips/${ID}\"\
+        )\n          FORWARDED_IPS_LIST+=(\"${IP}\")\n        done\n        FORWARDED_IPS=$(printf\
+        \ \"%s\\n\" \"${FORWARDED_IPS_LIST[@]}\")\n\n        CURRENT_RULE_IPS=$(ip\
+        \ rule show | grep \"lookup ${TABLE_ID}\" | awk -F 'from ' '/from/ {split($2,\
+        \ a, \" \"); print a[1]}' | sort -u || true)\n\n        for IP in ${FORWARDED_IPS};\
+        \ do\n          if ! echo \"${CURRENT_RULE_IPS}\" | grep -q \"^${IP}$\"; then\n\
+        \            ip rule add from ${IP} to 35.191.0.0/16 lookup ${TABLE_ID}\n\
+        \            ip rule add from ${IP} to 130.211.0.0/22 lookup ${TABLE_ID}\n\
+        \          fi\n        done\n\n        for IP in ${CURRENT_RULE_IPS}; do\n\
+        \          if ! echo \"${FORWARDED_IPS}\" | grep -q \"^${IP}$\"; then\n  \
+        \          ip rule del from ${IP} to 35.191.0.0/16 lookup ${TABLE_ID} || true\n\
+        \            ip rule del from ${IP} to 130.211.0.0/22 lookup ${TABLE_ID} ||\
+        \ true\n          fi\n        done\n\n        sleep 5\n      done\n  - path:\
+        \ /var/run/nva/frr-config-sync.sh\n    permissions: \"0755\"\n    content:\
+        \ |\n      #!/bin/bash\n      # Fetch the FRR configuration from instance\
+        \ metadata, substitute the\n      # router id with the primary NIC address\
+        \ and (re)start FRR when the\n      # configuration changes. Runs forever\
+        \ in the background.\n      METADATA_URL=\"http://metadata.google.internal/computeMetadata/v1/instance\"\
+        \n      METADATA_HEADER=\"Metadata-Flavor: Google\"\n      IP0=$(curl -s -H\
+        \ \"${METADATA_HEADER}\" \"${METADATA_URL}/network-interfaces/0/ip\")\n  \
+        \    LAST_HASH=\"\"\n      while true; do\n        CONFIG=$(curl -s -f -H\
+        \ \"${METADATA_HEADER}\" \"${METADATA_URL}/attributes/nva-frr-config\")\n\
+        \        if [ -n \"${CONFIG}\" ]; then\n          HASH=$(echo \"${CONFIG}\"\
+        \ | md5sum | cut -d' ' -f1)\n          if [ \"${HASH}\" != \"${LAST_HASH}\"\
+        \ ]; then\n            echo \"FRR configuration changed, applying.\"\n   \
+        \         echo \"${CONFIG}\" | sed \"s/ROUTER_ID/${IP0}/\" > /etc/frr/frr.conf\n\
+        \            chown -R 100:101 /etc/frr || true\n            # pull only when\
+        \ the image is not already cached locally; on first\n            # boot the\
+        \ pull may race with Cloud NAT becoming available\n            if ! docker\
+        \ image inspect quay.io/frrouting/frr:10.2.1 >/dev/null 2>&1; then\n     \
+        \         for i in $(seq 1 30); do\n                docker pull quay.io/frrouting/frr:10.2.1\
+        \ && break\n                echo \"Image pull failed, retrying in 10s (${i}/30).\"\
+        \n                sleep 10\n              done\n            fi\n         \
+        \   docker rm -f frr 2>/dev/null || true\n            docker run -d --name\
+        \ frr --restart=always --net=host \\\n              --cap-add=NET_ADMIN --cap-add=NET_RAW\
+        \ --cap-add=NET_BIND_SERVICE \\\n              --cap-add=SYS_ADMIN -v /etc/frr:/etc/frr\
+        \ quay.io/frrouting/frr:10.2.1 && \\\n              LAST_HASH=\"${HASH}\"\n\
+        \          fi\n        fi\n        sleep 30\n      done\n\nruncmd:\n  - |\n\
+        \    #!/bin/bash\n    set -ex\n\n    echo \"Starting NVA network configuration...\"\
+        \n\n    echo \"Enabling IP forwarding and loose reverse path filtering.\"\n\
+        \    cat > /etc/sysctl.d/90-nva.conf <<EOF\n    net.ipv4.ip_forward = 1\n\
+        \    net.ipv4.conf.all.rp_filter = 2\n    net.ipv4.conf.default.rp_filter\
+        \ = 2\n    EOF\n    sysctl -p /etc/sysctl.d/90-nva.conf\n\n    iptables -I\
+        \ FORWARD -j ACCEPT\n    # let Cloud Router initiated BGP sessions and ILB\
+        \ health checks in through\n    # the host firewall\n    iptables -I INPUT\
+        \ -p tcp --dport 179 -j ACCEPT\n    iptables -I INPUT -s 35.191.0.0/16,130.211.0.0/22\
+        \ -j ACCEPT\n\n    METADATA_URL=\"http://metadata.google.internal/computeMetadata/v1/instance/network-interfaces\"\
+        \n    METADATA_HEADER=\"Metadata-Flavor: Google\"\n    INTERFACE_INDEXES=$(curl\
+        \ -s -H \"${METADATA_HEADER}\" \"${METADATA_URL}/\" | sed 's:/$::')\n\n  \
+        \  for i in ${INTERFACE_INDEXES}; do\n      IF_NAME=\"eth${i}\"\n      echo\
+        \ \"Configuring interface ${IF_NAME}...\"\n\n      GATEWAY=$(curl -s -H \"\
+        ${METADATA_HEADER}\" \"${METADATA_URL}/${i}/gateway\")\n      if [ -z \"${GATEWAY}\"\
+        \ ]; then\n        echo \"Could not retrieve gateway for ${IF_NAME}. Skipping.\"\
+        \n        continue\n      fi\n      echo \"Gateway for ${IF_NAME} is ${GATEWAY}.\"\
+        \n      # loose rp_filter per interface (sysctl \"all\" is a max with per-if)\n\
+        \      sysctl -w net.ipv4.conf.${IF_NAME}.rp_filter=2 || true\n\n        \
+        \          if [ \"${i}\" == \"0\" ]; then\n                        echo \"\
+        Enabling NAT (Masquerade) on ${IF_NAME} and setting default route.\"\n   \
+        \     ip route replace default via ${GATEWAY} dev ${IF_NAME}\n           \
+        \     # keep source addresses for traffic that stays private, so that an\n\
+        \        # active/standby switch does not reset flows through the NAT\n  \
+        \      iptables -t nat -A POSTROUTING -o ${IF_NAME} -d 10.0.0.0/8 -j RETURN\n\
+        \                iptables -t nat -A POSTROUTING -o ${IF_NAME} -j MASQUERADE\n\
+        \              fi\n                        \n      echo \"Starting continuous\
+        \ PBR update for eth${i} in the background.\"\n      nohup bash /var/run/nva/update-pbrs.sh\
+        \ $i >> /var/log/nva-pbr-update.log 2>&1 &\n    done\n\n    echo \"Starting\
+        \ FRR configuration sync.\"\n    nohup bash /var/run/nva/frr-config-sync.sh\
+        \ >> /var/log/nva-frr-sync.log 2>&1 &\n\n    echo \"NVA network configuration\
+        \ complete.\"\n"
+    metadata_startup_script: null
+    name: nva-managed-b-0
+    network_interface:
+    - access_config: []
+      alias_ip_range: []
+      alias_ipv6_range: []
+      enable_vpc_scoped_dns: null
+      ipv6_access_config: []
+      nic_type: null
+      queue_count: null
+      security_policy: null
+      vlan: null
+    - access_config: []
+      alias_ip_range: []
+      alias_ipv6_range: []
+      enable_vpc_scoped_dns: null
+      ipv6_access_config: []
+      nic_type: null
+      queue_count: null
+      security_policy: null
+      vlan: null
+    network_performance_config: []
+    params: []
+    partner_metadata: null
+    project: fast-prod-net-core-0
+    resource_policies: null
+    scheduling:
+    - automatic_restart: true
+      availability_domain: null
+      graceful_shutdown: []
+      host_error_timeout_seconds: null
+      instance_termination_action: null
+      local_ssd_recovery_timeout: []
+      maintenance_interval: null
+      max_run_duration: []
+      min_node_cpus: null
+      node_affinities: []
+      on_host_maintenance: MIGRATE
+      on_instance_stop_action: []
+      preemptible: false
+      preemption_notice_duration: []
+      provisioning_model: STANDARD
+      skip_guest_os_shutdown: false
+      termination_time: null
+    scratch_disk: []
+    service_account:
+    - scopes:
+      - https://www.googleapis.com/auth/devstorage.read_only
+      - https://www.googleapis.com/auth/logging.write
+      - https://www.googleapis.com/auth/monitoring.write
+    shielded_instance_config: []
+    tags:
+    - nva
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+    workload_identity_config: []
+    zone: europe-west1-b
+  module.projects.module.projects-iam["net-core-0"].google_compute_shared_vpc_host_project.shared_vpc_host[0]:
+    deletion_policy: DELETE
+    project: fast-prod-net-core-0
+    timeouts: null
+  module.projects.module.projects["net-core-0"].data.google_logging_project_settings.logging_sa[0]:
+    project: fast-prod-net-core-0
+  module.projects.module.projects["net-core-0"].google_project.project[0]:
+    auto_create_network: false
+    billing_account: 000000-111111-222222
+    deletion_policy: DELETE
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    folder_id: '12345678'
+    labels: null
+    name: fast-prod-net-core-0
+    org_id: null
+    project_id: fast-prod-net-core-0
+    tags: null
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+  module.projects.module.projects["net-core-0"].google_project_iam_member.service_agents["compute-system"]:
+    condition: []
+    project: fast-prod-net-core-0
+    role: roles/compute.serviceAgent
+  module.projects.module.projects["net-core-0"].google_project_iam_member.service_agents["container-engine-robot"]:
+    condition: []
+    project: fast-prod-net-core-0
+    role: roles/container.serviceAgent
+  module.projects.module.projects["net-core-0"].google_project_iam_member.service_agents["dns"]:
+    condition: []
+    project: fast-prod-net-core-0
+    role: roles/dns.serviceAgent
+  module.projects.module.projects["net-core-0"].google_project_iam_member.service_agents["gkenode"]:
+    condition: []
+    project: fast-prod-net-core-0
+    role: roles/container.defaultNodeServiceAgent
+  module.projects.module.projects["net-core-0"].google_project_iam_member.service_agents["monitoring-notification"]:
+    condition: []
+    project: fast-prod-net-core-0
+    role: roles/monitoring.notificationServiceAgent
+  module.projects.module.projects["net-core-0"].google_project_iam_member.service_agents["networkmanagement"]:
+    condition: []
+    project: fast-prod-net-core-0
+    role: roles/networkmanagement.serviceAgent
+  module.projects.module.projects["net-core-0"].google_project_iam_member.service_agents["service-networking"]:
+    condition: []
+    project: fast-prod-net-core-0
+    role: roles/servicenetworking.serviceAgent
+  module.projects.module.projects["net-core-0"].google_project_iam_member.service_agents["vpcaccess"]:
+    condition: []
+    project: fast-prod-net-core-0
+    role: roles/vpcaccess.serviceAgent
+  module.projects.module.projects["net-core-0"].google_project_service.project_services["compute.googleapis.com"]:
+    deletion_policy: DELETE
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: fast-prod-net-core-0
+    service: compute.googleapis.com
+    timeouts: null
+  module.projects.module.projects["net-core-0"].google_project_service.project_services["container.googleapis.com"]:
+    deletion_policy: DELETE
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: fast-prod-net-core-0
+    service: container.googleapis.com
+    timeouts: null
+  module.projects.module.projects["net-core-0"].google_project_service.project_services["dns.googleapis.com"]:
+    deletion_policy: DELETE
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: fast-prod-net-core-0
+    service: dns.googleapis.com
+    timeouts: null
+  module.projects.module.projects["net-core-0"].google_project_service.project_services["iap.googleapis.com"]:
+    deletion_policy: DELETE
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: fast-prod-net-core-0
+    service: iap.googleapis.com
+    timeouts: null
+  module.projects.module.projects["net-core-0"].google_project_service.project_services["logging.googleapis.com"]:
+    deletion_policy: DELETE
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: fast-prod-net-core-0
+    service: logging.googleapis.com
+    timeouts: null
+  module.projects.module.projects["net-core-0"].google_project_service.project_services["monitoring.googleapis.com"]:
+    deletion_policy: DELETE
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: fast-prod-net-core-0
+    service: monitoring.googleapis.com
+    timeouts: null
+  module.projects.module.projects["net-core-0"].google_project_service.project_services["networkmanagement.googleapis.com"]:
+    deletion_policy: DELETE
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: fast-prod-net-core-0
+    service: networkmanagement.googleapis.com
+    timeouts: null
+  module.projects.module.projects["net-core-0"].google_project_service.project_services["networksecurity.googleapis.com"]:
+    deletion_policy: DELETE
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: fast-prod-net-core-0
+    service: networksecurity.googleapis.com
+    timeouts: null
+  module.projects.module.projects["net-core-0"].google_project_service.project_services["servicenetworking.googleapis.com"]:
+    deletion_policy: DELETE
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: fast-prod-net-core-0
+    service: servicenetworking.googleapis.com
+    timeouts: null
+  module.projects.module.projects["net-core-0"].google_project_service.project_services["vpcaccess.googleapis.com"]:
+    deletion_policy: DELETE
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: fast-prod-net-core-0
+    service: vpcaccess.googleapis.com
+    timeouts: null
+  module.projects.module.projects["net-core-0"].google_project_service_identity.default["container.googleapis.com"]:
+    project: fast-prod-net-core-0
+    service: container.googleapis.com
+    timeouts: null
+  module.projects.module.projects["net-core-0"].google_project_service_identity.default["dns.googleapis.com"]:
+    project: fast-prod-net-core-0
+    service: dns.googleapis.com
+    timeouts: null
+  module.projects.module.projects["net-core-0"].google_project_service_identity.default["iap.googleapis.com"]:
+    project: fast-prod-net-core-0
+    service: iap.googleapis.com
+    timeouts: null
+  module.projects.module.projects["net-core-0"].google_project_service_identity.default["monitoring.googleapis.com"]:
+    project: fast-prod-net-core-0
+    service: monitoring.googleapis.com
+    timeouts: null
+  module.projects.module.projects["net-core-0"].google_project_service_identity.default["networkmanagement.googleapis.com"]:
+    project: fast-prod-net-core-0
+    service: networkmanagement.googleapis.com
+    timeouts: null
+  module.projects.module.projects["net-core-0"].google_project_service_identity.default["networksecurity.googleapis.com"]:
+    project: fast-prod-net-core-0
+    service: networksecurity.googleapis.com
+    timeouts: null
+  module.projects.module.projects["net-core-0"].google_project_service_identity.default["servicenetworking.googleapis.com"]:
+    project: fast-prod-net-core-0
+    service: servicenetworking.googleapis.com
+    timeouts: null
+  module.projects.module.projects["net-core-0"].google_project_service_identity.default["vpcaccess.googleapis.com"]:
+    project: fast-prod-net-core-0
+    service: vpcaccess.googleapis.com
+    timeouts: null
+  module.projects.terraform_data.defaults_preconditions:
+    input: null
+    output: null
+    triggers_replace: null
+  module.projects.terraform_data.project_preconditions:
+    input: null
+    output: null
+    triggers_replace: null
+  module.vpc-factory.module.vpcs["trusted"].google_compute_network.network[0]:
+    auto_create_subnetworks: false
+    delete_bgp_always_compare_med: false
+    delete_default_routes_on_create: true
+    deletion_policy: DELETE
+    description: Terraform managed
+    enable_ula_internal_ipv6: null
+    mtu: 1500
+    name: trusted
+    network_firewall_policy_enforcement_order: AFTER_CLASSIC_FIREWALL
+    network_profile: null
+    params: []
+    project: fast-prod-net-core-0
+    routing_mode: GLOBAL
+    timeouts: null
+  module.vpc-factory.module.vpcs["trusted"].google_compute_route.gateway["directpath-googleapis"]:
+    deletion_policy: DELETE
+    description: Terraform-managed.
+    dest_range: 34.126.0.0/18
+    name: trusted-directpath-googleapis
+    network: trusted
+    next_hop_gateway: default-internet-gateway
+    next_hop_ilb: null
+    next_hop_instance: null
+    next_hop_vpn_tunnel: null
+    params: []
+    priority: 1000
+    project: fast-prod-net-core-0
+    tags: null
+    timeouts: null
+  module.vpc-factory.module.vpcs["trusted"].google_compute_route.gateway["private-googleapis"]:
+    deletion_policy: DELETE
+    description: Terraform-managed.
+    dest_range: 199.36.153.8/30
+    name: trusted-private-googleapis
+    network: trusted
+    next_hop_gateway: default-internet-gateway
+    next_hop_ilb: null
+    next_hop_instance: null
+    next_hop_vpn_tunnel: null
+    params: []
+    priority: 1000
+    project: fast-prod-net-core-0
+    tags: null
+    timeouts: null
+  module.vpc-factory.module.vpcs["trusted"].google_compute_route.gateway["restricted-googleapis"]:
+    deletion_policy: DELETE
+    description: Terraform-managed.
+    dest_range: 199.36.153.4/30
+    name: trusted-restricted-googleapis
+    network: trusted
+    next_hop_gateway: default-internet-gateway
+    next_hop_ilb: null
+    next_hop_instance: null
+    next_hop_vpn_tunnel: null
+    params: []
+    priority: 1000
+    project: fast-prod-net-core-0
+    tags: null
+    timeouts: null
+  module.vpc-factory.module.vpcs["trusted"].google_compute_subnetwork.subnetwork["europe-west1/trusted-default"]:
+    deletion_policy: DELETE
+    description: Terraform-managed.
+    ip_cidr_range: 10.0.1.0/24
+    ip_collection: null
+    ipv6_access_type: null
+    log_config: []
+    name: trusted-default
+    network: trusted
+    params: []
+    private_ip_google_access: true
+    project: fast-prod-net-core-0
+    region: europe-west1
+    reserved_internal_range: null
+    resolve_subnet_mask: null
+    role: null
+    send_secondary_ip_range_if_empty: true
+    timeouts: null
+  module.vpc-factory.module.vpcs["untrusted"].google_compute_network.network[0]:
+    auto_create_subnetworks: false
+    delete_bgp_always_compare_med: false
+    delete_default_routes_on_create: true
+    deletion_policy: DELETE
+    description: Terraform managed
+    enable_ula_internal_ipv6: null
+    mtu: 1500
+    name: untrusted
+    network_firewall_policy_enforcement_order: AFTER_CLASSIC_FIREWALL
+    network_profile: null
+    params: []
+    project: fast-prod-net-core-0
+    routing_mode: GLOBAL
+    timeouts: null
+  module.vpc-factory.module.vpcs["untrusted"].google_compute_route.gateway["directpath-googleapis"]:
+    deletion_policy: DELETE
+    description: Terraform-managed.
+    dest_range: 34.126.0.0/18
+    name: untrusted-directpath-googleapis
+    network: untrusted
+    next_hop_gateway: default-internet-gateway
+    next_hop_ilb: null
+    next_hop_instance: null
+    next_hop_vpn_tunnel: null
+    params: []
+    priority: 1000
+    project: fast-prod-net-core-0
+    tags: null
+    timeouts: null
+  module.vpc-factory.module.vpcs["untrusted"].google_compute_route.gateway["private-googleapis"]:
+    deletion_policy: DELETE
+    description: Terraform-managed.
+    dest_range: 199.36.153.8/30
+    name: untrusted-private-googleapis
+    network: untrusted
+    next_hop_gateway: default-internet-gateway
+    next_hop_ilb: null
+    next_hop_instance: null
+    next_hop_vpn_tunnel: null
+    params: []
+    priority: 1000
+    project: fast-prod-net-core-0
+    tags: null
+    timeouts: null
+  module.vpc-factory.module.vpcs["untrusted"].google_compute_route.gateway["restricted-googleapis"]:
+    deletion_policy: DELETE
+    description: Terraform-managed.
+    dest_range: 199.36.153.4/30
+    name: untrusted-restricted-googleapis
+    network: untrusted
+    next_hop_gateway: default-internet-gateway
+    next_hop_ilb: null
+    next_hop_instance: null
+    next_hop_vpn_tunnel: null
+    params: []
+    priority: 1000
+    project: fast-prod-net-core-0
+    tags: null
+    timeouts: null
+  module.vpc-factory.module.vpcs["untrusted"].google_compute_subnetwork.subnetwork["europe-west1/untrusted-default"]:
+    deletion_policy: DELETE
+    description: Terraform-managed.
+    ip_cidr_range: 10.0.0.0/24
+    ip_collection: null
+    ipv6_access_type: null
+    log_config: []
+    name: untrusted-default
+    network: untrusted
+    params: []
+    private_ip_google_access: true
+    project: fast-prod-net-core-0
+    region: europe-west1
+    reserved_internal_range: null
+    resolve_subnet_mask: null
+    role: null
+    send_secondary_ip_range_if_empty: true
+    timeouts: null
+  terraform_data.nva_ra_instances["trusted/byo"]:
+    input:
+    - projects/my-project/zones/europe-west1-b/instances/fw-a
+    - projects/my-project/zones/europe-west1-c/instances/fw-b
+    triggers_replace: null
+  terraform_data.nva_ra_instances["trusted/managed"]:
+    input:
+    - null
+    triggers_replace: null
+  terraform_data.nva_ra_instances["untrusted/byo"]:
+    input:
+    - projects/my-project/zones/europe-west1-b/instances/fw-a
+    - projects/my-project/zones/europe-west1-c/instances/fw-b
+    triggers_replace: null
+  terraform_data.nva_ra_instances["untrusted/managed"]:
+    input:
+    - null
+    triggers_replace: null
+  terraform_data.router_peer_instances["trusted/ra/fw-0/fw-a"]:
+    input: projects/my-project/zones/europe-west1-b/instances/fw-a
+    triggers_replace: null
+  terraform_data.router_peer_instances["trusted/ra/fw-0/fw-b"]:
+    input: projects/my-project/zones/europe-west1-c/instances/fw-b
+    triggers_replace: null
+  terraform_data.router_peer_instances["trusted/ra/managed-0/managed-b-0"]:
+    triggers_replace: null
+  terraform_data.router_peer_instances["untrusted/ra/fw-a-0"]:
+    input: projects/my-project/zones/europe-west1-b/instances/fw-a
+    triggers_replace: null
+  terraform_data.router_peer_instances["untrusted/ra/fw-b-0"]:
+    input: projects/my-project/zones/europe-west1-c/instances/fw-b
+    triggers_replace: null
+  terraform_data.router_peer_instances["untrusted/ra/managed-0/managed-b-0"]:
+    triggers_replace: null
+  terraform_data.router_peer_instances["untrusted/ra/managed-1"]:
+    triggers_replace: null
+
+counts:
+  google_compute_instance: 1
+  google_compute_network: 2
+  google_compute_route: 6
+  google_compute_router: 2
+  google_compute_router_interface: 4
+  google_compute_router_peer: 7
+  google_compute_router_route_policy: 1
+  google_compute_shared_vpc_host_project: 1
+  google_compute_subnetwork: 2
+  google_logging_project_settings: 1
+  google_network_connectivity_hub: 1
+  google_network_connectivity_spoke: 4
+  google_project: 1
+  google_project_iam_member: 8
+  google_project_service: 10
+  google_project_service_identity: 8
+  google_storage_bucket_object: 2
+  modules: 7
+  resources: 74
+  terraform_data: 13
+
+outputs:
+  host_project_ids:
+    net-core-0: fast-prod-net-core-0
+  host_project_numbers: __missing__
+  subnet_ips:
+    trusted:
+      europe-west1/trusted-default: 10.0.1.0/24
+    untrusted:
+      europe-west1/untrusted-default: 10.0.0.0/24
+  subnet_proxy_only_self_links:
+    trusted: {}
+    untrusted: {}
+  subnet_psc_self_links:
+    trusted: {}
+    untrusted: {}
+  subnet_self_links: __missing__
+  vpc_self_links: __missing__

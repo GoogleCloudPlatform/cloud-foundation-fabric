@@ -15,6 +15,7 @@
     - [Delegated Public Zones](#delegated-public-zones)
   - [Firewall Policies](#firewall-policies)
   - [Cloud NAT and Routers](#cloud-nat-and-routers)
+  - [Network Virtual Appliances (NVAs)](#network-virtual-appliances-nvas)
   - [VPC Connectivity](#vpc-connectivity)
 - [Context-based interpolation](#context-based-interpolation)
 - [Files](#files)
@@ -60,6 +61,7 @@ It currently implements the following:
 
 - **Hub and spoke (w/ NCC)**: Environment-based VPCs interconnected through an NCC full-mesh, resulting in full routing line-of-sight between spokes ([dataset](./datasets/hub-and-spokes-ncc/))
 - **Hub and spoke (w/ NVA)**: Environment-based VPCs interconnected through a Network Virtual Appliance, allowing for centralized traffic inspection and control ([dataset](./datasets/hub-and-spokes-nva/))
+- **Hub and spoke (w/ NVA as NCC Router Appliance)**: Environment-based VPCs attached to two NCC hubs, with multi-region NVAs peering via BGP with Cloud Routers as Router Appliance spokes; traffic inspection without load balancers or static routes, with regional affinity and cross-region failover ([dataset](./datasets/hub-and-spokes-nva-ncc/))
 - **Hub and spoke (w/ VPC Peering)**: Environment-based VPCs interconnected through VPC peering, resulting in full isolation between spokes ([dataset](./datasets/hub-and-spokes-peerings/))
 - **Hub and spoke (w/ VPN)**: Environment-based VPCs interconnected through HA VPN, with full routing line-of-sight between spokes ([dataset](./datasets/hub-and-spokes-vpns/))
 
@@ -269,7 +271,9 @@ In this example:
 This stage supports both VPC-level firewall rules and hierarchical firewall policies.
 
 - **Hierarchical Firewall Policies** are defined in the `firewall-policies` directory. They are attached to folders or the organization and are useful for enforcing baseline security rules across multiple projects (e.g., allowing health checks and IAP access).
-- **VPC Firewall Rules** are defined within each VPC's configuration directory (`vpcs/[vpc-name]/firewall-rules`). These are used for more specific rules tailored to a particular VPC.
+- **VPC Firewall Rules** are defined within each VPC's configuration directory (`vpcs/[vpc-name]/firewall-rules`). These are used for more specific rules tailored to a particular VPC. Rule names must be unique within a project, so VPCs sharing a host project need distinct rule names.
+
+The `$cidr_ranges_sets:` tokens defined in the defaults file `context` are resolved in hierarchical firewall policies only; VPC-level firewall rules need literal ranges.
 
 ### Cloud NAT and Routers
 
@@ -330,7 +334,7 @@ routers:
 # [...]
 ```
 
-Each term requires at least one action, and takes a list of them applied in the order they are declared.
+Each term requires at least one action, and takes a list of them applied in the order they are declared; a catch-all term matches `destination.inAnyRange(prefix('0.0.0.0/0').orLonger())`, since the API requires a function call in every match expression.
 
 ```yaml
 # in vpcs/[vpc-name]/vpns/[vpn-name].yaml
@@ -353,6 +357,125 @@ Policies can equally be declared under a VPN's or VLAN attachment's own `router_
 > [!NOTE]
 > Cloud Router serializes configuration changes. Updating or deleting several route policies on the same router in a single apply may fail with `Error 400: [...] is not ready, resourceNotReady`. Re-running the apply converges, and `-parallelism=1` avoids the error entirely.
 
+Routers can also declare their own `interfaces` and BGP `peers`, which is how Cloud Router peers with NVAs attached as NCC Router Appliance spokes (see [NVAs](#network-virtual-appliances-nvas) below). Interfaces live in a subnet of the router's VPC and can be marked as redundant to another interface of the same router; the `ip_address` must be a literal, since it is also rendered in the NVA guest BGP configuration before the router exists. Peers reference an interface by key and either fan out over all instances of an NVA's Router Appliance spoke in the router's VPC via `nva`, or point to an explicit `address` with an optional `router_appliance_instance`; exactly one of `nva` and `address` must be set.
+
+```yaml
+# [...]
+routers:
+  ra-primary:
+    region: $locations:primary
+    asn: 64512
+    custom_advertise:
+      all_subnets: true
+      ip_ranges:
+        "0.0.0.0/0": default
+    interfaces:
+      intf-0:
+        subnet: $subnets:routing/europe-west1/routing-primary
+        ip_address: 10.64.0.252
+      intf-1:
+        subnet: $subnets:routing/europe-west1/routing-primary
+        ip_address: 10.64.0.253
+        redundant_interface: intf-0
+    peers:
+      # one BGP session per instance of the `primary` NVA spoke in this VPC,
+      # peer address is the instance NIC attached to this VPC
+      nva-0:
+        interface: intf-0
+        nva: primary
+        asn: 64513
+      nva-1:
+        interface: intf-1
+        nva: primary
+        asn: 64513
+      # explicit peer to a factory-created instance, via context tokens
+      primary-b-0:
+        interface: intf-0
+        asn: 64513
+        address: $nva_addresses:primary-b-0/routing
+        router_appliance_instance: $nva_instances:primary-b-0
+        import_policies:
+          - prefer-primary
+      # explicit peer to an externally managed appliance
+      external-0:
+        interface: intf-0
+        asn: 64514
+        address: 10.64.0.10
+        router_appliance_instance: projects/my-project/zones/europe-west1-b/instances/my-nva
+        route_priority: 200
+        custom_learned_ip_ranges:
+          route_priority: 200
+          ip_ranges:
+            "192.168.0.0/16": onprem
+        md5_authentication_key:
+          name: my-nva
+          key: secret
+# [...]
+```
+
+Peers use the same attributes as VPN and VLAN attachment BGP peers: `asn`, `address`, `route_priority`, `custom_advertise`, `custom_learned_ip_ranges` (`route_priority` and `ip_ranges` map), `md5_authentication_key` (`name` and `key`), `enable`, and `import_policies`/`export_policies` referencing the router's route policies by key. Interfaces and peers are created in the router's project and region; peer names are scoped to the router, `<peer key>` for explicit peers and `<peer key>-<instance key>` for fan-out ones (`nva-0-primary-b-0` above), and must fit in 63 characters. Peers referencing an undefined interface, an NVA without a Router Appliance spoke in the router's VPC, or an unknown route policy are rejected at plan time, as is a `redundant_interface` that does not name a primary interface of the same router.
+
+Explicit peers can use two context namespaces to refer to instances created by the NVA factory: `$nva_instances:<instance key>` resolves to the instance self link (for `router_appliance_instance`) and `$nva_addresses:<instance key>/<vpc key>` to the address of the instance NIC attached to that VPC (for `address`), where the instance key is `<nva>-<zone>-<index>`. An explicit peer to a factory-created instance also gets its neighbor (including any `md5_authentication_key`) rendered in the instance FRR configuration, which is how per-instance route policies are attached (the `nva` fan-out gives every instance the same policies).
+
+### Network Virtual Appliances (NVAs)
+
+The NVA factory ([factory-nva.tf](./factory-nva.tf)) creates multi-NIC appliances from YAML files in the `nvas` directory, and plugs them into the VPCs in one of two ways:
+
+- **ILB sandwich**: one internal passthrough load balancer per VPC fronts the instances, and VPC routes point at the load balancer addresses. This is configured via `ilb_config` and described in the [hub-and-spokes-nva dataset](./datasets/hub-and-spokes-nva/README.md).
+- **NCC Router Appliance**: the instances are attached to NCC hubs as Router Appliance spokes and peer via BGP with Cloud Routers, which program dynamic routes through them. This is configured via `ncc_ra_config` and `bgp_config` and described in the [hub-and-spokes-nva-ncc dataset](./datasets/hub-and-spokes-nva-ncc/README.md).
+
+The two modes are exclusive per VPC: the factory refuses to create a Router Appliance spoke for an NVA that also has an ILB forwarding rule in the same VPC.
+
+```yaml
+project_id: $project_ids:net-core-0
+name: primary
+region: $locations:primary
+auto_instance_config:
+  nics:
+    - network: $networks:routing
+      subnet: $subnets:routing/europe-west1/routing-primary
+      masquerade: true
+      # only SNAT internet-bound traffic
+      masquerade_exclude:
+        - 10.0.0.0/8
+    - network: $networks:transit
+      subnet: $subnets:transit/europe-west1/transit-primary
+      # never accept these prefixes from the neighbors on this NIC
+      bgp_inbound_deny:
+        - 0.0.0.0/0
+# instance groups keyed by zone letter drive instance creation in both modes
+instance_groups:
+  b:
+    auto_create_instances: 1
+  c:
+    auto_create_instances: 1
+ncc_ra_config:
+  spokes:
+    - network: $networks:routing
+      hub: $ncc_hubs:routing
+    - network: $networks:transit
+      hub: $ncc_hubs:transit
+      group: $ncc_groups:transit/center
+      include_import_ranges: ["ALL_IPV4_RANGES"]
+      exclude_import_ranges: ["10.99.0.0/16"]
+bgp_config:
+  asn: 64513
+  keepalive: 3
+  holdtime: 9
+```
+
+- `instance_groups` sits at the top level of the NVA file and is shared by both modes; `ilb_config.instance_groups` is still accepted. Instances are named `nva-<nva>-<zone>-<index>` and keyed `<nva>-<zone>-<index>` in the `$nva_instances:` and `$nva_addresses:` contexts. Instance group resources are only created when the NVA has ILB forwarding rules.
+- `ncc_ra_config.spokes` creates one Router Appliance spoke per VPC, named `ra-<vpc>-<nva>`, containing every auto-created instance via its NIC in that VPC plus any `instances` listed explicitly (`vm`, `ip`, optional `name` used as the instance key, with `$nva_instances:`/`$nva_addresses:` tokens accepted); `site_to_site_data_transfer` defaults to `true`, `include_import_ranges` to `["ALL_IPV4_RANGES"]`. A spoke with no instances, two spokes of the same NVA for the same VPC, or an NVA with no NIC in the spoke VPC fail at plan time.
+- `bgp_config` switches the auto-created instances to Container-Optimized OS (unless `image` is set) and to a startup script running [FRR](https://frrouting.org/) in a container. The BGP neighbors are derived from the router peers that reference the NVA or its instances, so the router interface addresses and ASNs are the only source of truth. Routes learned on one NIC are re-advertised on the others unchanged: the appliance is MED neutral, and active/standby, ECMP and regional affinity are expressed with Cloud Router route policies on the peers (per-instance import policies on explicit peers, or one shared policy on a fan-out peer), see the [NCC dataset](./datasets/hub-and-spokes-nva-ncc/README.md#path-selection-with-cloud-router-import-policies) for a complete example.
+- The rendered FRR configuration is published as the `nva-frr-config` instance metadata key; a loop on the instance polls it every 30 seconds and restarts the FRR container when it changes, so BGP configuration changes apply in place (about 1 s of graceful BGP restart) without recreating the instance.
+- `advertise` on a NIC lists prefixes originated by the guest BGP daemon toward all its neighbors; they are not installed in the kernel by BGP, so each must be covered by a static route in the NIC's `routes` (used to publish workload prefixes through a star hub, see the NCC dataset); `bgp_inbound_deny` rejects the listed prefixes (exact match) from the neighbors on that NIC.
+- `masquerade_exclude` lists destination ranges excluded from SNAT on a masquerading NIC, so that private flows keep their source address and survive an active/standby switch. It works with both startup scripts.
+
+Appliances not created by the factory use the Router Appliance mode through an NVA file with only `ncc_ra_config.spokes[].instances` (no `auto_instance_config`, no `instance_groups`); router peers then reach them via the `nva` fan-out or as explicit peers. For the ILB sandwich, external instances are attached via `instance_groups.<zone>.attach_instances`.
+
+> [!WARNING]
+> Instances cannot be deleted while a Router Appliance spoke or a Cloud Router BGP peer references them. The factory replaces the spokes and peers of an NVA whenever one of its instances is replaced, so that they are destroyed first and recreated afterwards. A change that recreates an instance therefore drops every BGP session of that NVA for the duration of the apply; roll such changes one NVA at a time, or define one NVA file per instance so that each instance has its own spokes and peers. BGP configuration changes are reloaded in place and do not trigger this.
+
 ### VPC Connectivity
 
 This stage supports multiple ways to connect VPCs to other VPCs or other networks:
@@ -360,7 +483,8 @@ This stage supports multiple ways to connect VPCs to other VPCs or other network
 - **VPC Peering:** Managed via the `peering_config` section in a VPC's `.config.yaml` file.
 - **VLAN Attachments:** Partner or Dedicated Interconnect VLAN attachments are defined in the `vpcs/[vpc-name]/vlan-attachments` directory. By default, they are disabled by passing a non-existing directory via `factories_config`.
 - **VPNs:** High-availability VPNs are defined in the `vpcs/[vpc-name]/vpns` directory.
-- **Network Connectivity Center (NCC):** Managed via the `ncc_config` section in a VPC's `.config.yaml` file.
+- **Network Connectivity Center (NCC):** Managed via the `ncc_config` section in a VPC's `.config.yaml` file for VPC spokes, `ncc_spoke_config` in VPN and VLAN attachment files for hybrid spokes, and `ncc_ra_config` in NVA files for Router Appliance spokes.
+- **Network Virtual Appliances (NVAs):** Defined in the `nvas` directory, see the [dedicated section](#network-virtual-appliances-nvas).
 
 ## Context-based interpolation
 
@@ -405,6 +529,8 @@ Assuming keys of the form `my_folder`, `my_project`, `my_vpc`, etc. this is an e
 - `$ncc_groups:my_hub/my_group`
 - `$ncc_hubs:my_hub`
 - `$networks:my_vpc`
+- `$nva_addresses:my_nva-b-0/my_vpc` (NVA instance NIC address in a VPC)
+- `$nva_instances:my_nva-b-0` (NVA instance self link)
 - `$project_ids:my_project`
 - `$routers:my_vpc/my_vpn`
 - `$vpn_gateways:my_vpc/my_gateway`
@@ -422,10 +548,10 @@ Internally created resources are mapped to context namespaces, and use specific 
 | [factory-dns.tf](./factory-dns.tf) | DNS zones and RPZ factory. | <code>dns</code> · <code>dns-response-policy</code> |  |
 | [factory-firewall-policies.tf](./factory-firewall-policies.tf) | Firewall policies factory. | <code>net-firewall-policy</code> |  |
 | [factory-ncc.tf](./factory-ncc.tf) | NCC Hubs and Groups factory |  | <code>google_network_connectivity_group</code> · <code>google_network_connectivity_hub</code> · <code>google_network_connectivity_spoke</code> |
-| [factory-nva.tf](./factory-nva.tf) | NVA factory | <code>compute-vm</code> · <code>net-lb-int</code> | <code>google_compute_health_check</code> · <code>google_compute_instance_group</code> |
+| [factory-nva.tf](./factory-nva.tf) | NVA factory | <code>compute-vm</code> · <code>net-lb-int</code> | <code>google_compute_health_check</code> · <code>google_compute_instance_group</code> · <code>google_network_connectivity_spoke</code> · <code>terraform_data</code> |
 | [factory-peering.tf](./factory-peering.tf) | VPC Peering factory. |  | <code>google_compute_network_peering</code> |
 | [factory-projects.tf](./factory-projects.tf) | Projects factory. | <code>project-factory</code> |  |
-| [factory-routers.tf](./factory-routers.tf) | Routers factory. |  | <code>google_compute_router</code> · <code>google_compute_router_route_policy</code> |
+| [factory-routers.tf](./factory-routers.tf) | Routers factory. |  | <code>google_compute_router</code> · <code>google_compute_router_interface</code> · <code>google_compute_router_peer</code> · <code>google_compute_router_route_policy</code> · <code>terraform_data</code> |
 | [factory-vlan-attachments.tf](./factory-vlan-attachments.tf) | VLAN attachments factory. | <code>net-vlan-attachment</code> | <code>google_compute_interconnect_attachment_group</code> |
 | [factory-vpcs.tf](./factory-vpcs.tf) | VPC and firewall rules factory. | <code>net-vpc</code> · <code>net-vpc-factory</code> |  |
 | [factory-vpns.tf](./factory-vpns.tf) | VPNs factory. | <code>net-vpn-ha</code> | <code>google_compute_ha_vpn_gateway</code> |
