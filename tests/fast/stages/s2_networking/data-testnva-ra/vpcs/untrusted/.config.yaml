@@ -1,0 +1,74 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+project_id: $project_ids:net-core-0
+name: untrusted
+routing_mode: GLOBAL
+routers:
+  ra:
+    region: $locations:primary
+    asn: 64512
+    route_policies:
+      prefer-primary:
+        type: IMPORT
+        terms:
+          - priority: 10
+            match:
+              expression: "true"
+            actions:
+              - expression: "med.set(50)"
+    interfaces:
+      intf-0:
+        subnet: $subnets:untrusted/europe-west1/untrusted-default
+        ip_address: 10.0.0.252
+      intf-1:
+        subnet: $subnets:untrusted/europe-west1/untrusted-default
+        ip_address: 10.0.0.253
+        redundant_interface: intf-0
+    peers:
+      # explicit peers to appliances not created by the NVA factory
+      fw-a-0:
+        interface: intf-0
+        asn: 64513
+        address: 10.0.0.10
+        router_appliance_instance: projects/my-project/zones/europe-west1-b/instances/fw-a
+        route_priority: 100
+        import_policies: [prefer-primary]
+        custom_advertise:
+          all_subnets: true
+          ip_ranges:
+            "0.0.0.0/0": default
+        md5_authentication_key:
+          name: fw-a
+          key: secret
+      fw-b-0:
+        interface: intf-0
+        asn: 64513
+        address: 10.0.0.11
+        router_appliance_instance: projects/my-project/zones/europe-west1-c/instances/fw-b
+        custom_learned_ip_ranges:
+          route_priority: 200
+          ip_ranges:
+            "192.168.0.0/16": onprem
+      # fan-out across the factory created instances
+      managed-0:
+        interface: intf-0
+        asn: 64514
+        nva: managed
+      # explicit peer to a factory created instance via tokens
+      managed-1:
+        interface: intf-1
+        asn: 64514
+        address: $nva_addresses:managed-b-0/untrusted
+        router_appliance_instance: $nva_instances:managed-b-0

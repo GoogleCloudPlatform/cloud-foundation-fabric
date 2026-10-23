@@ -1,0 +1,203 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# yaml-language-server: $schema=../../../../schemas/vpc.schema.json
+
+# Routing VPC: hosts hybrid connectivity, internet egress and the NVA nic0.
+project_id: $project_ids:net-core-0
+name: routing
+routing_mode: GLOBAL
+nat_config:
+  nat-primary:
+    region: $locations:primary
+  nat-secondary:
+    region: $locations:secondary
+routers:
+  # hybrid connectivity router used by the HA VPN to on-premises
+  vpn-primary:
+    region: $locations:primary
+    asn: 64520
+  # router appliance routers, one per region, peering with the regional NVAs;
+  # they originate the default route and the routing VPC subnets toward the
+  # NVAs, which re-advertise them to the transit side. Import policies set the
+  # priority of what each appliance instance advertises: the local instances
+  # are preferred for the workload prefixes of their own region (b active, c
+  # standby), everything else is sent to the appliances of the region that
+  # owns the prefix, so north-south flows use one appliance in both directions
+  ra-primary:
+    region: $locations:primary
+    asn: 64512
+    custom_advertise:
+      all_subnets: true
+      ip_ranges:
+        "0.0.0.0/0": default
+    interfaces:
+      intf-0:
+        subnet: $subnets:routing/europe-west1/routing-primary
+        ip_address: 10.64.0.252
+      intf-1:
+        subnet: $subnets:routing/europe-west1/routing-primary
+        ip_address: 10.64.0.253
+        redundant_interface: intf-0
+    route_policies:
+      import-b:
+        type: IMPORT
+        terms:
+          # workload prefixes of this region: local appliance preferred
+          - priority: 10
+            match:
+              expression: "destination.inAnyRange([prefix('10.65.0.0/24').orLonger(), prefix('10.66.0.0/24').orLonger()])"
+            actions:
+              - expression: med.set(100)
+              - expression: accept()
+          # anything else is reached through the appliances of its own region
+          - priority: 20
+            match:
+              expression: "destination.inAnyRange(prefix('0.0.0.0/0').orLonger())"
+            actions:
+              - expression: med.set(10100)
+              - expression: accept()
+      import-c:
+        type: IMPORT
+        terms:
+          # workload prefixes of this region: local appliance preferred
+          - priority: 10
+            match:
+              expression: "destination.inAnyRange([prefix('10.65.0.0/24').orLonger(), prefix('10.66.0.0/24').orLonger()])"
+            actions:
+              - expression: med.set(150)
+              - expression: accept()
+          # anything else is reached through the appliances of its own region
+          - priority: 20
+            match:
+              expression: "destination.inAnyRange(prefix('0.0.0.0/0').orLonger())"
+            actions:
+              - expression: med.set(10150)
+              - expression: accept()
+    peers:
+      primary-b-0:
+        interface: intf-0
+        asn: 64513
+        address: $nva_addresses:primary-b-0/routing
+        router_appliance_instance: $nva_instances:primary-b-0
+        import_policies:
+          - import-b
+      primary-b-1:
+        interface: intf-1
+        asn: 64513
+        address: $nva_addresses:primary-b-0/routing
+        router_appliance_instance: $nva_instances:primary-b-0
+        import_policies:
+          - import-b
+      primary-c-0:
+        interface: intf-0
+        asn: 64513
+        address: $nva_addresses:primary-c-0/routing
+        router_appliance_instance: $nva_instances:primary-c-0
+        import_policies:
+          - import-c
+      primary-c-1:
+        interface: intf-1
+        asn: 64513
+        address: $nva_addresses:primary-c-0/routing
+        router_appliance_instance: $nva_instances:primary-c-0
+        import_policies:
+          - import-c
+  ra-secondary:
+    region: $locations:secondary
+    asn: 64512
+    custom_advertise:
+      all_subnets: true
+      ip_ranges:
+        "0.0.0.0/0": default
+    interfaces:
+      intf-0:
+        subnet: $subnets:routing/europe-west8/routing-secondary
+        ip_address: 10.64.1.252
+      intf-1:
+        subnet: $subnets:routing/europe-west8/routing-secondary
+        ip_address: 10.64.1.253
+        redundant_interface: intf-0
+    route_policies:
+      import-b:
+        type: IMPORT
+        terms:
+          # workload prefixes of this region: local appliance preferred
+          - priority: 10
+            match:
+              expression: "destination.inAnyRange([prefix('10.65.1.0/24').orLonger(), prefix('10.66.1.0/24').orLonger()])"
+            actions:
+              - expression: med.set(100)
+              - expression: accept()
+          # anything else is reached through the appliances of its own region
+          - priority: 20
+            match:
+              expression: "destination.inAnyRange(prefix('0.0.0.0/0').orLonger())"
+            actions:
+              - expression: med.set(10100)
+              - expression: accept()
+      import-c:
+        type: IMPORT
+        terms:
+          # workload prefixes of this region: local appliance preferred
+          - priority: 10
+            match:
+              expression: "destination.inAnyRange([prefix('10.65.1.0/24').orLonger(), prefix('10.66.1.0/24').orLonger()])"
+            actions:
+              - expression: med.set(150)
+              - expression: accept()
+          # anything else is reached through the appliances of its own region
+          - priority: 20
+            match:
+              expression: "destination.inAnyRange(prefix('0.0.0.0/0').orLonger())"
+            actions:
+              - expression: med.set(10150)
+              - expression: accept()
+    peers:
+      secondary-b-0:
+        interface: intf-0
+        asn: 64513
+        address: $nva_addresses:secondary-b-0/routing
+        router_appliance_instance: $nva_instances:secondary-b-0
+        import_policies:
+          - import-b
+      secondary-b-1:
+        interface: intf-1
+        asn: 64513
+        address: $nva_addresses:secondary-b-0/routing
+        router_appliance_instance: $nva_instances:secondary-b-0
+        import_policies:
+          - import-b
+      secondary-c-0:
+        interface: intf-0
+        asn: 64513
+        address: $nva_addresses:secondary-c-0/routing
+        router_appliance_instance: $nva_instances:secondary-c-0
+        import_policies:
+          - import-c
+      secondary-c-1:
+        interface: intf-1
+        asn: 64513
+        address: $nva_addresses:secondary-c-0/routing
+        router_appliance_instance: $nva_instances:secondary-c-0
+        import_policies:
+          - import-c
+routes:
+  internet:
+    dest_range: "0.0.0.0/0"
+    priority: 100
+    next_hop_type: "gateway"
+    next_hop: "default-internet-gateway"
+factories_config:
+  vlan_attachments: "none"
