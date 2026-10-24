@@ -20,7 +20,7 @@ locals {
     ? try(google_compute_health_check.default[0].self_link, null)
     : try(var.auto_healing_policies.health_check, null)
   )
-  is_regional = length(split("-", var.location)) == 2
+  is_regional = length(regexall("-[a-zA-Z]$|-ai[0-9][a-zA-Z]$", var.location)) == 0
 }
 
 resource "google_compute_instance_group_manager" "default" {
