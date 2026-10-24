@@ -152,7 +152,10 @@ module "automation-service-accounts" {
     "Service account ${each.value.name} for ${each.value.parent}."
   )
   context = merge(local.ctx, {
-    project_ids = local.ctx_project_ids
+    project_ids = merge(
+      local.ctx.project_ids,
+      { for k, v in module.projects : k => v.project_id }
+    )
     iam_principals = merge(
       local.ctx.iam_principals,
       local.projects_sas_iam_emails
