@@ -15,7 +15,7 @@
  */
 
 locals {
-  _region = replace(local.zone, "/-[^-]+$/", "")
+  _region = replace(local.zone, "/-[^-]?$|-ai[0-9][a-zA-Z]$/", "")
   advanced_mf = anytrue([
     for k, v in var.machine_features_config : v != null
   ])
