@@ -92,6 +92,7 @@ resource "google_compute_router_interface" "intf_0" {
   region             = var.region
   subnetwork         = var.vpc_config.subnet_self_link
   private_ip_address = var.router_config.ip_interface0
+  depends_on         = [google_compute_router_route_policy.default]
 }
 
 resource "google_compute_router_interface" "intf_1" {

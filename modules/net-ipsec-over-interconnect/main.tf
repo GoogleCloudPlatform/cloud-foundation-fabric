@@ -141,6 +141,7 @@ resource "google_compute_router_interface" "default" {
   router     = local.router
   ip_range   = each.value.bgp_session_range == "" ? null : each.value.bgp_session_range
   vpn_tunnel = google_compute_vpn_tunnel.default[each.key].name
+  depends_on = [google_compute_router_route_policy.default]
 }
 
 resource "google_compute_vpn_tunnel" "default" {

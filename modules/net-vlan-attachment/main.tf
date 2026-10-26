@@ -124,6 +124,7 @@ resource "google_compute_router_interface" "default" {
   router                  = local.router
   ip_range                = google_compute_interconnect_attachment.default.cloud_router_ip_address
   interconnect_attachment = google_compute_interconnect_attachment.default.self_link
+  depends_on              = [google_compute_router_route_policy.default]
 }
 
 resource "google_compute_router_peer" "default" {

@@ -172,6 +172,7 @@ resource "google_compute_router_interface" "router_interface" {
   # FIXME: can bgp_session_range be null?
   ip_range   = each.value.bgp_session_range == "" ? null : each.value.bgp_session_range
   vpn_tunnel = google_compute_vpn_tunnel.tunnels[each.key].name
+  depends_on = [google_compute_router_route_policy.default]
 }
 
 resource "google_compute_vpn_tunnel" "tunnels" {

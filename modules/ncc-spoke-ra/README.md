@@ -166,8 +166,7 @@ module "spoke-ra" {
     {
       internal_ip     = module.compute-vm-primary-b.internal_ip
       vm_self_link    = module.compute-vm-primary-b.self_link
-      import_policies = ["import-rfc1918", "import-drop-all"]
-      export_policies = ["export-policy"]
+      import_policies = ["import-rfc1918"]
     }
   ]
   router_config = {
@@ -192,15 +191,11 @@ module "spoke-ra" {
               title       = "import-rfc1918-subnets"
               description = "Accept the 3 RFC1918 subnets."
             }
-            actions = [{
-              expression = "accept()"
-            }]
-          }
-        ]
-      }
-      "import-drop-all" = {
-        type = "IMPORT"
-        terms = [
+            actions = [
+              { expression = "med.set(1000)" },
+              { expression = "accept()" }
+            ]
+          },
           {
             priority = 2
             match = {
@@ -214,21 +209,6 @@ module "spoke-ra" {
           }
         ]
       }
-      "export-policy" = {
-        type = "EXPORT"
-        terms = [
-          {
-            priority = 0
-            match = {
-              expression = "destination == '10.10.10.0/24'"
-            }
-            actions = [
-              { expression = "med.set(1000)" },
-              { expression = "accept()" }
-            ]
-          }
-        ]
-      }
     }
   }
   vpc_config = {
@@ -236,7 +216,7 @@ module "spoke-ra" {
     subnet_self_link = var.subnet.self_link
   }
 }
-# tftest modules=5 resources=14 fixtures=fixtures/compute-vm-nva.tf e2e inventory=bgp-route-policies.yaml
+# tftest modules=5 resources=12 fixtures=fixtures/compute-vm-nva.tf e2e inventory=bgp-route-policies.yaml
 ```
 
 Policies are created on the router with their map key as name, and peers reference them by that same key. Editing a term is an in-place update, so names stay stable. Names the module does not manage (for example policies already defined on a pre-existing router) are passed through to the peer unchanged.
