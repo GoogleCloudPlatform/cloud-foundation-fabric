@@ -15,8 +15,16 @@
  */
 
 locals {
+  _o_cas = flatten([
+    for k, v in local._cas_modules : [
+      for name, chain in v.ca_chains : {
+        chain = chain
+        key   = "${k}-${name}"
+      }
+    ]
+  ])
   ca_chains = {
-    for k, v in module.cas : k => v.ca_chains
+    for k in local._o_cas : k.key => k.chain
   }
   security_profile_group_ids = {
     for k, v in google_network_security_security_profile_group.default :
@@ -37,6 +45,20 @@ locals {
   }
 }
 
+resource "local_file" "ca_chains" {
+  for_each        = var.outputs_location == null ? {} : local.ca_chains
+  file_permission = "0644"
+  filename        = "${try(pathexpand(var.outputs_location), "")}/ca-chains/${var.names.output_files_prefix}/${each.key}.pem"
+  content         = each.value
+}
+
+resource "google_storage_bucket_object" "ca_chains" {
+  for_each = local.ca_chains
+  bucket   = var.automation.outputs_bucket
+  name     = "ca-chains/${var.names.output_files_prefix}/${each.key}.pem"
+  content  = each.value
+}
+
 resource "local_file" "tfvars" {
   for_each        = var.outputs_location == null ? {} : { 1 = 1 }
   file_permission = "0644"
@@ -48,9 +70,4 @@ resource "google_storage_bucket_object" "tfvars" {
   bucket  = var.automation.outputs_bucket
   name    = "tfvars/${var.names.output_files_prefix}.auto.tfvars.json"
   content = jsonencode(local.tfvars)
-}
-
-output "ca_chains" {
-  description = "Certificate Authority Service CA chains in PEM format."
-  value       = local.ca_chains
 }

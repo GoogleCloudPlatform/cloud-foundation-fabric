@@ -191,7 +191,7 @@ A reference Certificate Authority Services (CAS) is also part of this stage, all
 | [prefix](variables-fast.tf#L57) | Prefix used for resources that need unique names. Use a maximum of 9 chars for organizations, and 11 chars for tenants. | <code>string</code> | ✓ |  | <code>0-org-setup</code> |
 | [context](variables.tf#L17) | Context-specific interpolations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |  |
 | [custom_roles](variables-fast.tf#L25) | Custom roles defined at the org level, in key => id format. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-org-setup</code> |
-| [factories_config](variables.tf#L40) | Configuration for the resource factories or external data. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |  |
+| [factories_config](variables.tf#L42) | Configuration for the resource factories or external data. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |  |
 | [folder_ids](variables-fast.tf#L33) | Folders created in the bootstrap stage. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-org-setup</code> |
 | [iam_principals](variables-fast.tf#L41) | IAM-format principals. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-org-setup</code> |
 | [perimeters](variables-fast.tf#L49) | Optional VPC-SC perimeter ids. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>1-vpcsc</code> |
@@ -207,7 +207,8 @@ A reference Certificate Authority Services (CAS) is also part of this stage, all
 
 | name | description | sensitive | consumers |
 |---|---|:---:|---|
-| [ca_pools](outputs.tf#L66) | Certificate Authority Service pools and CAs. |  |  |
-| [kms_keys_ids](outputs.tf#L71) | KMS keys IDs. |  |  |
-| [tfvars](outputs.tf#L76) | Terraform variable files for the following stages. | ✓ |  |
+| [ca_ids](outputs.tf#L92) | Certificate Authority Service CA IDs. |  |  |
+| [ca_pools](outputs.tf#L97) | Certificate Authority Service pool IDs. |  |  |
+| [kms_keys_ids](outputs.tf#L102) | KMS keys IDs. |  |  |
+| [tfvars](outputs.tf#L107) | Terraform variable files for the following stages. | ✓ |  |
 <!-- END TFDOC -->

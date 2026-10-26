@@ -21,6 +21,7 @@
 - **mtu**: *number*
 - **routing_mode**: *string*
   <br>*enum: ['GLOBAL', 'REGIONAL']*
+- **service_connection_policies**: *reference([service_connection_policies](#refs-service_connection_policies))*
 - **firewall_policy_enforcement_order**: *string*
   <br>*enum: ['BEFORE_CLASSIC_FIREWALL', 'AFTER_CLASSIC_FIREWALL']*
 - **create_googleapis_routes**: *reference([create_googleapis_routes](#refs-create_googleapis_routes))*
@@ -181,3 +182,22 @@
   - **description**: *string*
   - **active**: *boolean*
   - **global**: *boolean*
+- **service_connection_policies**<a name="refs-service_connection_policies"></a>: *object*
+  <br>*additional properties: false*
+  - **`^[a-z0-9-]+$`**: *object*
+    <br>*additional properties: false*
+    - ⁺**location**: *string*
+    - ⁺**service_class**: *string*
+    - **description**: *string*
+    - **labels**: *object*
+      <br>*additional properties: string*
+    - ⁺**psc_config**: *object*
+      <br>*additional properties: false*
+      - ⁺**subnetworks**: *array*
+        - items: *string*
+      - **limit**: *number*
+      - **producer_instance_location**: *string*
+        <br>*enum: ['CUSTOM_RESOURCE_HIERARCHY_LEVELS']*
+      - **nodes**: *array*
+        - items: *string*
+          <br>*pattern: ^(projects|folders|organizations)/[a-zA-Z0-9-]+$*

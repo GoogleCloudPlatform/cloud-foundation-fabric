@@ -117,6 +117,7 @@ counts:
   terraform_data: 2
 
 outputs:
+  ca_ids: {}
   ca_pools: {}
   kms_keys_ids: __missing__
   tfvars: __missing__
