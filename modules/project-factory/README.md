@@ -200,10 +200,10 @@ iam:
 automation:
   project: $project_ids:iac-core-0
   service_accounts:
-    # sa name: foo-prod-app-example-0-rw
+    # sa name: prod-app-example-0-rw
     rw:
       description: Read/write automation sa for app example 0.
-    # sa name: foo-prod-app-example-0-ro
+    # sa name: prod-app-example-0-ro
     ro:
       description: Read-only automation sa for app example 0.
   bucket:
@@ -973,22 +973,22 @@ compute.disableSerialPortAccess:
 
 | name | description | sensitive |
 |---|---|:---:|
-| [bigquery_datasets](outputs.tf#L119) | BigQuery dataset ids. |  |
-| [custom_roles](outputs.tf#L126) | Custom role ids. |  |
-| [folder_ids](outputs.tf#L133) | Folder ids. |  |
-| [iam_principals](outputs.tf#L138) | IAM principals mappings. |  |
-| [kms_keys](outputs.tf#L143) | KMS key ids. |  |
-| [log_buckets](outputs.tf#L148) | Log bucket ids. |  |
-| [project_ids](outputs.tf#L155) | Project ids. |  |
-| [project_numbers](outputs.tf#L160) | Project numbers. |  |
-| [projects](outputs.tf#L167) | Project attributes. |  |
-| [pubsub_topics](outputs.tf#L172) | PubSub topic ids. |  |
-| [service_account_emails](outputs.tf#L179) | Service account emails. |  |
-| [service_account_iam_emails](outputs.tf#L186) | Service account IAM-format emails. |  |
-| [service_account_ids](outputs.tf#L193) | Service account IDs. |  |
-| [service_accounts](outputs.tf#L200) | Service account emails. |  |
-| [service_agents](outputs.tf#L205) | Service agent emails. |  |
-| [storage_buckets](outputs.tf#L216) | Bucket names. |  |
+| [bigquery_datasets](outputs.tf#L121) | BigQuery dataset ids. |  |
+| [custom_roles](outputs.tf#L128) | Custom role ids. |  |
+| [folder_ids](outputs.tf#L135) | Folder ids. |  |
+| [iam_principals](outputs.tf#L140) | IAM principals mappings. |  |
+| [kms_keys](outputs.tf#L145) | KMS key ids. |  |
+| [log_buckets](outputs.tf#L150) | Log bucket ids. |  |
+| [project_ids](outputs.tf#L157) | Project ids. |  |
+| [project_numbers](outputs.tf#L162) | Project numbers. |  |
+| [projects](outputs.tf#L169) | Project attributes. |  |
+| [pubsub_topics](outputs.tf#L174) | PubSub topic ids. |  |
+| [service_account_emails](outputs.tf#L181) | Service account emails. |  |
+| [service_account_iam_emails](outputs.tf#L188) | Service account IAM-format emails. |  |
+| [service_account_ids](outputs.tf#L195) | Service account IDs. |  |
+| [service_accounts](outputs.tf#L202) | Service account emails. |  |
+| [service_agents](outputs.tf#L207) | Service agent emails. |  |
+| [storage_buckets](outputs.tf#L218) | Bucket names. |  |
 <!-- END TFDOC -->
 ## Tests
 
@@ -1031,8 +1031,37 @@ module "project-factory" {
   factories_config = {
     basepath = "data"
   }
+  folders = {
+    folder-hcl = {
+      parent = "folders/1234567890"
+      name   = "Folder HCL"
+      automation = {
+        project = "test-0"
+        prefix  = "auto-pfx"
+        bucket  = {}
+        service_accounts = {
+          hcl-sa = {}
+        }
+      }
+    }
+  }
 }
-# tftest modules=16 resources=49 files=test-0,test-1,test-2 inventory=test-1.yaml
+
+output "test_1_automation" {
+  value = module.project-factory.projects["test-1"].automation
+}
+# tftest files=folder-0,test-0,test-1,test-2 inventory=test-1.yaml
+```
+
+```yaml
+parent: folders/1234567890
+name: Folder 0
+automation:
+  project: test-0
+  bucket: null
+  service_accounts:
+    folder-sa: {}
+# tftest-file id=folder-0 path=data/folders/folder-0/.config.yaml schema=folder.schema.json
 ```
 
 ```yaml
@@ -1134,7 +1163,14 @@ service_accounts:
 tag_bindings:
   org-level: $tag_values:context/project-factory
   project-level: $tag_values:test-0/context/project-factory
-# tftest-file id=test-1 path=data/projects/test-1.yaml
+automation:
+  project: test-0
+  bucket:
+    prefix: bkt-pfx
+  service_accounts:
+    custom-sa:
+      prefix: custom-pfx
+# tftest-file id=test-1 path=data/projects/test-1.yaml schema=project.schema.json
 ```
 
 ```yaml
@@ -1144,6 +1180,14 @@ prefix: bar
 services:
   - iam.googleapis.com
   - storage.googleapis.com
+automation:
+  project: test-0
+  bucket: null
+  service_accounts:
+    no-bkt-sa: {}
+buckets:
+  custom-pfx-bkt:
+    prefix: bkt-override
 service_accounts:
   # service account IAM is applied in a second pass, so bindings declared via
   # iam_bindings/iam_bindings_additive alone also need to trigger it
@@ -1162,5 +1206,5 @@ service_accounts:
       token-creator:
         role: roles/iam.serviceAccountTokenCreator
         member: $iam_principals:service_accounts/_self_/bindings-only
-# tftest-file id=test-2 path=data/projects/test-2.yaml
+# tftest-file id=test-2 path=data/projects/test-2.yaml schema=project.schema.json
 ```

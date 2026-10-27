@@ -32,7 +32,9 @@
   <br>*additional properties: false*
   - **prefix**: *string*
   - ⁺**project**: *string*
-  - **bucket**: *reference([bucket](#refs-bucket))*
+  - **bucket**: *oneof*
+    - *null*
+    - *reference([bucket](#refs-bucket))*
   - **service_accounts**: *object*
     <br>*additional properties: false*
     - **`^[a-z0-9-]+$`**: *object*
@@ -260,7 +262,7 @@
     - **ignore_safety_checks**: *string*
       <br>*enum: ['QUOTA_DECREASE_BELOW_USAGE', 'QUOTA_DECREASE_PERCENTAGE_TOO_HIGH', 'QUOTA_SAFETY_CHECK_UNSPECIFIED']*
 - **parent**: *string*
-- **prefix**: *string*
+- **prefix**: *(string|null)*
 - **project_reuse**: *object*
   <br>*additional properties: false*
   - **use_data_source**: *boolean*
