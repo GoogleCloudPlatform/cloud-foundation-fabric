@@ -34,7 +34,8 @@ Array = collections.namedtuple('Array', 'name items default', defaults=[None])
 Boolean = collections.namedtuple('Boolean', 'name default')
 Integer = collections.namedtuple('Integer', 'name default enum')
 AnyOf = collections.namedtuple('AnyOf', 'name default pattern types')
-OneOf = collections.namedtuple('OneOf', 'properties')
+Null = collections.namedtuple('Null', 'name')
+OneOf = collections.namedtuple('OneOf', 'name properties')
 Number = collections.namedtuple('Number', 'name default enum')
 Object = collections.namedtuple(
     'Object', 'name required additional pattern properties defs')
@@ -68,7 +69,7 @@ def parse_node(node, name=None):
           logging.debug('    additional as typed dict')
           additional = parse_node(additional)
         elif 'oneOf' in additional:
-          additional = OneOf([parse_node(p) for p in additional['oneOf']])
+          additional = OneOf(None, [parse_node(p) for p in additional['oneOf']])
       el = Object(name, node.get('required', []), additional, [], [], [])
       properties = node.get('properties')
       if properties:
@@ -85,6 +86,8 @@ def parse_node(node, name=None):
       logging.debug('  end object parsing')
     case 'integer':
       el = Integer(name, default, enum)
+    case 'null':
+      el = Null(name)
     case 'number':
       el = Number(name, default, enum)
     case 'string':
@@ -93,6 +96,8 @@ def parse_node(node, name=None):
       ref = node.get('$ref')
       if ref:
         el = Reference(name, ref.split('/')[-1])
+      elif 'oneOf' in node:
+        el = OneOf(name, [parse_node(p) for p in node['oneOf']])
       else:
         raise ValueError(f'{name} {el_type}')
   # logging.debug(f'return {el}')
@@ -143,8 +148,15 @@ def render_node(el, level=0, required=False, f_name=lambda f: f'**{f}**',
       if el.items:
         buffer.append(render_node(el.items, level + 1, f_name=str))
     case 'reference':
-      buffer[-1] = (
-          f'{indent}- {f_name(el.name)}: *reference([{el.to}](#refs-{el.to}))*')
+      if skip_name:
+        buffer[-1] = f'{indent}- *reference([{el.to}](#refs-{el.to}))*'
+      else:
+        buffer[-1] = (
+            f'{indent}- {f_name(el.name)}: *reference([{el.to}](#refs-{el.to}))*'
+        )
+    case 'oneof':
+      for p in el.properties:
+        buffer.append(render_node(p, level + 1, skip_name=True))
     case 'anyof':
       buffer[-1] = f'{indent}- {r}{f_name(el.name)}: *({"|".join(el.types)})*'
       if el.pattern:
