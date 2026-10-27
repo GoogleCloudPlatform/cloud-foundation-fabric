@@ -852,7 +852,8 @@ module "glb-0" {
   project_id = "$project_ids:test"
   backend_buckets_config = {
     default-gcs = {
-      bucket_name = "my-bucket"
+      bucket_name          = "my-bucket"
+      edge_security_policy = "$security_policies:edge"
     }
   }
   backend_service_configs = {
@@ -861,6 +862,7 @@ module "glb-0" {
         { group = "projects/my-project/zones/europe-west8-b/instanceGroups/ig-b" },
         { group = "ig-c" }
       ]
+      security_policy = "$security_policies:waf"
     }
     neg-cloudrun = {
       backends      = [{ group = "neg-cloudrun" }]
@@ -978,6 +980,10 @@ module "glb-0" {
     }
     project_ids = {
       test = "my-project"
+    }
+    security_policies = {
+      edge = "projects/my-project/global/securityPolicies/edge"
+      waf  = "projects/my-project/global/securityPolicies/waf"
     }
     subnets = {
       test = "projects/my-project/regions/europe-west8/subnetworks/gce"
@@ -1284,23 +1290,23 @@ After provisioning this change, and verifying that the new certificate is provis
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [name](variables.tf#L139) | Load balancer name. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L254) | Project id. | <code>string</code> | ✓ |  |
+| [name](variables.tf#L140) | Load balancer name. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L255) | Project id. | <code>string</code> | ✓ |  |
 | [backend_buckets_config](variables.tf#L17) | Backend buckets configuration. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [backend_service_configs](variables-backend-service.tf#L19) | Backend service level configuration. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [context](variables.tf#L52) | Context-specific interpolations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [description](variables.tf#L65) | Optional description used for resources. | <code>string</code> |  | <code>&#34;Terraform managed.&#34;</code> |
-| [forwarding_rules_config](variables.tf#L71) | The optional forwarding rules configuration. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#8230;&#125;</code> |
-| [group_configs](variables.tf#L92) | Optional unmanaged groups to create. Can be referenced in backends via key or outputs. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [description](variables.tf#L66) | Optional description used for resources. | <code>string</code> |  | <code>&#34;Terraform managed.&#34;</code> |
+| [forwarding_rules_config](variables.tf#L72) | The optional forwarding rules configuration. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#8230;&#125;</code> |
+| [group_configs](variables.tf#L93) | Optional unmanaged groups to create. Can be referenced in backends via key or outputs. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [health_check_configs](variables-health-check.tf#L19) | Optional auto-created health check configurations, use the output self-link to set it in the auto healing policy. Refer to examples for usage. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#8230;&#125;</code> |
-| [http_proxy_config](variables.tf#L106) | HTTP proxy configuration. Only used for non-classic load balancers. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [https_proxy_config](variables.tf#L117) | HTTPS proxy connfiguration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [labels](variables.tf#L133) | Labels set on resources. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [neg_configs](variables.tf#L144) | Optional network endpoint groups to create. Can be referenced in backends via key or outputs. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [protocol](variables.tf#L259) | Protocol supported by this load balancer. | <code>string</code> |  | <code>&#34;HTTP&#34;</code> |
-| [ssl_certificates](variables.tf#L272) | SSL target proxy certificates (only if protocol is HTTPS) for existing, custom, and managed certificates. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [http_proxy_config](variables.tf#L107) | HTTP proxy configuration. Only used for non-classic load balancers. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [https_proxy_config](variables.tf#L118) | HTTPS proxy connfiguration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [labels](variables.tf#L134) | Labels set on resources. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [neg_configs](variables.tf#L145) | Optional network endpoint groups to create. Can be referenced in backends via key or outputs. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [protocol](variables.tf#L260) | Protocol supported by this load balancer. | <code>string</code> |  | <code>&#34;HTTP&#34;</code> |
+| [ssl_certificates](variables.tf#L273) | SSL target proxy certificates (only if protocol is HTTPS) for existing, custom, and managed certificates. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [urlmap_config](variables-urlmap.tf#L19) | The URL map configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#8230;&#125;</code> |
-| [use_classic_version](variables.tf#L290) | Use classic Global Load Balancer. | <code>bool</code> |  | <code>true</code> |
+| [use_classic_version](variables.tf#L291) | Use classic Global Load Balancer. | <code>bool</code> |  | <code>true</code> |
 
 ## Outputs
 

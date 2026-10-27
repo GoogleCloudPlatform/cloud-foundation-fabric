@@ -14,6 +14,14 @@
  * limitations under the License.
  */
 
+variable "folder_ids" {
+  # tfdoc:variable:source 0-org-setup
+  description = "Folders created in the bootstrap stage."
+  type        = map(string)
+  nullable    = false
+  default     = {}
+}
+
 variable "iam_principals" {
   # tfdoc:variable:source 0-org-setup
   description = "Org-level IAM principals."

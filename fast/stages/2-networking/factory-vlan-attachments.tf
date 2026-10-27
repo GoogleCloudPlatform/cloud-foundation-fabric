@@ -174,7 +174,7 @@ module "vlan-attachments" {
     project_ids = local.ctx_projects.project_ids
     routers     = local.ctx_routers.names
   }
-  depends_on = [module.vpc-factory]
+  depends_on = [module.vpc-factory, google_compute_router_route_policy.default]
 }
 
 resource "google_compute_interconnect_attachment_group" "default" {

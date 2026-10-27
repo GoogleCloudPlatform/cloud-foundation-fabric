@@ -71,7 +71,15 @@ resource "google_compute_region_backend_service" "default" {
   )
   session_affinity = each.value.session_affinity
   timeout_sec      = each.value.timeout_sec
-  security_policy  = each.value.security_policy
+  security_policy = (
+    each.value.security_policy == null
+    ? null
+    : lookup(
+      local.ctx.security_policies,
+      each.value.security_policy,
+      each.value.security_policy
+    )
+  )
 
   dynamic "backend" {
     for_each = { for b in coalesce(each.value.backends, []) : b.group => b }

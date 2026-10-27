@@ -1,0 +1,69 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.agent-gateway.google_iam_project_access_policy.default["registry-wide"]:
+    access_policy_id: registry-wide
+    details:
+    - rules:
+      - conditions:
+        - expression: destination.is_registered == true && destination.agent_registry.location
+            in ['global', 'europe-west1']
+          service: iap.googleapis.com
+        description: null
+        effect: ALLOW
+        excluded_principals: []
+        operation:
+        - excluded_permissions: []
+          permissions:
+          - iap.googleapis.com/resources.egressViaIAP
+        principals:
+        - principal://agents.global.proj-1234567890.system.id.goog/resources/aiplatform/projects/1234567890/locations/europe-west1/reasoningEngines/support-agent
+        - principalSet://goog/group/agent-platform@example.com
+    display_name: null
+    location: global
+    project: my-project-id
+  module.agent-gateway.google_iam_projects_policy_binding.default["corp-guardrails"]:
+    condition: []
+    display_name: null
+    location: global
+    policy: organizations/123456789012/locations/global/accessPolicies/corp-guardrails
+    policy_binding_id: corp-guardrails
+    policy_kind: ACCESS
+    project: my-project-id
+    target:
+    - principal_set: null
+      resource: //cloudresourcemanager.googleapis.com/projects/my-project-id
+  module.agent-gateway.google_iam_projects_policy_binding.default["registry-wide"]:
+    condition: []
+    display_name: null
+    location: global
+    policy: projects/my-project-id/locations/global/accessPolicies/registry-wide
+    policy_binding_id: registry-wide
+    policy_kind: ACCESS
+    project: my-project-id
+    target:
+    - principal_set: null
+      resource: //cloudresourcemanager.googleapis.com/projects/my-project-id
+
+counts:
+  google_iam_project_access_policy: 1
+  google_iam_projects_policy_binding: 2
+  google_network_security_authz_policy: 1
+  google_network_services_agent_gateway: 1
+  google_network_services_authz_extension: 1
+  modules: 1
+  resources: 6
+
+outputs: {}

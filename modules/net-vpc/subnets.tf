@@ -211,9 +211,7 @@ resource "google_compute_subnetwork" "subnetwork" {
       range_name = secondary_ip_range.key
       ip_cidr_range = try(
         local.ctx.cidr_ranges[secondary_ip_range.value.ip_cidr_range],
-        secondary_ip_range.value.ip_cidr_range,
-        local.ctx.cidr_ranges[secondary_ip_range.value],
-        secondary_ip_range.value
+        secondary_ip_range.value.ip_cidr_range
       )
       reserved_internal_range = (
         try(secondary_ip_range.value.reserved_internal_range, null) != null

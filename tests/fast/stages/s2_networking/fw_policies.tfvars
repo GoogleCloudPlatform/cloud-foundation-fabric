@@ -16,6 +16,9 @@ organization = {
   customer_id = "C00000000"
 }
 prefix = "fast"
+security_profile_groups = {
+  ngfw-0 = "//networksecurity.googleapis.com/organizations/123456789012/locations/global/securityProfileGroups/ngfw-0"
+}
 service_accounts = {
   "iac-0/iac-pf-rw" = "iac-pf-rw@test.iam.gserviceaccount.com"
 }

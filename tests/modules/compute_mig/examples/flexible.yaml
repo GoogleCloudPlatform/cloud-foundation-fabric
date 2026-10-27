@@ -86,11 +86,11 @@ values:
         \ for the specific language governing permissions and\n# limitations under\
         \ the License.\n\n# https://hub.docker.com/r/nginx/nginx/\n# https://nginx.io/manual/toc/#installation\n\
         \nusers:\n  - name: nginx\n    uid: 2000\n  \n\nwrite_files:\n  - path: /var/lib/docker/daemon.json\n\
-        \    permissions: 0644\n    owner: root\n    content: |\n      {\n       \
+        \    permissions: \"0644\"\n    owner: root\n    content: |\n      {\n       \
         \ \"live-restore\": true,\n        \"storage-driver\": \"overlay2\",\n   \
         \     \"log-opts\": {\n          \"max-size\": \"1024m\"\n        }\n    \
         \  }\n\n\n  # nginx container service\n  - path: /etc/systemd/system/nginx.service\n\
-        \    permissions: 0644\n    owner: root\n    content: |\n      [Unit]\n  \
+        \    permissions: \"0644\"\n    owner: root\n    content: |\n      [Unit]\n  \
         \    Description=Start nginx container\n      After=gcr-online.target docker.socket\n\
         \      Wants=gcr-online.target docker.socket docker-events-collector.service\n\
         \      [Service]\n      Environment=\"HOME=/home/nginx\"\n      ExecStartPre=/usr/bin/docker-credential-gcr\

@@ -16,3 +16,5 @@ module: modules/net-lb-app-ext-regional
 
 tests:
   context:
+  server-tls-policy:
+  urlmaps:

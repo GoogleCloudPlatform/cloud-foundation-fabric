@@ -1,0 +1,76 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.cloud-armor.google_compute_security_policy.global[0]:
+    adaptive_protection_config: []
+    deletion_policy: DELETE
+    description: Terraform managed.
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    labels: null
+    name: edge
+    project: project-id
+    recaptcha_options_config: []
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+    type: CLOUD_ARMOR_EDGE
+  module.cloud-armor.google_compute_security_policy_rule.global["deny-regions"]:
+    action: deny(403)
+    deletion_policy: DELETE
+    description: null
+    header_action: []
+    match:
+    - config: []
+      expr:
+      - expression: origin.region_code == 'XX'
+      expr_options: []
+      versioned_expr: null
+    preconfigured_waf_config: []
+    preview: false
+    priority: 100
+    project: project-id
+    rate_limit_options: []
+    redirect_options: []
+    security_policy: edge
+    timeouts: null
+  module.cloud-armor.google_compute_security_policy_rule.global_default[0]:
+    action: allow
+    deletion_policy: DELETE
+    description: Default rule.
+    header_action: []
+    match:
+    - config:
+      - src_ip_ranges:
+        - '*'
+      expr: []
+      expr_options: []
+      versioned_expr: SRC_IPS_V1
+    preconfigured_waf_config: []
+    preview: false
+    priority: 2147483647
+    project: project-id
+    rate_limit_options: []
+    redirect_options: []
+    security_policy: edge
+    timeouts: null
+
+counts:
+  google_compute_security_policy: 1
+  google_compute_security_policy_rule: 2
+  modules: 1
+  resources: 3
+
+outputs: {}

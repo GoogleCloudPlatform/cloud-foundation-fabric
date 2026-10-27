@@ -70,12 +70,10 @@ SKIP_IAM_AGENTS = [
     'service-PROJECT_NUMBER@gcp-sa-krmapihosting-dataplane.iam.gserviceaccount.com',
     'service-PROJECT_NUMBER@gcp-sa-krmapihosting.iam.gserviceaccount.com',
     'service-PROJECT_NUMBER@gcp-sa-logging.iam.gserviceaccount.com',
-    'service-PROJECT_NUMBER@gcp-sa-networkactions.iam.gserviceaccount.com',
     'service-PROJECT_NUMBER@gcp-sa-prod-bigqueryomni.iam.gserviceaccount.com',
     'service-PROJECT_NUMBER@gcp-sa-scc-notification.iam.gserviceaccount.com',
     'service-PROJECT_NUMBER@gcp-sa-securitycenter.iam.gserviceaccount.com',
     'service-PROJECT_NUMBER@gcp-sa-ns-authz.iam.gserviceaccount.com',
-    'service-PROJECT_NUMBER@gcp-sa-agentgateway.iam.gserviceaccount.com',
 ]
 
 AGENT_NAME_OVERRIDE = {
@@ -123,6 +121,11 @@ E2E_SERVICES = [
 
 PRIMARY_OVERRIDE = {
     'storage-transfer-service': True,
+    # networkservices.googleapis.com has no documented primary agent, and API
+    # enablement alone creates none of its agents. A single
+    # generateServiceIdentity call on the API creates all of them (dep,
+    # agentgateway, networkactions, securewebproxy), so force one to primary.
+    'dep': True,
 }
 
 

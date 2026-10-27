@@ -1,0 +1,90 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.agent-gateway.google_network_services_agent_connectivity_template.default[0]:
+    access_path: AGENT_TO_ANYWHERE
+    agent_connectivity_template_id: my-gateway
+    egress_network_config:
+    - dns_peering_config:
+      - domains:
+        - corp.internal.
+        target_network: projects/my-host-prj-id/global/networks/my-vpc
+      network_attachment: projects/my-host-prj-id/regions/europe-west1/networkAttachments/my-na
+      vpc_egress: PRIVATE_RANGES_ONLY
+    location: europe-west1
+    project: my-prj-id
+  module.agent-gateway.google_network_services_agent_gateway.default:
+    agent_connectivity_template: projects/1234567890/locations/europe-west1/agentConnectivityTemplates/my-gateway
+    description: Terraform managed.
+    google_managed:
+    - governed_access_path: AGENT_TO_ANYWHERE
+    labels: null
+    location: europe-west1
+    name: my-gateway
+    network_config: []
+    project: my-prj-id
+    registries: null
+    self_managed: []
+  module.agent-gateway.google_iam_project_access_policy.default["egress"]:
+    access_policy_id: egress
+    details:
+    - rules:
+      - conditions:
+        - expression: destination.is_registered == true && destination.agent_registry.location
+            == 'europe-west1'
+          service: iap.googleapis.com
+        effect: ALLOW
+        operation:
+        - permissions:
+          - iap.googleapis.com/resources.egressViaIAP
+        principals:
+        - principalSet://goog/group/agents@example.com
+    location: global
+    project: my-prj-id
+  module.agent-gateway.google_iam_projects_policy_binding.default["egress"]:
+    location: global
+    policy: projects/my-prj-id/locations/global/accessPolicies/egress
+    policy_binding_id: egress
+    policy_kind: ACCESS
+    project: my-prj-id
+    target:
+    - resource: //cloudresourcemanager.googleapis.com/projects/my-prj-id
+  module.agent-gateway.google_iam_projects_policy_binding.default["guardrails"]:
+    location: global
+    policy: organizations/123456789012/locations/global/accessPolicies/guardrails
+    policy_binding_id: guardrails
+    policy_kind: ACCESS
+    project: my-prj-id
+    target:
+    - resource: //cloudresourcemanager.googleapis.com/projects/my-prj-id
+  module.agent-gateway.google_network_services_authz_extension.model_armor[0]:
+    location: europe-west1
+    metadata:
+      model_armor_settings: '[{"request_template_id":"projects/my-prj-id/locations/europe-west1/templates/request","response_template_id":"projects/my-prj-id/locations/europe-west1/templates/response"}]'
+    name: my-gateway-ma
+    project: my-prj-id
+    service: modelarmor.europe-west1.rep.googleapis.com
+
+counts:
+  google_iam_project_access_policy: 1
+  google_iam_projects_policy_binding: 2
+  google_network_security_authz_policy: 2
+  google_network_services_agent_connectivity_template: 1
+  google_network_services_agent_gateway: 1
+  google_network_services_authz_extension: 2
+  modules: 1
+  resources: 9
+
+outputs: {}

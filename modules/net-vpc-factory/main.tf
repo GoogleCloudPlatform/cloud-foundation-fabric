@@ -86,6 +86,7 @@ module "vpcs" {
   psa_configs                       = try(each.value.psa_configs, [])
   routes                            = try(each.value.routes, {})
   routing_mode                      = try(each.value.routing_mode, "GLOBAL")
+  service_connection_policies       = try(each.value.service_connection_policies, {})
 }
 
 module "firewall" {

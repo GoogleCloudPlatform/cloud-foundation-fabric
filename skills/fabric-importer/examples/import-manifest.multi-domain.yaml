@@ -1,0 +1,140 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# ---------------------------------------------------------------------------
+# EXAMPLE import manifest: "multi-domain" — PER-SCOPE TYPES
+#
+# One estate, four different depths. Each scope carries its own `types:`
+# list — there is no other place to declare types, so what a scope
+# collects is exactly what is written on it. The same type may appear in
+# several scopes with different `levels`, `iam` or `enumerate`; that is
+# the point, not an accident.
+#
+# Fail-closed rules (all exit 1 with the reason, before any API call):
+#   - a scope without a `types:` list is refused;
+#   - `types: []` is refused: an empty list is a scope that collects
+#     nothing, and that is the one thing no scope may say quietly;
+#   - a type whose `levels` cannot intersect its scope's `levels` is
+#     refused as a dead declaration (an entry listing `unknown` is
+#     exempt — see import-manifest.fast-vpcsc.yaml);
+#   - a duplicate `type:` inside one scope's list is refused.
+#
+# Note the asymmetry with `emission:` (also per scope): emission INHERITS
+# built-in defaults for families you omit, because it only decides how
+# collected assets are written. `types:` never inherits anything, because
+# it decides what is collected at all.
+#
+# After collection, read the PER-SCOPE yield tables in inventory.json
+# (`_meta.scopes[].declared_types` / `zero_yield_types`): the aggregate
+# table can be non-zero for a type while one scope's own declaration
+# yielded nothing — e.g. `iam` non-empty org-wide but empty under
+# `workloads`. Every inventory entry also names the scope(s) that
+# collected it (`scopes: [...]`).
+# ---------------------------------------------------------------------------
+
+scopes:
+
+  # Org foundation: governance only, no project-contained resources.
+  - name: org-foundation
+    root: organizations/000000000000        # <- your org id
+    levels: [organization, folder]
+    emission:
+      folder: factory                       # day-2 operating model
+    types:
+      - type: iam
+        levels: [organization, folder]
+      - type: org-policy
+        levels: [organization, folder]
+      - type: iam.googleapis.com/Role
+        levels: [organization]
+      - type: logging.googleapis.com/LogSink
+        levels: [organization]
+      - type: cloudresourcemanager.googleapis.com/Folder
+        levels: [organization, folder]
+
+  # Networking folder: the connectivity stack, plus folder-level
+  # governance for that subtree only. Same `iam` and `org-policy` types
+  # as above, different levels — per-scope lists make that expressible.
+  - name: networking
+    root: folders/111111111111              # <- networking folder
+    levels: [folder, project]
+    types:
+      - type: iam
+        levels: [folder, project]
+      - type: org-policy
+        levels: [folder, project]
+      - type: cloudresourcemanager.googleapis.com/Project
+        levels: [folder]
+      - type: serviceusage.googleapis.com/Service
+        levels: [project]
+      - type: compute.googleapis.com/Network
+        levels: [project]
+      - type: compute.googleapis.com/Subnetwork
+        levels: [project]
+      - type: compute.googleapis.com/Router
+        levels: [project]
+      - type: dns.googleapis.com/ManagedZone
+        levels: [project]
+
+  # Security folder: KMS and service accounts, with leaf IAM opted in
+  # per type. `iam: true` is a property of the type ENTRY, so it is
+  # per-scope too: another scope may collect the same CryptoKey type
+  # without leaf IAM.
+  - name: security
+    root: folders/222222222222              # <- security folder
+    levels: [folder, project]
+    types:
+      - type: iam
+        levels: [folder, project]
+      - type: org-policy
+        levels: [folder, project]
+      - type: cloudresourcemanager.googleapis.com/Project
+        levels: [folder]
+      - type: serviceusage.googleapis.com/Service
+        levels: [project]
+      - type: iam.googleapis.com/ServiceAccount
+        levels: [project]
+        iam: true
+      - type: cloudkms.googleapis.com/KeyRing
+        levels: [project]
+      - type: cloudkms.googleapis.com/CryptoKey
+        levels: [project]
+        iam: true
+
+  # Two workload projects, named explicitly. Project IAM is in scope
+  # here and nowhere else; no org-policy at all — a deliberate, declared
+  # gap, not a silent one.
+  - name: workloads
+    root: organizations/000000000000
+    levels: [project]
+    include:
+      - projects/333333333333               # app-prod  (project NUMBER)
+      - projects/444444444444               # app-dev
+    types:
+      - type: iam
+        levels: [project]
+      - type: serviceusage.googleapis.com/Service
+        levels: [project]
+      - type: iam.googleapis.com/ServiceAccount
+        levels: [project]
+        iam: true
+      - type: storage.googleapis.com/Bucket
+        levels: [project]
+
+# ---------------------------------------------------------------------------
+# `enumerate:` blocks live in the list that declares them: a natively
+# enumerated type is swept only in the scopes whose `types:` names it.
+# Repeat the block in every scope that needs it — see
+# references/cai-blind-spots.md.
+# ---------------------------------------------------------------------------

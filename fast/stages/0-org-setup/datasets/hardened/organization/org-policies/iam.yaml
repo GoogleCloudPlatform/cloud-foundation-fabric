@@ -39,6 +39,14 @@ custom.iamDisableRedisAdminRoles:
   rules:
     - enforce: false
 
+# custom.iamLimitKmsCryptoKeyUsers:
+#   rules:
+#     - enforce: true
+
+# custom.iamRestrictFirestoreServiceAccountAccess:
+#   rules:
+#     - enforce: true
+
 iam.allowedPolicyMemberDomains:
   rules:
     - allow:

@@ -23,17 +23,23 @@ resource "google_binary_authorization_policy" "policy" {
     }
   }
   default_admission_rule {
-    evaluation_mode         = var.default_admission_rule.evaluation_mode
-    enforcement_mode        = var.default_admission_rule.enforcement_mode
-    require_attestations_by = [for attestor in coalesce(var.default_admission_rule.attestors, []) : google_binary_authorization_attestor.attestors[attestor].name]
+    evaluation_mode  = var.default_admission_rule.evaluation_mode
+    enforcement_mode = var.default_admission_rule.enforcement_mode
+    require_attestations_by = [
+      for attestor in coalesce(var.default_admission_rule.attestors, []) :
+      google_binary_authorization_attestor.attestors[attestor].id
+    ]
   }
   dynamic "cluster_admission_rules" {
     for_each = coalesce(var.cluster_admission_rules, {})
     content {
-      cluster                 = cluster_admission_rules.key
-      evaluation_mode         = cluster_admission_rules.value.evaluation_mode
-      enforcement_mode        = cluster_admission_rules.value.enforcement_mode
-      require_attestations_by = [for attestor in cluster_admission_rules.value.attestors : google_binary_authorization_attestor.attestors[attestor].name]
+      cluster          = cluster_admission_rules.key
+      evaluation_mode  = cluster_admission_rules.value.evaluation_mode
+      enforcement_mode = cluster_admission_rules.value.enforcement_mode
+      require_attestations_by = [
+        for attestor in cluster_admission_rules.value.attestors :
+        google_binary_authorization_attestor.attestors[attestor].id
+      ]
     }
   }
 }
@@ -43,7 +49,11 @@ resource "google_binary_authorization_attestor" "attestors" {
   name     = each.key
   project  = var.project_id
   attestation_authority_note {
-    note_reference = each.value.note_reference == null ? google_container_analysis_note.notes[each.key].name : each.value.note_reference
+    note_reference = (
+      each.value.note_reference == null
+      ? google_container_analysis_note.notes[each.key].id
+      : each.value.note_reference
+    )
     dynamic "public_keys" {
       for_each = coalesce(each.value.pgp_public_keys, [])
       content {

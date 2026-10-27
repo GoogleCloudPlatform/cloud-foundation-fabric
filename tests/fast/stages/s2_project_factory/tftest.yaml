@@ -17,3 +17,4 @@ module: fast/stages/2-project-factory
 tests:
   simple:
   data-platform:
+    workspace: data-platform

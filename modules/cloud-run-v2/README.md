@@ -17,6 +17,7 @@ Cloud Run Services and Jobs, with support for IAM roles and Eventarc trigger cre
   - [GCS bucket](#gcs-bucket)
 - [Cloud Run Invoker IAM Disable](#cloud-run-invoker-iam-disable)
 - [Cloud Run Service Account](#cloud-run-service-account)
+  - [Workload and agent identities](#workload-and-agent-identities)
 - [Creating Cloud Run Jobs](#creating-cloud-run-jobs)
 - [Tag bindings](#tag-bindings)
 - [IAP Configuration](#iap-configuration)
@@ -751,6 +752,34 @@ module "cloud_run" {
 # tftest fixtures=fixtures/iam-service-account.tf inventory=service-external-sa.yaml e2e
 ```
 
+### Workload and agent identities
+
+Services can run under a Cloud Run managed identity instead of a service account, via `service_config.workload_identity_config`. This is what [Agent Platform](https://cloud.google.com/run/docs/ai/agent-platform-features) features build on: a workload with identity type `IDENTITY_TYPE_AGENT_IDENTITY` is assigned a system-managed SPIFFE identity and registered in the Agent Registry.
+
+When identity type is not `IDENTITY_TYPE_SERVICE_ACCOUNT` the module creates no service account and binds no roles, as there is no service account to bind them to. Cloud Run does not expose the resolved principal as an attribute, so roles for the managed identity need to be granted outside this module.
+
+```hcl
+module "cloud_run" {
+  source     = "./fabric/modules/cloud-run-v2"
+  project_id = var.project_id
+  region     = var.region
+  name       = "example-agent"
+  containers = {
+    hello = {
+      image = "us-docker.pkg.dev/cloudrun/container/hello"
+    }
+  }
+  service_config = {
+    workload_identity_config = {
+      certificate_enabled = true
+      identity_type       = "IDENTITY_TYPE_AGENT_IDENTITY"
+    }
+  }
+  deletion_protection = false
+}
+# tftest inventory=service-agent-identity.yaml
+```
+
 ## Creating Cloud Run Jobs
 
 To create a job instead of service set `type` to `JOB`. Jobs support all functions above apart from triggers.
@@ -1083,11 +1112,11 @@ module "cloud_run" {
 | [revision](variables.tf#L207) | Revision template configurations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [service_account_config](variables-serviceaccount.tf#L17) | Service account configurations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [service_config](variables.tf#L274) | Cloud Run service specific configuration options. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [tag_bindings](variables.tf#L374) | Tag bindings for this service, in key => tag value id format. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [type](variables.tf#L381) | Type of Cloud Run resource to deploy: JOB, SERVICE or WORKERPOOL. | <code>string</code> |  | <code>&#34;SERVICE&#34;</code> |
-| [volumes](variables.tf#L391) | Named volumes in containers in name => attributes format. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [tag_bindings](variables.tf#L407) | Tag bindings for this service, in key => tag value id format. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [type](variables.tf#L414) | Type of Cloud Run resource to deploy: JOB, SERVICE or WORKERPOOL. | <code>string</code> |  | <code>&#34;SERVICE&#34;</code> |
+| [volumes](variables.tf#L424) | Named volumes in containers in name => attributes format. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [vpc_connector_create](variables-vpcconnector.tf#L17) | VPC connector network configuration. Must be provided if new VPC connector is being created. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [workerpool_config](variables.tf#L425) | Cloud Run Worker Pool specific configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [workerpool_config](variables.tf#L458) | Cloud Run Worker Pool specific configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
 

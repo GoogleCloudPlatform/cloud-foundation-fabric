@@ -8,6 +8,7 @@ This module makes it easy to deploy either GCP-to-GCP or GCP-to-On-prem [Cloud H
   - [GCP to on-prem](#gcp-to-on-prem)
   - [GCP to on-prem with custom ciphers](#gcp-to-on-prem-with-custom-ciphers)
   - [IPv6 (dual-stack)](#ipv6-dual-stack)
+  - [BGP Route Policies](#bgp-route-policies)
 - [Recipes](#recipes)
 - [Variables](#variables)
 - [Outputs](#outputs)
@@ -304,6 +305,116 @@ module "vpn_ha" {
 # tftest modules=1 resources=12 inventory=ipv6.yaml
 ```
 
+### BGP Route Policies
+
+> [!NOTE]
+> Cloud Router serializes configuration changes. Updating or deleting several route policies on the same router in a single apply may fail with `Error 400: [...] is not ready, resourceNotReady`. Re-running the apply converges, and `-parallelism=1` avoids the error entirely.
+
+```hcl
+module "vpn_ha" {
+  source     = "./fabric/modules/net-vpn-ha"
+  project_id = var.project_id
+  region     = var.region
+  network    = var.vpc.self_link
+  name       = "mynet-to-onprem"
+  peer_gateways = {
+    default = {
+      external = {
+        redundancy_type = "SINGLE_IP_INTERNALLY_REDUNDANT"
+        interfaces      = ["8.8.8.8"]
+      }
+    }
+  }
+  router_config = {
+    asn = 64514
+    custom_advertise = {
+      all_subnets = true
+      ip_ranges = {
+        "10.10.0.0/24" = "default"
+      }
+    }
+    route_policies = {
+      "import-rfc1918" = {
+        type = "IMPORT"
+        terms = [
+          {
+            priority = 1
+            match = {
+              expression  = "destination == '10.0.0.0/8' || destination == '172.16.0.0/12' || destination == '192.168.0.0/16'"
+              title       = "import-rfc1918-subnets"
+              description = "Accept the 3 RFC1918 subnets."
+            }
+            actions = [{
+              expression = "accept()"
+            }]
+          }
+        ]
+      }
+      "import-drop-all" = {
+        type = "IMPORT"
+        terms = [
+          {
+            priority = 2
+            match = {
+              expression  = "destination.inAnyRange(prefix('0.0.0.0/0').orLonger())"
+              title       = "default-drop"
+              description = "Drop all the routes not accepted above"
+            }
+            actions = [{
+              expression = "drop()"
+            }]
+          }
+        ]
+      }
+      "export-policy" = {
+        type = "EXPORT"
+        terms = [
+          {
+            priority = 0
+            match = {
+              expression = "destination == '10.10.0.0/24'"
+            }
+            actions = [
+              { expression = "med.set(1000)" },
+              { expression = "accept()" }
+            ]
+          }
+        ]
+      }
+    }
+  }
+  tunnels = {
+    remote-0 = {
+      bgp_peer = {
+        address         = "169.254.1.1"
+        asn             = 64513
+        import_policies = ["import-rfc1918", "import-drop-all"]
+        export_policies = ["export-policy"]
+      }
+      bgp_session_range               = "169.254.1.2/30"
+      peer_external_gateway_interface = 0
+      shared_secret                   = "mySecret"
+      vpn_gateway_interface           = 0
+    }
+    remote-1 = {
+      bgp_peer = {
+        address         = "169.254.2.1"
+        asn             = 64513
+        import_policies = ["import-rfc1918", "import-drop-all"]
+        export_policies = ["export-policy"]
+      }
+      bgp_session_range               = "169.254.2.2/30"
+      peer_external_gateway_interface = 0
+      shared_secret                   = "mySecret"
+      vpn_gateway_interface           = 1
+    }
+  }
+}
+# tftest modules=1 resources=15 inventory=bgp-route-policies.yaml
+```
+
+Policies are created on the router with their map key as name, and peers reference them by that same key. Editing a term is an in-place update, so names stay stable. Names the module does not manage (for example policies already defined on a pre-existing router) are passed through to the peer unchanged.
+
 You can optionally avoid to specify MD5 keys and the module will automatically generate them for you.
 <!-- BEGIN TFDOC -->
 ## Recipes
@@ -321,9 +432,9 @@ You can optionally avoid to specify MD5 keys and the module will automatically g
 | [router_config](variables.tf#L72) | Cloud Router configuration for the VPN. If you want to reuse an existing router, set create to false and use name to specify the desired router. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
 | [context](variables.tf#L17) | Context-specific interpolations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [peer_gateways](variables.tf#L41) | Configuration of the (external or GCP) peer gateway. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [tunnels](variables.tf#L88) | VPN tunnel configurations. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [vpn_gateway](variables.tf#L142) | HA VPN Gateway Self Link for using an existing HA VPN Gateway. Ignored if `vpn_gateway_create` is set to `true`. | <code>string</code> |  | <code>null</code> |
-| [vpn_gateway_create](variables.tf#L148) | Create HA VPN Gateway. Set to null to avoid creation. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [tunnels](variables.tf#L132) | VPN tunnel configurations. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [vpn_gateway](variables.tf#L188) | HA VPN Gateway Self Link for using an existing HA VPN Gateway. Ignored if `vpn_gateway_create` is set to `true`. | <code>string</code> |  | <code>null</code> |
+| [vpn_gateway_create](variables.tf#L194) | Create HA VPN Gateway. Set to null to avoid creation. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
 
@@ -336,11 +447,12 @@ You can optionally avoid to specify MD5 keys and the module will automatically g
 | [md5_keys](outputs.tf#L42) | BGP tunnels MD5 keys. | ✓ |
 | [name](outputs.tf#L54) | VPN gateway name (only if auto-created). |  |
 | [random_secret](outputs.tf#L59) | Generated secret. | ✓ |
-| [router](outputs.tf#L65) | Router resource (only if auto-created). |  |
-| [router_name](outputs.tf#L70) | Router name. |  |
-| [self_link](outputs.tf#L75) | HA VPN gateway self link. |  |
-| [shared_secrets](outputs.tf#L80) | IPSEC tunnels shared secrets. | ✓ |
-| [tunnel_names](outputs.tf#L89) | VPN tunnel names. |  |
-| [tunnel_self_links](outputs.tf#L97) | VPN tunnel self links. |  |
-| [tunnels](outputs.tf#L105) | VPN tunnel resources. |  |
+| [route_policies](outputs.tf#L65) | BGP route policy ids, keyed by route policy key. |  |
+| [router](outputs.tf#L72) | Router resource (only if auto-created). |  |
+| [router_name](outputs.tf#L77) | Router name. |  |
+| [self_link](outputs.tf#L82) | HA VPN gateway self link. |  |
+| [shared_secrets](outputs.tf#L87) | IPSEC tunnels shared secrets. | ✓ |
+| [tunnel_names](outputs.tf#L96) | VPN tunnel names. |  |
+| [tunnel_self_links](outputs.tf#L104) | VPN tunnel self links. |  |
+| [tunnels](outputs.tf#L112) | VPN tunnel resources. |  |
 <!-- END TFDOC -->

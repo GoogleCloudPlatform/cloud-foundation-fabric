@@ -1,0 +1,108 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.agent-gateway.google_iam_project_access_policy.default["egress-policy"]:
+    access_policy_id: egress-policy
+    details:
+    - rules:
+      - conditions:
+        - expression: destination.agent_registry.endpoint.name == 'projects/my-project-id/locations/europe-west1/endpoints/billing-api'
+          service: iap.googleapis.com
+        description: Allow support agent to call billing API
+        effect: ALLOW
+        excluded_principals: []
+        operation:
+        - excluded_permissions: []
+          permissions:
+          - iap.googleapis.com/resources.egressViaIAP
+        principals:
+        - principal://agents.global.proj-1234567890.system.id.goog/resources/aiplatform/projects/1234567890/locations/europe-west1/reasoningEngines/support-agent
+      - conditions:
+        - expression: destination.unregistered.host == 'ocr.example.com' && destination.unregistered.path.startsWith('/v2/process')
+            && destination.unregistered.method == 'POST'
+          service: iap.googleapis.com
+        description: Allow POST to external OCR service
+        effect: ALLOW
+        excluded_principals: []
+        operation:
+        - excluded_permissions: []
+          permissions:
+          - iap.googleapis.com/resources.egressViaIAP
+        principals:
+        - principal://agents.global.proj-1234567890.system.id.goog/resources/aiplatform/projects/1234567890/locations/europe-west1/reasoningEngines/support-agent
+      - conditions:
+        - expression: destination.agent_registry.agent.name == 'projects/my-project-id/locations/global/agents/partner-agent'
+          service: iap.googleapis.com
+        description: null
+        effect: ALLOW
+        excluded_principals: []
+        operation:
+        - excluded_permissions: []
+          permissions:
+          - iap.googleapis.com/resources.egressViaIAP
+        principals:
+        - principalSet://goog/group/agent-developers@example.com
+      - conditions:
+        - expression: destination.agent_registry.mcp_server.name == 'projects/my-project-id/locations/europe-west1/mcpServers/weather-mcp'
+            && destination.agent_registry.mcp_server.tool.name == 'delete_station'
+          service: iap.googleapis.com
+        description: Block delete_station tool on weather-mcp
+        effect: DENY
+        excluded_principals: []
+        operation:
+        - excluded_permissions: []
+          permissions:
+          - iap.googleapis.com/resources.egressViaIAP
+        principals:
+        - principalSet://goog/group/agent-developers@example.com
+      - conditions:
+        - expression: destination.agent_registry.mcp_server.name == 'projects/my-project-id/locations/europe-west1/mcpServers/weather-mcp'
+            && destination.agent_registry.mcp_server.tool.annotations.read_only_hint
+            == true
+          service: iap.googleapis.com
+        description: Allow read-only tools on weather-mcp
+        effect: ALLOW
+        excluded_principals: []
+        operation:
+        - excluded_permissions: []
+          permissions:
+          - iap.googleapis.com/resources.egressViaIAP
+        principals:
+        - principalSet://goog/group/agent-developers@example.com
+    display_name: Agent Gateway Egress Policy
+    location: global
+    project: my-project-id
+  module.agent-gateway.google_iam_projects_policy_binding.default["egress-policy"]:
+    condition: []
+    display_name: Agent Gateway Egress Policy
+    location: global
+    policy: projects/my-project-id/locations/global/accessPolicies/egress-policy
+    policy_binding_id: egress-policy
+    policy_kind: ACCESS
+    project: my-project-id
+    target:
+    - principal_set: null
+      resource: //cloudresourcemanager.googleapis.com/projects/my-project-id
+
+counts:
+  google_iam_project_access_policy: 1
+  google_iam_projects_policy_binding: 1
+  google_network_security_authz_policy: 1
+  google_network_services_agent_gateway: 1
+  google_network_services_authz_extension: 1
+  modules: 1
+  resources: 5
+
+outputs: {}

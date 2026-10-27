@@ -28,3 +28,4 @@ spec:
     - $service_sets:restricted_services
   resources:
     - projects/1234567890
+    - $folder_ids:teams

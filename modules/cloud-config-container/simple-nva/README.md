@@ -45,7 +45,7 @@ module "cos-nva" {
   #   "/var/lib/cloud/scripts/per-boot/firewall-rules.sh" = {
   #     content     = file("./your_path/to/firewall-rules.sh")
   #     owner       = "root"
-  #     permissions = 0700
+  #     permissions = "0700"
   #   }
   # }
 }

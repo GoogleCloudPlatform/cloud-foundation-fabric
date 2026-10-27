@@ -104,6 +104,14 @@ resource "google_cloud_run_v2_service" "service" {
     }
     timeout         = var.service_config.timeout
     service_account = local.service_account_email
+    dynamic "workload_identity_config" {
+      for_each = var.service_config.workload_identity_config == null ? [] : [""]
+      content {
+        identity                     = local.workload_identity
+        identity_certificate_enabled = var.service_config.workload_identity_config.certificate_enabled
+        identity_type                = var.service_config.workload_identity_config.identity_type
+      }
+    }
     dynamic "containers" {
       for_each = var.containers
       content {

@@ -1,0 +1,109 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  google_container_cluster.cluster:
+    addons_config:
+    - agent_sandbox_config:
+      - enabled: true
+      cloudrun_config:
+      - disabled: true
+      config_connector_config:
+      - enabled: false
+      dns_cache_config:
+      - enabled: true
+      gce_persistent_disk_csi_driver_config:
+      - enabled: true
+      gcp_filestore_csi_driver_config:
+      - enabled: true
+      gcs_fuse_csi_driver_config:
+      - enabled: true
+      gke_backup_agent_config:
+      - enabled: true
+      horizontal_pod_autoscaling:
+      - disabled: false
+      http_load_balancing:
+      - disabled: false
+      istio_config:
+      - auth: null
+        disabled: true
+      kalm_config:
+      - enabled: false
+      network_policy_config:
+      - disabled: true
+      stateful_ha_config:
+      - enabled: false
+    authenticator_groups_config:
+    - security_group: gke-security-groups@example.com
+    database_encryption:
+    - key_name: projects/my-project/locations/europe-west8/keyRings/kr/cryptoKeys/k
+      state: ENCRYPTED
+    fleet:
+    - project: my-project
+    location: europe-west8-b
+    managed_opentelemetry_config:
+    - scope: COLLECTION_AND_INSTRUMENTATION_COMPONENTS
+    master_authorized_networks_config:
+    - cidr_blocks:
+      - cidr_block: 192.168.0.0/16
+        display_name: home
+    name: cluster-1
+    network: projects/my-project/global/networks/vpc
+    node_config:
+    - boot_disk_kms_key: projects/my-project/locations/europe-west8/keyRings/kr/cryptoKeys/k
+      resource_manager_tags:
+        env: tagValues/123456789
+      service_account: nodes@my-project.iam.gserviceaccount.com
+    node_locations:
+    - europe-west8-c
+    notification_config:
+    - pubsub:
+      - enabled: true
+        filter:
+        - event_type: []
+        topic: projects/my-project/topics/gke-upgrades
+    private_cluster_config:
+    - enable_private_nodes: true
+      master_ipv4_cidr_block: 172.16.20.0/28
+    project: my-project
+    resource_usage_export_config:
+    - bigquery_destination:
+      - dataset_id: gke_usage
+      enable_network_egress_metering: false
+      enable_resource_consumption_metering: true
+    subnetwork: projects/my-project/regions/europe-west8/subnetworks/gke
+    workload_identity_config:
+    - workload_pool: my-project.svc.id.goog
+
+  google_gke_backup_backup_plan.backup_plan["backup-1"]:
+    backup_config:
+    - all_namespaces: true
+      encryption_key:
+      - gcp_kms_encryption_key: projects/my-project/locations/europe-west8/keyRings/kr/cryptoKeys/k
+      include_secrets: true
+      include_volume_data: true
+    location: europe-west8
+    name: backup-1
+    project: my-project
+
+  google_gke_backup_restore_channel.restore_channel["dr"]:
+    destination_project: projects/my-dr-project
+    location: europe-west8
+    name: dr
+    project: my-project
+
+counts:
+  google_container_cluster: 1
+  google_gke_backup_backup_plan: 1
+  google_gke_backup_restore_channel: 1

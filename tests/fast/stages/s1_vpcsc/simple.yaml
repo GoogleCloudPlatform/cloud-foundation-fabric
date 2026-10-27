@@ -157,10 +157,14 @@ values:
           roles: []
         title: test
       resources:
+      - folders/1234567890
       - projects/1234567890
       restricted_services:
       - accessapproval.googleapis.com
       - adsdatahub.googleapis.com
+      - agentidentity.googleapis.com
+      - agentidentitycredentials.googleapis.com
+      - agentregistry.googleapis.com
       - aiplatform.googleapis.com
       - apigee.googleapis.com
       - apigeeconnect.googleapis.com
@@ -171,6 +175,9 @@ values:
       - bigquerydatatransfer.googleapis.com
       - bigtable.googleapis.com
       - binaryauthorization.googleapis.com
+      - businessaicode.googleapis.com
+      - ces.googleapis.com
+      - cloudaicompanion.googleapis.com
       - cloudasset.googleapis.com
       - cloudbuild.googleapis.com
       - cloudfunctions.googleapis.com
@@ -193,12 +200,14 @@ values:
       - dataproc.googleapis.com
       - datastream.googleapis.com
       - dialogflow.googleapis.com
+      - discoveryengine.googleapis.com
       - dlp.googleapis.com
       - dns.googleapis.com
       - documentai.googleapis.com
       - eventarc.googleapis.com
       - file.googleapis.com
       - gameservices.googleapis.com
+      - geminidataanalytics.googleapis.com
       - gkeconnect.googleapis.com
       - gkehub.googleapis.com
       - healthcare.googleapis.com
@@ -212,6 +221,7 @@ values:
       - meshca.googleapis.com
       - metastore.googleapis.com
       - ml.googleapis.com
+      - modelarmor.googleapis.com
       - monitoring.googleapis.com
       - networkconnectivity.googleapis.com
       - networkmanagement.googleapis.com
@@ -242,6 +252,7 @@ values:
       - trafficdirector.googleapis.com
       - transcoder.googleapis.com
       - translate.googleapis.com
+      - vectorsearch.googleapis.com
       - videointelligence.googleapis.com
       - vision.googleapis.com
       - vpcaccess.googleapis.com

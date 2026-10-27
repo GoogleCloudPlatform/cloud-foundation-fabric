@@ -12,11 +12,17 @@
     <br>*default: 1-vpcsc*
 - **context**: *object*
   <br>*additional properties: false*
+  - **folder_ids**: *object*
+    <br>*additional properties: string*
   - **iam_principals**: *object*
     <br>*additional properties: string*
   - **identity_sets**: *object*
     <br>*additional properties: array*
+  - **organization_ids**: *object*
+    <br>*additional properties: string*
   - **project_numbers**: *object*
+    <br>*additional properties: string*
+  - **psc_endpoints**: *object*
     <br>*additional properties: string*
   - **resource_sets**: *object*
     <br>*additional properties: array*

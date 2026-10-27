@@ -28,6 +28,20 @@ values:
       - topic: projects/test-prod-audit-logs-0/topics/audit-logs
     project: my-project
     timeouts: null
+  google_cloud_quotas_quota_preference.default["cpus-ew8"]:
+    contact_email: foo@example.com
+    dimensions:
+      region: europe-west8
+    ignore_safety_checks: QUOTA_SAFETY_CHECK_UNSPECIFIED
+    justification: null
+    name: cpus-ew8
+    parent: projects/my-project
+    quota_config:
+    - annotations: null
+      preferred_value: '751'
+    quota_id: CPUS-per-project-region
+    service: compute.googleapis.com
+    timeouts: null
   google_compute_shared_vpc_service_project.shared_vpc_service[0]:
     host_project: test-vpc-host
     service_project: my-project
@@ -339,6 +353,7 @@ values:
 counts:
   google_access_context_manager_service_perimeter_resource: 1
   google_cloud_asset_project_feed: 1
+  google_cloud_quotas_quota_preference: 1
   google_compute_shared_vpc_service_project: 1
   google_essential_contacts_contact: 1
   google_iam_deny_policy: 1
@@ -360,7 +375,7 @@ counts:
   google_tags_tag_value_iam_binding: 2
   google_tags_tag_value_iam_member: 1
   modules: 0
-  resources: 39
+  resources: 40
 
 outputs:
   alert_ids: __missing__
@@ -381,8 +396,8 @@ outputs:
   number: __missing__
   organization_policies_ids: {}
   project_id: my-project
-  quota_configs: {}
-  quotas: {}
+  quota_configs: __missing__
+  quotas: __missing__
   scc_custom_sha_modules_ids: {}
   service_agents: __missing__
   services:

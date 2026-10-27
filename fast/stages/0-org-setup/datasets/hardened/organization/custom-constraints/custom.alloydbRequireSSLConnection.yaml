@@ -1,0 +1,32 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# yaml-language-server: $schema=../../../../schemas/custom-constraint.schema.json
+
+custom.alloydbRequireSSLConnection:
+  action_type: DENY
+  condition: |-
+    has(resource.clientConnectionConfig) &&
+    has(resource.clientConnectionConfig.sslConfig) &&
+    has(resource.clientConnectionConfig.sslConfig.sslMode) &&
+    resource.clientConnectionConfig.sslConfig.sslMode != 'ENCRYPTED_ONLY'
+  description: Ensure that AlloyDB instances are configured to allow only connections
+    that are encrypted with SSL/TLS
+  display_name: Require AlloyDB instances to allow only connections that are encrypted
+    with SSL/TLS
+  method_types:
+  - CREATE
+  - UPDATE
+  resource_types:
+  - alloydb.googleapis.com/Instance

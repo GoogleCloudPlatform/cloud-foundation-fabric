@@ -55,11 +55,10 @@ locals {
           (k) = { for kk, vv in v.tag_vars : kk => vv }
         } if length(v.tag_vars) > 0
       ]...)
-      organization = {
-        for k, v in module.organization[0].tag_keys :
-        # the provider returns allowed_values_regex set to "" not null
-        k => v.namespaced_name if try(v.allowed_values_regex, "") != ""
-      }
+      organization = merge(
+        try(local.ctx.tag_vars.organization, {}),
+        local.org_tag_vars
+      )
     }
   })
   of_logging_sinks = {

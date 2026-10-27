@@ -27,7 +27,7 @@ values:
     project: foo-test-0
     timeouts: null
   google_compute_network_firewall_policy_rule.net_global["egress/smtp"]:
-    action: deny
+    action: apply_security_profile_group
     deletion_policy: DELETE
     description: null
     direction: EGRESS
@@ -60,7 +60,7 @@ values:
     priority: 900
     project: foo-test-0
     rule_name: smtp
-    security_profile_group: null
+    security_profile_group: //networksecurity.googleapis.com/organizations/1234567890/locations/global/securityProfileGroups/test
     target_forwarding_rules: null
     target_secure_tags: []
     target_service_accounts:

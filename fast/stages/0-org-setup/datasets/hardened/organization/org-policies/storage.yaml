@@ -18,7 +18,43 @@
 
 # yaml-language-server: $schema=../../../../schemas/org-policies.schema.json
 
+# custom.storageAllowedStorageClasses:
+#   rules:
+#     - enforce: true
+
+# custom.storageRequireBucketLogging:
+#   rules:
+#     - enforce: true
+
 # custom.storageRequireBucketObjectVersionning:
+#   rules:
+#     - enforce: true
+
+# custom.storageRequireBucketRetentionPolicy:
+#   rules:
+#     - enforce: true
+
+# custom.storageRequireDeleteLifecycleIsLive:
+#   rules:
+#     - enforce: true
+
+# custom.storageRequireLabels:
+#   rules:
+#     - enforce: true
+
+# custom.storageRequireOwnerLabel:
+#   rules:
+#     - enforce: true
+
+# custom.storageRequireRegionalLocation:
+#   rules:
+#     - enforce: true
+
+custom.storageRequireRetentionOrSoftDelete:
+  rules:
+    - enforce: true
+
+# custom.storageRequireSetStorageClassLifecycle:
 #   rules:
 #     - enforce: true
 

@@ -21,6 +21,7 @@
 - **mtu**: *number*
 - **routing_mode**: *string*
   <br>*enum: ['GLOBAL', 'REGIONAL']*
+- **service_connection_policies**: *reference([service_connection_policies](#refs-service_connection_policies))*
 - **firewall_policy_enforcement_order**: *string*
   <br>*enum: ['BEFORE_CLASSIC_FIREWALL', 'AFTER_CLASSIC_FIREWALL']*
 - **create_googleapis_routes**: *reference([create_googleapis_routes](#refs-create_googleapis_routes))*
@@ -117,6 +118,30 @@
     - items: *string*
   - **range_prefix**: *string*
   - **service_producer**: *string*
+- **route_policies**<a name="refs-route_policies"></a>: *object*
+  <br>*additional properties: false*
+  - **`^[a-z]([-a-z0-9]{0,52}[a-z0-9])?$`**: *object*
+    <br>*additional properties: false*
+    - ⁺**type**: *string*
+      <br>*enum: ['IMPORT', 'EXPORT']*
+    - ⁺**terms**: *array*
+      - items: *reference([route_policy_term](#refs-route_policy_term))*
+- **route_policy_term**<a name="refs-route_policy_term"></a>: *object*
+  <br>*additional properties: false*
+  - ⁺**actions**: *array*
+    - items: *object*
+      <br>*additional properties: false*
+      - ⁺**expression**: *string*
+      - **title**: *string*
+      - **description**: *string*
+      - **location**: *string*
+  - ⁺**match**: *object*
+    <br>*additional properties: false*
+    - ⁺**expression**: *string*
+    - **title**: *string*
+    - **description**: *string*
+    - **location**: *string*
+  - ⁺**priority**: *number*
 - **routes**<a name="refs-routes"></a>: *object*
   - **`^[a-z0-9-]+$`**: *object*
     - **description**: *string*
@@ -136,6 +161,7 @@
       - **all_subnets**: *boolean*
       - **ip_ranges**: *object*
         - **`.*`**: *string*
+    - **route_policies**: *reference([route_policies](#refs-route_policies))*
 - **simple_subnet**<a name="refs-simple_subnet"></a>: *object*
   - ⁺**name**: *string*
   - ⁺**ip_cidr_range**: *string*
@@ -156,3 +182,22 @@
   - **description**: *string*
   - **active**: *boolean*
   - **global**: *boolean*
+- **service_connection_policies**<a name="refs-service_connection_policies"></a>: *object*
+  <br>*additional properties: false*
+  - **`^[a-z0-9-]+$`**: *object*
+    <br>*additional properties: false*
+    - ⁺**location**: *string*
+    - ⁺**service_class**: *string*
+    - **description**: *string*
+    - **labels**: *object*
+      <br>*additional properties: string*
+    - ⁺**psc_config**: *object*
+      <br>*additional properties: false*
+      - ⁺**subnetworks**: *array*
+        - items: *string*
+      - **limit**: *number*
+      - **producer_instance_location**: *string*
+        <br>*enum: ['CUSTOM_RESOURCE_HIERARCHY_LEVELS']*
+      - **nodes**: *array*
+        - items: *string*
+          <br>*pattern: ^(projects|folders|organizations)/[a-zA-Z0-9-]+$*

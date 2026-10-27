@@ -27,6 +27,7 @@ The following table provides a granular overview of modules that implement facto
 | **folder** | Folder | `pam_entitlements` | PAM Entitlements | `folder` (ID/Name) |
 | **folder** | Folder | `scc_mute_configs` | SCC Mute Configs | `folder` (ID/Name) |
 | **folder** | Folder | `scc_sha_custom_modules` | SCC SHA Custom Modules | `folder` (ID/Name) |
+| **net-cloud-armor** | Cloud Armor Security Policy | `rules_file_path` | Security Policy Rules | `name` (Policy Name) |
 | **net-firewall-policy** | Firewall Policy | `egress_mirroring_rules_file_path` | Egress Packet Mirroring Rules | `name` (Policy Name) |
 | **net-firewall-policy** | Firewall Policy | `egress_rules_file_path` | Egress Firewall Rules | `name` (Policy Name) |
 | **net-firewall-policy** | Firewall Policy | `ingress_mirroring_rules_file_path` | Ingress Packet Mirroring Rules | `name` (Policy Name) |

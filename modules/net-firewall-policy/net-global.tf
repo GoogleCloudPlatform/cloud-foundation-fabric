@@ -70,6 +70,7 @@ resource "google_compute_network_firewall_policy_rule" "net_global" {
   )
   tls_inspect = local.rules[each.key].tls_inspect
   security_profile_group = try(
+    local.ctx.security_profile_groups[local.rules[each.key].security_profile_group],
     var.security_profile_group_ids[local.rules[each.key].security_profile_group],
     local.rules[each.key].security_profile_group
   )
@@ -185,6 +186,7 @@ resource "google_compute_network_firewall_policy_packet_mirroring_rule" "net_glo
   tls_inspect     = local.mirroring_rules[each.key].tls_inspect
 
   security_profile_group = try(
+    local.ctx.security_profile_groups[local.mirroring_rules[each.key].security_profile_group],
     var.security_profile_group_ids[local.mirroring_rules[each.key].security_profile_group],
     local.mirroring_rules[each.key].security_profile_group
   )

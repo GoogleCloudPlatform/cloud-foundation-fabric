@@ -1576,6 +1576,8 @@ curl -X GET \
   | grep quotaId
 ```
 
+The `contact_email` attribute supports context interpolation via the `email_addresses` context key, as shown in the example below.
+
 ```hcl
 module "project" {
   source          = "./fabric/modules/project"
@@ -1583,11 +1585,16 @@ module "project" {
   billing_account = var.billing_account_id
   parent          = var.folder_id
   prefix          = var.prefix
+  context = {
+    email_addresses = {
+      quota-admin = "user@example.com"
+    }
+  }
   quotas = {
     cpus-ew8 = {
       service         = "compute.googleapis.com"
       quota_id        = "CPUS-per-project-region"
-      contact_email   = "user@example.com"
+      contact_email   = "$email_addresses:quota-admin"
       preferred_value = 751
       dimensions = {
         region = "europe-west8"

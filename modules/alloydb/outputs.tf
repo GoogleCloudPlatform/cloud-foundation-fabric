@@ -44,6 +44,12 @@ output "ids" {
   }
 }
 
+output "instance" {
+  description = "AlloyDB primary instance resource."
+  value       = google_alloydb_instance.primary
+  sensitive   = true
+}
+
 output "instances" {
   description = "AlloyDB instance resources."
   value       = local._all_instances
@@ -98,7 +104,7 @@ output "public_ip" {
 }
 
 output "read_pool_ids" {
-  description = "Fully qualified ids of all primary read poll instances."
+  description = "Fully qualified ids of all primary read pool instances."
   value = {
     for name, instance in google_alloydb_instance.read_pool_primary :
     name => instance.id
@@ -106,11 +112,16 @@ output "read_pool_ids" {
 }
 
 output "read_pool_ips" {
-  description = "IP addresses of all primary read poll instances."
+  description = "IP addresses of all primary read pool instances."
   value = {
     for name, instance in google_alloydb_instance.read_pool_primary :
     name => instance.ip_address
   }
+}
+
+output "read_pools" {
+  description = "Primary read pool resources."
+  value       = google_alloydb_instance.read_pool_primary
 }
 
 output "secondary_cluster_id" {
@@ -126,6 +137,12 @@ output "secondary_cluster_name" {
 output "secondary_id" {
   description = "Fully qualified secondary instance id."
   value       = var.cross_region_replication.enabled ? google_alloydb_instance.secondary[0].id : null
+}
+
+output "secondary_instance" {
+  description = "AlloyDB secondary instance resource."
+  value       = one(google_alloydb_instance.secondary)
+  sensitive   = true
 }
 
 output "secondary_ip" {
@@ -144,7 +161,7 @@ output "secondary_public_ip" {
 }
 
 output "secondary_read_pool_ids" {
-  description = "Fully qualified ids of all secondary read poll instances."
+  description = "Fully qualified ids of all secondary read pool instances."
   value = {
     for name, instance in google_alloydb_instance.read_pool_secondary :
     name => instance.id
@@ -152,11 +169,16 @@ output "secondary_read_pool_ids" {
 }
 
 output "secondary_read_pool_ips" {
-  description = "IP addresses of all secondary read poll instances."
+  description = "IP addresses of all secondary read pool instances."
   value = {
     for name, instance in google_alloydb_instance.read_pool_secondary :
     name => instance.ip_address
   }
+}
+
+output "secondary_read_pools" {
+  description = "Secondary read pool resources."
+  value       = google_alloydb_instance.read_pool_secondary
 }
 
 output "service_attachment" {

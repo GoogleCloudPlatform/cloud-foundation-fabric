@@ -41,6 +41,14 @@
 
 - **VpcAccessibleServices**<a name="refs-VpcAccessibleServices"></a>: *object*
   <br>*additional properties: false*
-  - ⁺**allowed_services**: *array*
+  - **allow_all_restricted_services**: *boolean*
+  - **allowed_service_patterns**: *object*
+    <br>*additional properties: oneof*
+    - **None**: *(null)*
+    - *object*
+      <br>*additional properties: false*
+      - **x_goog_allowed_resources**: *string*
+      - **x_googapps_allowed_domains**: *string*
+  - **allowed_services**: *array*
     - items: *string*
   - **enable_restriction**: *boolean*

@@ -29,6 +29,7 @@ values:
     project: resolved-project
     protocol: UNSPECIFIED
     region: resolved-region
+    security_policy: projects/resolved-project/regions/resolved-region/securityPolicies/network-edge
 
 counts:
   google_compute_forwarding_rule: 1

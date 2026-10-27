@@ -23,11 +23,12 @@ variable "address" {
 variable "context" {
   description = "Context-specific interpolations."
   type = object({
-    addresses   = optional(map(string), {})
-    locations   = optional(map(string), {})
-    networks    = optional(map(string), {})
-    project_ids = optional(map(string), {})
-    subnets     = optional(map(string), {})
+    addresses         = optional(map(string), {})
+    locations         = optional(map(string), {})
+    networks          = optional(map(string), {})
+    project_ids       = optional(map(string), {})
+    security_policies = optional(map(string), {})
+    subnets           = optional(map(string), {})
   })
   default  = {}
   nullable = false
@@ -73,6 +74,7 @@ variable "https_proxy_config" {
     certificate_map                  = optional(string)
     http_keepalive_timeout           = optional(string)
     quic_override                    = optional(string)
+    server_tls_policy                = optional(string)
     ssl_policy                       = optional(string)
   })
   default  = {}

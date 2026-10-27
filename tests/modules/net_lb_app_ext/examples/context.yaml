@@ -19,7 +19,7 @@ values:
     custom_response_headers: null
     deletion_policy: DELETE
     description: null
-    edge_security_policy: null
+    edge_security_policy: projects/my-project/global/securityPolicies/edge
     enable_cdn: null
     load_balancing_scheme: null
     name: glb-test-0-default-gcs
@@ -68,7 +68,7 @@ values:
     port_name: http
     project: my-project
     protocol: HTTP
-    security_policy: null
+    security_policy: projects/my-project/global/securityPolicies/waf
     security_settings: []
     service_lb_policy: null
     strong_session_affinity_cookie: []

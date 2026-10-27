@@ -22,3 +22,4 @@ tests:
   health-checks-https:
   health-checks-ssl:
   health-checks-tcp:
+  urlmaps:

@@ -54,6 +54,7 @@ resource "google_compute_firewall_policy_rule" "hierarchical" {
   )
   tls_inspect = local.rules[each.key].tls_inspect
   security_profile_group = try(
+    local.ctx.security_profile_groups[local.rules[each.key].security_profile_group],
     var.security_profile_group_ids[local.rules[each.key].security_profile_group],
     local.rules[each.key].security_profile_group
   )

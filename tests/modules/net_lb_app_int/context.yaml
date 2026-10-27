@@ -157,6 +157,7 @@ counts:
 
 outputs:
   address: 10.0.0.10
+  backend_service_generated_ids: __missing__
   backend_service_ids: __missing__
   backend_service_names:
     default: ilb-l7-test-default

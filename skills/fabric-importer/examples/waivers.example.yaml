@@ -1,0 +1,36 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# HUMAN-OWNED waiver ledger (example).
+#
+# A waiver excludes one in-scope inventory key from the coverage gate:
+# "we saw it, we decided not to manage it, here is why, signed". The model
+# operating the skill MUST NOT add or edit waivers; it may only propose
+# them in its report for a human to review and commit.
+#
+# Every waiver requires key + reason. `signed_by` records who accepted
+# it — coverage.py reports waivers without it, and hard-fails them under
+# --require-signed-waivers (recommended whenever a human is in the
+# loop). Include the date in the signed_by value for auditing.
+
+waivers:
+  - key: //cloudresourcemanager.googleapis.com/folders/000000000001
+    reason: >-
+      Decommissioning next quarter; not worth importing. Tracked in
+      TICKET-123.
+    signed_by: alice@example.com 2026-08-21
+
+  - key: //logging.googleapis.com/organizations/000000000000/sinks/tmp-debug
+    reason: temporary debugging sink owned by the SRE oncall; do not manage
+    signed_by: bob@example.com 2026-08-21

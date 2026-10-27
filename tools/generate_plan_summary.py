@@ -58,6 +58,7 @@ FILTERED_ATTRIBUTES = [
     'filename',
     'source_md5hash',
     'pem_certificate',
+    'store',
 ]
 
 HEADER = "".join(open(__file__).readlines()[2:15])
@@ -148,6 +149,9 @@ def handle_readme(readme_path, target, index, save):
 
   directive = target_example.directive
   module_path = readme_path.parent
+  # test assets live under tests/, in a copy of the module path with
+  # underscores instead of dashes (see tests/examples/test_plan.py)
+  test_path = BASEDIR / 'tests' / str(target_example.module).replace('-', '_')
 
   inventory_path = None
   if save:
@@ -156,9 +160,7 @@ def handle_readme(readme_path, target, index, save):
       print("Error: No inventory file specified in the # tftest directive.")
       print("Please add `inventory=filename.yaml` to the directive first.")
       sys.exit(1)
-    module_str = str(target_example.module).replace('-', '_')
-    inventory_path = (BASEDIR / 'tests' / module_str / 'examples' /
-                      inventory_name)
+    inventory_path = test_path / 'examples' / inventory_name
 
   with tempfile.TemporaryDirectory(prefix='tftest-') as tmp_path:
     tmp_path = Path(tmp_path)
@@ -169,7 +171,7 @@ def handle_readme(readme_path, target, index, save):
                                              'variables.tf')
       (tmp_path / 'main.tf').write_text(target_example.code)
 
-      assets_path = module_path / 'assets'
+      assets_path = test_path / 'assets'
       if assets_path.exists():
         (tmp_path / 'assets').symlink_to(assets_path.resolve())
 
@@ -215,11 +217,12 @@ def handle_tftest(test_file, target, save):
   spec = raw.get('tests', {})[test_name] or {}
   extra_dirs = spec.get('extra_dirs', [])
   extra_files = spec.get('extra_files', [])
+  workspace = spec.get('workspace')
   tf_var_files = common + [f'{test_name}.tfvars'] + spec.get('tfvars', [])
   module_path = BASEDIR / module
   summary = fixtures.plan_summary(module_path, test_base_dir, tf_var_files,
                                   extra_files=extra_files,
-                                  extra_dirs=extra_dirs)
+                                  extra_dirs=extra_dirs, workspace=workspace)
 
   inventory_path = test_base_dir / f'{test_name}.yaml' if save else None
   output_summary(summary, inventory_path, save)
