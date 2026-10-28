@@ -6,6 +6,31 @@
   "required": [
     "region"
   ],
+  "not": {
+    "anyOf": [
+      {
+        "properties": {
+          "psc": {"const": true},
+          "proxy_only": {"const": true}
+        },
+        "required": ["psc", "proxy_only"]
+      },
+      {
+        "properties": {
+          "psc": {"const": true},
+          "private_nat": {"const": true}
+        },
+        "required": ["psc", "private_nat"]
+      },
+      {
+        "properties": {
+          "proxy_only": {"const": true},
+          "private_nat": {"const": true}
+        },
+        "required": ["proxy_only", "private_nat"]
+      }
+    ]
+  },
   "anyOf": [
     {"required": ["ip_cidr_range"]},
     {"required": ["reserved_internal_range"]},
@@ -91,6 +116,9 @@
       "type": "boolean"
     },
     "proxy_only": {
+      "type": "boolean"
+    },
+    "private_nat": {
       "type": "boolean"
     },
     "secondary_ip_ranges": {
