@@ -82,10 +82,16 @@ locals {
     names      = { for k, v in module.vpc-factory.vpcs : k => v.name }
     self_links = { for k, v in module.vpc-factory.vpcs : k => v.self_link }
     subnets_by_vpc = merge([
-      for vpc_key, vpc in module.vpc-factory.vpcs : {
-        for subnet_key, subnet_self_link in vpc.subnet_self_links :
-        "${vpc_key}/${subnet_key}" => subnet_self_link
-      }
+      for vpc_key, vpc in module.vpc-factory.vpcs : merge(
+        {
+          for subnet_key, subnet_self_link in vpc.subnet_self_links :
+          "${vpc_key}/${subnet_key}" => subnet_self_link
+        },
+        {
+          for subnet_key, subnet in vpc.subnets_private_nat :
+          "${vpc_key}/${subnet_key}" => subnet.self_link
+        }
+      )
     ]...)
   }
 }
