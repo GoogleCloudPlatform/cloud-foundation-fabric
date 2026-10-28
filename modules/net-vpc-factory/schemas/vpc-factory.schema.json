@@ -298,6 +298,9 @@
             "router_create": {
               "type": "boolean"
             },
+            "router_name": {
+              "type": "string"
+            },
             "rules": {
               "type": "array",
               "items": {

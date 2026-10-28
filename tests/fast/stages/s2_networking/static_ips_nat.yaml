@@ -49,7 +49,7 @@ values:
     project: fast-prod-net-core-0
     region: europe-west1
   module.nat["core/nat-private"].google_compute_router.router[0]:
-    name: core-nat-private-nat
+    name: custom-private-nat-router
     project: fast-prod-net-core-0
     region: europe-west1
   module.nat["core/nat-private"].google_compute_router_nat.nat:
@@ -65,7 +65,7 @@ values:
     nat_ip_allocate_option: null
     project: fast-prod-net-core-0
     region: europe-west1
-    router: core-nat-private-nat
+    router: custom-private-nat-router
     rules:
       - action:
           - source_nat_active_ips: []

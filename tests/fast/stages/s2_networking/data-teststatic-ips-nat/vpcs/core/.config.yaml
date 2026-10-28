@@ -18,6 +18,7 @@ nat_config:
   nat-private:
     region: $locations:primary
     type: PRIVATE
+    router_name: custom-private-nat-router
     config_source_subnetworks:
       all: false
       subnetworks:

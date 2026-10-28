@@ -104,6 +104,7 @@
     - ⁺**region**: *string*
     - **router_asn**: *number*
     - **router_create**: *boolean*
+    - **router_name**: *string*
     - **rules**: *array*
       - items: *object*
         <br>*additional properties: false*
