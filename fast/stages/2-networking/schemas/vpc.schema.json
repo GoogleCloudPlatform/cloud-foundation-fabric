@@ -194,15 +194,168 @@
       "patternProperties": {
         "^[a-z0-9-]+$": {
           "type": "object",
+          "additionalProperties": false,
           "required": [
             "region"
           ],
           "properties": {
-            "region": {
-              "type": "string"
+            "addresses": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "config_port_allocation": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "enable_endpoint_independent_mapping": {
+                  "type": "boolean"
+                },
+                "enable_dynamic_port_allocation": {
+                  "type": "boolean"
+                },
+                "min_ports_per_vm": {
+                  "type": "number"
+                },
+                "max_ports_per_vm": {
+                  "type": "number"
+                }
+              }
+            },
+            "config_source_subnetworks": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "all": {
+                  "type": "boolean"
+                },
+                "primary_ranges_only": {
+                  "type": "boolean"
+                },
+                "subnetworks": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "self_link"
+                    ],
+                    "properties": {
+                      "self_link": {
+                        "type": "string"
+                      },
+                      "all_ranges": {
+                        "type": "boolean"
+                      },
+                      "primary_range": {
+                        "type": "boolean"
+                      },
+                      "secondary_ranges": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "config_timeouts": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "icmp": {
+                  "type": "number"
+                },
+                "tcp_established": {
+                  "type": "number"
+                },
+                "tcp_time_wait": {
+                  "type": "number"
+                },
+                "tcp_transitory": {
+                  "type": "number"
+                },
+                "udp": {
+                  "type": "number"
+                }
+              }
+            },
+            "endpoint_types": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "ENDPOINT_TYPE_VM",
+                  "ENDPOINT_TYPE_SWG",
+                  "ENDPOINT_TYPE_MANAGED_PROXY_LB"
+                ]
+              }
+            },
+            "logging_filter": {
+              "type": "string",
+              "enum": [
+                "ERRORS_ONLY",
+                "TRANSLATIONS_ONLY",
+                "ALL"
+              ]
             },
             "num_nat_ips": {
               "type": "number"
+            },
+            "region": {
+              "type": "string"
+            },
+            "router_asn": {
+              "type": "number"
+            },
+            "router_create": {
+              "type": "boolean"
+            },
+            "router_name": {
+              "type": "string"
+            },
+            "rules": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "match"
+                ],
+                "properties": {
+                  "description": {
+                    "type": "string"
+                  },
+                  "match": {
+                    "type": "string"
+                  },
+                  "rule_number": {
+                    "type": "number"
+                  },
+                  "source_ips": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "source_ranges": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            },
+            "type": {
+              "type": "string",
+              "enum": [
+                "PUBLIC",
+                "PRIVATE"
+              ]
             }
           }
         }
@@ -532,14 +685,177 @@
                     }
                   }
                 }
-              }
+              },
+              "additionalProperties": false
             },
             "route_policies": {
               "$ref": "#/$defs/route_policies"
+            },
+            "keepalive": {
+              "type": "number"
+            },
+            "interfaces": {
+              "type": "object",
+              "description": "Cloud Router interfaces, required for router appliance BGP peers. Addresses must be literal so that NVA guest BGP configuration can be rendered.",
+              "patternProperties": {
+                "^[a-z0-9-]+$": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "subnet",
+                    "ip_address"
+                  ],
+                  "properties": {
+                    "subnet": {
+                      "type": "string"
+                    },
+                    "ip_address": {
+                      "type": "string"
+                    },
+                    "redundant_interface": {
+                      "type": "string",
+                      "description": "Key of the primary interface this interface is redundant to."
+                    }
+                  }
+                }
+              },
+              "additionalProperties": false
+            },
+            "peers": {
+              "type": "object",
+              "additionalProperties": false,
+              "description": "BGP peers, using the same attributes as VPN and VLAN attachment peers. Set `nva` (NVA key) to fan out one peer per instance of that NVA's router appliance spoke in this VPC, or `address` (literal or `$nva_addresses:<instance>/<vpc>`) with an optional `router_appliance_instance` (self link or `$nva_instances:<instance>`).",
+              "patternProperties": {
+                "^[a-z0-9-]+$": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "interface",
+                    "asn"
+                  ],
+                  "oneOf": [
+                    {
+                      "required": [
+                        "nva"
+                      ],
+                      "not": {
+                        "anyOf": [
+                          {
+                            "required": [
+                              "address"
+                            ]
+                          },
+                          {
+                            "required": [
+                              "router_appliance_instance"
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "required": [
+                        "address"
+                      ],
+                      "not": {
+                        "required": [
+                          "nva"
+                        ]
+                      }
+                    }
+                  ],
+                  "properties": {
+                    "interface": {
+                      "type": "string",
+                      "description": "Key of the router interface."
+                    },
+                    "asn": {
+                      "type": "number"
+                    },
+                    "nva": {
+                      "type": "string",
+                      "description": "NVA key, fans out across the instances of its router appliance spoke in this VPC."
+                    },
+                    "address": {
+                      "type": "string"
+                    },
+                    "router_appliance_instance": {
+                      "type": "string"
+                    },
+                    "route_priority": {
+                      "type": "number"
+                    },
+                    "custom_advertise": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "all_subnets": {
+                          "type": "boolean"
+                        },
+                        "ip_ranges": {
+                          "type": "object",
+                          "additionalProperties": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    },
+                    "custom_learned_ip_ranges": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "ip_ranges"
+                      ],
+                      "properties": {
+                        "route_priority": {
+                          "type": "number"
+                        },
+                        "ip_ranges": {
+                          "type": "object",
+                          "additionalProperties": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    },
+                    "md5_authentication_key": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "name"
+                      ],
+                      "properties": {
+                        "name": {
+                          "type": "string"
+                        },
+                        "key": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "enable": {
+                      "type": "boolean"
+                    },
+                    "export_policies": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "import_policies": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
             }
           }
         }
-      }
+      },
+      "additionalProperties": false
     },
     "simple_subnet": {
       "type": "object",
