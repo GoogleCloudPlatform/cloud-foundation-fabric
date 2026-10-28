@@ -103,10 +103,7 @@ module "automation-bucket" {
   encryption_key = lookup(each.value, "encryption_key", null)
   force_destroy  = each.value.force_destroy
   context = merge(local.ctx, {
-    project_ids = merge(
-      local.ctx.project_ids,
-      { for k, v in module.projects-iam : k => v.project_id }
-    )
+    project_ids     = local.ctx_project_ids
     iam_principals  = local.ctx_iam_principals
     storage_buckets = local.ctx.storage_buckets
     kms_keys        = merge(local.ctx.kms_keys, local.kms_keys, local.kms_autokeys)
