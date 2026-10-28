@@ -157,10 +157,12 @@ module "automation-service-accounts" {
     "Service account ${each.value.name} for ${each.value.parent}."
   )
   context = merge(local.ctx, {
+    folder_ids  = local.ctx_folder_ids
     project_ids = local.ctx_project_ids
     iam_principals = merge(
       local.ctx.iam_principals,
-      local.projects_sas_iam_emails
+      local.projects_sas_iam_emails,
+      local.projects_service_agents
     )
     tag_vars = {
       projects     = merge(try(local.ctx.tag_vars.projects, {}), local.tag_vars_projects)
@@ -202,8 +204,13 @@ module "automation-service-accounts-iam" {
     use_data_source = false
   }
   context = merge(local.ctx, {
+    folder_ids          = local.ctx_folder_ids
+    project_ids         = local.ctx_project_ids
     service_account_ids = local.projects_sas_ids
   })
   iam_sa_bindings = lookup(each.value, "iam_sa_bindings", {})
   iam_sa_roles    = lookup(each.value, "iam_sa_roles", {})
+  depends_on = [
+    module.automation-service-accounts
+  ]
 }
