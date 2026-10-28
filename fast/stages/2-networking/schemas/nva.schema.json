@@ -93,6 +93,7 @@
         },
         "routes": {
           "type": "array",
+          "description": "Prefixes installed as static kernel routes in the guest OS via this NIC's subnet gateway (data-plane forwarding).",
           "items": {
             "type": "string"
           }
@@ -116,7 +117,7 @@
         },
         "advertise": {
           "type": "array",
-          "description": "Prefixes originated by the guest BGP daemon toward all its neighbors; each must be covered by a static route in `routes` on this NIC, since originated prefixes are not installed in the kernel. Only used by the BGP startup template.",
+          "description": "Prefixes originated by the guest BGP daemon (`network` statement) toward all its neighbors (control-plane advertisement); each must be covered by a kernel route (such as `routes` on this NIC or the default route from `masquerade`), since FRR prefers locally originated prefixes over eBGP routes and installs no BGP route in the kernel. Only used by the BGP startup template.",
           "items": {
             "type": "string"
           }

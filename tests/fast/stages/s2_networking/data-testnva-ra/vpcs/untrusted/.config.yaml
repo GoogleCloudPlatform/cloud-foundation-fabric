@@ -19,6 +19,8 @@ routers:
   ra:
     region: $locations:primary
     asn: 64512
+    # IMPORT route policy applied to `fw-a-0` below to prefer `fw-a` (MED 50)
+    # over `fw-b` (default priority 200).
     route_policies:
       prefer-primary:
         type: IMPORT

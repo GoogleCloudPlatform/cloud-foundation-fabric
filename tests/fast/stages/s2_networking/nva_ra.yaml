@@ -479,73 +479,115 @@ values:
     machine_type: e2-standard-2
     metadata:
       google-logging-enabled: 'true'
-      nva-frr-config: "frr defaults traditional\nhostname nva-managed-b-0\nlog stdout\
-        \ informational\nip forwarding\n!\n! routes learned on this NIC are tagged\
-        \ so that they are not sent back to it\nbgp community-list standard CL-NIC0-LEARNED\
-        \ seq 5 permit 64514:100\nip prefix-list PL-NIC1-DENY seq 5 permit 0.0.0.0/0\n\
-        ! routes learned on this NIC are tagged so that they are not sent back to\
-        \ it\nbgp community-list standard CL-NIC1-LEARNED seq 5 permit 64514:101\n\
-        !\nroute-map RM-NIC0-IN permit 20\n set community 64514:100 additive\n!\n\
-        route-map RM-NIC0-OUT deny 20\n match community CL-NIC0-LEARNED\n!\nroute-map\
-        \ RM-NIC0-OUT permit 100\n!\nroute-map RM-NIC1-IN deny 10\n match ip address\
-        \ prefix-list PL-NIC1-DENY\n!\nroute-map RM-NIC1-IN permit 20\n set community\
-        \ 64514:101 additive\n!\nroute-map RM-NIC1-OUT deny 20\n match community CL-NIC1-LEARNED\n\
-        !\nroute-map RM-NIC1-OUT permit 100\n!\nrouter bgp 64514\n bgp router-id ROUTER_ID\n\
-        \ bgp log-neighbor-changes\n no bgp ebgp-requires-policy\n no bgp network\
-        \ import-check\n bgp bestpath as-path multipath-relax\n timers bgp 3 9\n !\
-        \ GCE assigns /32 addresses, so Cloud Router interfaces are reached via the\n\
-        \ ! subnet gateway and fail FRR's eBGP connected check\n neighbor 10.0.1.252\
-        \ remote-as 64515\n neighbor 10.0.1.252 description trusted-ra\n neighbor\
-        \ 10.0.1.252 update-source eth1\n neighbor 10.0.1.252 disable-connected-check\n\
-        \ neighbor 10.0.0.252 remote-as 64512\n neighbor 10.0.0.252 description untrusted-ra\n\
+      nva-frr-config: "! FRR configuration for NCC Router Appliance NVAs.\n!\n! A\
+        \ single FRR instance in the default VRF peers via eBGP with the Cloud Router\n\
+        ! interfaces of every VPC the NVA is attached to. Routes learned on one NIC\
+        \ are\n! tagged with a per-NIC BGP community so they are not re-advertised\
+        \ back to\n! peers on the same NIC (split-horizon across redundant Cloud Router\
+        \ interfaces),\n! and passed through unchanged to all other NICs (`attribute-unchanged\
+        \ med`).\n! All path selection (active/standby, ECMP, and regional affinity)\
+        \ is controlled\n! by Cloud Router import policies rather than on the appliance.\n\
+        frr defaults traditional\nhostname nva-managed-b-0\nlog stdout informational\n\
+        ip forwarding\n!\n! Per-NIC inbound prefix filters (`bgp_inbound_deny`) and\
+        \ split-horizon\n! community lists (`<asn>:<100 + nic_index>`).\nbgp community-list\
+        \ standard CL-NIC0-LEARNED seq 5 permit 64514:100\nip prefix-list PL-NIC1-DENY\
+        \ seq 5 permit 0.0.0.0/0\nbgp community-list standard CL-NIC1-LEARNED seq\
+        \ 5 permit 64514:101\n!\n! Per-NIC route maps:\n! - RM-NIC<n>-IN drops any\
+        \ prefix in `bgp_inbound_deny` (e.g. `0.0.0.0/0` from\n!   a transit Cloud\
+        \ Router) and tags accepted routes with the NIC's community.\n! - RM-NIC<n>-OUT\
+        \ drops routes carrying that NIC's community so routes learned\n!   from one\
+        \ Cloud Router interface on `eth<n>` are never reflected back to the\n!  \
+        \ redundant Cloud Router interface (or another router) on the same NIC.\n\
+        route-map RM-NIC0-IN permit 20\n set community 64514:100 additive\n!\nroute-map\
+        \ RM-NIC0-OUT deny 20\n match community CL-NIC0-LEARNED\n!\nroute-map RM-NIC0-OUT\
+        \ permit 100\n!\nroute-map RM-NIC1-IN deny 10\n match ip address prefix-list\
+        \ PL-NIC1-DENY\n!\nroute-map RM-NIC1-IN permit 20\n set community 64514:101\
+        \ additive\n!\nroute-map RM-NIC1-OUT deny 20\n match community CL-NIC1-LEARNED\n\
+        !\nroute-map RM-NIC1-OUT permit 100\n!\nrouter bgp 64514\n ! ROUTER_ID is\
+        \ substituted with eth0's primary IP by `frr-config-sync.sh`\n bgp router-id\
+        \ ROUTER_ID\n bgp log-neighbor-changes\n ! allow eBGP route exchange without\
+        \ requiring explicit route-maps on every AFI\n no bgp ebgp-requires-policy\n\
+        \ ! originate `network` statements (`advertise`) without requiring an exact-match\n\
+        \ ! route in the kernel/zebra RIB (allows static supernet `routes` to cover\
+        \ more\n ! specific `/24` BGP advertisements)\n no bgp network import-check\n\
+        \ bgp bestpath as-path multipath-relax\n timers bgp 3 9\n ! GCE assigns /32\
+        \ addresses via DHCP, so Cloud Router interfaces in the same\n ! subnet are\
+        \ reached via the subnet gateway and fail FRR's eBGP connected\n ! check unless\
+        \ `disable-connected-check` is set; `update-source` binds each\n ! session\
+        \ to the guest NIC attached to that router's VPC\n neighbor 10.0.1.252 remote-as\
+        \ 64515\n neighbor 10.0.1.252 description trusted-ra\n neighbor 10.0.1.252\
+        \ update-source eth1\n neighbor 10.0.1.252 disable-connected-check\n neighbor\
+        \ 10.0.0.252 remote-as 64512\n neighbor 10.0.0.252 description untrusted-ra\n\
         \ neighbor 10.0.0.252 update-source eth0\n neighbor 10.0.0.252 disable-connected-check\n\
         \ neighbor 10.0.0.253 remote-as 64512\n neighbor 10.0.0.253 description untrusted-ra\n\
         \ neighbor 10.0.0.253 update-source eth0\n neighbor 10.0.0.253 disable-connected-check\n\
-        \ !\n address-family ipv4 unicast\n  ! originated toward every neighbor; the\
-        \ kernel route comes from the NIC\n  ! `routes` (static via the subnet gateway),\
-        \ not from BGP\n  network 10.128.0.0/9\n  neighbor 10.0.1.252 soft-reconfiguration\
-        \ inbound\n  ! MED neutral: FRR strips the MED toward eBGP peers by default,\
-        \ pass the\n  ! Cloud Router value through instead; priorities are set by\
-        \ Cloud Router\n  ! import policies\n  neighbor 10.0.1.252 attribute-unchanged\
-        \ med\n  neighbor 10.0.1.252 route-map RM-NIC1-IN in\n  neighbor 10.0.1.252\
-        \ route-map RM-NIC1-OUT out\n  neighbor 10.0.0.252 soft-reconfiguration inbound\n\
-        \  ! MED neutral: FRR strips the MED toward eBGP peers by default, pass the\n\
-        \  ! Cloud Router value through instead; priorities are set by Cloud Router\n\
-        \  ! import policies\n  neighbor 10.0.0.252 attribute-unchanged med\n  neighbor\
-        \ 10.0.0.252 route-map RM-NIC0-IN in\n  neighbor 10.0.0.252 route-map RM-NIC0-OUT\
-        \ out\n  neighbor 10.0.0.253 soft-reconfiguration inbound\n  ! MED neutral:\
-        \ FRR strips the MED toward eBGP peers by default, pass the\n  ! Cloud Router\
-        \ value through instead; priorities are set by Cloud Router\n  ! import policies\n\
+        \ !\n address-family ipv4 unicast\n  ! Prefixes in `advertise` are originated\
+        \ toward every BGP neighbor (`network`\n  ! statement). Because FRR assigns\
+        \ locally originated `network` routes weight\n  ! 32768 (beating any eBGP\
+        \ route with weight 0), FRR never installs a BGP route\n  ! in the Linux kernel\
+        \ for these prefixes; data-plane forwarding relies on the\n  ! static kernel\
+        \ routes configured under `routes` (or `masquerade`) on the NIC.\n  network\
+        \ 10.128.0.0/9\n  ! MED-neutral forwarding: FRR strips the received MED toward\
+        \ eBGP peers by\n  ! default; `attribute-unchanged med` preserves the Cloud\
+        \ Router metric across\n  ! the appliance while Cloud Router import policies\
+        \ control path priorities.\n  neighbor 10.0.1.252 soft-reconfiguration inbound\n\
+        \  neighbor 10.0.1.252 attribute-unchanged med\n  neighbor 10.0.1.252 route-map\
+        \ RM-NIC1-IN in\n  neighbor 10.0.1.252 route-map RM-NIC1-OUT out\n  neighbor\
+        \ 10.0.0.252 soft-reconfiguration inbound\n  neighbor 10.0.0.252 attribute-unchanged\
+        \ med\n  neighbor 10.0.0.252 route-map RM-NIC0-IN in\n  neighbor 10.0.0.252\
+        \ route-map RM-NIC0-OUT out\n  neighbor 10.0.0.253 soft-reconfiguration inbound\n\
         \  neighbor 10.0.0.253 attribute-unchanged med\n  neighbor 10.0.0.253 route-map\
         \ RM-NIC0-IN in\n  neighbor 10.0.0.253 route-map RM-NIC0-OUT out\n exit-address-family\n\
         !\nline vty\n!\n"
-      user-data: "#cloud-config\n\n# NVA startup for the NCC router appliance mode:\
-        \ static per-NIC routes and\n# optional masquerade as in the ILB sandwich\
-        \ template, plus a containerized FRR\n# instance peering via eBGP with the\
-        \ Cloud Router interfaces of every VPC the\n# NVA is attached to. The FRR\
-        \ configuration is rendered by the factory into the\n# `nva-frr-config` metadata\
-        \ key and reloaded whenever it changes.\n\nwrite_files:\n  - path: /etc/frr/daemons\n\
-        \    permissions: \"0644\"\n    content: |\n      bgpd=yes\n      zebra=yes\n\
-        \      vtysh_enable=yes\n      zebra_options=\"  -A 127.0.0.1 -s 90000000\"\
-        \n      bgpd_options=\"   -A 127.0.0.1\"\n  - path: /etc/frr/vtysh.conf\n\
+      user-data: "#cloud-config\n\n# NVA startup configuration for NCC Router Appliance\
+        \ (BGP) mode (runs on\n# Container-Optimized OS):\n# 1. Enables IPv4 forwarding,\
+        \ sets loose reverse-path filtering (`rp_filter=2`),\n#    and opens the COS\
+        \ host firewall (`iptables` defaults to DROP on INPUT and\n#    FORWARD) for\
+        \ transit traffic, BGP (TCP 179), and GCP health check probers.\n# 2. Programs\
+        \ per-NIC static kernel routes (`routes`) and optional outbound SNAT\n#  \
+        \  (`masquerade` / `masquerade_exclude`) via each NIC's VPC subnet gateway.\n\
+        # 3. Starts a per-NIC Policy-Based Routing (PBR) daemon (`update-pbrs.sh`)\
+        \ so\n#    GCP health check probes arriving on secondary NICs (`eth1+`) or\
+        \ ILB VIPs\n#    return out the ingress NIC rather than following `eth0`'s\
+        \ default route.\n# 4. Starts a background daemon (`frr-config-sync.sh`) that\
+        \ polls the\n#    `nva-frr-config` instance metadata key every 30s and runs\
+        \ FRR (`bgpd` +\n#    `zebra`) in a container sharing the host network namespace.\n\
+        \nwrite_files:\n  # Enable `zebra` (kernel FIB manager) and `bgpd` inside\
+        \ the FRR container;\n  # `-A 127.0.0.1` binds VTY sockets to loopback only\
+        \ and `-s 90000000` raises\n  # Zebra's netlink socket buffer size.\n  - path:\
+        \ /etc/frr/daemons\n    permissions: \"0644\"\n    content: |\n      bgpd=yes\n\
+        \      zebra=yes\n      vtysh_enable=yes\n      zebra_options=\"  -A 127.0.0.1\
+        \ -s 90000000\"\n      bgpd_options=\"   -A 127.0.0.1\"\n  - path: /etc/frr/vtysh.conf\n\
         \    permissions: \"0644\"\n    content: |\n      service integrated-vtysh-config\n\
         \  - path: /var/run/nva/update-pbrs.sh\n    permissions: \"0755\"\n    content:\
-        \ |\n      #!/bin/bash\n      # Continuous update of PBRs for an interface\
-        \ (needed when an NVA mixes\n      # NCC Router Appliance spokes on some NICs\
-        \ with ILB backends on others).\n      set -e\n\n      IF_INDEX=$1\n     \
-        \ METADATA_URL=\"http://metadata.google.internal/computeMetadata/v1/instance/network-interfaces\"\
+        \ |\n      #!/bin/bash\n      # Policy-Based Routing (PBR) daemon for a single\
+        \ network interface.\n      #\n      # Why this is needed: Linux shares a\
+        \ single `main` routing table across\n      # all NICs where the default route\
+        \ points out `eth0`. When GCP health\n      # check probers (`35.191.0.0/16`,\
+        \ `130.211.0.0/22`) probe a secondary NIC\n      # (`eth1+`) or an Internal\
+        \ Passthrough NLB VIP (`forwarded-ips`), reply\n      # packets would otherwise\
+        \ exit via `eth0` and be dropped by GCP's strict\n      # VPC return-path\
+        \ anti-spoofing check.\n      #\n      # For interface `ethN`, this loop maintains\
+        \ routing table `110 + N` with a\n      # default route via `ethN`'s subnet\
+        \ gateway (re-applied inside the loop so\n      # it survives FRR/Zebra restarts)\
+        \ and syncs `ip rule` entries directing\n      # replies from `ethN`'s primary\
+        \ IP and any ILB `forwarded-ips` back to\n      # the health check ranges\
+        \ through table `110 + N`.\n      set -e\n\n      IF_INDEX=$1\n      METADATA_URL=\"\
+        http://metadata.google.internal/computeMetadata/v1/instance/network-interfaces\"\
         \n      METADATA_HEADER=\"Metadata-Flavor: Google\"\n      IF_NAME=\"eth${IF_INDEX}\"\
         \n      TABLE_ID=$((110 + IF_INDEX))\n\n      GATEWAY=$(curl -s -H \"${METADATA_HEADER}\"\
         \ \"${METADATA_URL}/${IF_INDEX}/gateway\")\n      NIC_IP=$(curl -s -H \"${METADATA_HEADER}\"\
         \ \"${METADATA_URL}/${IF_INDEX}/ip\")\n      if [ -z \"${GATEWAY}\" ]; then\n\
         \        echo \"Could not retrieve gateway. Exiting.\"\n        exit 1\n \
-        \     fi\n\n      while true; do\n        ip route replace default via ${GATEWAY}\
-        \ dev ${IF_NAME} onlink table ${TABLE_ID} || true\n        FORWARDED_IPS_LIST=()\n\
-        \        if [ -n \"${NIC_IP}\" ]; then\n          FORWARDED_IPS_LIST+=(\"\
-        ${NIC_IP}\")\n        fi\n        FORWARDED_IP_IDS=$(curl -s -H \"${METADATA_HEADER}\"\
-        \ \"${METADATA_URL}/${IF_INDEX}/forwarded-ips/\")\n        for ID in ${FORWARDED_IP_IDS};\
-        \ do\n          IP=$(curl -s -H \"${METADATA_HEADER}\" \"${METADATA_URL}/${IF_INDEX}/forwarded-ips/${ID}\"\
-        )\n          FORWARDED_IPS_LIST+=(\"${IP}\")\n        done\n        FORWARDED_IPS=$(printf\
+        \     fi\n\n      while true; do\n        # Omit `proto static` so FRR's `staticd`/`zebra`\
+        \ does not purge the\n        # route when the FRR container starts or restarts.\n\
+        \        ip route replace default via ${GATEWAY} dev ${IF_NAME} onlink table\
+        \ ${TABLE_ID} || true\n        FORWARDED_IPS_LIST=()\n        if [ -n \"${NIC_IP}\"\
+        \ ]; then\n          FORWARDED_IPS_LIST+=(\"${NIC_IP}\")\n        fi\n   \
+        \     FORWARDED_IP_IDS=$(curl -s -H \"${METADATA_HEADER}\" \"${METADATA_URL}/${IF_INDEX}/forwarded-ips/\"\
+        )\n        for ID in ${FORWARDED_IP_IDS}; do\n          IP=$(curl -s -H \"\
+        ${METADATA_HEADER}\" \"${METADATA_URL}/${IF_INDEX}/forwarded-ips/${ID}\")\n\
+        \          FORWARDED_IPS_LIST+=(\"${IP}\")\n        done\n        FORWARDED_IPS=$(printf\
         \ \"%s\\n\" \"${FORWARDED_IPS_LIST[@]}\")\n\n        CURRENT_RULE_IPS=$(ip\
         \ rule show | grep \"lookup ${TABLE_ID}\" | awk -F 'from ' '/from/ {split($2,\
         \ a, \" \"); print a[1]}' | sort -u || true)\n\n        for IP in ${FORWARDED_IPS};\
@@ -558,18 +600,21 @@ values:
         \            ip rule del from ${IP} to 130.211.0.0/22 lookup ${TABLE_ID} ||\
         \ true\n          fi\n        done\n\n        sleep 5\n      done\n  - path:\
         \ /var/run/nva/frr-config-sync.sh\n    permissions: \"0755\"\n    content:\
-        \ |\n      #!/bin/bash\n      # Fetch the FRR configuration from instance\
-        \ metadata, substitute the\n      # router id with the primary NIC address\
-        \ and (re)start FRR when the\n      # configuration changes. Runs forever\
-        \ in the background.\n      METADATA_URL=\"http://metadata.google.internal/computeMetadata/v1/instance\"\
-        \n      METADATA_HEADER=\"Metadata-Flavor: Google\"\n      IP0=$(curl -s -H\
-        \ \"${METADATA_HEADER}\" \"${METADATA_URL}/network-interfaces/0/ip\")\n  \
-        \    LAST_HASH=\"\"\n      while true; do\n        CONFIG=$(curl -s -f -H\
-        \ \"${METADATA_HEADER}\" \"${METADATA_URL}/attributes/nva-frr-config\")\n\
-        \        if [ -n \"${CONFIG}\" ]; then\n          HASH=$(echo \"${CONFIG}\"\
+        \ |\n      #!/bin/bash\n      # Poll the `nva-frr-config` instance metadata\
+        \ attribute every 30s,\n      # substitute `ROUTER_ID` with `eth0`'s primary\
+        \ IPv4 address, and (re)start\n      # the FRR container whenever the rendered\
+        \ configuration hash changes.\n      # Keeping the FRR config in a dedicated\
+        \ metadata key lets Terraform update\n      # BGP peers, timers, and advertised\
+        \ prefixes in place without recreating\n      # the NVA VM.\n      METADATA_URL=\"\
+        http://metadata.google.internal/computeMetadata/v1/instance\"\n      METADATA_HEADER=\"\
+        Metadata-Flavor: Google\"\n      IP0=$(curl -s -H \"${METADATA_HEADER}\" \"\
+        ${METADATA_URL}/network-interfaces/0/ip\")\n      LAST_HASH=\"\"\n      while\
+        \ true; do\n        CONFIG=$(curl -s -f -H \"${METADATA_HEADER}\" \"${METADATA_URL}/attributes/nva-frr-config\"\
+        )\n        if [ -n \"${CONFIG}\" ]; then\n          HASH=$(echo \"${CONFIG}\"\
         \ | md5sum | cut -d' ' -f1)\n          if [ \"${HASH}\" != \"${LAST_HASH}\"\
         \ ]; then\n            echo \"FRR configuration changed, applying.\"\n   \
         \         echo \"${CONFIG}\" | sed \"s/ROUTER_ID/${IP0}/\" > /etc/frr/frr.conf\n\
+        \            # UID:GID 100:101 is the `frr:frr` user inside the FRR container\n\
         \            chown -R 100:101 /etc/frr || true\n            # pull only when\
         \ the image is not already cached locally; on first\n            # boot the\
         \ pull may race with Cloud NAT becoming available\n            if ! docker\
@@ -577,20 +622,27 @@ values:
         \         for i in $(seq 1 30); do\n                docker pull quay.io/frrouting/frr:10.2.1\
         \ && break\n                echo \"Image pull failed, retrying in 10s (${i}/30).\"\
         \n                sleep 10\n              done\n            fi\n         \
-        \   docker rm -f frr 2>/dev/null || true\n            docker run -d --name\
-        \ frr --restart=always --net=host \\\n              --cap-add=NET_ADMIN --cap-add=NET_RAW\
-        \ --cap-add=NET_BIND_SERVICE \\\n              --cap-add=SYS_ADMIN -v /etc/frr:/etc/frr\
-        \ quay.io/frrouting/frr:10.2.1 && \\\n              LAST_HASH=\"${HASH}\"\n\
-        \          fi\n        fi\n        sleep 30\n      done\n\nruncmd:\n  - |\n\
-        \    #!/bin/bash\n    set -ex\n\n    echo \"Starting NVA network configuration...\"\
-        \n\n    echo \"Enabling IP forwarding and loose reverse path filtering.\"\n\
-        \    cat > /etc/sysctl.d/90-nva.conf <<EOF\n    net.ipv4.ip_forward = 1\n\
-        \    net.ipv4.conf.all.rp_filter = 2\n    net.ipv4.conf.default.rp_filter\
-        \ = 2\n    EOF\n    sysctl -p /etc/sysctl.d/90-nva.conf\n\n    iptables -I\
-        \ FORWARD -j ACCEPT\n    # let Cloud Router initiated BGP sessions and ILB\
-        \ health checks in through\n    # the host firewall\n    iptables -I INPUT\
-        \ -p tcp --dport 179 -j ACCEPT\n    iptables -I INPUT -s 35.191.0.0/16,130.211.0.0/22\
-        \ -j ACCEPT\n\n    METADATA_URL=\"http://metadata.google.internal/computeMetadata/v1/instance/network-interfaces\"\
+        \   docker rm -f frr 2>/dev/null || true\n            # Run FRR in the host\
+        \ network namespace (`--net=host`) with netlink\n            # capabilities\
+        \ so `bgpd` binds directly to `eth0..ethN` and `zebra`\n            # programs\
+        \ dynamic BGP routes into the host Linux kernel FIB.\n            docker run\
+        \ -d --name frr --restart=always --net=host \\\n              --cap-add=NET_ADMIN\
+        \ --cap-add=NET_RAW --cap-add=NET_BIND_SERVICE \\\n              --cap-add=SYS_ADMIN\
+        \ -v /etc/frr:/etc/frr quay.io/frrouting/frr:10.2.1 && \\\n              LAST_HASH=\"\
+        ${HASH}\"\n          fi\n        fi\n        sleep 30\n      done\n\nruncmd:\n\
+        \  - |\n    #!/bin/bash\n    set -ex\n\n    echo \"Starting NVA network configuration...\"\
+        \n\n    # Enable IPv4 packet forwarding across NICs and set loose Reverse\
+        \ Path\n    # Filtering (`rp_filter = 2`) so packets arriving on one NIC whose\
+        \ source\n    # prefix is reachable via another routing table/NIC are not\
+        \ dropped as\n    # martians.\n    echo \"Enabling IP forwarding and loose\
+        \ reverse path filtering.\"\n    cat > /etc/sysctl.d/90-nva.conf <<EOF\n \
+        \   net.ipv4.ip_forward = 1\n    net.ipv4.conf.all.rp_filter = 2\n    net.ipv4.conf.default.rp_filter\
+        \ = 2\n    EOF\n    sysctl -p /etc/sysctl.d/90-nva.conf\n\n    # Container-Optimized\
+        \ OS sets default `DROP` policies on `INPUT` and\n    # `FORWARD`; explicitly\
+        \ allow transit forwarding, Cloud Router-initiated\n    # BGP connections\
+        \ (TCP 179), and GCP health check probers.\n    iptables -I FORWARD -j ACCEPT\n\
+        \    iptables -I INPUT -p tcp --dport 179 -j ACCEPT\n    iptables -I INPUT\
+        \ -s 35.191.0.0/16,130.211.0.0/22 -j ACCEPT\n\n    METADATA_URL=\"http://metadata.google.internal/computeMetadata/v1/instance/network-interfaces\"\
         \n    METADATA_HEADER=\"Metadata-Flavor: Google\"\n    INTERFACE_INDEXES=$(curl\
         \ -s -H \"${METADATA_HEADER}\" \"${METADATA_URL}/\" | sed 's:/$::')\n\n  \
         \  for i in ${INTERFACE_INDEXES}; do\n      IF_NAME=\"eth${i}\"\n      echo\
@@ -598,21 +650,24 @@ values:
         ${METADATA_HEADER}\" \"${METADATA_URL}/${i}/gateway\")\n      if [ -z \"${GATEWAY}\"\
         \ ]; then\n        echo \"Could not retrieve gateway for ${IF_NAME}. Skipping.\"\
         \n        continue\n      fi\n      echo \"Gateway for ${IF_NAME} is ${GATEWAY}.\"\
-        \n      # loose rp_filter per interface (sysctl \"all\" is a max with per-if)\n\
-        \      sysctl -w net.ipv4.conf.${IF_NAME}.rp_filter=2 || true\n\n        \
-        \          if [ \"${i}\" == \"0\" ]; then\n                        echo \"\
-        Enabling NAT (Masquerade) on ${IF_NAME} and setting default route.\"\n   \
-        \     ip route replace default via ${GATEWAY} dev ${IF_NAME}\n           \
-        \     # keep source addresses for traffic that stays private, so that an\n\
-        \        # active/standby switch does not reset flows through the NAT\n  \
-        \      iptables -t nat -A POSTROUTING -o ${IF_NAME} -d 10.0.0.0/8 -j RETURN\n\
+        \n      # Linux evaluates effective rp_filter as max(conf.all, conf.<if>),\
+        \ and\n      # interfaces are initialized with rp_filter=1 before cloud-init\
+        \ runs.\n      sysctl -w net.ipv4.conf.${IF_NAME}.rp_filter=2 || true\n\n\
+        \                  if [ \"${i}\" == \"0\" ]; then\n                      \
+        \  echo \"Enabling NAT (Masquerade) on ${IF_NAME} and setting default route.\"\
+        \n        ip route replace default via ${GATEWAY} dev ${IF_NAME}\n       \
+        \         # Exclude private destination ranges from SNAT so internal/on-premises\n\
+        \        # flows preserve their original client source IP and do not reset\
+        \ when\n        # failing over between active and standby NVA instances.\n\
+        \        iptables -t nat -A POSTROUTING -o ${IF_NAME} -d 10.0.0.0/8 -j RETURN\n\
         \                iptables -t nat -A POSTROUTING -o ${IF_NAME} -j MASQUERADE\n\
-        \              fi\n                        \n      echo \"Starting continuous\
-        \ PBR update for eth${i} in the background.\"\n      nohup bash /var/run/nva/update-pbrs.sh\
-        \ $i >> /var/log/nva-pbr-update.log 2>&1 &\n    done\n\n    echo \"Starting\
-        \ FRR configuration sync.\"\n    nohup bash /var/run/nva/frr-config-sync.sh\
-        \ >> /var/log/nva-frr-sync.log 2>&1 &\n\n    echo \"NVA network configuration\
-        \ complete.\"\n"
+        \              fi\n                        \n      # Invoke via `bash` because\
+        \ `/var/run` (`/run` tmpfs) is mounted `noexec` on COS.\n      echo \"Starting\
+        \ continuous PBR update for eth${i} in the background.\"\n      nohup bash\
+        \ /var/run/nva/update-pbrs.sh $i >> /var/log/nva-pbr-update.log 2>&1 &\n \
+        \   done\n\n    echo \"Starting FRR configuration sync.\"\n    nohup bash\
+        \ /var/run/nva/frr-config-sync.sh >> /var/log/nva-frr-sync.log 2>&1 &\n\n\
+        \    echo \"NVA network configuration complete.\"\n"
     metadata_startup_script: null
     name: nva-managed-b-0
     network_interface:
@@ -624,6 +679,7 @@ values:
       nic_type: null
       queue_count: null
       security_policy: null
+      service_class_id: null
       vlan: null
     - access_config: []
       alias_ip_range: []
@@ -633,6 +689,7 @@ values:
       nic_type: null
       queue_count: null
       security_policy: null
+      service_class_id: null
       vlan: null
     network_performance_config: []
     params: []

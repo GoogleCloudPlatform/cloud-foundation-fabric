@@ -1,11 +1,27 @@
 #cloud-config
 
+# NVA startup configuration for Internal Passthrough NLB (ILB sandwich) mode:
+# 1. Enables IPv4 packet forwarding across all network interfaces.
+# 2. Programs per-NIC static kernel routes (`routes`) and optional outbound SNAT
+#    (`masquerade` / `masquerade_exclude`) via each NIC's VPC subnet gateway.
+# 3. Runs a per-NIC Policy-Based Routing (PBR) daemon (`update-pbrs.sh`) so
+#    health check probes sent to an ILB VIP (`forwarded-ips`) on `ethN` are
+#    answered via `ethN`'s subnet gateway rather than `eth0`'s default route.
+
 write_files:
   - path: /var/run/nva/update-pbrs.sh
     permissions: "0755"
     content: |
       #!/bin/bash
-      # Continuous update of PBRs for an interface.
+      # Policy-Based Routing (PBR) daemon for an interface fronting an ILB.
+      #
+      # GCP Internal Passthrough NLBs deliver packets and health check probes
+      # (`35.191.0.0/16`, `130.211.0.0/22`) to the backend VM with the ILB's VIP
+      # as the destination IP (published in metadata under `forwarded-ips/`).
+      # Because Linux uses a single `main` routing table whose default route
+      # points out `eth0`, health check replies from `eth1+` would exit `eth0`
+      # and be dropped by VPC anti-spoofing unless steered back out `ethN` via
+      # a per-NIC routing table (`110 + IF_INDEX`).
       set -e
 
       IF_INDEX=$1
@@ -91,6 +107,7 @@ runcmd:
       if [ "$${i}" == "${nic_index}" ]; then
         %{ if can(nic.routes) ~}
         %{ for route in nic.routes ~}
+        # Install static kernel route for `${route}` via this NIC's VPC subnet gateway.
         echo "Adding route for ${route} via $${GATEWAY} on $${IF_NAME}"
         ip route add ${route} via $${GATEWAY} dev $${IF_NAME} proto static
         %{ endfor ~}
@@ -99,6 +116,8 @@ runcmd:
         echo "Enabling NAT (Masquerade) on $${IF_NAME} and setting default route."
         ip route replace default via $${GATEWAY} dev $${IF_NAME}
         %{ for range in try(nic.masquerade_exclude, []) ~}
+        # Exclude private destination ranges from SNAT so internal flows keep
+        # their original source IP across the appliance.
         iptables -t nat -A POSTROUTING -o $${IF_NAME} -d ${range} -j RETURN
         %{ endfor ~}
         iptables -t nat -A POSTROUTING -o $${IF_NAME} -j MASQUERADE

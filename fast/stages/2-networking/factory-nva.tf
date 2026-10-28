@@ -83,24 +83,34 @@ locals {
   # fan-out or via an explicit $nva_instances: peer, matched to the instance
   # NIC attached to the router's VPC
   _nva_bgp_neighbors = {
-    for inst_key, inst in local._nva_instance_keys : inst_key => distinct(flatten([
+    for inst_key, inst in local._nva_instance_keys :
+    inst_key => distinct(flatten([
       for router_key, router_config in local.router_configs : [
         for peer_key, peer_config in try(router_config.peers, {}) : {
-          router   = router_config.name
-          asn      = router_config.asn
-          ip       = try(router_config.interfaces[peer_config.interface].ip_address, null)
+          router = router_config.name
+          asn    = router_config.asn
+          ip = try(
+            router_config.interfaces[peer_config.interface].ip_address, null
+          )
           password = try(peer_config.md5_authentication_key.key, null)
           nic_index = try(index(
             [
-              for nic in try(local.nva_configs[inst.nva_key].auto_instance_config.nics, []) :
+              for nic in try(
+                local.nva_configs[inst.nva_key].auto_instance_config.nics, []
+              ) :
               trimprefix(nic.network, "$networks:")
             ],
             router_config.vpc_self_link
           ), null)
           } if(
           try(peer_config.nva, null) == inst.nva_key ||
-          try(peer_config.router_appliance_instance, null) == "$nva_instances:${inst_key}" ||
-          startswith(try(peer_config.address, ""), "$nva_addresses:${inst_key}/")
+          (
+            try(peer_config.router_appliance_instance, null) ==
+            "$nva_instances:${inst_key}"
+          ) ||
+          startswith(
+            try(peer_config.address, ""), "$nva_addresses:${inst_key}/"
+          )
         )
       ]
     ])) if local.nva_configs[inst.nva_key].bgp_config != null
@@ -111,8 +121,10 @@ locals {
     for inst_key, inst in local._nva_instance_keys : inst_key => templatefile(
       "${path.module}/assets/frr.conf.tpl",
       {
-        hostname        = "nva-${inst_key}"
-        nva_nics_config = try(local.nva_configs[inst.nva_key].auto_instance_config.nics, [])
+        hostname = "nva-${inst_key}"
+        nva_nics_config = try(
+          local.nva_configs[inst.nva_key].auto_instance_config.nics, []
+        )
         bgp = merge(
           {
             asn       = local.nva_configs[inst.nva_key].bgp_config.asn
@@ -194,13 +206,17 @@ locals {
           )
           nva-frr-config = local._nva_frr_configs[inst_key]
         },
-        coalesce(try(local.nva_configs[inst.nva_key].auto_instance_config.metadata, null), {})
+        coalesce(
+          try(local.nva_configs[inst.nva_key].auto_instance_config.metadata, null),
+          {}
+        )
       )
       attachments = try(
         local.nva_configs[inst.nva_key].auto_instance_config.nics, []
       )
       confidential_compute = try(
-        local.nva_configs[inst.nva_key].auto_instance_config.confidential_compute, null
+        local.nva_configs[inst.nva_key].auto_instance_config.confidential_compute,
+        null
       )
       encryption = try(
         local.nva_configs[inst.nva_key].auto_instance_config.encryption, null
@@ -209,7 +225,8 @@ locals {
         local.nva_configs[inst.nva_key].auto_instance_config.options, null
       )
       shielded_config = try(
-        local.nva_configs[inst.nva_key].auto_instance_config.shielded_config, null
+        local.nva_configs[inst.nva_key].auto_instance_config.shielded_config,
+        null
       )
       tags = try(
         local.nva_configs[inst.nva_key].auto_instance_config.tags, ["nva"]
@@ -278,17 +295,21 @@ locals {
             "ra-${trimprefix(spoke.network, "$networks:")}/${nva_def.name}",
             "/", "-"
           )
-          nva_config                 = nva_def.name
-          network_key                = trimprefix(spoke.network, "$networks:")
-          project_id                 = nva_def.project_id
-          region                     = nva_def.region
-          hub                        = spoke.hub
-          group                      = try(spoke.group, null)
-          description                = try(spoke.description, "Terraform-managed.")
-          labels                     = try(spoke.labels, {})
-          site_to_site_data_transfer = try(spoke.site_to_site_data_transfer, true)
-          include_import_ranges      = try(spoke.include_import_ranges, ["ALL_IPV4_RANGES"])
-          exclude_import_ranges      = try(spoke.exclude_import_ranges, null)
+          nva_config  = nva_def.name
+          network_key = trimprefix(spoke.network, "$networks:")
+          project_id  = nva_def.project_id
+          region      = nva_def.region
+          hub         = spoke.hub
+          group       = try(spoke.group, null)
+          description = try(spoke.description, "Terraform-managed.")
+          labels      = try(spoke.labels, {})
+          site_to_site_data_transfer = try(
+            spoke.site_to_site_data_transfer, true
+          )
+          include_import_ranges = try(
+            spoke.include_import_ranges, ["ALL_IPV4_RANGES"]
+          )
+          exclude_import_ranges = try(spoke.exclude_import_ranges, null)
           instances = concat(
             [
               for k, v in local.nva_instances : {
@@ -303,7 +324,10 @@ locals {
             ],
             [
               for v in try(spoke.instances, []) : {
-                key = try(v.name, element(split("/", v.vm), length(split("/", v.vm)) - 1))
+                key = try(
+                  v.name,
+                  element(split("/", v.vm), length(split("/", v.vm)) - 1)
+                )
                 vm = lookup(
                   local.ctx_nva_instances.self_links,
                   trimprefix(v.vm, "$nva_instances:"), v.vm
@@ -554,7 +578,10 @@ resource "google_network_connectivity_spoke" "router_appliances" {
       error_message = "NVA ${each.value.nva_config} has no NIC attached to VPC ${each.value.network_key}."
     }
     precondition {
-      condition     = length(local._nva_ra_spoke_keys) == length(distinct(local._nva_ra_spoke_keys))
+      condition = (
+        length(local._nva_ra_spoke_keys) ==
+        length(distinct(local._nva_ra_spoke_keys))
+      )
       error_message = "An NVA defines more than one router appliance spoke for the same VPC."
     }
     precondition {

@@ -1,12 +1,23 @@
 #cloud-config
 
-# NVA startup for the NCC router appliance mode: static per-NIC routes and
-# optional masquerade as in the ILB sandwich template, plus a containerized FRR
-# instance peering via eBGP with the Cloud Router interfaces of every VPC the
-# NVA is attached to. The FRR configuration is rendered by the factory into the
-# `nva-frr-config` metadata key and reloaded whenever it changes.
+# NVA startup configuration for NCC Router Appliance (BGP) mode (runs on
+# Container-Optimized OS):
+# 1. Enables IPv4 forwarding, sets loose reverse-path filtering (`rp_filter=2`),
+#    and opens the COS host firewall (`iptables` defaults to DROP on INPUT and
+#    FORWARD) for transit traffic, BGP (TCP 179), and GCP health check probers.
+# 2. Programs per-NIC static kernel routes (`routes`) and optional outbound SNAT
+#    (`masquerade` / `masquerade_exclude`) via each NIC's VPC subnet gateway.
+# 3. Starts a per-NIC Policy-Based Routing (PBR) daemon (`update-pbrs.sh`) so
+#    GCP health check probes arriving on secondary NICs (`eth1+`) or ILB VIPs
+#    return out the ingress NIC rather than following `eth0`'s default route.
+# 4. Starts a background daemon (`frr-config-sync.sh`) that polls the
+#    `nva-frr-config` instance metadata key every 30s and runs FRR (`bgpd` +
+#    `zebra`) in a container sharing the host network namespace.
 
 write_files:
+  # Enable `zebra` (kernel FIB manager) and `bgpd` inside the FRR container;
+  # `-A 127.0.0.1` binds VTY sockets to loopback only and `-s 90000000` raises
+  # Zebra's netlink socket buffer size.
   - path: /etc/frr/daemons
     permissions: "0644"
     content: |
@@ -23,8 +34,20 @@ write_files:
     permissions: "0755"
     content: |
       #!/bin/bash
-      # Continuous update of PBRs for an interface (needed when an NVA mixes
-      # NCC Router Appliance spokes on some NICs with ILB backends on others).
+      # Policy-Based Routing (PBR) daemon for a single network interface.
+      #
+      # Why this is needed: Linux shares a single `main` routing table across
+      # all NICs where the default route points out `eth0`. When GCP health
+      # check probers (`35.191.0.0/16`, `130.211.0.0/22`) probe a secondary NIC
+      # (`eth1+`) or an Internal Passthrough NLB VIP (`forwarded-ips`), reply
+      # packets would otherwise exit via `eth0` and be dropped by GCP's strict
+      # VPC return-path anti-spoofing check.
+      #
+      # For interface `ethN`, this loop maintains routing table `110 + N` with a
+      # default route via `ethN`'s subnet gateway (re-applied inside the loop so
+      # it survives FRR/Zebra restarts) and syncs `ip rule` entries directing
+      # replies from `ethN`'s primary IP and any ILB `forwarded-ips` back to
+      # the health check ranges through table `110 + N`.
       set -e
 
       IF_INDEX=$1
@@ -41,6 +64,8 @@ write_files:
       fi
 
       while true; do
+        # Omit `proto static` so FRR's `staticd`/`zebra` does not purge the
+        # route when the FRR container starts or restarts.
         ip route replace default via $${GATEWAY} dev $${IF_NAME} onlink table $${TABLE_ID} || true
         FORWARDED_IPS_LIST=()
         if [ -n "$${NIC_IP}" ]; then
@@ -75,9 +100,12 @@ write_files:
     permissions: "0755"
     content: |
       #!/bin/bash
-      # Fetch the FRR configuration from instance metadata, substitute the
-      # router id with the primary NIC address and (re)start FRR when the
-      # configuration changes. Runs forever in the background.
+      # Poll the `nva-frr-config` instance metadata attribute every 30s,
+      # substitute `ROUTER_ID` with `eth0`'s primary IPv4 address, and (re)start
+      # the FRR container whenever the rendered configuration hash changes.
+      # Keeping the FRR config in a dedicated metadata key lets Terraform update
+      # BGP peers, timers, and advertised prefixes in place without recreating
+      # the NVA VM.
       METADATA_URL="http://metadata.google.internal/computeMetadata/v1/instance"
       METADATA_HEADER="Metadata-Flavor: Google"
       IP0=$(curl -s -H "$${METADATA_HEADER}" "$${METADATA_URL}/network-interfaces/0/ip")
@@ -89,6 +117,7 @@ write_files:
           if [ "$${HASH}" != "$${LAST_HASH}" ]; then
             echo "FRR configuration changed, applying."
             echo "$${CONFIG}" | sed "s/ROUTER_ID/$${IP0}/" > /etc/frr/frr.conf
+            # UID:GID 100:101 is the `frr:frr` user inside the FRR container
             chown -R 100:101 /etc/frr || true
             # pull only when the image is not already cached locally; on first
             # boot the pull may race with Cloud NAT becoming available
@@ -100,6 +129,9 @@ write_files:
               done
             fi
             docker rm -f frr 2>/dev/null || true
+            # Run FRR in the host network namespace (`--net=host`) with netlink
+            # capabilities so `bgpd` binds directly to `eth0..ethN` and `zebra`
+            # programs dynamic BGP routes into the host Linux kernel FIB.
             docker run -d --name frr --restart=always --net=host \
               --cap-add=NET_ADMIN --cap-add=NET_RAW --cap-add=NET_BIND_SERVICE \
               --cap-add=SYS_ADMIN -v /etc/frr:/etc/frr ${frr_image} && \
@@ -116,6 +148,10 @@ runcmd:
 
     echo "Starting NVA network configuration..."
 
+    # Enable IPv4 packet forwarding across NICs and set loose Reverse Path
+    # Filtering (`rp_filter = 2`) so packets arriving on one NIC whose source
+    # prefix is reachable via another routing table/NIC are not dropped as
+    # martians.
     echo "Enabling IP forwarding and loose reverse path filtering."
     cat > /etc/sysctl.d/90-nva.conf <<EOF
     net.ipv4.ip_forward = 1
@@ -124,9 +160,10 @@ runcmd:
     EOF
     sysctl -p /etc/sysctl.d/90-nva.conf
 
+    # Container-Optimized OS sets default `DROP` policies on `INPUT` and
+    # `FORWARD`; explicitly allow transit forwarding, Cloud Router-initiated
+    # BGP connections (TCP 179), and GCP health check probers.
     iptables -I FORWARD -j ACCEPT
-    # let Cloud Router initiated BGP sessions and ILB health checks in through
-    # the host firewall
     iptables -I INPUT -p tcp --dport 179 -j ACCEPT
     iptables -I INPUT -s 35.191.0.0/16,130.211.0.0/22 -j ACCEPT
 
@@ -144,7 +181,8 @@ runcmd:
         continue
       fi
       echo "Gateway for $${IF_NAME} is $${GATEWAY}."
-      # loose rp_filter per interface (sysctl "all" is a max with per-if)
+      # Linux evaluates effective rp_filter as max(conf.all, conf.<if>), and
+      # interfaces are initialized with rp_filter=1 before cloud-init runs.
       sysctl -w net.ipv4.conf.$${IF_NAME}.rp_filter=2 || true
 
       %{ for nic_index, nic in nva_nics_config ~}
@@ -152,6 +190,9 @@ runcmd:
       if [ "$${i}" == "${nic_index}" ]; then
         %{ if can(nic.routes) ~}
         %{ for route in nic.routes ~}
+        # Static kernel route (`RTPROT_BOOT`, without `proto static` so FRR does
+        # not delete it on startup) directing data-plane traffic for `${route}`
+        # out this NIC via its VPC subnet gateway.
         echo "Adding route for ${route} via $${GATEWAY} on $${IF_NAME}"
         ip route replace ${route} via $${GATEWAY} dev $${IF_NAME}
         %{ endfor ~}
@@ -160,8 +201,9 @@ runcmd:
         echo "Enabling NAT (Masquerade) on $${IF_NAME} and setting default route."
         ip route replace default via $${GATEWAY} dev $${IF_NAME}
         %{ for range in try(nic.masquerade_exclude, []) ~}
-        # keep source addresses for traffic that stays private, so that an
-        # active/standby switch does not reset flows through the NAT
+        # Exclude private destination ranges from SNAT so internal/on-premises
+        # flows preserve their original client source IP and do not reset when
+        # failing over between active and standby NVA instances.
         iptables -t nat -A POSTROUTING -o $${IF_NAME} -d ${range} -j RETURN
         %{ endfor ~}
         iptables -t nat -A POSTROUTING -o $${IF_NAME} -j MASQUERADE
@@ -170,6 +212,7 @@ runcmd:
       %{ endif ~}
       %{ endfor ~}
 
+      # Invoke via `bash` because `/var/run` (`/run` tmpfs) is mounted `noexec` on COS.
       echo "Starting continuous PBR update for eth$${i} in the background."
       nohup bash /var/run/nva/update-pbrs.sh $i >> /var/log/nva-pbr-update.log 2>&1 &
     done

@@ -25,15 +25,23 @@ locals {
     for vpc_key, vpc_config in local.vpcs : [
       for router_key, router_config in try(vpc_config.routers, {}) : {
         "${vpc_key}/${router_key}" = merge(router_config, {
-          name              = replace("${vpc_key}/${router_key}", "/", "-")
-          vpc_self_link     = vpc_key
-          project_id        = vpc_config.project_id
-          custom_advertise  = try(router_config.custom_advertise, {})
-          advertise_mode    = try(router_config.custom_advertise != null, false) ? "CUSTOM" : "DEFAULT"
-          advertised_groups = try(router_config.custom_advertise.all_subnets, false) ? ["ALL_SUBNETS"] : []
-          keepalive         = try(router_config.keepalive, null)
-          asn               = try(router_config.asn, null)
-          route_policies    = try(router_config.route_policies, {})
+          name             = replace("${vpc_key}/${router_key}", "/", "-")
+          vpc_self_link    = vpc_key
+          project_id       = vpc_config.project_id
+          custom_advertise = try(router_config.custom_advertise, {})
+          advertise_mode = (
+            try(router_config.custom_advertise != null, false)
+            ? "CUSTOM"
+            : "DEFAULT"
+          )
+          advertised_groups = (
+            try(router_config.custom_advertise.all_subnets, false)
+            ? ["ALL_SUBNETS"]
+            : []
+          )
+          keepalive      = try(router_config.keepalive, null)
+          asn            = try(router_config.asn, null)
+          route_policies = try(router_config.route_policies, {})
         })
       }
     ]
@@ -95,7 +103,8 @@ locals {
             router_appliance_instance = lookup(
               local.ctx_nva_instances.self_links,
               trimprefix(
-                try(peer_config.router_appliance_instance, ""), "$nva_instances:"
+                try(peer_config.router_appliance_instance, ""),
+                "$nva_instances:"
               ),
               try(peer_config.router_appliance_instance, null)
             )
@@ -208,7 +217,11 @@ resource "google_compute_router_route_policy" "default" {
   region   = google_compute_router.default[each.value.router_key].region
   router   = google_compute_router.default[each.value.router_key].name
   name     = each.value.name
-  type     = each.value.type == "IMPORT" ? "ROUTE_POLICY_TYPE_IMPORT" : each.value.type == "EXPORT" ? "ROUTE_POLICY_TYPE_EXPORT" : null
+  type = (
+    each.value.type == "IMPORT"
+    ? "ROUTE_POLICY_TYPE_IMPORT"
+    : each.value.type == "EXPORT" ? "ROUTE_POLICY_TYPE_EXPORT" : null
+  )
 
   dynamic "terms" {
     for_each = each.value.terms
@@ -238,11 +251,17 @@ resource "google_compute_router_route_policy" "default" {
       error_message = "Route policy type must be either 'IMPORT' or 'EXPORT'."
     }
     precondition {
-      condition     = length(each.value.terms) == length(distinct([for t in each.value.terms : t.priority]))
+      condition = (
+        length(each.value.terms) ==
+        length(distinct([for t in each.value.terms : t.priority]))
+      )
       error_message = "Route policy term priorities must be unique."
     }
     precondition {
-      condition     = alltrue([for t in each.value.terms : t.priority >= 0 && t.priority < 2147483648])
+      condition = alltrue([
+        for t in each.value.terms :
+        t.priority >= 0 && t.priority < 2147483648
+      ])
       error_message = "Route policy term priority must be between 0 (inclusive) and 2147483648 (exclusive)."
     }
   }
@@ -343,11 +362,15 @@ resource "google_compute_router_peer" "default" {
   enable = each.value.enable
   export_policies = [
     for p in each.value.export_policies :
-    google_compute_router_route_policy.default["${each.value.router_key}/${p}"].name
+    google_compute_router_route_policy.default[
+      "${each.value.router_key}/${p}"
+    ].name
   ]
   import_policies = [
     for p in each.value.import_policies :
-    google_compute_router_route_policy.default["${each.value.router_key}/${p}"].name
+    google_compute_router_route_policy.default[
+      "${each.value.router_key}/${p}"
+    ].name
   ]
   lifecycle {
     replace_triggered_by = [terraform_data.router_peer_instances[each.key]]
@@ -357,8 +380,12 @@ resource "google_compute_router_peer" "default" {
     }
     precondition {
       condition = alltrue([
-        for p in concat(each.value.export_policies, each.value.import_policies) :
-        contains(keys(local.router_route_policies), "${each.value.router_key}/${p}")
+        for p in concat(
+          each.value.export_policies, each.value.import_policies
+        ) :
+        contains(
+          keys(local.router_route_policies), "${each.value.router_key}/${p}"
+        )
       ])
       error_message = "Peer ${each.key}: references a route policy not defined on its router."
     }

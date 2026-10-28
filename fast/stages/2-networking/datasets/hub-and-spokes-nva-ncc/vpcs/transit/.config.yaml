@@ -36,10 +36,21 @@ routers:
         subnet: $subnets:transit/europe-west1/transit-primary
         ip_address: 10.64.16.253
         redundant_interface: intf-0
+    # Cloud Router IMPORT policies for the highest-ranked region (`primary` /
+    # `europe-west1`, rank 1):
+    # - Because no region is ranked above `primary`, a single catch-all term
+    #   (`0.0.0.0/0.orLonger()`) sets `MED = 100` on `import-b` (active zone `b`
+    #   appliance) and `MED = 150` on `import-c` (standby zone `c` appliance)
+    #   for all prefixes (`0.0.0.0/0`, on-premises, `europe-west1` workloads,
+    #   and `europe-west8` workloads).
+    # - `europe-west1` workloads therefore always send same-region east-west,
+    #   inter-region east-west, and north-south/internet traffic through
+    #   `primary-b-0` (or `primary-c-0` on failover).
     route_policies:
       import-b:
         type: IMPORT
         terms:
+          # Catch-all: active instance preferred (MED 100) for all prefixes
           - priority: 20
             match:
               expression: "destination.inAnyRange(prefix('0.0.0.0/0').orLonger())"
@@ -49,6 +60,7 @@ routers:
       import-c:
         type: IMPORT
         terms:
+          # Catch-all: standby instance (MED 150) for all prefixes
           - priority: 20
             match:
               expression: "destination.inAnyRange(prefix('0.0.0.0/0').orLonger())"
@@ -95,18 +107,39 @@ routers:
         subnet: $subnets:transit/europe-west8/transit-secondary
         ip_address: 10.64.17.253
         redundant_interface: intf-0
+    # Cloud Router IMPORT policies for the lower-ranked region (`secondary` /
+    # `europe-west8`, rank 2):
+    # - Without regional tie-breaking on the `transit` hub, inter-region
+    #   east-west flows (`europe-west1` <-> `europe-west8`) would be asymmetric:
+    #   `europe-west1` -> `europe-west8` would traverse `primary-b-0` (local
+    #   MED 100 in `ew1`), while the `europe-west8` -> `europe-west1` reply
+    #   would traverse `secondary-b-0` (local MED 100 in `ew8`).
+    # - Term 10 prevents this by demoting the higher-ranked (`europe-west1`)
+    #   workload prefixes (`10.65.0.0/24`, `10.66.0.0/24`) to `10100` (`import-b`)
+    #   and `10150` (`import-c`). As a result, `europe-west8` workloads see
+    #   `primary-b-0`'s route (`100 + ~215 inter-region cost = 315`) as better
+    #   than `secondary-b-0`'s demoted route (`10100`), forcing both legs of
+    #   inter-region east-west traffic through `primary-b-0` (and falling back
+    #   to `secondary-b-0` only if both `europe-west1` NVAs are down).
+    # - Term 20 sets `MED = 100` (`import-b`) / `150` (`import-c`) for all other
+    #   prefixes (`europe-west8` subnets `10.65.1.0/24` and `10.66.1.0/24`,
+    #   on-premises, and `0.0.0.0/0`), so same-region `europe-west8` east-west
+    #   and `europe-west8` north-south/internet flows stay local on
+    #   `secondary-b-0`.
     route_policies:
       import-b:
         type: IMPORT
         terms:
-          # workload prefixes of higher ranked regions: their appliances handle
-          # inter-region east-west traffic in both directions
+          # Term 10: demote higher-ranked region (`ew1`) workload subnets (+10000)
+          # so inter-region east-west flows use `ew1`'s NVA in both directions
           - priority: 10
             match:
               expression: "destination.inAnyRange([prefix('10.65.0.0/24').orLonger(), prefix('10.66.0.0/24').orLonger()])"
             actions:
               - expression: med.set(10100)
               - expression: accept()
+          # Term 20: local (`ew8`) workloads, on-premises, and default route ->
+          # active local appliance preferred (MED 100)
           - priority: 20
             match:
               expression: "destination.inAnyRange(prefix('0.0.0.0/0').orLonger())"
@@ -116,14 +149,16 @@ routers:
       import-c:
         type: IMPORT
         terms:
-          # workload prefixes of higher ranked regions: their appliances handle
-          # inter-region east-west traffic in both directions
+          # Term 10: demote higher-ranked region (`ew1`) workload subnets (+10000)
+          # on the standby appliance (MED 10150)
           - priority: 10
             match:
               expression: "destination.inAnyRange([prefix('10.65.0.0/24').orLonger(), prefix('10.66.0.0/24').orLonger()])"
             actions:
               - expression: med.set(10150)
               - expression: accept()
+          # Term 20: local (`ew8`) workloads, on-premises, and default route ->
+          # standby local appliance (MED 150)
           - priority: 20
             match:
               expression: "destination.inAnyRange(prefix('0.0.0.0/0').orLonger())"

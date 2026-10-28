@@ -14,7 +14,6 @@
 
 # yaml-language-server: $schema=../../../schemas/project.schema.json
 
-
 name: dev-net-spoke-0
 parent: $folder_ids:networking/dev
 services:

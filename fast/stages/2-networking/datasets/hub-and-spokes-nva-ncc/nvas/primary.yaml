@@ -36,12 +36,20 @@ auto_instance_config:
         - 192.168.0.0/16
         - 100.64.0.0/10
     # nic1: transit VPC; never accept a default route from the workload side.
-    # Every appliance originates every workload prefix; which region's
-    # appliances carry a flow is decided by the Cloud Router import policies
+    # `routes` and `advertise` serve distinct data-plane vs. control-plane roles:
+    # - `routes` (data plane / guest Linux kernel FIB): installs static kernel
+    #   routes for the workload `/16` supernets via the `transit` subnet gateway
+    #   on `eth1`, so the NVA forwards packets for `10.65.0.0/16` and
+    #   `10.66.0.0/16` out `eth1` (required because FRR prefers its own
+    #   originated `network` statements over eBGP routes from Cloud Router and
+    #   therefore installs no BGP route in the kernel for advertised prefixes).
+    # - `advertise` (control plane / FRR BGP `network` origination): originates
+    #   the four workload `/24` subnets into BGP toward all Cloud Routers on both
+    #   `routing` and `transit` (required because edge spokes in the `transit`
+    #   STAR hub do not exchange subnet routes directly, and Cloud Router import
+    #   policies need every NVA to advertise every workload prefix so they can
+    #   rank active/standby and regional paths).
     - network: $networks:transit
-      # workload supernets reachable through the transit VPC, installed as
-      # static routes via the subnet gateway so that the appliance forwards
-      # to them regardless of what the Cloud Router advertises
       routes:
         - 10.65.0.0/16
         - 10.66.0.0/16

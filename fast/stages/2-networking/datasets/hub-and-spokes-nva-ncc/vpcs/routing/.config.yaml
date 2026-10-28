@@ -50,18 +50,32 @@ routers:
         subnet: $subnets:routing/europe-west1/routing-primary
         ip_address: 10.64.0.253
         redundant_interface: intf-0
+    # Cloud Router IMPORT policies controlling north-south return routing:
+    # - Active/Standby within the region: `import-b` (applied to zone `b` NVA
+    #   peers) sets a base MED of 100 and `import-c` (applied to zone `c` NVA
+    #   peers) sets 150, so `primary-b-0` is always preferred over `primary-c-0`
+    #   and flows stay symmetric on a single stateful instance without session
+    #   sync.
+    # - Regional affinity across global routing: Term 10 matches this region's
+    #   own workload subnets (`10.65.0.0/24`, `10.66.0.0/24` in `europe-west1`)
+    #   and keeps the base MED (`100` / `150`). Term 20 matches all other
+    #   prefixes (`0.0.0.0/0.orLonger()`, i.e. remote-region workload subnets)
+    #   and adds +10000 (`10100` / `10150`), so the `routing` VPC prefers the
+    #   remote region's own NVAs (`100 + ~215 inter-region cost < 10100`) for
+    #   traffic to remote workloads and only falls back to local NVAs if the
+    #   remote region's appliances are all down.
     route_policies:
       import-b:
         type: IMPORT
         terms:
-          # workload prefixes of this region: local appliance preferred
+          # Term 10: local-region workload subnets -> active base MED (100)
           - priority: 10
             match:
               expression: "destination.inAnyRange([prefix('10.65.0.0/24').orLonger(), prefix('10.66.0.0/24').orLonger()])"
             actions:
               - expression: med.set(100)
               - expression: accept()
-          # anything else is reached through the appliances of its own region
+          # Term 20: remote-region prefixes -> demoted (+10000) to cross-region backup
           - priority: 20
             match:
               expression: "destination.inAnyRange(prefix('0.0.0.0/0').orLonger())"
@@ -71,14 +85,14 @@ routers:
       import-c:
         type: IMPORT
         terms:
-          # workload prefixes of this region: local appliance preferred
+          # Term 10: local-region workload subnets -> standby base MED (150)
           - priority: 10
             match:
               expression: "destination.inAnyRange([prefix('10.65.0.0/24').orLonger(), prefix('10.66.0.0/24').orLonger()])"
             actions:
               - expression: med.set(150)
               - expression: accept()
-          # anything else is reached through the appliances of its own region
+          # Term 20: remote-region prefixes -> demoted (+10000) to cross-region backup
           - priority: 20
             match:
               expression: "destination.inAnyRange(prefix('0.0.0.0/0').orLonger())"
@@ -129,18 +143,23 @@ routers:
         subnet: $subnets:routing/europe-west8/routing-secondary
         ip_address: 10.64.1.253
         redundant_interface: intf-0
+    # Same IMPORT policy structure for the secondary region (`europe-west8`):
+    # prefers local NVAs (`import-b` active at 100, `import-c` standby at 150)
+    # for `europe-west8` workload subnets (`10.65.1.0/24`, `10.66.1.0/24`), and
+    # demotes all other prefixes to 10100 / 10150 so traffic to `europe-west1`
+    # workloads uses the `europe-west1` NVAs unless both `europe-west1` NVAs fail.
     route_policies:
       import-b:
         type: IMPORT
         terms:
-          # workload prefixes of this region: local appliance preferred
+          # Term 10: local-region workload subnets -> active base MED (100)
           - priority: 10
             match:
               expression: "destination.inAnyRange([prefix('10.65.1.0/24').orLonger(), prefix('10.66.1.0/24').orLonger()])"
             actions:
               - expression: med.set(100)
               - expression: accept()
-          # anything else is reached through the appliances of its own region
+          # Term 20: remote-region prefixes -> demoted (+10000) to cross-region backup
           - priority: 20
             match:
               expression: "destination.inAnyRange(prefix('0.0.0.0/0').orLonger())"
@@ -150,14 +169,14 @@ routers:
       import-c:
         type: IMPORT
         terms:
-          # workload prefixes of this region: local appliance preferred
+          # Term 10: local-region workload subnets -> standby base MED (150)
           - priority: 10
             match:
               expression: "destination.inAnyRange([prefix('10.65.1.0/24').orLonger(), prefix('10.66.1.0/24').orLonger()])"
             actions:
               - expression: med.set(150)
               - expression: accept()
-          # anything else is reached through the appliances of its own region
+          # Term 20: remote-region prefixes -> demoted (+10000) to cross-region backup
           - priority: 20
             match:
               expression: "destination.inAnyRange(prefix('0.0.0.0/0').orLonger())"

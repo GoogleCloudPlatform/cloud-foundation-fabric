@@ -14,7 +14,6 @@
 
 # yaml-language-server: $schema=../../../schemas/project.schema.json
 
-
 name: prod-net-spoke-0
 parent: $folder_ids:networking/prod
 services:
