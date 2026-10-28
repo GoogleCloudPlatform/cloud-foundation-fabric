@@ -103,7 +103,10 @@ module "automation-bucket" {
   encryption_key = lookup(each.value, "encryption_key", null)
   force_destroy  = each.value.force_destroy
   context = merge(local.ctx, {
-    project_ids     = local.ctx_project_ids
+    project_ids = merge(
+      local.ctx.project_ids,
+      { for k, v in module.projects-iam : k => v.project_id }
+    )
     iam_principals  = local.ctx_iam_principals
     storage_buckets = local.ctx.storage_buckets
     kms_keys        = merge(local.ctx.kms_keys, local.kms_keys, local.kms_autokeys)
@@ -157,10 +160,12 @@ module "automation-service-accounts" {
     "Service account ${each.value.name} for ${each.value.parent}."
   )
   context = merge(local.ctx, {
+    folder_ids  = local.ctx_folder_ids
     project_ids = local.ctx_project_ids
     iam_principals = merge(
       local.ctx.iam_principals,
-      local.projects_sas_iam_emails
+      local.projects_sas_iam_emails,
+      local.projects_service_agents
     )
     tag_vars = {
       projects     = merge(try(local.ctx.tag_vars.projects, {}), local.tag_vars_projects)
@@ -202,8 +207,13 @@ module "automation-service-accounts-iam" {
     use_data_source = false
   }
   context = merge(local.ctx, {
+    folder_ids          = local.ctx_folder_ids
+    project_ids         = local.ctx_project_ids
     service_account_ids = local.projects_sas_ids
   })
   iam_sa_bindings = lookup(each.value, "iam_sa_bindings", {})
   iam_sa_roles    = lookup(each.value, "iam_sa_roles", {})
+  depends_on = [
+    module.automation-service-accounts
+  ]
 }
