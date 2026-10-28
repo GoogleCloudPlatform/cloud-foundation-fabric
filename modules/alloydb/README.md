@@ -310,6 +310,7 @@ module "alloydb" {
   flags = {
     "alloydb.enable_pgaudit"            = "on"
     "alloydb.iam_authentication"        = "on"
+    "alloydb.iam_group_authentication"  = "on"
     idle_in_transaction_session_timeout = "900000"
     timezone                            = "'UTC'"
   }
@@ -327,11 +328,19 @@ module "alloydb" {
     user2 = {
       password = "mypassword"
     }
+    # IAM user
+    iam_user1 = {
+      type = "ALLOYDB_IAM_USER"
+    }
+    # IAM group
+    iam_group1 = {
+      type = "ALLOYDB_IAM_GROUP"
+    }
   }
 
   deletion_protection = false
 }
-# tftest modules=1 resources=5 inventory=custom.yaml e2e
+# tftest modules=1 resources=7 inventory=custom.yaml e2e
 ```
 
 ### CMEK encryption
