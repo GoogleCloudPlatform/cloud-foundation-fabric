@@ -489,7 +489,7 @@ module "vpc" {
 
 ### Subnet Factory
 
-The `net-vpc` module includes a subnet factory for massive creation of subnets leveraging one configuration file per subnet. The factory also supports proxy-only and PSC subnets via the `purpose` attribute. The `name` attribute is optional and defaults to the file name, allowing to use the same name for subnets in different regions. The `context` attribute of `var.factories_config` can optionally contain the map `regions`, which allows for the templatization of the `region` attribute (e.g. see `config/subnets/subnet-simple.yaml` below)
+The `net-vpc` module includes a subnet factory for massive creation of subnets leveraging one configuration file per subnet. The factory also supports proxy-only, PSC, and Private NAT subnets via the `proxy_only`, `psc`, and `private_nat` attributes. The `name` attribute is optional and defaults to the file name, allowing to use the same name for subnets in different regions. The `context` attribute of `var.factories_config` can optionally contain the map `regions`, which allows for the templatization of the `region` attribute (e.g. see `config/subnets/subnet-simple.yaml` below)
 
 ```hcl
 module "vpc" {
@@ -506,7 +506,7 @@ module "vpc" {
     subnets_folder = "config/subnets"
   }
 }
-# tftest files=subnet-simple,subnet-simple-2,subnet-detailed,subnet-proxy,subnet-proxy-global,subnet-psc,subnet-psc-detailed inventory=factory.yaml
+# tftest files=subnet-simple,subnet-simple-2,subnet-detailed,subnet-proxy,subnet-proxy-global,subnet-psc,subnet-psc-detailed,subnet-private-nat inventory=factory.yaml
 ```
 
 ```yaml
@@ -582,6 +582,14 @@ flow_logs_config:             # enable, set to empty map to use defaults
   metadata: "INCLUDE_ALL_METADATA"
 
 # tftest-file id=subnet-psc-detailed path=config/subnets/subnet-psc-detailed.yaml schema=subnet.schema.json
+```
+
+```yaml
+region: europe-west4
+ip_cidr_range: 10.3.0.0/24
+private_nat: true
+
+# tftest-file id=subnet-private-nat path=config/subnets/subnet-private-nat.yaml schema=subnet.schema.json
 ```
 
 ### Custom Routes

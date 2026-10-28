@@ -16,18 +16,18 @@ counts:
   google_compute_address: 3
   google_compute_network: 1
   google_compute_route: 3
-  google_compute_router: 1
-  google_compute_router_nat: 1
+  google_compute_router: 2
+  google_compute_router_nat: 2
   google_compute_shared_vpc_host_project: 1
-  google_compute_subnetwork: 1
+  google_compute_subnetwork: 2
   google_logging_project_settings: 1
   google_project: 1
   google_project_iam_member: 8
   google_project_service: 10
   google_project_service_identity: 8
   google_storage_bucket_object: 2
-  modules: 7
-  resources: 43
+  modules: 8
+  resources: 46
   terraform_data: 2
 values:
   module.addresses["core/nat-static"].google_compute_address.external["core-nat-static-ip-0"]:
@@ -48,6 +48,42 @@ values:
     name: core-nat-static-ip-2
     project: fast-prod-net-core-0
     region: europe-west1
+  module.nat["core/nat-private"].google_compute_router.router[0]:
+    name: core-nat-private-nat
+    project: fast-prod-net-core-0
+    region: europe-west1
+  module.nat["core/nat-private"].google_compute_router_nat.nat:
+    enable_dynamic_port_allocation: True
+    enable_endpoint_independent_mapping: False
+    icmp_idle_timeout_sec: 30
+    log_config:
+      - enable: False
+        filter: ALL
+    max_ports_per_vm: 65536
+    name: core-nat-private
+    nat64_subnetwork: []
+    nat_ip_allocate_option: null
+    project: fast-prod-net-core-0
+    region: europe-west1
+    router: core-nat-private-nat
+    rules:
+      - action:
+          - source_nat_active_ips: []
+            source_nat_drain_ips: []
+            source_nat_drain_ranges: []
+        description: private nat hybrid rule
+        match: nexthop.is_hybrid
+        rule_number: 100
+    source_subnetwork_ip_ranges_to_nat: LIST_OF_SUBNETWORKS
+    subnetwork:
+      - secondary_ip_range_names: []
+        source_ip_ranges_to_nat:
+          - 'ALL_IP_RANGES'
+    tcp_established_idle_timeout_sec: 1200
+    tcp_time_wait_timeout_sec: 120
+    tcp_transitory_idle_timeout_sec: 30
+    type: PRIVATE
+    udp_idle_timeout_sec: 30
   module.nat["core/nat-static"].google_compute_router.router[0]:
     name: core-nat-static-nat
     project: fast-prod-net-core-0
@@ -76,3 +112,10 @@ values:
     tcp_transitory_idle_timeout_sec: 30
     type: PUBLIC
     udp_idle_timeout_sec: 30
+  module.vpc-factory.module.vpcs["core"].google_compute_subnetwork.private_nat["europe-west1/core-private-nat"]:
+    description: Private NAT subnet for core
+    ip_cidr_range: 10.71.1.0/24
+    name: core-private-nat
+    project: fast-prod-net-core-0
+    purpose: PRIVATE_NAT
+    region: europe-west1
