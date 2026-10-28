@@ -387,7 +387,7 @@
     - items: *string*
 - **iam_folder_roles**<a name="refs-iam_folder_roles"></a>: *object*
   <br>*additional properties: false*
-  - **`^[a-z0-9-]+$`**: *array*
+  - **`^(?:(folders/)?[a-z0-9-]+|\$folder_ids:[a-z0-9_/-]+)$`**: *array*
     - items: *string*
 - **iam_organization_roles**<a name="refs-iam_organization_roles"></a>: *object*
   <br>*additional properties: false*
@@ -395,15 +395,15 @@
     - items: *string*
 - **iam_project_roles**<a name="refs-iam_project_roles"></a>: *object*
   <br>*additional properties: false*
-  - **`^[a-z0-9-]+$`**: *array*
+  - **`^(?:([a-z0-9.]+:)?[a-z0-9-]+|\$project_ids:[a-z0-9_/-]+)$`**: *array*
     - items: *string*
 - **iam_sa_roles**<a name="refs-iam_sa_roles"></a>: *object*
   <br>*additional properties: false*
-  - **`^[a-z0-9-]+$`**: *array*
+  - **`^(?:\$service_account_ids:|projects/)`**: *array*
     - items: *string*
 - **iam_storage_roles**<a name="refs-iam_storage_roles"></a>: *object*
   <br>*additional properties: false*
-  - **`^[a-z0-9-]+$`**: *array*
+  - **`^(?:[a-z0-9_.-]+|\$storage_buckets:[a-z0-9_/-]+)$`**: *array*
     - items: *string*
 - **labels**<a name="refs-labels"></a>: *object*
   <br>*additional properties: false*

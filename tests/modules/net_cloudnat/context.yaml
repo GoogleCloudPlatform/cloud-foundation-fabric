@@ -25,7 +25,7 @@ values:
     timeouts: null
   google_compute_router_nat.nat:
     enable_dynamic_port_allocation: false
-    enable_endpoint_independent_mapping: true
+    enable_endpoint_independent_mapping: false
     icmp_idle_timeout_sec: 30
     initial_nat_ips: null
     log_config:
@@ -40,7 +40,17 @@ values:
     project: foo-test-0
     region: europe-west8
     router: test-nat
-    rules: []
+    rules:
+    - action:
+      - source_nat_active_ips:
+        - 35.10.10.10
+        source_nat_active_ranges:
+        - projects/foo-dev-net-spoke-0/regions/europe-west1/subnetworks/gce
+        source_nat_drain_ips: []
+        source_nat_drain_ranges: []
+      description: rule1
+      match: destination.ip == '8.8.8.8'
+      rule_number: 100
     source_subnetwork_ip_ranges_to_nat: LIST_OF_SUBNETWORKS
     source_subnetwork_ip_ranges_to_nat64: null
     subnetwork:

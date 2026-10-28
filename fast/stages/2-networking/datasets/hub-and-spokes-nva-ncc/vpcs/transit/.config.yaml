@@ -1,0 +1,196 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# yaml-language-server: $schema=../../../../schemas/vpc.schema.json
+
+# Transit VPC: hosts the NVA nic1 and the transit-side router appliance
+# routers, which learn the workload VPC spoke subnets from the transit hub and
+# advertise them to the NVAs. Import policies prefer the local instances (b
+# active, c standby) for everything, except that regions are ranked (primary
+# first) and the workload prefixes of higher ranked regions are demoted, so
+# that inter-region east-west flows use the higher ranked region's appliances
+# in both directions and fall back to the local ones only when those are gone.
+project_id: $project_ids:net-core-0
+name: transit
+routing_mode: GLOBAL
+routers:
+  ra-primary:
+    region: $locations:primary
+    asn: 64515
+    interfaces:
+      intf-0:
+        subnet: $subnets:transit/europe-west1/transit-primary
+        ip_address: 10.64.16.252
+      intf-1:
+        subnet: $subnets:transit/europe-west1/transit-primary
+        ip_address: 10.64.16.253
+        redundant_interface: intf-0
+    # Cloud Router IMPORT policies for the highest-ranked region (`primary` /
+    # `europe-west1`, rank 1):
+    # - Because no region is ranked above `primary`, a single catch-all term
+    #   (`0.0.0.0/0.orLonger()`) sets `MED = 100` on `import-b` (active zone `b`
+    #   appliance) and `MED = 150` on `import-c` (standby zone `c` appliance)
+    #   for all prefixes (`0.0.0.0/0`, on-premises, `europe-west1` workloads,
+    #   and `europe-west8` workloads).
+    # - `europe-west1` workloads therefore always send same-region east-west,
+    #   inter-region east-west, and north-south/internet traffic through
+    #   `primary-b-0` (or `primary-c-0` on failover).
+    route_policies:
+      import-b:
+        type: IMPORT
+        terms:
+          # Catch-all: active instance preferred (MED 100) for all prefixes
+          - priority: 20
+            match:
+              expression: "destination.inAnyRange(prefix('0.0.0.0/0').orLonger())"
+            actions:
+              - expression: med.set(100)
+              - expression: accept()
+      import-c:
+        type: IMPORT
+        terms:
+          # Catch-all: standby instance (MED 150) for all prefixes
+          - priority: 20
+            match:
+              expression: "destination.inAnyRange(prefix('0.0.0.0/0').orLonger())"
+            actions:
+              - expression: med.set(150)
+              - expression: accept()
+    peers:
+      primary-b-0:
+        interface: intf-0
+        asn: 64513
+        address: $nva_addresses:primary-b-0/transit
+        router_appliance_instance: $nva_instances:primary-b-0
+        import_policies:
+          - import-b
+      primary-b-1:
+        interface: intf-1
+        asn: 64513
+        address: $nva_addresses:primary-b-0/transit
+        router_appliance_instance: $nva_instances:primary-b-0
+        import_policies:
+          - import-b
+      primary-c-0:
+        interface: intf-0
+        asn: 64513
+        address: $nva_addresses:primary-c-0/transit
+        router_appliance_instance: $nva_instances:primary-c-0
+        import_policies:
+          - import-c
+      primary-c-1:
+        interface: intf-1
+        asn: 64513
+        address: $nva_addresses:primary-c-0/transit
+        router_appliance_instance: $nva_instances:primary-c-0
+        import_policies:
+          - import-c
+  ra-secondary:
+    region: $locations:secondary
+    asn: 64515
+    interfaces:
+      intf-0:
+        subnet: $subnets:transit/europe-west8/transit-secondary
+        ip_address: 10.64.17.252
+      intf-1:
+        subnet: $subnets:transit/europe-west8/transit-secondary
+        ip_address: 10.64.17.253
+        redundant_interface: intf-0
+    # Cloud Router IMPORT policies for the lower-ranked region (`secondary` /
+    # `europe-west8`, rank 2):
+    # - Without regional tie-breaking on the `transit` hub, inter-region
+    #   east-west flows (`europe-west1` <-> `europe-west8`) would be asymmetric:
+    #   `europe-west1` -> `europe-west8` would traverse `primary-b-0` (local
+    #   MED 100 in `ew1`), while the `europe-west8` -> `europe-west1` reply
+    #   would traverse `secondary-b-0` (local MED 100 in `ew8`).
+    # - Term 10 prevents this by demoting the higher-ranked (`europe-west1`)
+    #   workload prefixes (`10.65.0.0/24`, `10.66.0.0/24`) to `10100` (`import-b`)
+    #   and `10150` (`import-c`). As a result, `europe-west8` workloads see
+    #   `primary-b-0`'s route (`100 + ~215 inter-region cost = 315`) as better
+    #   than `secondary-b-0`'s demoted route (`10100`), forcing both legs of
+    #   inter-region east-west traffic through `primary-b-0` (and falling back
+    #   to `secondary-b-0` only if both `europe-west1` NVAs are down).
+    # - Term 20 sets `MED = 100` (`import-b`) / `150` (`import-c`) for all other
+    #   prefixes (`europe-west8` subnets `10.65.1.0/24` and `10.66.1.0/24`,
+    #   on-premises, and `0.0.0.0/0`), so same-region `europe-west8` east-west
+    #   and `europe-west8` north-south/internet flows stay local on
+    #   `secondary-b-0`.
+    route_policies:
+      import-b:
+        type: IMPORT
+        terms:
+          # Term 10: demote higher-ranked region (`ew1`) workload subnets (+10000)
+          # so inter-region east-west flows use `ew1`'s NVA in both directions
+          - priority: 10
+            match:
+              expression: "destination.inAnyRange([prefix('10.65.0.0/24').orLonger(), prefix('10.66.0.0/24').orLonger()])"
+            actions:
+              - expression: med.set(10100)
+              - expression: accept()
+          # Term 20: local (`ew8`) workloads, on-premises, and default route ->
+          # active local appliance preferred (MED 100)
+          - priority: 20
+            match:
+              expression: "destination.inAnyRange(prefix('0.0.0.0/0').orLonger())"
+            actions:
+              - expression: med.set(100)
+              - expression: accept()
+      import-c:
+        type: IMPORT
+        terms:
+          # Term 10: demote higher-ranked region (`ew1`) workload subnets (+10000)
+          # on the standby appliance (MED 10150)
+          - priority: 10
+            match:
+              expression: "destination.inAnyRange([prefix('10.65.0.0/24').orLonger(), prefix('10.66.0.0/24').orLonger()])"
+            actions:
+              - expression: med.set(10150)
+              - expression: accept()
+          # Term 20: local (`ew8`) workloads, on-premises, and default route ->
+          # standby local appliance (MED 150)
+          - priority: 20
+            match:
+              expression: "destination.inAnyRange(prefix('0.0.0.0/0').orLonger())"
+            actions:
+              - expression: med.set(150)
+              - expression: accept()
+    peers:
+      secondary-b-0:
+        interface: intf-0
+        asn: 64513
+        address: $nva_addresses:secondary-b-0/transit
+        router_appliance_instance: $nva_instances:secondary-b-0
+        import_policies:
+          - import-b
+      secondary-b-1:
+        interface: intf-1
+        asn: 64513
+        address: $nva_addresses:secondary-b-0/transit
+        router_appliance_instance: $nva_instances:secondary-b-0
+        import_policies:
+          - import-b
+      secondary-c-0:
+        interface: intf-0
+        asn: 64513
+        address: $nva_addresses:secondary-c-0/transit
+        router_appliance_instance: $nva_instances:secondary-c-0
+        import_policies:
+          - import-c
+      secondary-c-1:
+        interface: intf-1
+        asn: 64513
+        address: $nva_addresses:secondary-c-0/transit
+        router_appliance_instance: $nva_instances:secondary-c-0
+        import_policies:
+          - import-c

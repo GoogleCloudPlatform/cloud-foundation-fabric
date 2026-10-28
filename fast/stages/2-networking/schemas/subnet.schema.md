@@ -30,6 +30,7 @@
 - ⁺**region**: *string*
 - **psc**: *boolean*
 - **proxy_only**: *boolean*
+- **private_nat**: *boolean*
 - **secondary_ip_ranges**: *object*
   <br>*additional properties: object*
 - **iam**: *reference([iam](#refs-iam))*
