@@ -12,7 +12,9 @@ workforce_identity_pools = {
             issuer_uri = "https://sts.windows.net/abcd01234/"
             client_id  = "https://analysis.windows.net/powerbi/connector/GoogleBigQuery"
             client_secret = {
-              file = "./wfif-secret/workforce_identity_client_secret_file.txt"
+              value      = "./wfif-secret/workforce_identity_client_secret_file.txt"
+              is_file    = true
+              wo_version = 1
             }
             web_sso_config = {
               response_type             = "CODE"

@@ -112,7 +112,27 @@ resource "google_iam_workforce_pool_provider" "default" {
         )
         content {
           value {
-            plain_text = each.value.identity_provider.oidc.client_secret.value == null ? trimspace(file("${each.value.identity_provider.oidc.client_secret.file}")) : each.value.identity_provider.oidc.client_secret.value
+            plain_text = (
+              try(each.value.identity_provider.oidc.client_secret.wo_version, null) != null
+              ? null
+              : (
+                try(each.value.identity_provider.oidc.client_secret.is_file, null) == true
+                ? file(each.value.identity_provider.oidc.client_secret.value)
+                : each.value.identity_provider.oidc.client_secret.value
+              )
+            )
+            plain_text_wo = (
+              try(each.value.identity_provider.oidc.client_secret.wo_version, null) == null
+              ? null
+              : (
+                try(each.value.identity_provider.oidc.client_secret.is_file, null) == true
+                ? file(each.value.identity_provider.oidc.client_secret.value)
+                : each.value.identity_provider.oidc.client_secret.value
+              )
+            )
+            plain_text_wo_version = try(
+              each.value.identity_provider.oidc.client_secret.wo_version, null
+            )
           }
         }
       }

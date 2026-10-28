@@ -552,15 +552,23 @@
                                       "properties": {
                                         "value": {
                                           "type": "string",
-                                          "description": "The client secret (optional)."
+                                          "description": "The client secret or the path to a file containing it. (optional)"
                                         }
                                       }
                                     },
                                     {
                                       "properties": {
-                                        "file": {
-                                          "type": "string",
-                                          "description": "Path to a file containing the client secret (optional)."
+                                        "is_file": {
+                                          "type": "boolean",
+                                          "description": "Indicates if the value is a file path. (optional)"
+                                        }
+                                      }
+                                    },
+                                    {
+                                      "properties": {
+                                        "wo_version": {
+                                          "type": "number",
+                                          "description": "The wo_version of the client secret, uses write-only attribute if set. (optional)"
                                         }
                                       }
                                     }

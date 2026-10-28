@@ -41,8 +41,9 @@ variable "workforce_identity_pools" {
           issuer_uri = string
           client_id  = string
           client_secret = optional(object({
-            value = optional(string)
-            file  = optional(string)
+            value      = optional(string)
+            is_file    = optional(bool, false)
+            wo_version = optional(number)
           }))
           jwks_json = optional(string)
           web_sso_config = optional(object({
