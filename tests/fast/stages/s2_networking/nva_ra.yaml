@@ -679,7 +679,6 @@ values:
       nic_type: null
       queue_count: null
       security_policy: null
-      service_class_id: null
       vlan: null
     - access_config: []
       alias_ip_range: []
@@ -689,7 +688,6 @@ values:
       nic_type: null
       queue_count: null
       security_policy: null
-      service_class_id: null
       vlan: null
     network_performance_config: []
     params: []
