@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="app.diagrams.net" modified="2026-10-28T12:00:00.000Z" agent="fast-net-diagrammer-oss" version="24.0.0" type="device">
+  <diagram id="classic_topology" name="classic (topology)">
+    <mxGraphModel dx="1600" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="3000" pageHeight="4000" math="0" shadow="1">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="zone_GoogleCloudRoot" value="Google Cloud" style="swimlane;fontStyle=1;horizontal=1;startSize=32;collapsible=1;rounded=1;fillColor=#f8fafd;strokeColor=#c2d7f5;strokeWidth=1.5;fontColor=#3c4043;fontSize=14;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="338.0" y="32.0" width="784.0" height="764.0" as="geometry" />
+        </mxCell>
+        <mxCell id="zone_Proj_net_core_0" value="Project: net-core-0" style="swimlane;fontStyle=1;horizontal=1;startSize=32;collapsible=1;rounded=1;fillColor=#e8f0fe;strokeColor=#8ab4f8;strokeWidth=1.5;fontColor=#202124;fontSize=14;shadow=1;" vertex="1" parent="zone_GoogleCloudRoot">
+          <mxGeometry x="24.0" y="152.0" width="340.0" height="526.0" as="geometry" />
+        </mxCell>
+        <mxCell id="zone_CoreLeftVpcs" value="" style="group;html=1;pointerEvents=0;fillColor=none;strokeColor=none;" vertex="1" parent="zone_Proj_net_core_0">
+          <mxGeometry x="18.0" y="66.0" width="304.0" height="442.0" as="geometry" />
+        </mxCell>
+        <mxCell id="zone_Vpc_hub" value="VPC: hub" style="swimlane;fontStyle=1;horizontal=1;startSize=32;collapsible=1;rounded=1;fillColor=#fef7e0;strokeColor=#fbbc04;strokeWidth=1.5;fontColor=#202124;fontSize=14;shadow=1;" vertex="1" parent="zone_CoreLeftVpcs">
+          <mxGeometry x="0.0" y="0.0" width="304.0" height="442.0" as="geometry" />
+        </mxCell>
+        <mxCell id="card_vpn_hub_to_onprem" value="&lt;b&gt;[CloudVPN] HA VPN: to-onprem&lt;/b&gt;&lt;br&gt;&lt;font color=&#x27;#5f6368&#x27; size=&#x27;1&#x27;&gt;Router: hybrid-connectivity-router&lt;/font&gt;" style="rounded=1;arcSize=15;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#dadce0;strokeWidth=1.0;fontColor=#202124;fontSize=12;shadow=1;align=left;spacingLeft=12;" vertex="1" parent="zone_Vpc_hub">
+          <mxGeometry x="28.0" y="76.0" width="248.0" height="58.0" as="geometry" />
+        </mxCell>
+        <mxCell id="card_vlan_hub" value="&lt;b&gt;[CloudInterconnect] VLAN Attachments&lt;/b&gt;&lt;br&gt;&lt;font color=&#x27;#5f6368&#x27; size=&#x27;1&#x27;&gt;to-onprem-vlan-0, to-onprem-vlan-1&lt;/font&gt;" style="rounded=1;arcSize=15;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#dadce0;strokeWidth=1.0;fontColor=#202124;fontSize=12;shadow=1;align=left;spacingLeft=12;" vertex="1" parent="zone_Vpc_hub">
+          <mxGeometry x="28.0" y="146.0" width="248.0" height="58.0" as="geometry" />
+        </mxCell>
+        <mxCell id="card_rtr_hub_hybrid_connectivity_router" value="&lt;b&gt;[CloudRouter] Router: hybrid-connectivity-router&lt;/b&gt;&lt;br&gt;&lt;font color=&#x27;#5f6368&#x27; size=&#x27;1&#x27;&gt;ASN 64514 (ew1)&lt;/font&gt;" style="rounded=1;arcSize=15;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#dadce0;strokeWidth=1.0;fontColor=#202124;fontSize=12;shadow=1;align=left;spacingLeft=12;" vertex="1" parent="zone_Vpc_hub">
+          <mxGeometry x="28.0" y="216.0" width="248.0" height="58.0" as="geometry" />
+        </mxCell>
+        <mxCell id="card_peering_attachment_hub" value="&lt;b&gt;[VirtualPrivateCloud] VPC Peering&lt;/b&gt;&lt;br&gt;&lt;font color=&#x27;#5f6368&#x27; size=&#x27;1&#x27;&gt;Peers: dev, prod&lt;/font&gt;" style="rounded=1;arcSize=15;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#dadce0;strokeWidth=1.0;fontColor=#202124;fontSize=12;shadow=1;align=left;spacingLeft=12;" vertex="1" parent="zone_Vpc_hub">
+          <mxGeometry x="28.0" y="286.0" width="248.0" height="58.0" as="geometry" />
+        </mxCell>
+        <mxCell id="card_nat_hub" value="&lt;b&gt;[CloudNAT] Cloud NAT&lt;/b&gt;&lt;br&gt;&lt;font color=&#x27;#5f6368&#x27; size=&#x27;1&#x27;&gt;nat-ew8 (ew1)&lt;/font&gt;" style="rounded=1;arcSize=15;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#dadce0;strokeWidth=1.0;fontColor=#202124;fontSize=12;shadow=1;align=left;spacingLeft=12;" vertex="1" parent="zone_Vpc_hub">
+          <mxGeometry x="28.0" y="356.0" width="248.0" height="58.0" as="geometry" />
+        </mxCell>
+        <mxCell id="zone_SpokeProjectsCol" value="" style="group;html=1;pointerEvents=0;fillColor=none;strokeColor=none;" vertex="1" parent="zone_GoogleCloudRoot">
+          <mxGeometry x="420.0" y="90.0" width="340.0" height="650.0" as="geometry" />
+        </mxCell>
+        <mxCell id="zone_Proj_net_dev_0" value="Project: net-dev-0" style="swimlane;fontStyle=1;horizontal=1;startSize=32;collapsible=1;rounded=1;fillColor=#e8f0fe;strokeColor=#8ab4f8;strokeWidth=1.5;fontColor=#202124;fontSize=14;shadow=1;" vertex="1" parent="zone_SpokeProjectsCol">
+          <mxGeometry x="0.0" y="0.0" width="340.0" height="316.0" as="geometry" />
+        </mxCell>
+        <mxCell id="zone_Vpc_dev" value="VPC: dev" style="swimlane;fontStyle=1;horizontal=1;startSize=32;collapsible=1;rounded=1;fillColor=#fef7e0;strokeColor=#fbbc04;strokeWidth=1.5;fontColor=#202124;fontSize=14;shadow=1;" vertex="1" parent="zone_Proj_net_dev_0">
+          <mxGeometry x="18.0" y="66.0" width="304.0" height="232.0" as="geometry" />
+        </mxCell>
+        <mxCell id="card_peering_attachment_dev" value="&lt;b&gt;[VirtualPrivateCloud] VPC Peering&lt;/b&gt;&lt;br&gt;&lt;font color=&#x27;#5f6368&#x27; size=&#x27;1&#x27;&gt;Peers: hub&lt;/font&gt;" style="rounded=1;arcSize=15;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#dadce0;strokeWidth=1.0;fontColor=#202124;fontSize=12;shadow=1;align=left;spacingLeft=12;" vertex="1" parent="zone_Vpc_dev">
+          <mxGeometry x="28.0" y="76.0" width="248.0" height="58.0" as="geometry" />
+        </mxCell>
+        <mxCell id="card_nat_dev" value="&lt;b&gt;[CloudNAT] Cloud NAT&lt;/b&gt;&lt;br&gt;&lt;font color=&#x27;#5f6368&#x27; size=&#x27;1&#x27;&gt;nat-ew8 (ew1)&lt;/font&gt;" style="rounded=1;arcSize=15;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#dadce0;strokeWidth=1.0;fontColor=#202124;fontSize=12;shadow=1;align=left;spacingLeft=12;" vertex="1" parent="zone_Vpc_dev">
+          <mxGeometry x="28.0" y="146.0" width="248.0" height="58.0" as="geometry" />
+        </mxCell>
+        <mxCell id="zone_Proj_net_prod_0" value="Project: net-prod-0" style="swimlane;fontStyle=1;horizontal=1;startSize=32;collapsible=1;rounded=1;fillColor=#e8f0fe;strokeColor=#8ab4f8;strokeWidth=1.5;fontColor=#202124;fontSize=14;shadow=1;" vertex="1" parent="zone_SpokeProjectsCol">
+          <mxGeometry x="0.0" y="334.0" width="340.0" height="316.0" as="geometry" />
+        </mxCell>
+        <mxCell id="zone_Vpc_prod" value="VPC: prod" style="swimlane;fontStyle=1;horizontal=1;startSize=32;collapsible=1;rounded=1;fillColor=#fef7e0;strokeColor=#fbbc04;strokeWidth=1.5;fontColor=#202124;fontSize=14;shadow=1;" vertex="1" parent="zone_Proj_net_prod_0">
+          <mxGeometry x="18.0" y="66.0" width="304.0" height="232.0" as="geometry" />
+        </mxCell>
+        <mxCell id="card_peering_attachment_prod" value="&lt;b&gt;[VirtualPrivateCloud] VPC Peering&lt;/b&gt;&lt;br&gt;&lt;font color=&#x27;#5f6368&#x27; size=&#x27;1&#x27;&gt;Peers: hub&lt;/font&gt;" style="rounded=1;arcSize=15;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#dadce0;strokeWidth=1.0;fontColor=#202124;fontSize=12;shadow=1;align=left;spacingLeft=12;" vertex="1" parent="zone_Vpc_prod">
+          <mxGeometry x="28.0" y="76.0" width="248.0" height="58.0" as="geometry" />
+        </mxCell>
+        <mxCell id="card_nat_prod" value="&lt;b&gt;[CloudNAT] Cloud NAT&lt;/b&gt;&lt;br&gt;&lt;font color=&#x27;#5f6368&#x27; size=&#x27;1&#x27;&gt;nat-ew8 (ew1)&lt;/font&gt;" style="rounded=1;arcSize=15;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#dadce0;strokeWidth=1.0;fontColor=#202124;fontSize=12;shadow=1;align=left;spacingLeft=12;" vertex="1" parent="zone_Vpc_prod">
+          <mxGeometry x="28.0" y="146.0" width="248.0" height="58.0" as="geometry" />
+        </mxCell>
+        <mxCell id="zone_ExternalHybrid" value="" style="group;html=1;pointerEvents=0;fillColor=none;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="32.0" y="184.0" width="250.0" height="138.0" as="geometry" />
+        </mxCell>
+        <mxCell id="zone_SiteZone_onprem" value="On-Premises (onprem)" style="swimlane;fontStyle=1;horizontal=1;startSize=32;collapsible=1;rounded=1;fillColor=#fce8e6;strokeColor=#f6aea9;strokeWidth=1.5;fontColor=#202124;fontSize=14;shadow=1;" vertex="1" parent="zone_ExternalHybrid">
+          <mxGeometry x="0.0" y="0.0" width="250.0" height="138.0" as="geometry" />
+        </mxCell>
+        <mxCell id="card_site_onprem" value="&lt;b&gt;[Server] On-Premises Router&lt;/b&gt;&lt;br&gt;&lt;font color=&#x27;#5f6368&#x27; size=&#x27;1&#x27;&gt;ASN 64513&lt;/font&gt;" style="rounded=1;arcSize=15;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#dadce0;strokeWidth=1.0;fontColor=#202124;fontSize=12;shadow=1;align=left;spacingLeft=12;" vertex="1" parent="zone_SiteZone_onprem">
+          <mxGeometry x="30.0" y="64.0" width="190.0" height="58.0" as="geometry" />
+        </mxCell>
+        <mxCell id="edge_0" value="BGP" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=1.00;exitY=0.50;exitDx=0;exitDy=0;entryX=1.00;entryY=0.80;entryDx=0;entryDy=0;strokeColor=#1a73e8;strokeWidth=2.0;startArrow=block;startFill=1;endArrow=block;endFill=1;fontColor=#1e293b;fontSize=11;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="card_vpn_hub_to_onprem" target="card_rtr_hub_hybrid_connectivity_router">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="691.0" y="355.0" />
+              <mxPoint x="691.0" y="512.4" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge_1" value="BGP" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=1.00;exitY=0.50;exitDx=0;exitDy=0;entryX=1.00;entryY=0.20;entryDx=0;entryDy=0;strokeColor=#1a73e8;strokeWidth=2.0;dashed=1;dashPattern=6 4;startArrow=block;startFill=1;endArrow=block;endFill=1;fontColor=#1e293b;fontSize=11;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="card_vlan_hub" target="card_rtr_hub_hybrid_connectivity_router">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="676.0" y="425.0" />
+              <mxPoint x="676.0" y="477.6" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge_2" value="HA VPN" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=1.00;exitY=0.20;exitDx=0;exitDy=0;entryX=0.00;entryY=0.50;entryDx=0;entryDy=0;strokeColor=#d93025;strokeWidth=2.0;startArrow=block;startFill=1;endArrow=block;endFill=1;fontColor=#1e293b;fontSize=11;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="card_site_onprem" target="card_vpn_hub_to_onprem">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="330.0" y="259.6" />
+              <mxPoint x="330.0" y="355.0" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge_3" value="Interconnect" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=1.00;exitY=0.80;exitDx=0;exitDy=0;entryX=0.00;entryY=0.50;entryDx=0;entryDy=0;strokeColor=#d93025;strokeWidth=2.0;dashed=1;dashPattern=6 4;startArrow=block;startFill=1;endArrow=block;endFill=1;fontColor=#1e293b;fontSize=11;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="card_site_onprem" target="card_vlan_hub">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="341.0" y="294.4" />
+              <mxPoint x="341.0" y="425.0" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge_4" value="VPC Peering" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.00;exitY=0.50;exitDx=0;exitDy=0;entryX=1.00;entryY=0.20;entryDx=0;entryDy=0;strokeColor=#1e8e3e;strokeWidth=2.0;startArrow=block;startFill=1;endArrow=block;endFill=1;fontColor=#1e293b;fontSize=11;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="card_peering_attachment_dev" target="card_peering_attachment_hub">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="730.0" y="293.0" />
+              <mxPoint x="730.0" y="547.6" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge_5" value="VPC Peering" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=1.00;exitY=0.80;exitDx=0;exitDy=0;entryX=0.00;entryY=0.50;entryDx=0;entryDy=0;strokeColor=#1e8e3e;strokeWidth=2.0;startArrow=block;startFill=1;endArrow=block;endFill=1;fontColor=#1e293b;fontSize=11;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="card_peering_attachment_hub" target="card_peering_attachment_prod">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="730.0" y="582.4" />
+              <mxPoint x="730.0" y="627.0" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

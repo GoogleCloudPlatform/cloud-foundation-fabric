@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="app.diagrams.net" modified="2026-10-28T12:00:00.000Z" agent="fast-net-diagrammer-oss" version="24.0.0" type="device">
+  <diagram id="hub-and-spokes-vpns_dns" name="hub-and-spokes-vpns (dns)">
+    <mxGraphModel dx="1600" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="3000" pageHeight="4000" math="0" shadow="1">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="zone_GoogleCloudRoot" value="Google Cloud" style="swimlane;fontStyle=1;horizontal=1;startSize=32;collapsible=1;rounded=1;fillColor=#f8fafd;strokeColor=#c2d7f5;strokeWidth=1.5;fontColor=#3c4043;fontSize=14;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="316.0" y="32.0" width="1792.0" height="592.0" as="geometry" />
+        </mxCell>
+        <mxCell id="zone_DnsProj_net_core_0" value="Project: net-core-0" style="swimlane;fontStyle=1;horizontal=1;startSize=32;collapsible=1;rounded=1;fillColor=#e8f0fe;strokeColor=#8ab4f8;strokeWidth=1.5;fontColor=#202124;fontSize=14;shadow=1;" vertex="1" parent="zone_GoogleCloudRoot">
+          <mxGeometry x="24.0" y="160.0" width="1020.0" height="338.0" as="geometry" />
+        </mxCell>
+        <mxCell id="zone_CoreUpstreamDns" value="Hub DNS Zones &amp; RPZ" style="swimlane;fontStyle=1;horizontal=1;startSize=32;collapsible=1;rounded=1;fillColor=#ffffff;strokeColor=#cbd5e1;strokeWidth=1.0;fontColor=#202124;fontSize=14;shadow=1;dashed=1;" vertex="1" parent="zone_DnsProj_net_core_0">
+          <mxGeometry x="18.0" y="66.0" width="272.0" height="254.0" as="geometry" />
+        </mxCell>
+        <mxCell id="card_zone_net_core_0_fwd_root" value="&lt;b&gt;[CloudDNS] FWD Zone: onprem.&lt;/b&gt;&lt;br&gt;&lt;font color=&#x27;#5f6368&#x27; size=&#x27;1&#x27;&gt;Target IPs: 8.8.8.8, 1.1.1.1&lt;/font&gt;" style="rounded=1;arcSize=15;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d93025;strokeWidth=1.8;fontColor=#202124;fontSize=12;shadow=1;align=left;spacingLeft=12;" vertex="1" parent="zone_CoreUpstreamDns">
+          <mxGeometry x="12.0" y="44.0" width="248.0" height="58.0" as="geometry" />
+        </mxCell>
+        <mxCell id="card_zone_net_core_0_pvt_test" value="&lt;b&gt;[CloudDNS] PVT Zone: test.&lt;/b&gt;&lt;br&gt;&lt;font color=&#x27;#5f6368&#x27; size=&#x27;1&#x27;&gt;Bound VPCs: hub&lt;/font&gt;" style="rounded=1;arcSize=15;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#1e8e3e;strokeWidth=1.8;fontColor=#202124;fontSize=12;shadow=1;align=left;spacingLeft=12;" vertex="1" parent="zone_CoreUpstreamDns">
+          <mxGeometry x="12.0" y="114.0" width="248.0" height="58.0" as="geometry" />
+        </mxCell>
+        <mxCell id="card_rpz_net_core_0_net_core_0" value="&lt;b&gt;[CloudDNS] RPZ: net-core-0 (42 PGA rules)&lt;/b&gt;&lt;br&gt;&lt;font color=&#x27;#5f6368&#x27; size=&#x27;1&#x27;&gt;Bound VPCs: hub, prod, dev&lt;/font&gt;" style="rounded=1;arcSize=15;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#007b83;strokeWidth=1.8;fontColor=#202124;fontSize=12;shadow=1;align=left;spacingLeft=12;" vertex="1" parent="zone_CoreUpstreamDns">
+          <mxGeometry x="12.0" y="184.0" width="248.0" height="58.0" as="geometry" />
+        </mxCell>
+        <mxCell id="zone_CoreHubVpcCol" value="" style="group;html=1;pointerEvents=0;fillColor=none;strokeColor=none;" vertex="1" parent="zone_DnsProj_net_core_0">
+          <mxGeometry x="358.0" y="120.0" width="304.0" height="146.0" as="geometry" />
+        </mxCell>
+        <mxCell id="zone_DnsVpcZone_hub" value="VPC: hub" style="swimlane;fontStyle=1;horizontal=1;startSize=32;collapsible=1;rounded=1;fillColor=#fef7e0;strokeColor=#fbbc04;strokeWidth=1.5;fontColor=#202124;fontSize=14;shadow=1;" vertex="1" parent="zone_CoreHubVpcCol">
+          <mxGeometry x="0.0" y="0.0" width="304.0" height="146.0" as="geometry" />
+        </mxCell>
+        <mxCell id="card_dns_vpc_hub" value="&lt;b&gt;[VirtualPrivateCloud] VPC: hub&lt;/b&gt;&lt;br&gt;&lt;font color=&#x27;#5f6368&#x27; size=&#x27;1&#x27;&gt;Central Resolver Hub&lt;/font&gt;" style="rounded=1;arcSize=15;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#dadce0;strokeWidth=1.0;fontColor=#202124;fontSize=12;shadow=1;align=left;spacingLeft=12;" vertex="1" parent="zone_DnsVpcZone_hub">
+          <mxGeometry x="28.0" y="60.0" width="248.0" height="58.0" as="geometry" />
+        </mxCell>
+        <mxCell id="zone_CorePeeringDns" value="Cross-VPC DNS Zones" style="swimlane;fontStyle=1;horizontal=1;startSize=32;collapsible=1;rounded=1;fillColor=#ffffff;strokeColor=#cbd5e1;strokeWidth=1.0;fontColor=#202124;fontSize=14;shadow=1;dashed=1;" vertex="1" parent="zone_DnsProj_net_core_0">
+          <mxGeometry x="730.0" y="136.0" width="272.0" height="114.0" as="geometry" />
+        </mxCell>
+        <mxCell id="card_zone_net_core_0_peer_root" value="&lt;b&gt;[CloudDNS] Peering Zone: &#x27;.&#x27;&lt;/b&gt;&lt;br&gt;&lt;font color=&#x27;#5f6368&#x27; size=&#x27;1&#x27;&gt;Target: hub · Bound: prod, dev&lt;/font&gt;" style="rounded=1;arcSize=15;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#9334e6;strokeWidth=1.8;fontColor=#202124;fontSize=12;shadow=1;align=left;spacingLeft=12;" vertex="1" parent="zone_CorePeeringDns">
+          <mxGeometry x="12.0" y="44.0" width="248.0" height="58.0" as="geometry" />
+        </mxCell>
+        <mxCell id="zone_SpokeDnsProjectsCol" value="" style="group;html=1;pointerEvents=0;fillColor=none;strokeColor=none;" vertex="1" parent="zone_GoogleCloudRoot">
+          <mxGeometry x="1112.0" y="90.0" width="656.0" height="478.0" as="geometry" />
+        </mxCell>
+        <mxCell id="zone_DnsProj_net_dev_0" value="Project: net-dev-0" style="swimlane;fontStyle=1;horizontal=1;startSize=32;collapsible=1;rounded=1;fillColor=#e8f0fe;strokeColor=#8ab4f8;strokeWidth=1.5;fontColor=#202124;fontSize=14;shadow=1;" vertex="1" parent="zone_SpokeDnsProjectsCol">
+          <mxGeometry x="0.0" y="0.0" width="656.0" height="230.0" as="geometry" />
+        </mxCell>
+        <mxCell id="zone_SpokeDnsZones_net_dev_0" value="" style="group;html=1;pointerEvents=0;fillColor=none;strokeColor=none;" vertex="1" parent="zone_DnsProj_net_dev_0">
+          <mxGeometry x="18.0" y="110.0" width="248.0" height="58.0" as="geometry" />
+        </mxCell>
+        <mxCell id="card_zone_net_dev_0_pvt_dev_test" value="&lt;b&gt;[CloudDNS] PVT Zone: dev.test.&lt;/b&gt;&lt;br&gt;&lt;font color=&#x27;#5f6368&#x27; size=&#x27;1&#x27;&gt;Bound VPCs: hub, dev&lt;/font&gt;" style="rounded=1;arcSize=15;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#1e8e3e;strokeWidth=1.8;fontColor=#202124;fontSize=12;shadow=1;align=left;spacingLeft=12;" vertex="1" parent="zone_SpokeDnsZones_net_dev_0">
+          <mxGeometry x="0.0" y="0.0" width="248.0" height="58.0" as="geometry" />
+        </mxCell>
+        <mxCell id="zone_DnsVpcZone_dev" value="VPC: dev" style="swimlane;fontStyle=1;horizontal=1;startSize=32;collapsible=1;rounded=1;fillColor=#fef7e0;strokeColor=#fbbc04;strokeWidth=1.5;fontColor=#202124;fontSize=14;shadow=1;" vertex="1" parent="zone_DnsProj_net_dev_0">
+          <mxGeometry x="334.0" y="66.0" width="304.0" height="146.0" as="geometry" />
+        </mxCell>
+        <mxCell id="card_dns_vpc_dev" value="&lt;b&gt;[VirtualPrivateCloud] VPC: dev&lt;/b&gt;&lt;br&gt;&lt;font color=&#x27;#5f6368&#x27; size=&#x27;1&#x27;&gt;Client VPC&lt;/font&gt;" style="rounded=1;arcSize=15;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#dadce0;strokeWidth=1.0;fontColor=#202124;fontSize=12;shadow=1;align=left;spacingLeft=12;" vertex="1" parent="zone_DnsVpcZone_dev">
+          <mxGeometry x="28.0" y="60.0" width="248.0" height="58.0" as="geometry" />
+        </mxCell>
+        <mxCell id="zone_DnsProj_net_prod_0" value="Project: net-prod-0" style="swimlane;fontStyle=1;horizontal=1;startSize=32;collapsible=1;rounded=1;fillColor=#e8f0fe;strokeColor=#8ab4f8;strokeWidth=1.5;fontColor=#202124;fontSize=14;shadow=1;" vertex="1" parent="zone_SpokeDnsProjectsCol">
+          <mxGeometry x="0.0" y="248.0" width="656.0" height="230.0" as="geometry" />
+        </mxCell>
+        <mxCell id="zone_SpokeDnsZones_net_prod_0" value="" style="group;html=1;pointerEvents=0;fillColor=none;strokeColor=none;" vertex="1" parent="zone_DnsProj_net_prod_0">
+          <mxGeometry x="18.0" y="110.0" width="248.0" height="58.0" as="geometry" />
+        </mxCell>
+        <mxCell id="card_zone_net_prod_0_pvt_prod_test" value="&lt;b&gt;[CloudDNS] PVT Zone: prod.test.&lt;/b&gt;&lt;br&gt;&lt;font color=&#x27;#5f6368&#x27; size=&#x27;1&#x27;&gt;Bound VPCs: hub, prod&lt;/font&gt;" style="rounded=1;arcSize=15;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#1e8e3e;strokeWidth=1.8;fontColor=#202124;fontSize=12;shadow=1;align=left;spacingLeft=12;" vertex="1" parent="zone_SpokeDnsZones_net_prod_0">
+          <mxGeometry x="0.0" y="0.0" width="248.0" height="58.0" as="geometry" />
+        </mxCell>
+        <mxCell id="zone_DnsVpcZone_prod" value="VPC: prod" style="swimlane;fontStyle=1;horizontal=1;startSize=32;collapsible=1;rounded=1;fillColor=#fef7e0;strokeColor=#fbbc04;strokeWidth=1.5;fontColor=#202124;fontSize=14;shadow=1;" vertex="1" parent="zone_DnsProj_net_prod_0">
+          <mxGeometry x="334.0" y="66.0" width="304.0" height="146.0" as="geometry" />
+        </mxCell>
+        <mxCell id="card_dns_vpc_prod" value="&lt;b&gt;[VirtualPrivateCloud] VPC: prod&lt;/b&gt;&lt;br&gt;&lt;font color=&#x27;#5f6368&#x27; size=&#x27;1&#x27;&gt;Client VPC&lt;/font&gt;" style="rounded=1;arcSize=15;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#dadce0;strokeWidth=1.0;fontColor=#202124;fontSize=12;shadow=1;align=left;spacingLeft=12;" vertex="1" parent="zone_DnsVpcZone_prod">
+          <mxGeometry x="28.0" y="60.0" width="248.0" height="58.0" as="geometry" />
+        </mxCell>
+        <mxCell id="zone_ExternalDns" value="" style="group;html=1;pointerEvents=0;fillColor=none;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="32.0" y="192.0" width="228.0" height="138.0" as="geometry" />
+        </mxCell>
+        <mxCell id="zone_OnPremDnsZone" value="On-Premises" style="swimlane;fontStyle=1;horizontal=1;startSize=32;collapsible=1;rounded=1;fillColor=#fce8e6;strokeColor=#f6aea9;strokeWidth=1.5;fontColor=#202124;fontSize=14;shadow=1;" vertex="1" parent="zone_ExternalDns">
+          <mxGeometry x="0.0" y="0.0" width="228.0" height="138.0" as="geometry" />
+        </mxCell>
+        <mxCell id="card_onprem_dns" value="&lt;b&gt;[Server] Target DNS IPs&lt;/b&gt;&lt;br&gt;&lt;font color=&#x27;#5f6368&#x27; size=&#x27;1&#x27;&gt;8.8.8.8, 1.1.1.1&lt;/font&gt;" style="rounded=1;arcSize=15;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#dadce0;strokeWidth=1.0;fontColor=#202124;fontSize=12;shadow=1;align=left;spacingLeft=12;" vertex="1" parent="zone_OnPremDnsZone">
+          <mxGeometry x="16.0" y="64.0" width="196.0" height="58.0" as="geometry" />
+        </mxCell>
+        <mxCell id="edge_0" value="Forward(8.8.8.8, 1.1.1.1)" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.00;exitY=0.50;exitDx=0;exitDy=0;entryX=1.00;entryY=0.50;entryDx=0;entryDy=0;strokeColor=#d93025;strokeWidth=2.2;startArrow=none;endArrow=block;endFill=1;fontColor=#1e293b;fontSize=11;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="card_zone_net_core_0_fwd_root" target="card_onprem_dns">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="307.0" y="331.0" />
+              <mxPoint x="307.0" y="285.0" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge_1" value="Bind" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=1.00;exitY=0.50;exitDx=0;exitDy=0;entryX=0.00;entryY=0.20;entryDx=0;entryDy=0;strokeColor=#1a73e8;strokeWidth=1.6;dashed=1;dashPattern=6 4;startArrow=none;endArrow=block;endFill=1;fontColor=#1e293b;fontSize=11;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="card_zone_net_core_0_fwd_root" target="card_dns_vpc_hub">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="672.0" y="331.0" />
+              <mxPoint x="672.0" y="383.6" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge_2" value="Bind" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=1.00;exitY=0.50;exitDx=0;exitDy=0;entryX=0.00;entryY=0.80;entryDx=0;entryDy=0;strokeColor=#1a73e8;strokeWidth=1.6;dashed=1;dashPattern=6 4;startArrow=none;endArrow=block;endFill=1;fontColor=#1e293b;fontSize=11;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="card_zone_net_core_0_pvt_test" target="card_dns_vpc_hub">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="683.0" y="401.0" />
+              <mxPoint x="683.0" y="418.4" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge_3" value="Peer (hub)" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.00;exitY=0.50;exitDx=0;exitDy=0;entryX=1.00;entryY=0.50;entryDx=0;entryDy=0;strokeColor=#9334e6;strokeWidth=2.2;startArrow=none;endArrow=block;endFill=1;fontColor=#1e293b;fontSize=11;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="card_zone_net_core_0_peer_root" target="card_dns_vpc_hub">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1028.0" y="401.0" />
+              <mxPoint x="1028.0" y="401.0" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge_4" value="Bind" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=1.00;exitY=0.80;exitDx=0;exitDy=0;entryX=0.00;entryY=0.80;entryDx=0;entryDy=0;strokeColor=#1a73e8;strokeWidth=1.6;dashed=1;dashPattern=6 4;startArrow=none;endArrow=block;endFill=1;fontColor=#1e293b;fontSize=11;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="card_zone_net_core_0_peer_root" target="card_dns_vpc_prod">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1348.0" y="418.4" />
+              <mxPoint x="1348.0" y="554.0" />
+              <mxPoint x="1772.0" y="554.0" />
+              <mxPoint x="1772.0" y="542.4" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge_5" value="Bind" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=1.00;exitY=0.20;exitDx=0;exitDy=0;entryX=0.00;entryY=0.20;entryDx=0;entryDy=0;strokeColor=#1a73e8;strokeWidth=1.6;dashed=1;dashPattern=6 4;startArrow=none;endArrow=block;endFill=1;fontColor=#1e293b;fontSize=11;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="card_zone_net_core_0_peer_root" target="card_dns_vpc_dev">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1348.0" y="383.6" />
+              <mxPoint x="1348.0" y="216.0" />
+              <mxPoint x="1772.0" y="216.0" />
+              <mxPoint x="1772.0" y="259.6" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge_6" value="Bind" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.00;exitY=0.67;exitDx=0;exitDy=0;entryX=1.00;entryY=0.10;entryDx=0;entryDy=0;strokeColor=#1a73e8;strokeWidth=1.6;dashed=1;dashPattern=6 4;startArrow=none;endArrow=block;endFill=1;fontColor=#1e293b;fontSize=11;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="card_zone_net_dev_0_pvt_dev_test" target="card_dns_vpc_hub">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1428.0" y="271.0" />
+              <mxPoint x="1428.0" y="298.0" />
+              <mxPoint x="992.0" y="298.0" />
+              <mxPoint x="992.0" y="378.0" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge_7" value="Bind" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=1.00;exitY=0.67;exitDx=0;exitDy=0;entryX=0.00;entryY=0.80;entryDx=0;entryDy=0;strokeColor=#1a73e8;strokeWidth=1.6;dashed=1;dashPattern=6 4;startArrow=none;endArrow=block;endFill=1;fontColor=#1e293b;fontSize=11;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="card_zone_net_dev_0_pvt_dev_test" target="card_dns_vpc_dev">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1742.0" y="271.0" />
+              <mxPoint x="1742.0" y="294.4" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge_8" value="Bind" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.00;exitY=0.50;exitDx=0;exitDy=0;entryX=1.00;entryY=0.63;entryDx=0;entryDy=0;strokeColor=#1a73e8;strokeWidth=1.6;dashed=1;dashPattern=6 4;startArrow=none;endArrow=block;endFill=1;fontColor=#1e293b;fontSize=11;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="card_zone_net_prod_0_pvt_prod_test" target="card_dns_vpc_hub">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1428.0" y="509.0" />
+              <mxPoint x="1428.0" y="472.0" />
+              <mxPoint x="992.0" y="472.0" />
+              <mxPoint x="992.0" y="408.4" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge_9" value="Bind" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=1.00;exitY=0.50;exitDx=0;exitDy=0;entryX=0.00;entryY=0.20;entryDx=0;entryDy=0;strokeColor=#1a73e8;strokeWidth=1.6;dashed=1;dashPattern=6 4;startArrow=none;endArrow=block;endFill=1;fontColor=#1e293b;fontSize=11;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="card_zone_net_prod_0_pvt_prod_test" target="card_dns_vpc_prod">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1742.0" y="509.0" />
+              <mxPoint x="1742.0" y="507.6" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
