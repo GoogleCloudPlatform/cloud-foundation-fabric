@@ -54,11 +54,13 @@ module "folder-1" {
   for_each = {
     for k, v in local.folders_input : k => v if v.level == 1
   }
-  folder_create       = lookup(each.value, "id", null) == null
-  id                  = lookup(each.value, "id", null)
-  deletion_protection = lookup(each.value, "deletion_protection", false)
-  parent              = coalesce(each.value.parent, "$folder_ids:default")
-  name                = try(each.value.name, null)
+  folder_create = lookup(each.value, "id", null) == null
+  id            = lookup(each.value, "id", null)
+  deletion_protection = coalesce(
+    lookup(each.value, "deletion_protection", null), false
+  )
+  parent = coalesce(each.value.parent, "$folder_ids:default")
+  name   = try(each.value.name, null)
   factories_config = {
     for k, v in lookup(each.value, "factories_config", {}) : k => try(pathexpand(
       var.factories_config.basepath == null || startswith(v, "/") || startswith(v, ".")
@@ -127,9 +129,11 @@ module "folder-2" {
   for_each = {
     for k, v in local.folders_input : k => v if v.level == 2
   }
-  folder_create       = lookup(each.value, "id", null) == null
-  id                  = lookup(each.value, "id", null)
-  deletion_protection = lookup(each.value, "deletion_protection", false)
+  folder_create = lookup(each.value, "id", null) == null
+  id            = lookup(each.value, "id", null)
+  deletion_protection = coalesce(
+    lookup(each.value, "deletion_protection", null), false
+  )
   parent = coalesce(
     each.value.parent, "$folder_ids:${each.value.parent_key}"
   )
@@ -210,9 +214,11 @@ module "folder-3" {
   for_each = {
     for k, v in local.folders_input : k => v if v.level == 3
   }
-  folder_create       = lookup(each.value, "id", null) == null
-  id                  = lookup(each.value, "id", null)
-  deletion_protection = lookup(each.value, "deletion_protection", false)
+  folder_create = lookup(each.value, "id", null) == null
+  id            = lookup(each.value, "id", null)
+  deletion_protection = coalesce(
+    lookup(each.value, "deletion_protection", null), false
+  )
   parent = coalesce(
     each.value.parent, "$folder_ids:${each.value.parent_key}"
   )
@@ -293,9 +299,11 @@ module "folder-4" {
   for_each = {
     for k, v in local.folders_input : k => v if v.level == 4
   }
-  folder_create       = lookup(each.value, "id", null) == null
-  id                  = lookup(each.value, "id", null)
-  deletion_protection = lookup(each.value, "deletion_protection", false)
+  folder_create = lookup(each.value, "id", null) == null
+  id            = lookup(each.value, "id", null)
+  deletion_protection = coalesce(
+    lookup(each.value, "deletion_protection", null), false
+  )
   parent = coalesce(
     each.value.parent, "$folder_ids:${each.value.parent_key}"
   )
