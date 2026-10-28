@@ -357,7 +357,7 @@ Policies can equally be declared under a VPN's or VLAN attachment's own `router_
 > [!NOTE]
 > Cloud Router serializes configuration changes. Updating or deleting several route policies on the same router in a single apply may fail with `Error 400: [...] is not ready, resourceNotReady`. Re-running the apply converges, and `-parallelism=1` avoids the error entirely.
 
-Routers can also declare their own `interfaces` and BGP `peers`, which is how Cloud Router peers with NVAs attached as NCC Router Appliance spokes (see [NVAs](#network-virtual-appliances-nvas) below). Interfaces live in a subnet of the router's VPC and can be marked as redundant to another interface of the same router; the `ip_address` must be a literal, since it is also rendered in the NVA guest BGP configuration before the router exists. Peers reference an interface by key and either fan out over all instances of an NVA's Router Appliance spoke in the router's VPC via `nva`, or point to an explicit `address` with an optional `router_appliance_instance`; exactly one of `nva` and `address` must be set.
+Routers can also declare `interfaces` and BGP `peers` to peer with NVAs attached as NCC Router Appliance spokes (see [NVAs](#network-virtual-appliances-nvas) below). Interfaces belong to a subnet of the router's VPC, and the second interface sets `redundant_interface` to the key of the first. Each interface requires a literal `ip_address` so the NVA factory can render the guest BGP configuration before the router is created. Each peer references an interface by key and sets either `nva` (creating one BGP session per instance of that NVA's Router Appliance spoke in the VPC) or an explicit `address` (with an optional `router_appliance_instance`).
 
 ```yaml
 # [...]
@@ -378,8 +378,9 @@ routers:
         ip_address: 10.64.0.253
         redundant_interface: intf-0
     peers:
-      # one BGP session per instance of the `primary` NVA spoke in this VPC,
-      # peer address is the instance NIC attached to this VPC
+      # Fan-out peer (`nva: <key>`): creates one BGP session per instance of
+      # the `primary` NVA spoke in this VPC (used for active-active ECMP when
+      # all instances share the same import policy)
       nva-0:
         interface: intf-0
         nva: primary
@@ -388,7 +389,9 @@ routers:
         interface: intf-1
         nva: primary
         asn: 64513
-      # explicit peer to a factory-created instance, via context tokens
+      # Explicit per-instance peer (`address` + `router_appliance_instance`):
+      # targets a single factory-created instance via context tokens so you can
+      # attach distinct active/standby import policies (`import-b` vs `import-c`)
       primary-b-0:
         interface: intf-0
         asn: 64513
@@ -396,7 +399,7 @@ routers:
         router_appliance_instance: $nva_instances:primary-b-0
         import_policies:
           - prefer-primary
-      # explicit peer to an externally managed appliance
+      # Explicit peer to an externally managed appliance
       external-0:
         interface: intf-0
         asn: 64514
@@ -413,18 +416,23 @@ routers:
 # [...]
 ```
 
-Peers use the same attributes as VPN and VLAN attachment BGP peers: `asn`, `address`, `route_priority`, `custom_advertise`, `custom_learned_ip_ranges` (`route_priority` and `ip_ranges` map), `md5_authentication_key` (`name` and `key`), `enable`, and `import_policies`/`export_policies` referencing the router's route policies by key. Interfaces and peers are created in the router's project and region; peer names are scoped to the router, `<peer key>` for explicit peers and `<peer key>-<instance key>` for fan-out ones (`nva-0-primary-b-0` above), and must fit in 63 characters. Peers referencing an undefined interface, an NVA without a Router Appliance spoke in the router's VPC, or an unknown route policy are rejected at plan time, as is a `redundant_interface` that does not name a primary interface of the same router.
+Peers accept the same attributes as VPN and VLAN attachment BGP peers: `asn`, `address`, `route_priority`, `custom_advertise`, `custom_learned_ip_ranges` (`route_priority` and `ip_ranges` map), `md5_authentication_key` (`name` and `key`), `enable`, and `import_policies` or `export_policies` referencing the router's route policies by key. Explicit peers are named `<peer key>` and fan-out peers are named `<peer key>-<instance key>` (`nva-0-primary-b-0` above), up to 63 characters. Plan-time preconditions reject peers that reference an undefined interface, an NVA without a Router Appliance spoke in the router's VPC, an unknown route policy, or a `redundant_interface` that is not a primary interface on the same router.
 
-Explicit peers can use two context namespaces to refer to instances created by the NVA factory: `$nva_instances:<instance key>` resolves to the instance self link (for `router_appliance_instance`) and `$nva_addresses:<instance key>/<vpc key>` to the address of the instance NIC attached to that VPC (for `address`), where the instance key is `<nva>-<zone>-<index>`. An explicit peer to a factory-created instance also gets its neighbor (including any `md5_authentication_key`) rendered in the instance FRR configuration, which is how per-instance route policies are attached (the `nva` fan-out gives every instance the same policies).
+Explicit peers can reference factory-created NVA instances through 2 context namespaces, where `<instance key>` is `<nva>-<zone>-<index>`:
+
+- `$nva_instances:<instance key>` resolves to the instance self-link for `router_appliance_instance`
+- `$nva_addresses:<instance key>/<vpc key>` resolves to the IP address of the instance NIC attached to `<vpc key>` for `address`
+
+Use explicit peers when you need per-instance route policies (such as active-passive MED offsets between zone `b` and zone `c`), and use `nva: <key>` fan-out peers when all instances in the spoke share the same policy (active-active ECMP).
 
 ### Network Virtual Appliances (NVAs)
 
-The NVA factory ([factory-nva.tf](./factory-nva.tf)) creates multi-NIC appliances from YAML files in the `nvas` directory, and plugs them into the VPCs in one of two ways:
+The NVA factory ([factory-nva.tf](./factory-nva.tf)) creates multi-NIC appliances from YAML files in the `nvas` directory and connects them to VPCs in 2 ways:
 
-- **ILB sandwich**: one internal passthrough load balancer per VPC fronts the instances, and VPC routes point at the load balancer addresses. This is configured via `ilb_config` and described in the [hub-and-spokes-nva dataset](./datasets/hub-and-spokes-nva/README.md).
-- **NCC Router Appliance**: the instances are attached to NCC hubs as Router Appliance spokes and peer via BGP with Cloud Routers, which program dynamic routes through them. This is configured via `ncc_ra_config` and `bgp_config` and described in the [hub-and-spokes-nva-ncc dataset](./datasets/hub-and-spokes-nva-ncc/README.md).
+- **ILB sandwich**: one internal passthrough load balancer per VPC fronts the instances, and VPC static routes use the load balancer VIPs as next hops. You configure this mode with `ilb_config`; see the [hub-and-spokes-nva dataset](./datasets/hub-and-spokes-nva/README.md).
+- **NCC Router Appliance**: the instances attach to NCC hubs as Router Appliance spokes and peer over BGP with Cloud Routers, which install dynamic routes through them. You configure this mode with `ncc_ra_config` and `bgp_config`; see the [hub-and-spokes-nva-ncc dataset](./datasets/hub-and-spokes-nva-ncc/README.md).
 
-The two modes are exclusive per VPC: the factory refuses to create a Router Appliance spoke for an NVA that also has an ILB forwarding rule in the same VPC.
+An NVA can use ILB on some NICs and Router Appliance on others, as long as no single VPC has both an ILB forwarding rule and a Router Appliance spoke for the same NVA.
 
 ```yaml
 project_id: $project_ids:net-core-0
@@ -464,17 +472,19 @@ bgp_config:
   holdtime: 9
 ```
 
-- `instance_groups` sits at the top level of the NVA file and is shared by both modes; `ilb_config.instance_groups` is still accepted. Instances are named `nva-<nva>-<zone>-<index>` and keyed `<nva>-<zone>-<index>` in the `$nva_instances:` and `$nva_addresses:` contexts. Instance group resources are only created when the NVA has ILB forwarding rules.
-- `ncc_ra_config.spokes` creates one Router Appliance spoke per VPC, named `ra-<vpc>-<nva>`, containing every auto-created instance via its NIC in that VPC plus any `instances` listed explicitly (`vm`, `ip`, optional `name` used as the instance key, with `$nva_instances:`/`$nva_addresses:` tokens accepted); `site_to_site_data_transfer` defaults to `true`, `include_import_ranges` to `["ALL_IPV4_RANGES"]`. A spoke with no instances, two spokes of the same NVA for the same VPC, or an NVA with no NIC in the spoke VPC fail at plan time.
-- `bgp_config` switches the auto-created instances to Container-Optimized OS (unless `image` is set) and to a startup script running [FRR](https://frrouting.org/) in a container. The BGP neighbors are derived from the router peers that reference the NVA or its instances, so the router interface addresses and ASNs are the only source of truth. Routes learned on one NIC are re-advertised on the others unchanged: the appliance is MED neutral, and active/standby, ECMP and regional affinity are expressed with Cloud Router route policies on the peers. Because forward and return legs are routed by independent VPC tables, stateful NVAs without cross-instance state synchronization must use explicit per-instance peers with distinct MED offsets (active/standby) and regional tie-breaking import policies so both directions hit the same instance; active/active ECMP (via a fan-out `nva` peer with a shared policy) hashes each leg independently across instances and requires stateless inspection or HA session sync. See the [NCC dataset](./datasets/hub-and-spokes-nva-ncc/README.md#routing-flow-symmetry-and-bgp-design) for a complete example.
-- The rendered FRR configuration is published as the `nva-frr-config` instance metadata key; a loop on the instance polls it every 30 seconds and restarts the FRR container when it changes, so BGP configuration changes apply in place (about 1 s of graceful BGP restart) without recreating the instance.
-- `routes` and `advertise` on a NIC control the data plane and control plane separately: `routes` installs static kernel routes in the guest OS via that NIC's VPC subnet gateway (used in both ILB and BGP modes so the kernel knows which interface forwards to a prefix), whereas `advertise` originates prefixes in FRR via BGP `network` statements toward all BGP neighbors (used only in BGP mode). Because FRR prefers its own locally originated `network` statement (`weight 32768`) over eBGP routes from Cloud Router (`weight 0`), it never installs a BGP route in the kernel for prefixes in `advertise`, so each advertised prefix must be covered by a kernel route from `routes` (or the default route from `masquerade`). `bgp_inbound_deny` rejects the listed prefixes (exact match) from the BGP neighbors on that NIC.
-- `masquerade_exclude` lists destination ranges excluded from SNAT on a masquerading NIC, so that private flows keep their source address and survive an active/standby switch. It works with both startup scripts.
+The NVA YAML fields control instance creation, spoke attachment, and guest routing:
 
-Appliances not created by the factory use the Router Appliance mode through an NVA file with only `ncc_ra_config.spokes[].instances` (no `auto_instance_config`, no `instance_groups`); router peers then reach them via the `nva` fan-out or as explicit peers. For the ILB sandwich, external instances are attached via `instance_groups.<zone>.attach_instances`.
+- `instance_groups` sits at the top level of the NVA file and is shared by both modes (`ilb_config.instance_groups` remains supported). Instances are named `nva-<nva>-<zone>-<index>` and keyed `<nva>-<zone>-<index>` in `$nva_instances:` and `$nva_addresses:`. Unmanaged instance group resources are created only when the NVA defines `ilb_config.forwarding_rules`.
+- `ncc_ra_config.spokes` creates one Router Appliance spoke per VPC (`ra-<vpc>-<nva>`) containing every auto-created instance via its NIC in that VPC plus any `instances` listed explicitly (`vm`, `ip`, and optional `name`, with `$nva_instances:` and `$nva_addresses:` tokens supported). `site_to_site_data_transfer` defaults to `true`, and `include_import_ranges` defaults to `["ALL_IPV4_RANGES"]`.
+- `bgp_config` boots auto-created instances on Container-Optimized OS (unless `image` is overridden) with a startup script that runs [FRR](https://frrouting.org/) in a container. The factory derives BGP neighbors from the Cloud Router peers that reference the NVA or its instances, and renders the FRR config to the `nva-frr-config` metadata key. A background daemon on the VM polls `nva-frr-config` every 30 seconds and reloads FRR in place (~1 s graceful restart) without recreating the instance.
+- The FRR config re-advertises routes across NICs without altering MED (`attribute-unchanged med`). You choose between active-passive and active-active ECMP on the Cloud Router `peers`: use explicit per-instance peers (`$nva_addresses:` and `$nva_instances:`) with separate MED import policies (`100` vs `150`) for stateful active-passive without session sync, or use a fan-out peer (`nva: <key>`) with a single shared import policy for active-active ECMP (which hashes forward and return legs independently and requires stateless inspection or cross-instance state sync). See the [NCC Router Appliance dataset](./datasets/hub-and-spokes-nva-ncc/README.md#routing-flow-symmetry-and-active-passive-vs-active-active) for complete active-passive and active-active YAML examples.
+- `routes` and `advertise` on a NIC configure the data plane and control plane separately: `routes` installs static kernel routes in the guest OS via that NIC's subnet gateway (used in both ILB and BGP modes so the kernel knows which interface forwards to a prefix), while `advertise` originates prefixes in FRR via BGP `network` statements toward all BGP neighbors (used only in BGP mode). Because FRR prefers its own locally originated `network` statement (weight `32768`) over eBGP routes from Cloud Router (weight `0`), FRR never installs a BGP route in the kernel for prefixes in `advertise`, so each advertised prefix must be covered by a kernel route from `routes` (or the default route from `masquerade`). `bgp_inbound_deny` rejects the listed prefixes (exact match) from BGP neighbors on that NIC.
+- `masquerade_exclude` lists destination ranges excluded from SNAT on a masquerading NIC so private flows keep their source address and survive an active-to-standby switch. It works in both ILB and BGP modes.
+
+To attach externally managed appliances in Router Appliance mode, create an NVA file with only `ncc_ra_config.spokes[].instances` (omitting `auto_instance_config` and `instance_groups`) and reference it from Cloud Router `peers` via `nva` fan-out or explicit peers. In ILB mode, attach external instances through `instance_groups.<zone>.attach_instances`.
 
 > [!WARNING]
-> Instances cannot be deleted while a Router Appliance spoke or a Cloud Router BGP peer references them. The factory replaces the spokes and peers of an NVA whenever one of its instances is replaced, so that they are destroyed first and recreated afterwards. A change that recreates an instance therefore drops every BGP session of that NVA for the duration of the apply; roll such changes one NVA at a time, or define one NVA file per instance so that each instance has its own spokes and peers. BGP configuration changes are reloaded in place and do not trigger this.
+> GCP blocks deleting a VM while a Router Appliance spoke or a Cloud Router BGP peer references it. Whenever an NVA instance is replaced, the factory replaces its spokes and peers so Terraform destroys them before the VM and recreates them afterward. Any change that recreates an instance therefore drops all BGP sessions of that NVA during `terraform apply`; roll such changes one NVA at a time, or define one NVA YAML file per instance (`primary-b.yaml`, `primary-c.yaml`) so each instance owns separate spokes and peers. BGP configuration edits reload in place through `nva-frr-config` metadata and do not replace the VM.
 
 ### VPC Connectivity
 
