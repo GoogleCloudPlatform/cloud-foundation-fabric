@@ -41,11 +41,11 @@ The project factory optionally "consumes" resources created by preceding stages,
 - KMS keys from the security stage and via `var.context.kms_keys`
 - VPC SC perimeters from the VPC SC stage and via `var.context.vpc_sc_perimeters`
 
-Additionally, some of the values defined earlier in the FAST apply cycle are set here as project defaults:
+Additionally, some of the values defined earlier in the FAST apply cycle are set here as project defaults or overrides:
 
-- prefix (as override)
-- billing account
-- storage location
+- prefix (as default)
+- billing account (as default)
+- universe (as override, when defined)
 
 The project factory stage is a thin wrapper of the underlying [project-factory module](../../../modules/project-factory/), which in turn exposes the full interface of the [project](../../../modules/project/) and [folder](../../../modules/folder/) modules.
 
@@ -64,10 +64,11 @@ The bootstrap-specific setup is reproduced here to aid using it as a starting po
 The default design uses two service accounts (read-write and read-only) and a Cloud Storage folder in a pre-existing bucket, to enable this stage for Infrastructure as Code. This is an example snippet that shows how to configure the org setup stage IaC project.
 
 ```yaml
-# data/projects/core/iac-0.yaml
+# datasets/classic/projects/core/iac-0.yaml
 buckets:
+  # Terraform state bucket for additional FAST stages
   iac-stage-state:
-    description: Terraform state for stage automation.
+    versioning: true
     managed_folders:
       2-project-factory:
         iam:
@@ -75,8 +76,9 @@ buckets:
             - $iam_principals:service_accounts/iac-0/iac-pf-rw
           $custom_roles:storage_viewer:
             - $iam_principals:service_accounts/iac-0/iac-pf-ro
+  # Terraform state bucket for FAST outputs
   iac-outputs:
-    description: Terraform state for the org-level automation.
+    versioning: true
     iam:
       roles/storage.admin:
         - $iam_principals:service_accounts/iac-0/iac-pf-rw
@@ -94,7 +96,7 @@ service_accounts:
 If an externally managed billing account is used, billing user permissions need to be assigned to the project factory service account.
 
 ```yaml
-# data/billing-accounts/default.yaml
+# datasets/classic/billing-accounts/default.yaml
 id: $defaults:billing_account
 iam_bindings_additive:
   billing_user_pf_sa:
@@ -107,21 +109,21 @@ iam_bindings_additive:
 This stage only needs conditional grants for organization policy management at the organization level. Additionally, if an organization-managed billing account is used the IAM bindings described in the section above can be omitted, and moved to the organization.
 
 ```yaml
-# data/organization/.config.yaml
+# datasets/classic/organization/.config.yaml
 iam_bindings:
   pf_org_policy_admin:
     role: roles/orgpolicy.policyAdmin
     members:
       - $iam_principals:service_accounts/iac-0/iac-pf-rw
     condition:
-      expression: resource.matchTag('${organization}/context', 'project-factory')
+      expression: resource.matchTag('${organization.id}/context', 'project-factory')
       title: Project factory org policy admin
   pf_org_policy_viewer:
     role: roles/orgpolicy.policyViewer
     members:
       - $iam_principals:service_accounts/iac-0/iac-pf-ro
     condition:
-      expression: resource.matchTag('${organization}/context', 'project-factory')
+      expression: resource.matchTag('${organization.id}/context', 'project-factory')
       title: Project factory org policy viewer
 ```
 
@@ -130,7 +132,7 @@ iam_bindings:
 A single "Teams" folder is created here. Multiple folders (or sub-folders) can of course be created by replicating the IAM configuration below for each.
 
 ```yaml
-# data/folders/teams/.config.yaml
+# datasets/classic/folders/teams/.config.yaml
 name: Teams
 iam_by_principals:
   $iam_principals:service_accounts/iac-0/iac-pf-rw:
@@ -149,7 +151,7 @@ tag_bindings:
 
 ### Factory configuration
 
-The `data` folder in this stage contains factory files that can be used as examples to implement the team-based design shown above. Before running `terraform apply` check the YAML files, as project names and other attributes will need basic editing to match your desired setup.
+The `datasets/classic` folder in this stage contains factory files that can be used as examples to implement the team-based design shown above. Before running `terraform apply` check the YAML files, as project names and other attributes will need basic editing to match your desired setup.
 
 ### Data Platform Dataset
 
@@ -162,7 +164,7 @@ As all other FAST stages, the [mechanism](../0-org-setup/README.md#output-files-
 The commands to link or copy the provider and terraform variable files can be easily derived from the `fast-links.sh` script in the FAST stages folder, passing it a single argument with the local output files folder (if configured) or the GCS output bucket in the automation project (derived from stage 0 outputs). The following examples demonstrate both cases, and the resulting commands that then need to be copy/pasted and run.
 
 ```bash
-../fast-links.sh ~/fast-config
+../fast-links.sh ~/fast-config/fast-test-00
 
 # File linking commands for project factory (org level) stage
 
@@ -173,13 +175,13 @@ ln -s ~/fast-config/fast-test-00/providers/2-project-factory-providers.tf ./
 ln -s ~/fast-config/fast-test-00/tfvars/0-globals.auto.tfvars.json ./
 ln -s ~/fast-config/fast-test-00/tfvars/0-org-setup.auto.tfvars.json ./
 
-# conventional place for stage tfvars (manually created)
+# conventional location for this stage terraform.tfvars (manually managed)
 ln -s ~/fast-config/fast-test-00/2-project-factory.auto.tfvars ./
 
 # optional files
-ln -s ~/fast-config/fast-test-00/2-networking.auto.tfvars.json ./
-ln -s ~/fast-config/fast-test-00/2-security.auto.tfvars.json ./
-ln -s ~/fast-config/fast-test-00/2-vpcsc.auto.tfvars.json ./
+ln -s ~/fast-config/fast-test-00/tfvars/1-vpcsc.auto.tfvars.json ./
+ln -s ~/fast-config/fast-test-00/tfvars/2-networking.auto.tfvars.json ./
+ln -s ~/fast-config/fast-test-00/tfvars/2-security.auto.tfvars.json ./
 ```
 
 ```bash
@@ -194,13 +196,13 @@ gcloud storage cp gs://xxx-prod-iac-core-outputs-0/providers/2-project-factory-p
 gcloud storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/0-globals.auto.tfvars.json ./
 gcloud storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/0-org-setup.auto.tfvars.json ./
 
-# conventional place for stage tfvars (manually created)
+# conventional location for this stage terraform.tfvars (manually managed)
 gcloud storage cp gs://xxx-prod-iac-core-outputs-0/2-project-factory.auto.tfvars ./
 
 # optional files
-gcloud storage cp gs://xxx-prod-iac-core-outputs-0/2-networking.auto.tfvars.json ./
-gcloud storage cp gs://xxx-prod-iac-core-outputs-0/2-security.auto.tfvars.json ./
-gcloud storage cp gs://xxx-prod-iac-core-outputs-0/2-vpcsc.auto.tfvars.json ./
+gcloud storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/1-vpcsc.auto.tfvars.json ./
+gcloud storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/2-networking.auto.tfvars.json ./
+gcloud storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/2-security.auto.tfvars.json ./
 ```
 
 If you're not using FAST, refer to the [Variables](#variables) table at the bottom of this document for a full list of variables, their origin (e.g., a stage or specific to this one), and descriptions explaining their meaning.
@@ -220,9 +222,9 @@ The YAML data files are self-explanatory and the included [schema files](./schem
 
 ### Project defaults and overrides
 
-The underlying module supports a way of defining sets of values that can be used as defaults of overrides for specific project attributes. This stage supports the same, and allows setting defaults and overrides either via Terraform variables, or via a dedicated YAML defaults file.
+The underlying module supports a way of defining sets of values that can be used as defaults or overrides for specific project attributes. This stage supports the same, and allows setting defaults and overrides either via Terraform variables, or via a dedicated YAML defaults file.
 
-An example defaults file is provided in the `data` folder, and the relevant schema (or the corresponding variable type) supports the full interface provided in the underlying module. Defaults from Terraform variables and the YAML file are merged, with the caveat that Where the same attribute (for example `billing_account`) is defined in both, the file takes precedence.
+An example defaults file is provided in the `datasets/classic` folder, and the relevant schema (or the corresponding variable type) supports the full interface provided in the underlying module. Defaults from Terraform variables and the YAML file are merged, with the caveat that where the same attribute (for example `billing_account`) is defined in both, the file takes precedence.
 
 ### Folder and hierarchy management
 
@@ -233,7 +235,7 @@ Filesystem folders which contain a `.config.yaml` file are mapped to folders in 
 This is the simple filesystem hierarchy provided here as an example.
 
 ```bash
-hierarchy
+folders
 ├── team-a
 │   ├── .config.yaml
 │   ├── dev
@@ -294,10 +296,10 @@ parent: $folder_ids:teams
 
 Project YAML files can be created in two different filesystem paths:
 
-- in the filesystem folder defined via the `factories_config.path.projects` variable, and then explicitly setting their `parent` attribute in YAML files, or
+- in the filesystem folder defined via the `factories_config.paths.projects` variable, and then explicitly setting their `parent` attribute in YAML files, or
 - in the filesystem hierarchy discussed above, so that their `parent` attribute is automatically derived from the containing folder
 
-The two approaches can be mixed and matched, but the first approach is safer as is avoids potentially dangerous situations when folders are deleted with project configuration files still inside.
+The two approaches can be mixed and matched, but the first approach is safer as it avoids potentially dangerous situations when folders are deleted with project configuration files still inside.
 
 When specifying projects outside of the folder hierarchy, setting the parent folder works in pretty much the same way as discussed above, with substitutions available for any folder defined in the filesystem hierarchy. This allows writing portable files, by referring to short names instead of resource ids.
 
@@ -311,18 +313,18 @@ parent: folders/1234509876
 parent: $folder_ids:team-a/dev
 ```
 
-All of the [project module](../../../modules/project/) attributes (and some service account attributes) can of course be leveraged in the configuration files. Refer to the [project schema](./schemas/folder.schema.json) for the complete set of available attributes.
+All of the [project module](../../../modules/project/) attributes (and some service account attributes) can of course be leveraged in the configuration files. Refer to the [project schema](./schemas/project.schema.json) for the complete set of available attributes.
 
 ### Automation Resources for Projects
 
 When created projects are meant to be managed via IaC downstream, an initial set of automation resources can be created in a "controlling project". The preferred pattern is to first create one or more controlling projects for the project factory, and then leverage them for service account and GCS bucket creation.
 
 ```yaml
-# controlling project shown in the diagram above
+# file name: iac-core-0.yaml (implicitly used for project id)
 parent: $folder_ids:teams
-name: $project_ids:iac-core-0
 services:
   - compute.googleapis.com
+  - iam.googleapis.com
   - storage.googleapis.com
   # ...
   # enable all services used by service accounts in this project
@@ -334,14 +336,14 @@ Once a controlling project is in place, it can be used in any other project decl
 # file name: dev-ta-app-0.yaml (implicitly used for project id)
 # team or application-level project with automation resources
 parent: $folder_ids:team-a/dev
-# project prefix is forced via override in `main.tf`
+# project prefix is set via default in `main.tf`
 iam:
   roles/owner:
     # refer to the rw service account defined below
-    - $iam_principals:service_accounts/dev-ta-app-0/rw
+    - $iam_principals:service_accounts/dev-ta-app-0/automation/rw
   roles/viewer:
     # refer to the ro service account defined below
-    - $iam_principals:service_accounts/dev-ta-app-0/ro
+    - $iam_principals:service_accounts/dev-ta-app-0/automation/ro
 automation:
   project: $project_ids:iac-core-0
   service_accounts:
@@ -350,13 +352,14 @@ automation:
     ro:
       description: Read-only automation sa for team a app 0.
   bucket:
-    description: Terraform state bucket for team a app 0.
+    # Terraform state bucket for team a app 0
+    versioning: true
     iam:
       roles/storage.objectCreator:
-        - $iam_principals:service_accounts/dev-ta-app-0/rw
+        - $iam_principals:service_accounts/dev-ta-app-0/automation/rw
       roles/storage.objectViewer:
-        - $iam_principals:service_accounts/dev-ta-app-0/rw
-        - $iam_principals:service_accounts/dev-ta-app-0/ro
+        - $iam_principals:service_accounts/dev-ta-app-0/automation/rw
+        - $iam_principals:service_accounts/dev-ta-app-0/automation/ro
         - group:devops@example.org
 ```
 
@@ -371,7 +374,7 @@ Output file generation is configured in the defaults file, and supports two usag
 
 The first use case is simple to use for small setups, or where output files are needed to manage multiple projects from a single service account. The second use case allows mass generation of output files, where project automation service accounts conform to a specific template.
 
-As is usual with FAST output files, their destination can be a storage bucket and/or a local filesystem folder. The two are not mutuallye exclusive and can be independently activated.
+As is usual with FAST output files, their destination can be a storage bucket and/or a local filesystem folder. The two are not mutually exclusive and can be independently activated.
 
 The following sub-sections illustrate the specifics of each of the two patterns described above.
 
@@ -397,18 +400,18 @@ output_files:
 
 The above snippet will result in two identical files being generated:
 
-- `~/fast-config/projects/providers/test-01.tf` in the local filesystem
-- `projects/providers/test-01.tf` in the storage bucket
+- `~/fast-config/projects/providers/test-01-providers.tf` in the local filesystem
+- `providers/test-01-providers.tf` in the storage bucket
 
 Individual files make specific assumptions:
 
 - the service account and bucket can refer to any valid resource, either internally (via context) or externally (explicitly) defined
-- where a backed prefix is set as in the example above, the assumption is the service account has permissions to use it
-- no tfvars files are generated as the provider might be designed to work across different projects (this may change ina  future release)
+- where a backend prefix is set as in the example above, the assumption is the service account has permissions to use it
+- no tfvars files are generated as the provider might be designed to work across different projects (this may change in a future release)
 
 #### Pattern-defined output files
 
-To automatically generate output files for all projects matching a pattern, populate the `output_files.providers_pattern` block in this stage's defaults file. Note that the `local_path`, `storage_bucket` and `providers_template` attribute are the same as in the example above, and shared between individual and pattern providers definitions.
+To automatically generate output files for all projects matching a pattern, populate the `output_files.providers_pattern` block in this stage's defaults file. Note that the `local_path`, `storage_bucket` and `providers_template_path` attributes are the same as in the example above, and shared between individual and pattern providers definitions.
 
 ```yaml
 output_files:
@@ -457,9 +460,9 @@ automation:
 
 Using the second example, these file names will be in the local filesystem (the bucket will have the same files save for the local path):
 
-- `~/fast-config/projects/providers/dev-foo-0-ro.tf`
-- `~/fast-config/projects/providers/dev-foo-0-rw.tf`
-- `~/fast-config/projects/tfvars/dev-foo-0.tf`
+- `~/fast-config/projects/providers/dev-foo-0-ro-providers.tf`
+- `~/fast-config/projects/providers/dev-foo-0-rw-providers.tf`
+- `~/fast-config/projects/tfvars/dev-foo-0.auto.tfvars.json`
 
 Pattern-based files make specific assumptions:
 

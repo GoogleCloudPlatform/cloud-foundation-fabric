@@ -13,6 +13,34 @@
 # limitations under the License.
 
 values:
+  module.project-factory.module.automation-bucket["folder-hcl/automation/tf-state"].google_storage_bucket.bucket[0]:
+    autoclass: []
+    cors: []
+    custom_placement_config: []
+    default_event_based_hold: null
+    deletion_policy: DELETE
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    enable_object_retention: null
+    encryption: []
+    force_destroy: false
+    hierarchical_namespace: []
+    ip_filter: []
+    labels: null
+    lifecycle_rule: []
+    location: EU
+    logging: []
+    name: auto-pfx-folder-hcl-tf-state
+    project: test-0
+    requester_pays: null
+    retention_policy: []
+    storage_class: STANDARD
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+    uniform_bucket_level_access: true
+    versioning:
+    - enabled: false
   module.project-factory.module.automation-bucket["test-0/automation/tf-state"].google_storage_bucket.bucket[0]:
     autoclass: []
     cors: []
@@ -41,6 +69,56 @@ values:
     uniform_bucket_level_access: true
     versioning:
     - enabled: false
+  module.project-factory.module.automation-bucket["test-1/automation/tf-state"].google_storage_bucket.bucket[0]:
+    autoclass: []
+    cors: []
+    custom_placement_config: []
+    default_event_based_hold: null
+    deletion_policy: DELETE
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    enable_object_retention: null
+    encryption: []
+    force_destroy: false
+    hierarchical_namespace: []
+    ip_filter: []
+    labels: null
+    lifecycle_rule: []
+    location: EU
+    logging: []
+    name: bkt-pfx-test-1-tf-state
+    project: test-0
+    requester_pays: null
+    retention_policy: []
+    storage_class: STANDARD
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+    uniform_bucket_level_access: true
+    versioning:
+    - enabled: false
+  ? module.project-factory.module.automation-service-accounts["folder-0/automation/folder-sa"].google_service_account.service_account[0]
+  : account_id: folder-0-folder-sa
+    create_ignore_already_exists: null
+    deletion_policy: DELETE
+    description: null
+    disabled: false
+    display_name: Service account folder-sa for folder-0.
+    email: folder-0-folder-sa@test-0.iam.gserviceaccount.com
+    member: serviceAccount:folder-0-folder-sa@test-0.iam.gserviceaccount.com
+    project: test-0
+    timeouts: null
+  ? module.project-factory.module.automation-service-accounts["folder-hcl/automation/hcl-sa"].google_service_account.service_account[0]
+  : account_id: folder-hcl-hcl-sa
+    create_ignore_already_exists: null
+    deletion_policy: DELETE
+    description: null
+    disabled: false
+    display_name: Service account hcl-sa for folder-hcl.
+    email: folder-hcl-hcl-sa@test-0.iam.gserviceaccount.com
+    member: serviceAccount:folder-hcl-hcl-sa@test-0.iam.gserviceaccount.com
+    project: test-0
+    timeouts: null
   ? module.project-factory.module.automation-service-accounts["test-0/automation/auto-tag-test"].google_service_account.service_account[0]
   : account_id: test-0-auto-tag-test
     create_ignore_already_exists: null
@@ -54,6 +132,28 @@ values:
     timeouts: null
   ? module.project-factory.module.automation-service-accounts["test-0/automation/auto-tag-test"].google_tags_tag_binding.binding["project-level"]
   : timeouts: null
+  ? module.project-factory.module.automation-service-accounts["test-1/automation/custom-sa"].google_service_account.service_account[0]
+  : account_id: custom-pfx-custom-sa
+    create_ignore_already_exists: null
+    deletion_policy: DELETE
+    description: null
+    disabled: false
+    display_name: Service account custom-sa for test-1.
+    email: custom-pfx-custom-sa@test-0.iam.gserviceaccount.com
+    member: serviceAccount:custom-pfx-custom-sa@test-0.iam.gserviceaccount.com
+    project: test-0
+    timeouts: null
+  ? module.project-factory.module.automation-service-accounts["test-2/automation/no-bkt-sa"].google_service_account.service_account[0]
+  : account_id: test-2-no-bkt-sa
+    create_ignore_already_exists: null
+    deletion_policy: DELETE
+    description: null
+    disabled: false
+    display_name: Service account no-bkt-sa for test-2.
+    email: test-2-no-bkt-sa@test-0.iam.gserviceaccount.com
+    member: serviceAccount:test-2-no-bkt-sa@test-0.iam.gserviceaccount.com
+    project: test-0
+    timeouts: null
   module.project-factory.module.buckets["test-0/attrs-test"].google_pubsub_topic.topic[0]:
     deletion_policy: DELETE
     effective_labels:
@@ -133,6 +233,48 @@ values:
     event_types: null
     object_name_prefix: null
     payload_format: JSON_API_V1
+  module.project-factory.module.buckets["test-2/custom-pfx-bkt"].google_storage_bucket.bucket[0]:
+    autoclass: []
+    cors: []
+    custom_placement_config: []
+    default_event_based_hold: null
+    deletion_policy: DELETE
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    enable_object_retention: null
+    encryption: []
+    force_destroy: false
+    hierarchical_namespace: []
+    ip_filter: []
+    labels: null
+    lifecycle_rule: []
+    location: EU
+    logging: []
+    name: bkt-override-test-2-custom-pfx-bkt
+    project: bar-test-2
+    requester_pays: null
+    retention_policy: []
+    storage_class: STANDARD
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+    uniform_bucket_level_access: true
+    versioning:
+    - enabled: false
+  module.project-factory.module.folder-1["folder-0"].google_folder.folder[0]:
+    deletion_policy: DELETE
+    deletion_protection: false
+    display_name: Folder 0
+    parent: folders/1234567890
+    tags: null
+    timeouts: null
+  module.project-factory.module.folder-1["folder-hcl"].google_folder.folder[0]:
+    deletion_policy: DELETE
+    deletion_protection: false
+    display_name: Folder HCL
+    parent: folders/1234567890
+    tags: null
+    timeouts: null
   module.project-factory.module.log-buckets["test-0/audit-logs"].google_logging_log_view.views["audit-view"]:
     description: Test log view.
     filter: LOG_ID("cloudaudit.googleapis.com/activity")
@@ -417,6 +559,7 @@ values:
     triggers_replace: null
 
 counts:
+  google_folder: 2
   google_logging_log_view: 1
   google_logging_log_view_iam_binding: 1
   google_logging_project_bucket_config: 1
@@ -426,18 +569,25 @@ counts:
   google_project_service_identity: 3
   google_pubsub_topic: 1
   google_pubsub_topic_iam_binding: 1
-  google_service_account: 5
+  google_service_account: 9
   google_service_account_iam_binding: 1
   google_service_account_iam_member: 2
-  google_storage_bucket: 2
+  google_storage_bucket: 5
   google_storage_notification: 1
   google_storage_project_service_account: 1
   google_tags_tag_binding: 5
   google_tags_tag_key: 1
   google_tags_tag_value: 1
   google_tags_tag_value_iam_binding: 1
-  modules: 16
-  resources: 49
+  modules: 25
+  resources: 58
   terraform_data: 2
 
-outputs: {}
+outputs:
+  test_1_automation:
+    bucket: bkt-pfx-test-1-tf-state
+    service_accounts:
+      test-1/automation/custom-sa:
+        email: custom-pfx-custom-sa@test-0.iam.gserviceaccount.com
+        iam_email: serviceAccount:custom-pfx-custom-sa@test-0.iam.gserviceaccount.com
+        id: projects/test-0/serviceAccounts/custom-pfx-custom-sa@test-0.iam.gserviceaccount.com

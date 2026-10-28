@@ -21,17 +21,20 @@ locals {
         bucket           = try(v.automation.bucket, {})
         parent_name      = replace(k, "/", "-")
         parent_type      = "folder"
-        prefix           = coalesce(try(v.automation.prefix, null), v.prefix)
+        prefix           = try(v.automation.prefix, null)
         project          = try(v.automation.project, null)
         service_accounts = try(v.automation.service_accounts, {})
       } if try(v.automation.bucket, null) != null || try(v.automation.service_accounts, null) != null
     },
     {
       for k, v in local.projects_input : k => {
-        bucket           = try(v.automation.bucket, {})
-        parent_name      = k
-        parent_type      = "project"
-        prefix           = coalesce(try(v.automation.prefix, null), v.prefix)
+        bucket      = try(v.automation.bucket, {})
+        parent_name = k
+        parent_type = "project"
+        prefix = try(
+          coalesce(try(v.automation.prefix, null), try(v.prefix, null)),
+          null
+        )
         project          = try(v.automation.project, null)
         service_accounts = try(v.automation.service_accounts, {})
       } if try(v.automation.bucket, null) != null || try(v.automation.service_accounts, null) != null
@@ -41,6 +44,7 @@ locals {
     for k, v in local._automation : k => merge(v.bucket, {
       automation_project    = v.project
       parent_name           = v.parent_name
+      parent_type           = v.parent_type
       name                  = lookup(v.bucket, "name", "tf-state")
       create                = lookup(v.bucket, "create", true)
       lifecycle_rules       = lookup(v.bucket, "lifecycle_rules", {})
@@ -54,6 +58,7 @@ locals {
       ), false)
       prefix = try(coalesce(
         local.data_defaults.overrides.prefix,
+        lookup(v.bucket, "prefix", null),
         v.prefix,
         local.data_defaults.defaults.prefix
       ), null)
@@ -65,7 +70,8 @@ locals {
         automation_project = v.project
         name               = sk
         parent             = k
-        prefix             = try(sv.prefix, v.parent_name)
+        parent_type        = v.parent_type
+        prefix             = coalesce(try(sv.prefix, null), v.parent_name)
       })
     ] if v.service_accounts != null
   ]))
@@ -90,7 +96,7 @@ module "automation-bucket" {
   prefix = (
     each.value.create == false
     ? each.value.prefix
-    : "${each.value.prefix}-${each.value.parent_name}"
+    : join("-", compact([each.value.prefix, each.value.parent_name]))
   )
   name           = each.value.name
   bucket_create  = each.value.create
@@ -146,9 +152,8 @@ module "automation-service-accounts" {
   prefix      = each.value.prefix
   name        = each.value.name
   description = lookup(each.value, "description", null)
-  display_name = lookup(
-    each.value,
-    "display_name",
+  display_name = coalesce(
+    lookup(each.value, "display_name", null),
     "Service account ${each.value.name} for ${each.value.parent}."
   )
   context = merge(local.ctx, {
@@ -185,7 +190,10 @@ module "automation-service-accounts-iam" {
   source = "../iam-service-account"
   for_each = {
     for k, v in local.automation_sas :
-    k => v if lookup(v, "iam_sa_roles", null) != null || lookup(v, "iam_sa_bindings", null) != null
+    k => v if(
+      try(length(v.iam_sa_roles), 0) > 0 ||
+      try(length(v.iam_sa_bindings), 0) > 0
+    )
   }
   project_id = each.value.automation_project
   prefix     = each.value.prefix

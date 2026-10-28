@@ -36,8 +36,9 @@ variable "projects" {
     })), {})
     automation = optional(object({
       project = string
+      prefix  = optional(string)
       bucket = optional(object({
-        location                    = string
+        location                    = optional(string)
         create                      = optional(bool, true)
         encryption_key              = optional(string)
         force_destroy               = optional(bool)
@@ -46,7 +47,7 @@ variable "projects" {
         public_access_prevention    = optional(string)
         storage_class               = optional(string, "STANDARD")
         uniform_bucket_level_access = optional(bool, true)
-        versioning                  = optional(bool)
+        versioning                  = optional(bool, false)
         iam                         = optional(map(list(string)), {})
         iam_bindings = optional(map(object({
           members = list(string)
@@ -119,8 +120,10 @@ variable "projects" {
         soft_delete_retention = optional(number)
       }))
       service_accounts = optional(map(object({
-        description = optional(string)
-        iam         = optional(map(list(string)), {})
+        description  = optional(string)
+        display_name = optional(string)
+        prefix       = optional(string)
+        iam          = optional(map(list(string)), {})
         iam_bindings = optional(map(object({
           members = list(string)
           role    = string
@@ -199,6 +202,7 @@ variable "projects" {
           }))
         })), {})
         iam_storage_roles = optional(map(list(string)), {})
+        tag_bindings      = optional(map(string), {})
       })), {})
     }))
     billing_account = optional(string)
@@ -317,7 +321,7 @@ variable "projects" {
       storage_class               = optional(string, "STANDARD")
       tag_bindings                = optional(map(string), {})
       uniform_bucket_level_access = optional(bool, true)
-      versioning                  = optional(bool)
+      versioning                  = optional(bool, false)
       website = optional(object({
         main_page_suffix = optional(string)
         not_found_page   = optional(string)
