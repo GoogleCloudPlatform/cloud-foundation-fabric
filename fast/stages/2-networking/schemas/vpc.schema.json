@@ -194,15 +194,168 @@
       "patternProperties": {
         "^[a-z0-9-]+$": {
           "type": "object",
+          "additionalProperties": false,
           "required": [
             "region"
           ],
           "properties": {
-            "region": {
-              "type": "string"
+            "addresses": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "config_port_allocation": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "enable_endpoint_independent_mapping": {
+                  "type": "boolean"
+                },
+                "enable_dynamic_port_allocation": {
+                  "type": "boolean"
+                },
+                "min_ports_per_vm": {
+                  "type": "number"
+                },
+                "max_ports_per_vm": {
+                  "type": "number"
+                }
+              }
+            },
+            "config_source_subnetworks": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "all": {
+                  "type": "boolean"
+                },
+                "primary_ranges_only": {
+                  "type": "boolean"
+                },
+                "subnetworks": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "self_link"
+                    ],
+                    "properties": {
+                      "self_link": {
+                        "type": "string"
+                      },
+                      "all_ranges": {
+                        "type": "boolean"
+                      },
+                      "primary_range": {
+                        "type": "boolean"
+                      },
+                      "secondary_ranges": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "config_timeouts": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "icmp": {
+                  "type": "number"
+                },
+                "tcp_established": {
+                  "type": "number"
+                },
+                "tcp_time_wait": {
+                  "type": "number"
+                },
+                "tcp_transitory": {
+                  "type": "number"
+                },
+                "udp": {
+                  "type": "number"
+                }
+              }
+            },
+            "endpoint_types": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "ENDPOINT_TYPE_VM",
+                  "ENDPOINT_TYPE_SWG",
+                  "ENDPOINT_TYPE_MANAGED_PROXY_LB"
+                ]
+              }
+            },
+            "logging_filter": {
+              "type": "string",
+              "enum": [
+                "ERRORS_ONLY",
+                "TRANSLATIONS_ONLY",
+                "ALL"
+              ]
             },
             "num_nat_ips": {
               "type": "number"
+            },
+            "region": {
+              "type": "string"
+            },
+            "router_asn": {
+              "type": "number"
+            },
+            "router_create": {
+              "type": "boolean"
+            },
+            "router_name": {
+              "type": "string"
+            },
+            "rules": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "match"
+                ],
+                "properties": {
+                  "description": {
+                    "type": "string"
+                  },
+                  "match": {
+                    "type": "string"
+                  },
+                  "rule_number": {
+                    "type": "number"
+                  },
+                  "source_ips": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "source_ranges": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            },
+            "type": {
+              "type": "string",
+              "enum": [
+                "PUBLIC",
+                "PRIVATE"
+              ]
             }
           }
         }

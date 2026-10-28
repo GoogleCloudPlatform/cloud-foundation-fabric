@@ -22,18 +22,32 @@ variable "addresses" {
 }
 
 variable "config_port_allocation" {
-  description = "Configuration for how to assign ports to virtual machines. min_ports_per_vm and max_ports_per_vm have no effect unless enable_dynamic_port_allocation is set to 'true'."
+  description = "Configuration for how to assign ports to virtual machines. enable_endpoint_independent_mapping defaults to true for PUBLIC NAT and false for PRIVATE NAT; enable_dynamic_port_allocation defaults to false for PUBLIC NAT and true for PRIVATE NAT. min_ports_per_vm and max_ports_per_vm have no effect unless enable_dynamic_port_allocation is set to 'true'."
   type = object({
-    enable_endpoint_independent_mapping = optional(bool, true)
-    enable_dynamic_port_allocation      = optional(bool, false)
+    enable_endpoint_independent_mapping = optional(bool)
+    enable_dynamic_port_allocation      = optional(bool)
     min_ports_per_vm                    = optional(number)
     max_ports_per_vm                    = optional(number, 65536)
   })
   default  = {}
   nullable = false
   validation {
-    condition     = var.config_port_allocation.enable_dynamic_port_allocation ? var.config_port_allocation.enable_endpoint_independent_mapping == false : true
+    condition = (
+      var.config_port_allocation.enable_dynamic_port_allocation == true
+      ? coalesce(
+        var.config_port_allocation.enable_endpoint_independent_mapping,
+        var.type != "PRIVATE"
+      ) == false
+      : true
+    )
     error_message = "You must set enable_endpoint_independent_mapping to false to set enable_dynamic_port_allocation to true."
+  }
+  validation {
+    condition = (
+      var.type != "PRIVATE" ||
+      var.config_port_allocation.enable_endpoint_independent_mapping != true
+    )
+    error_message = "Endpoint-independent mapping cannot be enabled for PRIVATE NAT."
   }
 }
 
@@ -64,6 +78,18 @@ variable "config_source_subnetworks" {
       var.config_source_subnetworks.primary_ranges_only == true) != (length(try(var.config_source_subnetworks.subnetworks, [])) > 0)
     )
     error_message = "Cannot use config_source_subnetworks.all and config_source_subnetworks.primary_ranges_only together with config_source_subnetworks.subnetworks."
+  }
+  validation {
+    condition = (
+      var.type != "PRIVATE" || (
+        var.config_source_subnetworks.primary_ranges_only != true &&
+        alltrue([
+          for s in var.config_source_subnetworks.subnetworks :
+          s.all_ranges == true
+        ])
+      )
+    )
+    error_message = "Private NAT does not support primary_ranges_only = true or subnetworks with all_ranges = false."
   }
 }
 
@@ -162,6 +188,7 @@ variable "rules" {
   type = list(object({
     description   = optional(string)
     match         = string
+    rule_number   = optional(number)
     source_ips    = optional(list(string))
     source_ranges = optional(list(string))
   }))
@@ -174,6 +201,18 @@ variable "rules" {
     ])
 
     error_message = "All rules must specify either source_ips or source_ranges."
+  }
+  validation {
+    condition = (
+      length(distinct([
+        for i, r in var.rules : coalesce(r.rule_number, i)
+      ])) == length(var.rules) &&
+      alltrue([
+        for i, r in var.rules :
+        coalesce(r.rule_number, i) >= 0 && coalesce(r.rule_number, i) <= 65000
+      ])
+    )
+    error_message = "Resolved rule numbers (rule_number or 0-based list index) must be unique and between 0 and 65000."
   }
 }
 
