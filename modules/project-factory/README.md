@@ -136,7 +136,7 @@ This allows granting broad roles on the project while ensuring that the automati
 
 Automation resources are defined via the `automation` attribute in project configurations, which supports:
 
-- a mandatory `project` attribute to define the external controlling project; this attribute does not support interpolation and needs to be explicit
+- a mandatory `project` attribute to define the external controlling project, either explicitly or via context interpolation (e.g. `$project_ids:iac-core-0`)
 - an optional `service_accounts` list where each element defines a service account in the controlling project
 - an optional `bucket` which defines a bucket and/org managed folders in the controlling project; bucket names cannot use interpolation so where bucket creation is not needed, they need to be explicit
 
@@ -836,7 +836,7 @@ service_agents_project_bindings:
     project: $project_ids:dev-ta-app0-be
     role: roles/storage.objectViewer
 automation:
-  project: test-pf-teams-iac-0
+  project: $project_ids:teams-iac-0
   # prefix used for automation resources can be explicitly set if needed
   # prefix: test-pf-dev-tb-0-0
   service_accounts:
@@ -1057,10 +1057,19 @@ output "test_1_automation" {
 parent: folders/1234567890
 name: Folder 0
 automation:
-  project: test-0
+  project: $project_ids:test-0
   bucket: null
   service_accounts:
-    folder-sa: {}
+    folder-sa:
+      iam_folder_roles:
+        $folder_ids:folder-0:
+          - roles/resourcemanager.projectCreator
+      iam_project_roles:
+        $project_ids:test-0:
+          - roles/viewer
+      iam_sa_roles:
+        $service_account_ids:folder-hcl/automation/hcl-sa:
+          - roles/iam.serviceAccountTokenCreator
 # tftest-file id=folder-0 path=data/folders/folder-0/.config.yaml schema=folder.schema.json
 ```
 

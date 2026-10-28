@@ -1,0 +1,67 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# yaml-language-server: $schema=../../../schemas/firewall-policy.schema.json
+
+parent_id: $folder_ids:networking
+attachments:
+  networking: $folder_ids:networking
+name: network-policy
+ingress_rules:
+  allow-healthchecks:
+    description: Enable SSH, HTTP and HTTPS healthchecks
+    priority: 1001
+    match:
+      source_ranges:
+        - $cidr_ranges_sets:healthchecks
+      layer4_configs:
+        - protocol: tcp
+          ports: ["22", "80", "443"]
+
+  allow-ssh-from-iap:
+    description: Enable SSH from IAP
+    priority: 1002
+    enable_logging: true
+    match:
+      source_ranges:
+        - 35.235.240.0/20
+      layer4_configs:
+        - protocol: tcp
+          ports: ["22"]
+
+  allow-icmp:
+    description: Enable ICMP
+    priority: 1003
+    match:
+      source_ranges:
+        - 0.0.0.0/0
+      layer4_configs:
+        - protocol: icmp
+
+  allow-nat-ranges:
+    description: Enable NAT ranges for VPC serverless connector
+    priority: 1004
+    match:
+      source_ranges:
+        - 107.178.230.64/26
+        - 35.199.224.0/19
+egress_rules:
+  deny-example-ip:
+    description: Allow internal traffic within the VPC
+    priority: 2000
+    match:
+      destination_ranges:
+        - 1.2.3.4/32
+      layer4_configs:
+        - protocol: all
