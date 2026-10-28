@@ -16,6 +16,10 @@
 
 IF_NAME=$1
 IF_NUMBER=${IF_NAME//eth/}
+if ! [[ "$IF_NUMBER" =~ ^[0-9]+$ ]]; then
+	echo "Invalid interface number derived from $IF_NAME" >&2
+	exit 1
+fi
 IF_GW=$(curl http://metadata.google.internal/computeMetadata/v1/instance/network-interfaces/"$IF_NUMBER"/gateway -H "Metadata-Flavor: Google")
 IF_IP=$(curl http://metadata.google.internal/computeMetadata/v1/instance/network-interfaces/"$IF_NUMBER"/ip -H "Metadata-Flavor: Google")
 IF_NETMASK=$(curl http://metadata.google.internal/computeMetadata/v1/instance/network-interfaces/"$IF_NUMBER"/subnetmask -H "Metadata-Flavor: Google")

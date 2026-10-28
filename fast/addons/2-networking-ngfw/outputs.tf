@@ -15,11 +15,23 @@
  */
 
 locals {
+  _o_cas = flatten([
+    for k, v in local._cas_modules : [
+      for name, chain in v.ca_chains : {
+        chain = chain
+        key   = "${k}-${name}"
+      }
+    ]
+  ])
+  ca_chains = {
+    for k in local._o_cas : k.key => k.chain
+  }
   security_profile_group_ids = {
     for k, v in google_network_security_security_profile_group.default :
     k => "//networksecurity.googleapis.com/${v.id}"
   }
   tfvars = {
+    ca_chains = local.ca_chains
     ngfw = {
       associations = {
         for k, v in google_network_security_firewall_endpoint_association.default :
@@ -31,6 +43,20 @@ locals {
     }
     security_profile_groups = local.security_profile_group_ids
   }
+}
+
+resource "local_file" "ca_chains" {
+  for_each        = var.outputs_location == null ? {} : local.ca_chains
+  file_permission = "0644"
+  filename        = "${try(pathexpand(var.outputs_location), "")}/ca-chains/${var.names.output_files_prefix}/${each.key}.pem"
+  content         = each.value
+}
+
+resource "google_storage_bucket_object" "ca_chains" {
+  for_each = local.ca_chains
+  bucket   = var.automation.outputs_bucket
+  name     = "ca-chains/${var.names.output_files_prefix}/${each.key}.pem"
+  content  = each.value
 }
 
 resource "local_file" "tfvars" {

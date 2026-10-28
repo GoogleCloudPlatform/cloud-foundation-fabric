@@ -83,9 +83,14 @@ locals {
           }
         }
       }
-      _is_regular    = !try(v.psc == true, false) && !try(v.proxy_only == true, false)
-      _is_psc        = try(v.psc == true, false)
-      _is_proxy_only = try(v.proxy_only == true, false)
+      _is_regular = (
+        !try(v.psc == true, false) &&
+        !try(v.proxy_only == true, false) &&
+        !try(v.private_nat == true, false)
+      )
+      _is_psc         = try(v.psc == true, false)
+      _is_proxy_only  = try(v.proxy_only == true, false)
+      _is_private_nat = try(v.private_nat == true, false)
     }
   }
   _iam_subnets = concat(
@@ -93,6 +98,7 @@ locals {
   )
   all_subnets = merge(
     { for k, v in google_compute_subnetwork.subnetwork : k => v },
+    { for k, v in google_compute_subnetwork.private_nat : k => v },
     { for k, v in google_compute_subnetwork.proxy_only : k => v },
     { for k, v in google_compute_subnetwork.psc : k => v }
   )
@@ -151,7 +157,7 @@ locals {
       for s in var.subnets_private_nat :
       "${lookup(local.ctx.locations, s.region, s.region)}/${s.name}" => s
     },
-    # { for k, v in local._factory_subnets : k => v if v._is_proxy_only },
+    { for k, v in local._factory_subnets : k => v if v._is_private_nat }
   )
   subnets_psc = merge(
     {
@@ -211,9 +217,7 @@ resource "google_compute_subnetwork" "subnetwork" {
       range_name = secondary_ip_range.key
       ip_cidr_range = try(
         local.ctx.cidr_ranges[secondary_ip_range.value.ip_cidr_range],
-        secondary_ip_range.value.ip_cidr_range,
-        local.ctx.cidr_ranges[secondary_ip_range.value],
-        secondary_ip_range.value
+        secondary_ip_range.value.ip_cidr_range
       )
       reserved_internal_range = (
         try(secondary_ip_range.value.reserved_internal_range, null) != null

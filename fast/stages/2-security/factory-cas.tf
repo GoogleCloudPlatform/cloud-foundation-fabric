@@ -32,6 +32,12 @@ locals {
       iam_bindings          = lookup(v, "iam_bindings", {})
       iam_bindings_additive = lookup(v, "iam_bindings_additive", {})
       iam_by_principals     = lookup(v, "iam_by_principals", {})
+      is_subordinate = anytrue([
+        for ck, cv in lookup(v, "ca_configs", {}) : (
+          try(cv.is_self_signed, true) == false ||
+          try(cv.subordinate_config, null) != null
+        )
+      ])
       ca_pool_config = {
         create_pool = try(v.ca_pool_config.create_pool, null) == null ? null : {
           name = try(v.ca_pool_config.create_pool.name, k)
@@ -89,7 +95,7 @@ locals {
 
 module "cas" {
   source                = "../../../modules/certificate-authority-service"
-  for_each              = local.ca_pools
+  for_each              = { for k, v in local.ca_pools : k => v if !v.is_subordinate }
   project_id            = each.value.project_id
   location              = each.value.location
   ca_pool_config        = each.value.ca_pool_config
@@ -102,4 +108,33 @@ module "cas" {
     project_ids = merge(local.ctx.project_ids, module.factory.project_ids)
   })
   depends_on = [module.factory]
+}
+
+module "cas-subordinate" {
+  source                = "../../../modules/certificate-authority-service"
+  for_each              = { for k, v in local.ca_pools : k => v if v.is_subordinate }
+  project_id            = each.value.project_id
+  location              = each.value.location
+  ca_pool_config        = each.value.ca_pool_config
+  ca_configs            = each.value.ca_configs
+  iam                   = each.value.iam
+  iam_bindings          = each.value.iam_bindings
+  iam_bindings_additive = each.value.iam_bindings_additive
+  iam_by_principals     = each.value.iam_by_principals
+  context = merge(local.ctx, {
+    ca_ids = merge(
+      local.ctx.ca_ids,
+      merge([
+        for pk, pv in module.cas : {
+          for ck, cv in pv.ca_ids : "${pk}-${ck}" => cv
+        }
+      ]...)
+    )
+    ca_pools = merge(
+      local.ctx.ca_pools,
+      { for k, v in module.cas : k => v.ca_pool_id }
+    )
+    project_ids = merge(local.ctx.project_ids, module.factory.project_ids)
+  })
+  depends_on = [module.factory, module.cas]
 }

@@ -39,12 +39,16 @@
   <br>*additional properties: false*
   - **prefix**: *string*
   - ⁺**project**: *string*
-  - **bucket**: *reference([bucket](#refs-bucket))*
+  - **bucket**: *oneof*
+    - *null*
+    - *reference([bucket](#refs-bucket))*
   - **service_accounts**: *object*
     <br>*additional properties: false*
     - **`^[a-z0-9-]+$`**: *object*
       <br>*additional properties: false*
+      - **display_name**: *string*
       - **description**: *string*
+      - **prefix**: *string*
       - **iam**: *reference([iam](#refs-iam))*
       - **iam_bindings**: *reference([iam_bindings](#refs-iam_bindings))*
       - **iam_bindings_additive**: *reference([iam_bindings_additive](#refs-iam_bindings_additive))*
@@ -145,7 +149,8 @@
 - **name**: *string*
 - **org_policies**: *object*
   <br>*additional properties: false*
-  - **`^[a-z]+\.`**: *object*
+  - **`^(dry_run:)?[a-z-]+[a-zA-Z0-9\.]+$`**: *object*
+    <br>*additional properties: false*
     - **inherit_from_parent**: *boolean*
     - **reset**: *boolean*
     - **rules**: *array*
@@ -168,6 +173,7 @@
           - **expression**: *string*
           - **location**: *string*
           - **title**: *string*
+        - **parameters**: *string*
 - **pam_entitlements**: *reference([pam_entitlements](#refs-pam_entitlements))*
 - **assured_workload_config**: *reference([assured_workload_config](#refs-assured_workload_config))*
 - **parent**: *string*
@@ -196,12 +202,45 @@
 - **bucket**<a name="refs-bucket"></a>: *object*
   <br>*additional properties: false*
   - **name**: *string*
+  - **create**: *boolean*
+  - **encryption_key**: *string*
   - **iam**: *reference([iam](#refs-iam))*
   - **iam_bindings**: *reference([iam_bindings](#refs-iam_bindings))*
   - **iam_bindings_additive**: *reference([iam_bindings_additive](#refs-iam_bindings_additive))*
   - **force_destroy**: *boolean*
   - **labels**: *reference([labels](#refs-labels))*
+  - **lifecycle_rules**: *object*
+    <br>*additional properties: false*
+    - **`^[a-zA-Z0-9_-]+$`**: *object*
+      <br>*additional properties: false*
+      - ⁺**action**: *object*
+        <br>*additional properties: false*
+        - ⁺**type**: *string*
+          <br>*enum: ['Delete', 'SetStorageClass', 'AbortIncompleteMultipartUpload']*
+        - **storage_class**: *string*
+      - ⁺**condition**: *object*
+        <br>*additional properties: false*
+        - **age**: *number*
+        - **created_before**: *string*
+        - **custom_time_before**: *string*
+        - **days_since_custom_time**: *number*
+        - **days_since_noncurrent_time**: *number*
+        - **matches_prefix**: *array*
+          - items: *string*
+        - **matches_storage_class**: *array*
+          - items: *string*
+            <br>*enum: ['STANDARD', 'MULTI_REGIONAL', 'REGIONAL', 'NEARLINE', 'COLDLINE', 'ARCHIVE', 'DURABLE_REDUCED_AVAILABILITY']*
+        - **matches_suffix**: *array*
+          - items: *string*
+        - **noncurrent_time_before**: *string*
+        - **num_newer_versions**: *number*
+        - **with_state**: *string*
+          <br>*enum: ['LIVE', 'ARCHIVED', 'ANY']*
   - **location**: *string*
+  - **logging_config**: *object*
+    <br>*additional properties: false*
+    - ⁺**log_bucket**: *string*
+    - **log_object_prefix**: *string*
   - **managed_folders**: *object*
     <br>*additional properties: false*
     - **`^[a-zA-Z0-9][a-zA-Z0-9_/-]+$`**: *object*
@@ -213,6 +252,11 @@
   - **prefix**: *string*
   - **public_access_prevention**: *string*
     <br>*enum: ['enforced', 'inherited']*
+  - **retention_policy**: *object*
+    <br>*additional properties: false*
+    - **retention_period**: *string*
+    - **is_locked**: *boolean*
+  - **soft_delete_retention**: *number*
   - **storage_class**: *string*
   - **uniform_bucket_level_access**: *boolean*
   - **versioning**: *boolean*
@@ -343,7 +387,7 @@
     - items: *string*
 - **iam_folder_roles**<a name="refs-iam_folder_roles"></a>: *object*
   <br>*additional properties: false*
-  - **`^[a-z0-9-]+$`**: *array*
+  - **`^(?:(folders/)?[a-z0-9-]+|\$folder_ids:[a-z0-9_/-]+)$`**: *array*
     - items: *string*
 - **iam_organization_roles**<a name="refs-iam_organization_roles"></a>: *object*
   <br>*additional properties: false*
@@ -351,15 +395,15 @@
     - items: *string*
 - **iam_project_roles**<a name="refs-iam_project_roles"></a>: *object*
   <br>*additional properties: false*
-  - **`^[a-z0-9-]+$`**: *array*
+  - **`^(?:([a-z0-9.]+:)?[a-z0-9-]+|\$project_ids:[a-z0-9_/-]+)$`**: *array*
     - items: *string*
 - **iam_sa_roles**<a name="refs-iam_sa_roles"></a>: *object*
   <br>*additional properties: false*
-  - **`^[a-z0-9-]+$`**: *array*
+  - **`^(?:\$service_account_ids:|projects/)`**: *array*
     - items: *string*
 - **iam_storage_roles**<a name="refs-iam_storage_roles"></a>: *object*
   <br>*additional properties: false*
-  - **`^[a-z0-9-]+$`**: *array*
+  - **`^(?:[a-z0-9_.-]+|\$storage_buckets:[a-z0-9_/-]+)$`**: *array*
     - items: *string*
 - **labels**<a name="refs-labels"></a>: *object*
   <br>*additional properties: false*

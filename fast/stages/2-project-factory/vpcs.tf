@@ -21,7 +21,7 @@ module "vpc-factory" {
   data_defaults  = local.vpc_defaults.defaults
   data_overrides = local.vpc_defaults.overrides
   factories_config = {
-    basepath = var.factories_config.dataset
+    basepath = local.dataset
     paths = {
       vpcs = var.factories_config.paths.vpcs
     }

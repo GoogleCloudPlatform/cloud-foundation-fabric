@@ -14,6 +14,12 @@
  * limitations under the License.
  */
 
+locals {
+  version_suffix = (
+    terraform.workspace == "default" ? "" : "-${terraform.workspace}"
+  )
+}
+
 output "projects" {
   description = "Attributes for managed projects."
   value       = module.factory.projects
@@ -27,7 +33,7 @@ output "vpcs" {
 resource "google_storage_bucket_object" "version" {
   count          = fileexists("fast_version.txt") ? 1 : 0
   bucket         = var.automation.outputs_bucket
-  name           = "versions/${var.stage_name}-version.txt"
+  name           = "versions/${var.stage_name}-version${local.version_suffix}.txt"
   source         = "fast_version.txt"
   source_md5hash = filemd5("fast_version.txt")
 }

@@ -16,9 +16,22 @@
 
 locals {
   aliased_project_id = lookup(
-    var.host_project_ids, var.project_id, var.project_id
+    local.ctx_lookup.project_ids, var.project_id, var.project_id
   )
-  project_id = try(module.project[0].project_id, var.project_id)
+  ctx = merge(var.context, {
+    ca_ids      = merge(var.context.ca_ids, var.ca_ids)
+    ca_pools    = merge(var.context.ca_pools, var.ca_pools)
+    project_ids = merge(var.context.project_ids, var.host_project_ids)
+    vpcs        = merge(var.context.vpcs, var.vpc_self_links)
+  })
+  ctx_lookup = {
+    for k, v in local.ctx : k => merge(
+      v,
+      { for kk, vv in v : "${local.ctx_p}${k}:${kk}" => vv }
+    ) if k != "condition_vars"
+  }
+  ctx_p      = "$"
+  project_id = try(module.project[0].project_id, local.aliased_project_id)
 }
 
 module "project" {

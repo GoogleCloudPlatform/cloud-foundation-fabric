@@ -34,6 +34,22 @@ variable "automation" {
   })
 }
 
+variable "ca_ids" {
+  # tfdoc:variable:source 2-security
+  description = "Certificate authority ids."
+  type        = map(string)
+  nullable    = false
+  default     = {}
+}
+
+variable "ca_pools" {
+  # tfdoc:variable:source 2-security
+  description = "Certificate authority pool ids."
+  type        = map(string)
+  nullable    = false
+  default     = {}
+}
+
 variable "host_project_ids" {
   # tfdoc:variable:source 2-networking
   description = "Networking stage host project id aliases."

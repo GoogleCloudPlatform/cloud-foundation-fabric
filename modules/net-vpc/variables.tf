@@ -461,7 +461,10 @@ variable "subnets" {
       for s in var.subnets :
       (
         length([
-          for field in [s.ip_cidr_range, s.reserved_internal_range, s.ip_collection] :
+          for field in [
+            try(coalesce(s.ip_cidr_range, s.reserved_internal_range), null),
+            s.ip_collection
+          ] :
           field if field != null
         ]) == 1
         ) || (
@@ -471,17 +474,17 @@ variable "subnets" {
         ]) == 0 && try(s.ipv6.ipv6_only, false) == true
       )
     ])
-    error_message = "Each subnet must specify exactly one of ip_cidr_range, reserved_internal_range, or ip_collection, or all three can be null for IPv6-only subnets (ipv6.ipv6_only = true)."
+    error_message = "Each subnet must specify ip_cidr_range and/or reserved_internal_range, or ip_collection, or all three can be null for IPv6-only subnets (ipv6.ipv6_only = true)."
   }
   validation {
     condition = alltrue([
       for s in var.subnets :
       s.secondary_ip_ranges == null || alltrue([
         for range_name, range_config in coalesce(s.secondary_ip_ranges, {}) :
-        (range_config.ip_cidr_range != null) != (range_config.reserved_internal_range != null)
+        range_config.ip_cidr_range != null || range_config.reserved_internal_range != null
       ])
     ])
-    error_message = "Each secondary IP range must specify either ip_cidr_range or reserved_internal_range, but not both."
+    error_message = "Each secondary IP range must specify ip_cidr_range and/or reserved_internal_range."
   }
 }
 

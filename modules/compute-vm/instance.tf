@@ -125,6 +125,10 @@ resource "google_compute_instance" "default" {
         provisioned_iops       = var.boot_disk.initialize_params.hyperdisk.provisioned_iops
         provisioned_throughput = var.boot_disk.initialize_params.hyperdisk.provisioned_throughput
         storage_pool           = var.boot_disk.initialize_params.hyperdisk.storage_pool
+        labels = merge(var.labels, {
+          disk_name = "boot"
+          disk_type = var.boot_disk.initialize_params.type
+        })
       }
     }
   }
@@ -262,6 +266,7 @@ resource "google_compute_instance" "default" {
     iterator = config
     content {
       interface = config.value
+      size      = var.scratch_disks.size
     }
   }
 

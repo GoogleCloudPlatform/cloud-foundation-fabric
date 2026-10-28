@@ -276,6 +276,34 @@ resource "google_compute_region_url_map" "default" {
           strip_query            = default_url_redirect.value.strip_query
         }
       }
+      dynamic "header_action" {
+        for_each = (
+          m.value.header_action == null
+          ? []
+          : [m.value.header_action]
+        )
+        iterator = h
+        content {
+          request_headers_to_remove  = h.value.request_remove
+          response_headers_to_remove = h.value.response_remove
+          dynamic "request_headers_to_add" {
+            for_each = coalesce(h.value.request_add, {})
+            content {
+              header_name  = request_headers_to_add.key
+              header_value = request_headers_to_add.value.value
+              replace      = request_headers_to_add.value.replace
+            }
+          }
+          dynamic "response_headers_to_add" {
+            for_each = coalesce(h.value.response_add, {})
+            content {
+              header_name  = response_headers_to_add.key
+              header_value = response_headers_to_add.value.value
+              replace      = response_headers_to_add.value.replace
+            }
+          }
+        }
+      }
       dynamic "path_rule" {
         for_each = toset(coalesce(m.value.path_rules, []))
         content {
@@ -529,7 +557,7 @@ resource "google_compute_region_url_map" "default" {
                   exact_match   = h.value.type == "exact" ? h.value.value : null
                   invert_match  = h.value.invert_match
                   prefix_match  = h.value.type == "prefix" ? h.value.value : null
-                  present_match = h.value.type == "present" ? h.value.value : null
+                  present_match = h.value.type == "present" ? true : null
                   regex_match   = h.value.type == "regex" ? h.value.value : null
                   suffix_match  = h.value.type == "suffix" ? h.value.value : null
                   dynamic "range_match" {

@@ -15,6 +15,7 @@
     - [Delegated Public Zones](#delegated-public-zones)
   - [Firewall Policies](#firewall-policies)
   - [Cloud NAT and Routers](#cloud-nat-and-routers)
+  - [Network Virtual Appliances (NVAs)](#network-virtual-appliances-nvas)
   - [VPC Connectivity](#vpc-connectivity)
 - [Context-based interpolation](#context-based-interpolation)
 - [Files](#files)
@@ -60,33 +61,35 @@ It currently implements the following:
 
 - **Hub and spoke (w/ NCC)**: Environment-based VPCs interconnected through an NCC full-mesh, resulting in full routing line-of-sight between spokes ([dataset](./datasets/hub-and-spokes-ncc/))
 - **Hub and spoke (w/ NVA)**: Environment-based VPCs interconnected through a Network Virtual Appliance, allowing for centralized traffic inspection and control ([dataset](./datasets/hub-and-spokes-nva/))
+- **Hub and spoke (w/ NVA as NCC Router Appliance)**: Environment-based VPCs attached to two NCC hubs, with multi-region NVAs peering via BGP with Cloud Routers as Router Appliance spokes; traffic inspection without load balancers or static routes, with regional affinity and cross-region failover ([dataset](./datasets/hub-and-spokes-nva-ncc/))
 - **Hub and spoke (w/ VPC Peering)**: Environment-based VPCs interconnected through VPC peering, resulting in full isolation between spokes ([dataset](./datasets/hub-and-spokes-peerings/))
 - **Hub and spoke (w/ VPN)**: Environment-based VPCs interconnected through HA VPN, with full routing line-of-sight between spokes ([dataset](./datasets/hub-and-spokes-vpns/))
 
 ### Defaults file
 
-Configurations defaults are stored in the `defaults.yaml` file in the selected dataset. Relocating the defaults file is good practice to avoid accidental changes from upstream, this is done via the `factories_config.default` variable attribute.
+Configurations defaults are stored in the `defaults.yaml` file in the selected dataset. Relocating the defaults file is good practice to avoid accidental changes from upstream, this is done via the `factories_config.paths.defaults` variable attribute.
 
-Once a suitable place has been found for the file, edit it to match the desired configuration. Several pieces of information coming from the previous stage (prefix, billing account, etc.) are pre-populated in the project defaults so they don't need to be explicitly set.
+Once a suitable place has been found for the file, edit it to match the desired configuration (including `output_files` to configure GCS and optional local output file generation). Several pieces of information coming from the previous stage (prefix, billing account, etc.) are pre-populated in the project defaults so they don't need to be explicitly set.
 
 ### Terraform variables configuration
 
-A tfvars file allows you to control paths for the project factories data and to enable local output files generation. This example shows how to override all the factory paths and how to enable output files.
+A tfvars file allows you to select the dataset and override paths for the factories data. This example shows how to configure `factories_config`:
 
 ```hcl
 factories_config = {
-  defaults              = "/some/path/data/defaults.yaml"
-  dns                   = "/some/path/data/dns/zones"
-  dns-response-policies = "/some/path/data/dns/response-policies"
-  firewall-policies     = "/some/path/data/firewall-policies"
-  folders               = "/some/path/data/folders"
-  interconnect          = "/some/path/data/interconnect"
-  ncc-hubs              = "/some/path/data/ncc-hubs"
-  nvas                  = "/some/path/data/nvas"
-  projects              = "/some/path/data/projects"
-  vpcs                  = "/some/path/data/vpcs"
+  dataset = "datasets/hub-and-spokes-peerings"
+  paths = {
+    defaults              = "/some/path/data/defaults.yaml"
+    dns                   = "/some/path/data/dns/zones"
+    dns_response_policies = "/some/path/data/dns/response-policies"
+    firewall_policies     = "/some/path/data/firewall-policies"
+    folders               = "/some/path/data/folders"
+    ncc_hubs              = "/some/path/data/ncc-hubs"
+    nvas                  = "/some/path/data/nvas"
+    projects              = "/some/path/data/projects"
+    vpcs                  = "/some/path/data/vpcs"
+  }
 }
-outputs_location = "~/fast-config"
 ```
 
 ### Linking FAST output files
@@ -205,7 +208,7 @@ The spoke VPCs have their own private zones for subdomains (e.g., `dev.test.`) a
 
 The factory also supports delegating public zones, which is useful for scenarios where a parent public zone is managed in one project, and you want to delegate a subdomain to a different project.
 
-To configure this, you first define the parent public zone. Then, for the delegated zone, you specify `delegation_config` pointing to the parent zone. This automatically creates the necessary `NS` (and `DS` records if you are using DNSSEC) records in the parent zone.
+To configure this, you first define the parent public zone and specify `delegations` pointing to the delegated child zone. This automatically creates the necessary `NS` (and `DS` records if you are using DNSSEC) records in the parent zone.
 
 Here's an example of how to set this up:
 
@@ -261,14 +264,16 @@ recordsets:
 In this example:
 - A public zone for `gcp.example.com.` is created in the `net-core-0` project.
 - A separate public zone for `dev.gcp.example.com.` is created in the `net-dev-0` project.
-- The `delegation_config` in the parent zone tells the factory to find the child zone named `pub-dev-gcp-example-com` in the `net-dev-0` project and create the necessary `NS` and `DS` records to make the delegation effective.
+- The `delegations` attribute in the parent zone tells the factory to find the child zone named `pub-dev-gcp-example-com` in the `net-dev-0` project and create the necessary `NS` and `DS` records to make the delegation effective.
 
 ### Firewall Policies
 
 This stage supports both VPC-level firewall rules and hierarchical firewall policies.
 
 - **Hierarchical Firewall Policies** are defined in the `firewall-policies` directory. They are attached to folders or the organization and are useful for enforcing baseline security rules across multiple projects (e.g., allowing health checks and IAP access).
-- **VPC Firewall Rules** are defined within each VPC's configuration directory (`vpcs/[vpc-name]/firewall-rules`). These are used for more specific rules tailored to a particular VPC.
+- **VPC Firewall Rules** are defined within each VPC's configuration directory (`vpcs/[vpc-name]/firewall-rules`). These are used for more specific rules tailored to a particular VPC. Rule names must be unique within a project, so VPCs sharing a host project need distinct rule names.
+
+The `$cidr_ranges_sets:` tokens defined in the defaults file `context` are resolved in hierarchical firewall policies only; VPC-level firewall rules need literal ranges.
 
 ### Cloud NAT and Routers
 
@@ -308,6 +313,179 @@ routers:
 # [...]
 ```
 
+Routers can also declare BGP route policies, which VPN tunnels and VLAN attachments then reference by key from their `bgp_peer` configuration.
+
+```yaml
+# [...]
+routers:
+  vpn-router:
+    region: $locations:primary
+    asn: 64514
+    route_policies:
+      import-rfc1918:
+        type: IMPORT
+        terms:
+          - priority: 1
+            match:
+              expression: "destination == '10.0.0.0/8'"
+            actions:
+              - expression: med.set(1000)
+              - expression: accept()
+# [...]
+```
+
+Each term requires at least one action, and takes a list of them applied in the order they are declared; a catch-all term matches `destination.inAnyRange(prefix('0.0.0.0/0').orLonger())`, since the API requires a function call in every match expression.
+
+```yaml
+# in vpcs/[vpc-name]/vpns/[vpn-name].yaml
+router_config:
+  name: $routers:my-vpc/vpn-router
+tunnels:
+  remote-0:
+    bgp_peer:
+      address: 169.254.1.1
+      asn: 64513
+      import_policies:
+        - import-rfc1918
+# [...]
+```
+
+Each policy is created on its router using the map key as name, which is also the name peers use to reference it. Terms are patched in place, so editing a policy does not recreate it or detach it from its peers.
+
+Policies can equally be declared under a VPN's or VLAN attachment's own `router_config` when the router is created by the module rather than by the stage, in which case peers reference them by key in exactly the same way.
+
+> [!NOTE]
+> Cloud Router serializes configuration changes. Updating or deleting several route policies on the same router in a single apply may fail with `Error 400: [...] is not ready, resourceNotReady`. Re-running the apply converges, and `-parallelism=1` avoids the error entirely.
+
+Routers can also declare `interfaces` and BGP `peers` to peer with NVAs attached as NCC Router Appliance spokes (see [NVAs](#network-virtual-appliances-nvas) below). Interfaces belong to a subnet of the router's VPC, and the second interface sets `redundant_interface` to the key of the first. Each interface requires a literal `ip_address` so the NVA factory can render the guest BGP configuration before the router is created. Each peer references an interface by key and sets either `nva` (creating one BGP session per instance of that NVA's Router Appliance spoke in the VPC) or an explicit `address` (with an optional `router_appliance_instance`).
+
+```yaml
+# [...]
+routers:
+  ra-primary:
+    region: $locations:primary
+    asn: 64512
+    custom_advertise:
+      all_subnets: true
+      ip_ranges:
+        "0.0.0.0/0": default
+    interfaces:
+      intf-0:
+        subnet: $subnets:routing/europe-west1/routing-primary
+        ip_address: 10.64.0.252
+      intf-1:
+        subnet: $subnets:routing/europe-west1/routing-primary
+        ip_address: 10.64.0.253
+        redundant_interface: intf-0
+    peers:
+      # Fan-out peer (`nva: <key>`): creates one BGP session per instance of
+      # the `primary` NVA spoke in this VPC (used for active-active ECMP when
+      # all instances share the same import policy)
+      nva-0:
+        interface: intf-0
+        nva: primary
+        asn: 64513
+      nva-1:
+        interface: intf-1
+        nva: primary
+        asn: 64513
+      # Explicit per-instance peer (`address` + `router_appliance_instance`):
+      # targets a single factory-created instance via context tokens so you can
+      # attach distinct active/standby import policies (`import-b` vs `import-c`)
+      primary-b-0:
+        interface: intf-0
+        asn: 64513
+        address: $nva_addresses:primary-b-0/routing
+        router_appliance_instance: $nva_instances:primary-b-0
+        import_policies:
+          - prefer-primary
+      # Explicit peer to an externally managed appliance
+      external-0:
+        interface: intf-0
+        asn: 64514
+        address: 10.64.0.10
+        router_appliance_instance: projects/my-project/zones/europe-west1-b/instances/my-nva
+        route_priority: 200
+        custom_learned_ip_ranges:
+          route_priority: 200
+          ip_ranges:
+            "192.168.0.0/16": onprem
+        md5_authentication_key:
+          name: my-nva
+          key: secret
+# [...]
+```
+
+Peers accept the same attributes as VPN and VLAN attachment BGP peers: `asn`, `address`, `route_priority`, `custom_advertise`, `custom_learned_ip_ranges` (`route_priority` and `ip_ranges` map), `md5_authentication_key` (`name` and `key`), `enable`, and `import_policies` or `export_policies` referencing the router's route policies by key. Explicit peers are named `<peer key>` and fan-out peers are named `<peer key>-<instance key>` (`nva-0-primary-b-0` above), up to 63 characters. Plan-time preconditions reject peers that reference an undefined interface, an NVA without a Router Appliance spoke in the router's VPC, an unknown route policy, or a `redundant_interface` that is not a primary interface on the same router.
+
+Explicit peers can reference factory-created NVA instances through 2 context namespaces, where `<instance key>` is `<nva>-<zone>-<index>`:
+
+- `$nva_instances:<instance key>` resolves to the instance self-link for `router_appliance_instance`
+- `$nva_addresses:<instance key>/<vpc key>` resolves to the IP address of the instance NIC attached to `<vpc key>` for `address`
+
+Use explicit peers when you need per-instance route policies (such as active-passive MED offsets between zone `b` and zone `c`), and use `nva: <key>` fan-out peers when all instances in the spoke share the same policy (active-active ECMP).
+
+### Network Virtual Appliances (NVAs)
+
+The NVA factory ([factory-nva.tf](./factory-nva.tf)) creates multi-NIC appliances from YAML files in the `nvas` directory and connects them to VPCs in 2 ways:
+
+- **ILB sandwich**: one internal passthrough load balancer per VPC fronts the instances, and VPC static routes use the load balancer VIPs as next hops. You configure this mode with `ilb_config`; see the [hub-and-spokes-nva dataset](./datasets/hub-and-spokes-nva/README.md).
+- **NCC Router Appliance**: the instances attach to NCC hubs as Router Appliance spokes and peer over BGP with Cloud Routers, which install dynamic routes through them. You configure this mode with `ncc_ra_config` and `bgp_config`; see the [hub-and-spokes-nva-ncc dataset](./datasets/hub-and-spokes-nva-ncc/README.md).
+
+An NVA can use ILB on some NICs and Router Appliance on others, as long as no single VPC has both an ILB forwarding rule and a Router Appliance spoke for the same NVA.
+
+```yaml
+project_id: $project_ids:net-core-0
+name: primary
+region: $locations:primary
+auto_instance_config:
+  nics:
+    - network: $networks:routing
+      subnet: $subnets:routing/europe-west1/routing-primary
+      masquerade: true
+      # only SNAT internet-bound traffic
+      masquerade_exclude:
+        - 10.0.0.0/8
+    - network: $networks:transit
+      subnet: $subnets:transit/europe-west1/transit-primary
+      # never accept these prefixes from the neighbors on this NIC
+      bgp_inbound_deny:
+        - 0.0.0.0/0
+# instance groups keyed by zone letter drive instance creation in both modes
+instance_groups:
+  b:
+    auto_create_instances: 1
+  c:
+    auto_create_instances: 1
+ncc_ra_config:
+  spokes:
+    - network: $networks:routing
+      hub: $ncc_hubs:routing
+    - network: $networks:transit
+      hub: $ncc_hubs:transit
+      group: $ncc_groups:transit/center
+      include_import_ranges: ["ALL_IPV4_RANGES"]
+      exclude_import_ranges: ["10.99.0.0/16"]
+bgp_config:
+  asn: 64513
+  keepalive: 3
+  holdtime: 9
+```
+
+The NVA YAML fields control instance creation, spoke attachment, and guest routing:
+
+- `instance_groups` sits at the top level of the NVA file and is shared by both modes (`ilb_config.instance_groups` remains supported). Instances are named `nva-<nva>-<zone>-<index>` and keyed `<nva>-<zone>-<index>` in `$nva_instances:` and `$nva_addresses:`. Unmanaged instance group resources are created only when the NVA defines `ilb_config.forwarding_rules`.
+- `ncc_ra_config.spokes` creates one Router Appliance spoke per VPC (`ra-<vpc>-<nva>`) containing every auto-created instance via its NIC in that VPC plus any `instances` listed explicitly (`vm`, `ip`, and optional `name`, with `$nva_instances:` and `$nva_addresses:` tokens supported). `site_to_site_data_transfer` defaults to `true`, and `include_import_ranges` defaults to `["ALL_IPV4_RANGES"]`.
+- `bgp_config` boots auto-created instances on Container-Optimized OS (unless `image` is overridden) with a startup script that runs [FRR](https://frrouting.org/) in a container. The factory derives BGP neighbors from the Cloud Router peers that reference the NVA or its instances, and renders the FRR config to the `nva-frr-config` metadata key. A background daemon on the VM polls `nva-frr-config` every 30 seconds and reloads FRR in place (~1 s graceful restart) without recreating the instance.
+- The FRR config re-advertises routes across NICs without altering MED (`attribute-unchanged med`). You choose between active-passive and active-active ECMP on the Cloud Router `peers`: use explicit per-instance peers (`$nva_addresses:` and `$nva_instances:`) with separate MED import policies (`100` vs `150`) for stateful active-passive without session sync, or use a fan-out peer (`nva: <key>`) with a single shared import policy for active-active ECMP (which hashes forward and return legs independently and requires stateless inspection or cross-instance state sync). See the [NCC Router Appliance dataset](./datasets/hub-and-spokes-nva-ncc/README.md#routing-flow-symmetry-and-active-passive-vs-active-active) for complete active-passive and active-active YAML examples.
+- `routes` and `advertise` on a NIC configure the data plane and control plane separately: `routes` installs static kernel routes in the guest OS via that NIC's subnet gateway (used in both ILB and BGP modes so the kernel knows which interface forwards to a prefix), while `advertise` originates prefixes in FRR via BGP `network` statements toward all BGP neighbors (used only in BGP mode). Because FRR prefers its own locally originated `network` statement (weight `32768`) over eBGP routes from Cloud Router (weight `0`), FRR never installs a BGP route in the kernel for prefixes in `advertise`, so each advertised prefix must be covered by a kernel route from `routes` (or the default route from `masquerade`). `bgp_inbound_deny` rejects the listed prefixes (exact match) from BGP neighbors on that NIC.
+- `masquerade_exclude` lists destination ranges excluded from SNAT on a masquerading NIC so private flows keep their source address and survive an active-to-standby switch. It works in both ILB and BGP modes.
+
+To attach externally managed appliances in Router Appliance mode, create an NVA file with only `ncc_ra_config.spokes[].instances` (omitting `auto_instance_config` and `instance_groups`) and reference it from Cloud Router `peers` via `nva` fan-out or explicit peers. In ILB mode, attach external instances through `instance_groups.<zone>.attach_instances`.
+
+> [!WARNING]
+> GCP blocks deleting a VM while a Router Appliance spoke or a Cloud Router BGP peer references it. Whenever an NVA instance is replaced, the factory replaces its spokes and peers so Terraform destroys them before the VM and recreates them afterward. Any change that recreates an instance therefore drops all BGP sessions of that NVA during `terraform apply`; roll such changes one NVA at a time, or define one NVA YAML file per instance (`primary-b.yaml`, `primary-c.yaml`) so each instance owns separate spokes and peers. BGP configuration edits reload in place through `nva-frr-config` metadata and do not replace the VM.
+
 ### VPC Connectivity
 
 This stage supports multiple ways to connect VPCs to other VPCs or other networks:
@@ -315,7 +493,8 @@ This stage supports multiple ways to connect VPCs to other VPCs or other network
 - **VPC Peering:** Managed via the `peering_config` section in a VPC's `.config.yaml` file.
 - **VLAN Attachments:** Partner or Dedicated Interconnect VLAN attachments are defined in the `vpcs/[vpc-name]/vlan-attachments` directory. By default, they are disabled by passing a non-existing directory via `factories_config`.
 - **VPNs:** High-availability VPNs are defined in the `vpcs/[vpc-name]/vpns` directory.
-- **Network Connectivity Center (NCC):** Managed via the `ncc_config` section in a VPC's `.config.yaml` file.
+- **Network Connectivity Center (NCC):** Managed via the `ncc_config` section in a VPC's `.config.yaml` file for VPC spokes, `ncc_spoke_config` in VPN and VLAN attachment files for hybrid spokes, and `ncc_ra_config` in NVA files for Router Appliance spokes.
+- **Network Virtual Appliances (NVAs):** Defined in the `nvas` directory, see the [dedicated section](#network-virtual-appliances-nvas).
 
 ## Context-based interpolation
 
@@ -360,6 +539,8 @@ Assuming keys of the form `my_folder`, `my_project`, `my_vpc`, etc. this is an e
 - `$ncc_groups:my_hub/my_group`
 - `$ncc_hubs:my_hub`
 - `$networks:my_vpc`
+- `$nva_addresses:my_nva-b-0/my_vpc` (NVA instance NIC address in a VPC)
+- `$nva_instances:my_nva-b-0` (NVA instance self link)
 - `$project_ids:my_project`
 - `$routers:my_vpc/my_vpn`
 - `$vpn_gateways:my_vpc/my_gateway`
@@ -377,10 +558,10 @@ Internally created resources are mapped to context namespaces, and use specific 
 | [factory-dns.tf](./factory-dns.tf) | DNS zones and RPZ factory. | <code>dns</code> · <code>dns-response-policy</code> |  |
 | [factory-firewall-policies.tf](./factory-firewall-policies.tf) | Firewall policies factory. | <code>net-firewall-policy</code> |  |
 | [factory-ncc.tf](./factory-ncc.tf) | NCC Hubs and Groups factory |  | <code>google_network_connectivity_group</code> · <code>google_network_connectivity_hub</code> · <code>google_network_connectivity_spoke</code> |
-| [factory-nva.tf](./factory-nva.tf) | NVA factory | <code>compute-vm</code> · <code>net-lb-int</code> | <code>google_compute_instance_group</code> |
+| [factory-nva.tf](./factory-nva.tf) | NVA factory | <code>compute-vm</code> · <code>net-lb-int</code> | <code>google_compute_health_check</code> · <code>google_compute_instance_group</code> · <code>google_network_connectivity_spoke</code> · <code>terraform_data</code> |
 | [factory-peering.tf](./factory-peering.tf) | VPC Peering factory. |  | <code>google_compute_network_peering</code> |
 | [factory-projects.tf](./factory-projects.tf) | Projects factory. | <code>project-factory</code> |  |
-| [factory-routers.tf](./factory-routers.tf) | Routers factory. |  | <code>google_compute_router</code> |
+| [factory-routers.tf](./factory-routers.tf) | Routers factory. |  | <code>google_compute_router</code> · <code>google_compute_router_interface</code> · <code>google_compute_router_peer</code> · <code>google_compute_router_route_policy</code> · <code>terraform_data</code> |
 | [factory-vlan-attachments.tf](./factory-vlan-attachments.tf) | VLAN attachments factory. | <code>net-vlan-attachment</code> | <code>google_compute_interconnect_attachment_group</code> |
 | [factory-vpcs.tf](./factory-vpcs.tf) | VPC and firewall rules factory. | <code>net-vpc</code> · <code>net-vpc-factory</code> |  |
 | [factory-vpns.tf](./factory-vpns.tf) | VPNs factory. | <code>net-vpn-ha</code> | <code>google_compute_ha_vpn_gateway</code> |
@@ -398,18 +579,19 @@ Internally created resources are mapped to context namespaces, and use specific 
 | [prefix](variables-fast.tf#L75) | Prefix used for resources that need unique names. Use a maximum of 9 chars for organizations, and 11 chars for tenants. | <code>string</code> | ✓ |  |
 | [context](variables.tf#L17) | Context-specific interpolations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [custom_roles](variables-fast.tf#L25) | Custom roles defined at the org level, in key => id format. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [factories_config](variables.tf#L41) | Configuration for the resource factories or external data. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [factories_config](variables.tf#L42) | Configuration for the resource factories or external data. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [folder_ids](variables-fast.tf#L33) | Folders created in the bootstrap stage. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam_principals](variables-fast.tf#L41) | IAM-format principals. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 | [kms_keys](variables-fast.tf#L50) | KMS key ids. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 | [perimeters](variables-fast.tf#L67) | Optional VPC-SC perimeter ids. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 | [project_ids](variables-fast.tf#L85) | Projects created in the bootstrap stage. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [service_accounts](variables-fast.tf#L93) | Service accounts created in the bootstrap stage. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [storage_buckets](variables-fast.tf#L101) | Storage buckets created in the bootstrap stage. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [tag_keys](variables-fast.tf#L109) | FAST-managed resource manager tag keys. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [tag_values](variables-fast.tf#L117) | FAST-managed resource manager tag values. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [tag_vars](variables-fast.tf#L125) | FAST-managed resource manager tag key namespaced names. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [universe](variables-fast.tf#L136) | GCP universe where to deploy projects. The prefix will be prepended to the project id. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [security_profile_groups](variables-fast.tf#L93) | Security profile group ids. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [service_accounts](variables-fast.tf#L101) | Service accounts created in the bootstrap stage. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [storage_buckets](variables-fast.tf#L109) | Storage buckets created in the bootstrap stage. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [tag_keys](variables-fast.tf#L117) | FAST-managed resource manager tag keys. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [tag_values](variables-fast.tf#L125) | FAST-managed resource manager tag values. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [tag_vars](variables-fast.tf#L133) | FAST-managed resource manager tag key namespaced names. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [universe](variables-fast.tf#L144) | GCP universe where to deploy projects. The prefix will be prepended to the project id. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 
 ## Outputs
 

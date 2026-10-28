@@ -34,9 +34,14 @@ locals {
     iam_principals_list = {
       for k, v in local._ctx.iam_principals : k => [v]
     }
-    project_numbers = {
-      for k, v in local._ctx.project_numbers : k => "projects/${v}"
-    }
+    # resource ids in the hierarchy, in the format expected by the API
+    resources = merge(
+      local._ctx.folder_ids,
+      local._ctx.organization_ids,
+      {
+        for k, v in local._ctx.project_numbers : k => "projects/${v}"
+      }
+    )
   })
   ctx_p = "$"
   do_cai_query = (

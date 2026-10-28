@@ -14,9 +14,19 @@
  * limitations under the License.
  */
 
+output "access_policy_ids" {
+  description = "The IAM v3 access policy ids, keyed by policy key."
+  value = {
+    for k, v in google_iam_project_access_policy.default : k => v.id
+  }
+}
+
 output "agent_gateway" {
   description = "The Agent Gateway object."
-  value       = google_network_services_agent_gateway.default
+  value = {
+    for k, v in google_network_services_agent_gateway.default : k => v
+    if k != "protocols"
+  }
 }
 
 output "authz_extension_ids" {
@@ -51,4 +61,11 @@ output "connectivity_template_id" {
 output "id" {
   description = "The Agent Gateway id."
   value       = google_network_services_agent_gateway.default.id
+}
+
+output "policy_binding_ids" {
+  description = "The IAM v3 policy binding ids, keyed by policy key."
+  value = {
+    for k, v in google_iam_projects_policy_binding.default : k => v.id
+  }
 }

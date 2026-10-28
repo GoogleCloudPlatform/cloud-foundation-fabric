@@ -14,305 +14,181 @@
  * limitations under the License.
  */
 
-# tfdoc:file:description Agent Registry IAM bindings.
+# tfdoc:file:description IAM Unified Access Policies and bindings.
 
 locals {
-  # Each registry resource type is governed by a different Terraform
-  # resource, so bindings are grouped by the type of their target.
-  _iam_types = ["agent", "endpoint", "mcp_server", "registry"]
-
-  # Bindings by principal are inverted and merged into the role-keyed
-  # ones, which then fan out to every registry governed by the gateway.
-  _registry_iam_principal_roles = distinct(flatten(values(
-    var.registry_iam_by_principals
-  )))
-
-  _registry_iam_principals = {
-    for r in local._registry_iam_principal_roles : r => [
-      for k, v in var.registry_iam_by_principals :
-      k if try(index(v, r), null) != null
+  # Flatten all principals referenced across rules so legacy IAM v1
+  # prefixes (user:, group:, serviceAccount:, domain:) can be resolved
+  # through context and normalized to IAM v3 principal URIs once.
+  _raw_principals = distinct(flatten([
+    for k, v in var.access_policies : [
+      for rk, rv in v.rules : concat(rv.principals, rv.excluded_principals)
     ]
+  ]))
+
+  _resolved_principals = {
+    for p in local._raw_principals :
+    p => lookup(local.ctx.iam_principals, p, p)
   }
 
-  _registry_iam_roles = {
-    for role in distinct(concat(
-      keys(var.registry_iam), keys(local._registry_iam_principals)
-    )) :
-    role => concat(
-      try(var.registry_iam[role], []),
-      try(local._registry_iam_principals[role], [])
+  _normalized_principals = {
+    for p, rp in local._resolved_principals : p => (
+      startswith(rp, "user:")
+      ? "principal://goog/subject/${trimprefix(rp, "user:")}"
+      : startswith(rp, "group:")
+      ? "principalSet://goog/group/${trimprefix(rp, "group:")}"
+      : startswith(rp, "serviceAccount:")
+      ? "principal://iam.googleapis.com/projects/-/serviceAccounts/${trimprefix(rp, "serviceAccount:")}"
+      : startswith(rp, "domain:")
+      ? "principalSet://goog/cloudIdentityCustomerId/${trimprefix(rp, "domain:")}"
+      : contains(["allUsers", "allAuthenticatedUsers"], rp)
+      ? "principalSet://goog/public:all"
+      : rp
     )
   }
 
-  # Keyed bindings target the whole registry, unless one of the '*_id'
-  # attributes narrows them down to a single registered resource. The
-  # location defaults to the gateway region.
-  _registry_iam_bindings = {
-    for k, v in var.registry_iam_bindings : k => merge(v, {
-      id = coalesce(
-        v.agent_id, v.endpoint_id, v.mcp_server_id, "registry"
-      )
-      location = lookup(
-        local.ctx.locations,
-        coalesce(v.location, var.region),
-        coalesce(v.location, var.region)
-      )
-      type = (
-        v.agent_id != null
-        ? "agent"
-        : (
-          v.endpoint_id != null
-          ? "endpoint"
-          : (v.mcp_server_id != null ? "mcp_server" : "registry")
+  _registry_cel_default = (
+    length(local.registry_locations) == 1
+    ? "destination.is_registered == true && destination.agent_registry.location == '${local.registry_locations[0]}'"
+    : "destination.is_registered == true && destination.agent_registry.location in [${join(", ", [for l in local.registry_locations : "'${l}'"])}]"
+  )
+
+  _access_policy_rules = {
+    for k, v in var.access_policies : k => {
+      for rk, rv in v.rules : rk => merge(rv, {
+        custom_cel = (
+          rv.condition == null
+          ? null
+          : templatestring(rv.condition, var.context.condition_vars)
         )
-      )
-    })
+        excluded_principals = [
+          for p in rv.excluded_principals : local._normalized_principals[p]
+        ]
+        location = (
+          rv.location == null
+          ? local.location
+          : lookup(local.ctx.locations, rv.location, rv.location)
+        )
+        principals = [
+          for p in rv.principals : local._normalized_principals[p]
+        ]
+        registry_location = (
+          rv.location == null
+          ? null
+          : lookup(local.ctx.locations, rv.location, rv.location)
+        )
+      })
+    }
   }
 
-  _registry_iam_bindings_additive = {
-    for k, v in var.registry_iam_bindings_additive : k => merge(v, {
-      id = coalesce(
-        v.agent_id, v.endpoint_id, v.mcp_server_id, "registry"
-      )
-      location = lookup(
-        local.ctx.locations,
-        coalesce(v.location, var.region),
-        coalesce(v.location, var.region)
-      )
-      type = (
-        v.agent_id != null
-        ? "agent"
-        : (
-          v.endpoint_id != null
-          ? "endpoint"
-          : (v.mcp_server_id != null ? "mcp_server" : "registry")
-        )
-      )
-    })
+  access_policies_create = {
+    for k, v in var.access_policies : k => merge(v, {
+      rules = {
+        for rk, rv in local._access_policy_rules[k] : rk => merge(rv, {
+          expression = join(" && ", compact([
+            rv.registry ? (
+              rv.registry_location != null
+              ? "destination.is_registered == true && destination.agent_registry.location == '${rv.registry_location}'"
+              : local._registry_cel_default
+            ) : null,
+            rv.agent_id != null ? (
+              startswith(rv.agent_id, "projects/") || startswith(rv.agent_id, "/projects/")
+              ? "destination.agent_registry.agent.name == '${rv.agent_id}'"
+              : "destination.agent_registry.agent.name == 'projects/${local.project_id}/locations/${rv.location}/agents/${rv.agent_id}'"
+            ) : null,
+            rv.endpoint_id != null ? (
+              startswith(rv.endpoint_id, "projects/") || startswith(rv.endpoint_id, "/projects/")
+              ? "destination.agent_registry.endpoint.name == '${rv.endpoint_id}'"
+              : "destination.agent_registry.endpoint.name == 'projects/${local.project_id}/locations/${rv.location}/endpoints/${rv.endpoint_id}'"
+            ) : null,
+            rv.mcp_server_id != null ? (
+              startswith(rv.mcp_server_id, "projects/") || startswith(rv.mcp_server_id, "/projects/")
+              ? "destination.agent_registry.mcp_server.name == '${rv.mcp_server_id}'"
+              : "destination.agent_registry.mcp_server.name == 'projects/${local.project_id}/locations/${rv.location}/mcpServers/${rv.mcp_server_id}'"
+            ) : null,
+            rv.custom_cel
+          ]))
+        })
+      }
+    }) if v.policy_reuse == null
   }
 
-  registry_iam = merge([
-    for location in local.registry_locations : {
-      for role, members in local._registry_iam_roles :
-      "${location}/${role}" => {
-        location = location
-        members  = members
-        role     = role
+  access_policy_bindings = {
+    for k, v in var.access_policies : k => merge(v, {
+      binding_id = coalesce(v.binding_id, k)
+      policy = (
+        v.policy_reuse == null
+        ? "projects/${local.project_id}/locations/global/accessPolicies/${google_iam_project_access_policy.default[k].access_policy_id}"
+        : lookup(local.ctx.access_policies, v.policy_reuse, v.policy_reuse)
+      )
+      target_resource = (
+        v.target_resource == "project"
+        ? "//cloudresourcemanager.googleapis.com/projects/${local.project_id}"
+        : v.target_resource == "gateway"
+        ? "//networkservices.googleapis.com/${google_network_services_agent_gateway.default.id}"
+        : v.target_resource
+      )
+    }) if v.bind
+  }
+}
+
+resource "google_iam_project_access_policy" "default" {
+  for_each         = local.access_policies_create
+  project          = local.project_id
+  location         = "global"
+  access_policy_id = each.key
+  display_name     = each.value.display_name
+  annotations      = each.value.annotations
+
+  details {
+    dynamic "rules" {
+      for_each = each.value.rules
+      content {
+        description         = rules.value.description
+        effect              = rules.value.effect
+        principals          = rules.value.principals
+        excluded_principals = rules.value.excluded_principals
+
+        operation {
+          permissions          = rules.value.permissions
+          excluded_permissions = rules.value.excluded_permissions
+        }
+
+        dynamic "conditions" {
+          for_each = rules.value.expression == "" ? [] : [""]
+          content {
+            service    = rules.value.condition_service
+            expression = rules.value.expression
+          }
+        }
       }
     }
-  ]...)
-
-  registry_iam_bindings = {
-    for t in local._iam_types : t => {
-      for k, v in local._registry_iam_bindings : k => v if v.type == t
-    }
-  }
-
-  registry_iam_bindings_additive = {
-    for t in local._iam_types : t => {
-      for k, v in local._registry_iam_bindings_additive :
-      k => v if v.type == t
-    }
   }
 }
 
-# Bindings on the whole Agent Registry.
+resource "google_iam_projects_policy_binding" "default" {
+  for_each          = local.access_policy_bindings
+  project           = local.project_id
+  location          = "global"
+  policy_binding_id = each.value.binding_id
+  policy_kind       = "ACCESS"
+  policy            = each.value.policy
+  display_name      = each.value.display_name
+  annotations       = each.value.annotations
 
-resource "google_iap_agent_registry_iam_binding" "authoritative" {
-  provider = google-beta
-  for_each = local.registry_iam
-  project  = local.project_id
-  location = each.value.location
-  role     = lookup(local.ctx.custom_roles, each.value.role, each.value.role)
-  members = [
-    for v in each.value.members : lookup(local.ctx.iam_principals, v, v)
-  ]
-}
-
-resource "google_iap_agent_registry_iam_binding" "bindings" {
-  provider = google-beta
-  for_each = local.registry_iam_bindings.registry
-  project  = local.project_id
-  location = each.value.location
-  role     = lookup(local.ctx.custom_roles, each.value.role, each.value.role)
-  members = [
-    for v in each.value.members : lookup(local.ctx.iam_principals, v, v)
-  ]
+  target {
+    resource = each.value.target_resource
+  }
 
   dynamic "condition" {
-    for_each = each.value.condition == null ? [] : [""]
+    for_each = each.value.binding_condition == null ? [] : [""]
     content {
       expression = templatestring(
-        each.value.condition.expression, var.context.condition_vars
+        each.value.binding_condition.expression, var.context.condition_vars
       )
-      title       = each.value.condition.title
-      description = each.value.condition.description
-    }
-  }
-}
-
-resource "google_iap_agent_registry_iam_member" "members" {
-  provider = google-beta
-  for_each = local.registry_iam_bindings_additive.registry
-  project  = local.project_id
-  location = each.value.location
-  role     = lookup(local.ctx.custom_roles, each.value.role, each.value.role)
-  member = lookup(
-    local.ctx.iam_principals, each.value.member, each.value.member
-  )
-
-  dynamic "condition" {
-    for_each = each.value.condition == null ? [] : [""]
-    content {
-      expression = templatestring(
-        each.value.condition.expression, var.context.condition_vars
-      )
-      title       = each.value.condition.title
-      description = each.value.condition.description
-    }
-  }
-}
-
-# Bindings on registered agents.
-
-resource "google_iap_agent_registry_agent_iam_binding" "bindings" {
-  provider = google-beta
-  for_each = local.registry_iam_bindings.agent
-  project  = local.project_id
-  location = each.value.location
-  agent_id = each.value.id
-  role     = lookup(local.ctx.custom_roles, each.value.role, each.value.role)
-  members = [
-    for v in each.value.members : lookup(local.ctx.iam_principals, v, v)
-  ]
-
-  dynamic "condition" {
-    for_each = each.value.condition == null ? [] : [""]
-    content {
-      expression = templatestring(
-        each.value.condition.expression, var.context.condition_vars
-      )
-      title       = each.value.condition.title
-      description = each.value.condition.description
-    }
-  }
-}
-
-resource "google_iap_agent_registry_agent_iam_member" "members" {
-  provider = google-beta
-  for_each = local.registry_iam_bindings_additive.agent
-  project  = local.project_id
-  location = each.value.location
-  agent_id = each.value.id
-  role     = lookup(local.ctx.custom_roles, each.value.role, each.value.role)
-  member = lookup(
-    local.ctx.iam_principals, each.value.member, each.value.member
-  )
-
-  dynamic "condition" {
-    for_each = each.value.condition == null ? [] : [""]
-    content {
-      expression = templatestring(
-        each.value.condition.expression, var.context.condition_vars
-      )
-      title       = each.value.condition.title
-      description = each.value.condition.description
-    }
-  }
-}
-
-# Bindings on registered endpoints.
-
-resource "google_iap_agent_registry_endpoint_iam_binding" "bindings" {
-  provider    = google-beta
-  for_each    = local.registry_iam_bindings.endpoint
-  project     = local.project_id
-  location    = each.value.location
-  endpoint_id = each.value.id
-  role        = lookup(local.ctx.custom_roles, each.value.role, each.value.role)
-  members = [
-    for v in each.value.members : lookup(local.ctx.iam_principals, v, v)
-  ]
-
-  dynamic "condition" {
-    for_each = each.value.condition == null ? [] : [""]
-    content {
-      expression = templatestring(
-        each.value.condition.expression, var.context.condition_vars
-      )
-      title       = each.value.condition.title
-      description = each.value.condition.description
-    }
-  }
-}
-
-resource "google_iap_agent_registry_endpoint_iam_member" "members" {
-  provider    = google-beta
-  for_each    = local.registry_iam_bindings_additive.endpoint
-  project     = local.project_id
-  location    = each.value.location
-  endpoint_id = each.value.id
-  role        = lookup(local.ctx.custom_roles, each.value.role, each.value.role)
-  member = lookup(
-    local.ctx.iam_principals, each.value.member, each.value.member
-  )
-
-  dynamic "condition" {
-    for_each = each.value.condition == null ? [] : [""]
-    content {
-      expression = templatestring(
-        each.value.condition.expression, var.context.condition_vars
-      )
-      title       = each.value.condition.title
-      description = each.value.condition.description
-    }
-  }
-}
-
-# Bindings on registered MCP servers.
-
-resource "google_iap_agent_registry_mcp_server_iam_binding" "bindings" {
-  provider      = google-beta
-  for_each      = local.registry_iam_bindings.mcp_server
-  project       = local.project_id
-  location      = each.value.location
-  mcp_server_id = each.value.id
-  role          = lookup(local.ctx.custom_roles, each.value.role, each.value.role)
-  members = [
-    for v in each.value.members : lookup(local.ctx.iam_principals, v, v)
-  ]
-
-  dynamic "condition" {
-    for_each = each.value.condition == null ? [] : [""]
-    content {
-      expression = templatestring(
-        each.value.condition.expression, var.context.condition_vars
-      )
-      title       = each.value.condition.title
-      description = each.value.condition.description
-    }
-  }
-}
-
-resource "google_iap_agent_registry_mcp_server_iam_member" "members" {
-  provider      = google-beta
-  for_each      = local.registry_iam_bindings_additive.mcp_server
-  project       = local.project_id
-  location      = each.value.location
-  mcp_server_id = each.value.id
-  role          = lookup(local.ctx.custom_roles, each.value.role, each.value.role)
-  member = lookup(
-    local.ctx.iam_principals, each.value.member, each.value.member
-  )
-
-  dynamic "condition" {
-    for_each = each.value.condition == null ? [] : [""]
-    content {
-      expression = templatestring(
-        each.value.condition.expression, var.context.condition_vars
-      )
-      title       = each.value.condition.title
-      description = each.value.condition.description
+      title       = each.value.binding_condition.title
+      description = each.value.binding_condition.description
+      location    = each.value.binding_condition.location
     }
   }
 }

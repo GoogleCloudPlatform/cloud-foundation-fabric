@@ -45,7 +45,6 @@ locals {
 }
 
 data "google_project" "default" {
-  provider = google-beta
   count = (
     local.connectivity_template_create && var.project_number == null ? 1 : 0
   )
@@ -53,7 +52,6 @@ data "google_project" "default" {
 }
 
 resource "google_network_services_agent_connectivity_template" "default" {
-  provider = google-beta
   count    = local.connectivity_template_create ? 1 : 0
   project  = local.project_id
   location = local.location
@@ -78,7 +76,7 @@ resource "google_network_services_agent_connectivity_template" "default" {
         var.networking_config.dns_peering_config == null ? [] : [""]
       )
       content {
-        domain = var.networking_config.dns_peering_config.domain
+        domains = var.networking_config.dns_peering_config.domains
         target_network = lookup(
           local.ctx.networks,
           var.networking_config.dns_peering_config.target_network,

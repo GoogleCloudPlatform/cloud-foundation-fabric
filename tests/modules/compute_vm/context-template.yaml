@@ -61,6 +61,11 @@ values:
       source_snapshot: null
       source_snapshot_encryption_key: []
       type: PERSISTENT
+    - auto_delete: true
+      disk_size_gb: 3000
+      disk_type: local-ssd
+      interface: NVME
+      type: SCRATCH
     effective_labels:
       goog-terraform-provisioned: 'true'
     enable_display: null

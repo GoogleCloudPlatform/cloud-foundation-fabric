@@ -52,6 +52,10 @@ network_interfaces = [{
   }
 }]
 project_id = "$project_ids:test"
+scratch_disks = {
+  count = 1
+  size  = 3000
+}
 tag_bindings = {
   foo = "$tag_values:test/one"
 }

@@ -302,6 +302,17 @@ variable "chat_agent_security_configs" {
   }
 }
 
+variable "context" {
+  description = "Context-specific interpolations."
+  type = object({
+    kms_keys    = optional(map(string), {})
+    locations   = optional(map(string), {})
+    project_ids = optional(map(string), {})
+  })
+  default  = {}
+  nullable = false
+}
+
 variable "data_stores_configs" {
   description = "The ai-applications datastore configurations."
   type = map(object({
@@ -337,6 +348,7 @@ variable "data_stores_configs" {
     }))
     industry_vertical            = optional(string, "GENERIC")
     json_schema                  = optional(string)
+    kms_key                      = optional(string)
     location                     = optional(string)
     skip_default_schema_creation = optional(bool)
     solution_types               = optional(list(string))
@@ -405,6 +417,17 @@ variable "data_stores_configs" {
     ]))
     error_message = "data_store_configs.sites_search_config.target_sites.*.type must be one of [EXCLUDE, INCLUDE]."
   }
+}
+
+variable "encryption_configs" {
+  description = "CMEK configurations registered for the project, keyed by location (e.g. us, eu). Data stores and engines are created after keys are registered. KMS key format: 'projects/[PROJECT]/locations/[LOCATION]/keyRings/[RING]/cryptoKeys/[KEY_NAME]'."
+  type = map(object({
+    kms_key            = string
+    set_default        = optional(bool, true)
+    single_region_keys = optional(list(string), [])
+  }))
+  default  = {}
+  nullable = false
 }
 
 variable "engines_configs" {

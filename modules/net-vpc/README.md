@@ -489,7 +489,7 @@ module "vpc" {
 
 ### Subnet Factory
 
-The `net-vpc` module includes a subnet factory for massive creation of subnets leveraging one configuration file per subnet. The factory also supports proxy-only and PSC subnets via the `purpose` attribute. The `name` attribute is optional and defaults to the file name, allowing to use the same name for subnets in different regions. The `context` attribute of `var.factories_config` can optionally contain the map `regions`, which allows for the templatization of the `region` attribute (e.g. see `config/subnets/subnet-simple.yaml` below)
+The `net-vpc` module includes a subnet factory for massive creation of subnets leveraging one configuration file per subnet. The factory also supports proxy-only, PSC, and Private NAT subnets via the `proxy_only`, `psc`, and `private_nat` attributes. The `name` attribute is optional and defaults to the file name, allowing to use the same name for subnets in different regions. The `context` attribute of `var.factories_config` can optionally contain the map `regions`, which allows for the templatization of the `region` attribute (e.g. see `config/subnets/subnet-simple.yaml` below)
 
 ```hcl
 module "vpc" {
@@ -506,7 +506,7 @@ module "vpc" {
     subnets_folder = "config/subnets"
   }
 }
-# tftest files=subnet-simple,subnet-simple-2,subnet-detailed,subnet-proxy,subnet-proxy-global,subnet-psc,subnet-psc-detailed inventory=factory.yaml
+# tftest files=subnet-simple,subnet-simple-2,subnet-detailed,subnet-proxy,subnet-proxy-global,subnet-psc,subnet-psc-detailed,subnet-private-nat inventory=factory.yaml
 ```
 
 ```yaml
@@ -582,6 +582,14 @@ flow_logs_config:             # enable, set to empty map to use defaults
   metadata: "INCLUDE_ALL_METADATA"
 
 # tftest-file id=subnet-psc-detailed path=config/subnets/subnet-psc-detailed.yaml schema=subnet.schema.json
+```
+
+```yaml
+region: europe-west4
+ip_cidr_range: 10.3.0.0/24
+private_nat: true
+
+# tftest-file id=subnet-private-nat path=config/subnets/subnet-private-nat.yaml schema=subnet.schema.json
 ```
 
 ### Custom Routes
@@ -886,6 +894,7 @@ module "vpc" {
       reserved_internal_range = "subnet-range"
       secondary_ip_ranges = {
         pods = {
+          ip_cidr_range           = "10.1.0.0/20"
           reserved_internal_range = "pods-range"
         }
         services = {
@@ -949,6 +958,7 @@ region: europe-west1
 reserved_internal_range: subnet-range
 secondary_ip_ranges:
   pods:
+    ip_cidr_range: "10.1.0.0/20"
     reserved_internal_range: pods-range
   services:
     reserved_internal_range: services-range
@@ -986,10 +996,10 @@ secondary_ip_ranges:
 | [shared_vpc_host](variables.tf#L396) | Enable shared VPC for this project. | <code>bool</code> |  | <code>false</code> |
 | [shared_vpc_service_projects](variables.tf#L402) | Shared VPC service projects to register with this host. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
 | [subnets](variables.tf#L408) | Subnet configuration. | <code>list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#91;&#93;</code> |
-| [subnets_private_nat](variables.tf#L488) | List of private NAT subnets. | <code>list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#91;&#93;</code> |
-| [subnets_proxy_only](variables.tf#L500) | List of proxy-only subnets for Regional HTTPS or Internal HTTPS load balancers. Note: Only one proxy-only subnet for each VPC network in each region can be active. | <code>list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#91;&#93;</code> |
-| [subnets_psc](variables.tf#L534) | List of subnets for Private Service Connect service producers. | <code>list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#91;&#93;</code> |
-| [vpc_reuse](variables.tf#L574) | Reuse existing VPC if not null. If the network_id number is not passed in, a data source is used. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [subnets_private_nat](variables.tf#L491) | List of private NAT subnets. | <code>list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#91;&#93;</code> |
+| [subnets_proxy_only](variables.tf#L503) | List of proxy-only subnets for Regional HTTPS or Internal HTTPS load balancers. Note: Only one proxy-only subnet for each VPC network in each region can be active. | <code>list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#91;&#93;</code> |
+| [subnets_psc](variables.tf#L537) | List of subnets for Private Service Connect service producers. | <code>list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#91;&#93;</code> |
+| [vpc_reuse](variables.tf#L577) | Reuse existing VPC if not null. If the network_id number is not passed in, a data source is used. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 
 ## Outputs
 

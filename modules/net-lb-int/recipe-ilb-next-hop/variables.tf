@@ -25,6 +25,24 @@ variable "_testing" {
   default = null
 }
 
+variable "ilb_connection_tracking" {
+  description = "Connection tracking configuration for ILBs. Defaults keep connection tracking tables consistent across both ILBs after backend failures, the idle timeout uses the API default of 600 seconds when not set."
+  type = object({
+    idle_timeout_sec          = optional(number)
+    persist_conn_on_unhealthy = optional(string, "NEVER_PERSIST")
+    track_per_session         = optional(bool, false)
+  })
+  default  = {}
+  nullable = false
+  validation {
+    condition = contains(
+      ["ALWAYS_PERSIST", "DEFAULT_FOR_PROTOCOL", "NEVER_PERSIST"],
+      var.ilb_connection_tracking.persist_conn_on_unhealthy
+    )
+    error_message = "persist_conn_on_unhealthy must be one of ALWAYS_PERSIST, DEFAULT_FOR_PROTOCOL, NEVER_PERSIST."
+  }
+}
+
 variable "ilb_right_enable" {
   description = "Route right to left traffic through ILB."
   type        = bool
@@ -34,7 +52,7 @@ variable "ilb_right_enable" {
 variable "ilb_session_affinity" {
   description = "Session affinity configuration for ILBs."
   type        = string
-  default     = "CLIENT_IP"
+  default     = "NONE"
 }
 
 variable "ip_ranges" {

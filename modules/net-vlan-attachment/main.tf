@@ -148,6 +148,9 @@ resource "google_compute_router_peer" "default" {
     : null
   )
 
+  export_policies = try(var.bgp_peer.export_policies, null)
+  import_policies = try(var.bgp_peer.import_policies, null)
+
   dynamic "advertised_ip_ranges" {
     for_each = var.bgp_peer != null ? try(var.bgp_peer.custom_advertise.ip_ranges, {}) : var.ipsec_gateway_ip_ranges
     iterator = range
@@ -193,7 +196,8 @@ resource "google_compute_router_peer" "default" {
   }
 
   depends_on = [
-    google_compute_router_interface.default
+    google_compute_router_interface.default,
+    google_compute_router_route_policy.default
   ]
 }
 

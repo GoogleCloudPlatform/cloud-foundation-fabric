@@ -502,11 +502,16 @@ variable "scratch_disks" {
   description = "Scratch disks configuration."
   type = object({
     count     = number
-    interface = string
+    interface = optional(string, "NVME")
+    size      = optional(number, 375)
   })
+  nullable = false
   default = {
-    count     = 0
-    interface = "NVME"
+    count = 0
+  }
+  validation {
+    condition     = contains(["NVME", "SCSI"], var.scratch_disks.interface)
+    error_message = "Interface must be 'NVME' or 'SCSI'."
   }
 }
 

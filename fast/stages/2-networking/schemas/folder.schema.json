@@ -126,7 +126,14 @@
           "type": "string"
         },
         "bucket": {
-          "$ref": "#/$defs/bucket"
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/bucket"
+            }
+          ]
         },
         "service_accounts": {
           "type": "object",
@@ -136,7 +143,13 @@
               "type": "object",
               "additionalProperties": false,
               "properties": {
+                "display_name": {
+                  "type": "string"
+                },
                 "description": {
+                  "type": "string"
+                },
+                "prefix": {
                   "type": "string"
                 },
                 "iam": {
@@ -464,8 +477,9 @@
       "type": "object",
       "additionalProperties": false,
       "patternProperties": {
-        "^[a-z]+\\.": {
+        "^(dry_run:)?[a-z-]+[a-zA-Z0-9\\.]+$": {
           "type": "object",
+          "additionalProperties": false,
           "properties": {
             "inherit_from_parent": {
               "type": "boolean"
@@ -529,6 +543,9 @@
                         "type": "string"
                       }
                     }
+                  },
+                  "parameters": {
+                    "type": "string"
                   }
                 }
               }
@@ -666,6 +683,13 @@
         "name": {
           "type": "string"
         },
+        "create": {
+          "type": "boolean",
+          "default": true
+        },
+        "encryption_key": {
+          "type": "string"
+        },
         "iam": {
           "$ref": "#/$defs/iam"
         },
@@ -681,8 +705,121 @@
         "labels": {
           "$ref": "#/$defs/labels"
         },
+        "lifecycle_rules": {
+          "type": "object",
+          "additionalProperties": false,
+          "patternProperties": {
+            "^[a-zA-Z0-9_-]+$": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "action",
+                "condition"
+              ],
+              "properties": {
+                "action": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "type"
+                  ],
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "Delete",
+                        "SetStorageClass",
+                        "AbortIncompleteMultipartUpload"
+                      ]
+                    },
+                    "storage_class": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "condition": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "age": {
+                      "type": "number"
+                    },
+                    "created_before": {
+                      "type": "string"
+                    },
+                    "custom_time_before": {
+                      "type": "string"
+                    },
+                    "days_since_custom_time": {
+                      "type": "number"
+                    },
+                    "days_since_noncurrent_time": {
+                      "type": "number"
+                    },
+                    "matches_prefix": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "matches_storage_class": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "enum": [
+                          "STANDARD",
+                          "MULTI_REGIONAL",
+                          "REGIONAL",
+                          "NEARLINE",
+                          "COLDLINE",
+                          "ARCHIVE",
+                          "DURABLE_REDUCED_AVAILABILITY"
+                        ]
+                      }
+                    },
+                    "matches_suffix": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "noncurrent_time_before": {
+                      "type": "string"
+                    },
+                    "num_newer_versions": {
+                      "type": "number"
+                    },
+                    "with_state": {
+                      "type": "string",
+                      "enum": [
+                        "LIVE",
+                        "ARCHIVED",
+                        "ANY"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
         "location": {
           "type": "string"
+        },
+        "logging_config": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "log_bucket": {
+              "type": "string"
+            },
+            "log_object_prefix": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "log_bucket"
+          ]
         },
         "managed_folders": {
           "type": "object",
@@ -717,6 +854,21 @@
             "enforced",
             "inherited"
           ]
+        },
+        "retention_policy": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "retention_period": {
+              "type": "string"
+            },
+            "is_locked": {
+              "type": "boolean"
+            }
+          }
+        },
+        "soft_delete_retention": {
+          "type": "number"
         },
         "storage_class": {
           "type": "string"
@@ -1146,7 +1298,7 @@
       "type": "object",
       "additionalProperties": false,
       "patternProperties": {
-        "^[a-z0-9-]+$": {
+        "^(?:(folders/)?[a-z0-9-]+|\\$folder_ids:[a-z0-9_/-]+)$": {
           "type": "array",
           "items": {
             "type": "string"
@@ -1170,7 +1322,7 @@
       "type": "object",
       "additionalProperties": false,
       "patternProperties": {
-        "^[a-z0-9-]+$": {
+        "^(?:([a-z0-9.]+:)?[a-z0-9-]+|\\$project_ids:[a-z0-9_/-]+)$": {
           "type": "array",
           "items": {
             "type": "string"
@@ -1182,7 +1334,7 @@
       "type": "object",
       "additionalProperties": false,
       "patternProperties": {
-        "^[a-z0-9-]+$": {
+        "^(?:\\$service_account_ids:|projects/)": {
           "type": "array",
           "items": {
             "type": "string"
@@ -1194,7 +1346,7 @@
       "type": "object",
       "additionalProperties": false,
       "patternProperties": {
-        "^[a-z0-9-]+$": {
+        "^(?:[a-z0-9_.-]+|\\$storage_buckets:[a-z0-9_/-]+)$": {
           "type": "array",
           "items": {
             "type": "string"

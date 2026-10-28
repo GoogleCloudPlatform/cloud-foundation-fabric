@@ -30,13 +30,9 @@
 - ⁺**region**: *string*
 - **psc**: *boolean*
 - **proxy_only**: *boolean*
+- **private_nat**: *boolean*
 - **secondary_ip_ranges**: *object*
-  <br>*additional properties: oneof*
-  - *string*
-  - *object*
-    <br>*additional properties: false*
-    - **ip_cidr_range**: *string*
-    - **reserved_internal_range**: *string*
+  <br>*additional properties: object*
 - **iam**: *reference([iam](#refs-iam))*
 - **iam_bindings**: *reference([iam_bindings](#refs-iam_bindings))*
 - **iam_bindings_additive**: *reference([iam_bindings_additive](#refs-iam_bindings_additive))*

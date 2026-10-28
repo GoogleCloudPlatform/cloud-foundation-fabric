@@ -101,7 +101,14 @@
           "type": "string"
         },
         "bucket": {
-          "$ref": "#/$defs/bucket"
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/bucket"
+            }
+          ]
         },
         "service_accounts": {
           "type": "object",
@@ -375,6 +382,9 @@
         "org_policies": {
           "type": "string"
         },
+        "pam_entitlements": {
+          "type": "string"
+        },
         "quotas": {
           "type": "string"
         },
@@ -605,6 +615,9 @@
     "labels": {
       "$ref": "#/$defs/labels"
     },
+    "lien_reason": {
+      "type": "string"
+    },
     "pam_entitlements": {
       "$ref": "#/$defs/pam_entitlements"
     },
@@ -615,6 +628,36 @@
         "^[a-zA-Z0-9_-]+$": {
           "$ref": "#/$defs/log_bucket"
         }
+      }
+    },
+    "log_scopes": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[a-zA-Z0-9_-]+$": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "resource_names"
+          ],
+          "properties": {
+            "description": {
+              "type": "string"
+            },
+            "resource_names": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "logging_exclusions": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
       }
     },
     "logging_sinks": {
@@ -672,8 +715,9 @@
       "type": "object",
       "additionalProperties": false,
       "patternProperties": {
-        "^[a-z]+\\.": {
+        "^(dry_run:)?[a-z-]+[a-zA-Z0-9\\.]+$": {
           "type": "object",
+          "additionalProperties": false,
           "properties": {
             "inherit_from_parent": {
               "type": "boolean"
@@ -737,6 +781,9 @@
                         "type": "string"
                       }
                     }
+                  },
+                  "parameters": {
+                    "type": "string"
                   }
                 }
               }
@@ -802,7 +849,10 @@
       "type": "string"
     },
     "prefix": {
-      "type": "string"
+      "type": [
+        "string",
+        "null"
+      ]
     },
     "project_reuse": {
       "type": "object",
@@ -2176,7 +2226,7 @@
       "type": "object",
       "additionalProperties": false,
       "patternProperties": {
-        "^[a-z0-9-]+$": {
+        "^(?:(folders/)?[a-z0-9-]+|\\$folder_ids:[a-z0-9_/-]+)$": {
           "type": "array",
           "items": {
             "type": "string"
@@ -2200,7 +2250,7 @@
       "type": "object",
       "additionalProperties": false,
       "patternProperties": {
-        "^(?:[a-z0-9-]|\\$project_ids:[a-z0-9_-])+$": {
+        "^(?:([a-z0-9.]+:)?[a-z0-9-]+|\\$project_ids:[a-z0-9_/-]+)$": {
           "type": "array",
           "items": {
             "type": "string"
@@ -2224,7 +2274,7 @@
       "type": "object",
       "additionalProperties": false,
       "patternProperties": {
-        "^[a-z0-9-]+$": {
+        "^(?:[a-z0-9_.-]+|\\$storage_buckets:[a-z0-9_/-]+)$": {
           "type": "array",
           "items": {
             "type": "string"

@@ -66,7 +66,7 @@ resource "google_access_context_manager_service_perimeter" "regular" {
       resources = flatten([
         for r in spec.value.resources : try(
           local.ctx.resource_sets[r],
-          [local.ctx.project_numbers[r]],
+          [local.ctx.resources[r]],
           [local.project_numbers[r]], [r]
         )
       ])
@@ -95,7 +95,9 @@ resource "google_access_context_manager_service_perimeter" "regular" {
                 )
               ])
               source_restriction = (
-                length(policy.value.from.access_levels) > 0 || length(policy.value.from.resources) > 0
+                length(policy.value.from.access_levels) > 0 ||
+                length(policy.value.from.psc_endpoints) > 0 ||
+                length(policy.value.from.resources) > 0
                 ? "SOURCE_RESTRICTION_ENABLED"
                 : "SOURCE_RESTRICTION_DISABLED"
               )
@@ -112,13 +114,25 @@ resource "google_access_context_manager_service_perimeter" "regular" {
                 for_each = flatten([
                   for r in policy.value.from.resources : try(
                     local.ctx.resource_sets[r],
-                    [local.ctx.project_numbers[r]],
+                    [local.ctx.resources[r]],
                     [local.project_numbers[r]], [r]
                   )
                 ])
                 iterator = resource
                 content {
                   resource = resource.value
+                }
+              }
+              dynamic "sources" {
+                for_each = [
+                  for e in policy.value.from.psc_endpoints :
+                  lookup(local.ctx.psc_endpoints, e, e)
+                ]
+                iterator = endpoint
+                content {
+                  psc_endpoint {
+                    forwarding_rule = endpoint.value
+                  }
                 }
               }
             }
@@ -130,7 +144,7 @@ resource "google_access_context_manager_service_perimeter" "regular" {
               resources = flatten([
                 for r in policy.value.to.resources : try(
                   local.ctx.resource_sets[r],
-                  [local.ctx.project_numbers[r]],
+                  [local.ctx.resources[r]],
                   [local.project_numbers[r]], [r]
                 )
               ])
@@ -189,12 +203,24 @@ resource "google_access_context_manager_service_perimeter" "regular" {
                 for_each = flatten([
                   for r in policy.value.from.resources : try(
                     local.ctx.resource_sets[r],
-                    [local.ctx.project_numbers[r]],
+                    [local.ctx.resources[r]],
                     [local.project_numbers[r]], [r]
                   )
                 ])
                 content {
                   resource = sources.value
+                }
+              }
+              dynamic "sources" {
+                for_each = [
+                  for e in policy.value.from.psc_endpoints :
+                  lookup(local.ctx.psc_endpoints, e, e)
+                ]
+                iterator = endpoint
+                content {
+                  psc_endpoint {
+                    forwarding_rule = endpoint.value
+                  }
                 }
               }
             }
@@ -205,7 +231,7 @@ resource "google_access_context_manager_service_perimeter" "regular" {
               resources = flatten([
                 for r in policy.value.to.resources : try(
                   local.ctx.resource_sets[r],
-                  [local.ctx.project_numbers[r]],
+                  [local.ctx.resources[r]],
                   [local.project_numbers[r]], [r]
                 )
               ])
@@ -235,13 +261,54 @@ resource "google_access_context_manager_service_perimeter" "regular" {
       }
 
       dynamic "vpc_accessible_services" {
-        for_each = spec.value.vpc_accessible_services == null ? [] : [""]
+        for_each = (
+          spec.value.vpc_accessible_services == null
+          ? []
+          : [spec.value.vpc_accessible_services]
+        )
+        iterator = services
         content {
-          allowed_services = flatten([
-            for r in spec.value.vpc_accessible_services.allowed_services :
-            lookup(local.ctx.service_sets, r, [r])
-          ])
-          enable_restriction = spec.value.vpc_accessible_services.enable_restriction
+          allowed_services = distinct(concat(
+            services.value.enable_restriction && services.value.allow_all_restricted_services
+            ? ["RESTRICTED-SERVICES"]
+            : [],
+            flatten([
+              for r in services.value.allowed_services :
+              lookup(local.ctx.service_sets, r, [r])
+            ])
+          ))
+          enable_restriction = services.value.enable_restriction
+          service_patterns_enforcement_scopes = (
+            services.value.allowed_service_patterns == null
+            ? null
+            : ["GOOGLE_APIS_VIA_PRIVATE_PATH"]
+          )
+          dynamic "allowed_service_patterns" {
+            for_each = (
+              services.value.allowed_service_patterns == null
+              ? {}
+              : services.value.allowed_service_patterns
+            )
+            iterator = pattern
+            content {
+              pattern = pattern.key
+              dynamic "modifiers" {
+                for_each = {
+                  for hk, hv in {
+                    "X-Goog-Allowed-Resources"   = try(pattern.value.x_goog_allowed_resources, null)
+                    "X-GoogApps-Allowed-Domains" = try(pattern.value.x_googapps_allowed_domains, null)
+                  } : hk => hv if hv != null
+                }
+                iterator = header
+                content {
+                  add_request_header {
+                    key   = header.key
+                    value = header.value
+                  }
+                }
+              }
+            }
+          }
         }
       }
 
@@ -260,7 +327,7 @@ resource "google_access_context_manager_service_perimeter" "regular" {
       resources = flatten([
         for r in status.value.resources : try(
           local.ctx.resource_sets[r],
-          [local.ctx.project_numbers[r]],
+          [local.ctx.resources[r]],
           [local.project_numbers[r]], [r]
         )
       ])
@@ -289,7 +356,9 @@ resource "google_access_context_manager_service_perimeter" "regular" {
                 )
               ])
               source_restriction = (
-                length(policy.value.from.access_levels) > 0 || length(policy.value.from.resources) > 0
+                length(policy.value.from.access_levels) > 0 ||
+                length(policy.value.from.psc_endpoints) > 0 ||
+                length(policy.value.from.resources) > 0
                 ? "SOURCE_RESTRICTION_ENABLED"
                 : "SOURCE_RESTRICTION_DISABLED"
               )
@@ -306,13 +375,25 @@ resource "google_access_context_manager_service_perimeter" "regular" {
                 for_each = flatten([
                   for r in policy.value.from.resources : try(
                     local.ctx.resource_sets[r],
-                    [local.ctx.project_numbers[r]],
+                    [local.ctx.resources[r]],
                     [local.project_numbers[r]], [r]
                   )
                 ])
                 iterator = resource
                 content {
                   resource = resource.value
+                }
+              }
+              dynamic "sources" {
+                for_each = [
+                  for e in policy.value.from.psc_endpoints :
+                  lookup(local.ctx.psc_endpoints, e, e)
+                ]
+                iterator = endpoint
+                content {
+                  psc_endpoint {
+                    forwarding_rule = endpoint.value
+                  }
                 }
               }
             }
@@ -324,7 +405,7 @@ resource "google_access_context_manager_service_perimeter" "regular" {
               resources = flatten([
                 for r in policy.value.to.resources : try(
                   local.ctx.resource_sets[r],
-                  [local.ctx.project_numbers[r]],
+                  [local.ctx.resources[r]],
                   [local.project_numbers[r]], [r]
                 )
               ])
@@ -383,12 +464,24 @@ resource "google_access_context_manager_service_perimeter" "regular" {
                 for_each = flatten([
                   for r in policy.value.from.resources : try(
                     local.ctx.resource_sets[r],
-                    [local.ctx.project_numbers[r]],
+                    [local.ctx.resources[r]],
                     [local.project_numbers[r]], [r]
                   )
                 ])
                 content {
                   resource = sources.value
+                }
+              }
+              dynamic "sources" {
+                for_each = [
+                  for e in policy.value.from.psc_endpoints :
+                  lookup(local.ctx.psc_endpoints, e, e)
+                ]
+                iterator = endpoint
+                content {
+                  psc_endpoint {
+                    forwarding_rule = endpoint.value
+                  }
                 }
               }
             }
@@ -399,7 +492,7 @@ resource "google_access_context_manager_service_perimeter" "regular" {
               resources = flatten([
                 for r in policy.value.to.resources : try(
                   local.ctx.resource_sets[r],
-                  [local.ctx.project_numbers[r]],
+                  [local.ctx.resources[r]],
                   [local.project_numbers[r]], [r]
                 )
               ])
@@ -429,13 +522,54 @@ resource "google_access_context_manager_service_perimeter" "regular" {
       }
 
       dynamic "vpc_accessible_services" {
-        for_each = status.value.vpc_accessible_services == null ? [] : [""]
+        for_each = (
+          status.value.vpc_accessible_services == null
+          ? []
+          : [status.value.vpc_accessible_services]
+        )
+        iterator = services
         content {
-          allowed_services = flatten([
-            for r in status.value.vpc_accessible_services.allowed_services :
-            lookup(local.ctx.service_sets, r, [r])
-          ])
-          enable_restriction = status.value.vpc_accessible_services.enable_restriction
+          allowed_services = distinct(concat(
+            services.value.enable_restriction && services.value.allow_all_restricted_services
+            ? ["RESTRICTED-SERVICES"]
+            : [],
+            flatten([
+              for r in services.value.allowed_services :
+              lookup(local.ctx.service_sets, r, [r])
+            ])
+          ))
+          enable_restriction = services.value.enable_restriction
+          service_patterns_enforcement_scopes = (
+            services.value.allowed_service_patterns == null
+            ? null
+            : ["GOOGLE_APIS_VIA_PRIVATE_PATH"]
+          )
+          dynamic "allowed_service_patterns" {
+            for_each = (
+              services.value.allowed_service_patterns == null
+              ? {}
+              : services.value.allowed_service_patterns
+            )
+            iterator = pattern
+            content {
+              pattern = pattern.key
+              dynamic "modifiers" {
+                for_each = {
+                  for hk, hv in {
+                    "X-Goog-Allowed-Resources"   = try(pattern.value.x_goog_allowed_resources, null)
+                    "X-GoogApps-Allowed-Domains" = try(pattern.value.x_googapps_allowed_domains, null)
+                  } : hk => hv if hv != null
+                }
+                iterator = header
+                content {
+                  add_request_header {
+                    key   = header.key
+                    value = header.value
+                  }
+                }
+              }
+            }
+          }
         }
       }
 

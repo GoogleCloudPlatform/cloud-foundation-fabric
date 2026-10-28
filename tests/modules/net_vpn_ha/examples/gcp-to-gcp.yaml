@@ -109,7 +109,7 @@ values:
     target_vpn_gateway: null
     vpn_gateway_interface: 1
   module.vpn-1.random_id.secret:
-    byte_length: 8
+    byte_length: 16
   module.vpn-2.google_compute_ha_vpn_gateway.ha_gateway[0]:
     description: Terraform managed external VPN gateway
     name: net2-to-net1
@@ -203,7 +203,7 @@ values:
     target_vpn_gateway: null
     vpn_gateway_interface: 1
   module.vpn-2.random_id.secret:
-    byte_length: 8
+    byte_length: 16
 
 counts:
   google_compute_ha_vpn_gateway: 2
