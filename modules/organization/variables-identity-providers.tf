@@ -38,10 +38,14 @@ variable "workforce_identity_pools" {
       scim_usage                 = optional(string)
       identity_provider = object({
         oidc = optional(object({
-          issuer_uri    = string
-          client_id     = string
-          client_secret = optional(string)
-          jwks_json     = optional(string)
+          issuer_uri = string
+          client_id  = string
+          client_secret = optional(object({
+            value      = optional(string)
+            path       = optional(string)
+            wo_version = optional(number)
+          }))
+          jwks_json = optional(string)
           web_sso_config = optional(object({
             # TODO: validation
             response_type             = optional(string, "CODE")
@@ -55,16 +59,24 @@ variable "workforce_identity_pools" {
       })
       oauth2_client_config = optional(object({
         extended_attributes = optional(object({
-          issuer_uri      = string
-          client_id       = string
-          client_secret   = string
+          issuer_uri = string
+          client_id  = string
+          client_secret = object({
+            value      = optional(string)
+            path       = optional(string)
+            wo_version = optional(number)
+          })
           attributes_type = optional(string)
           query_filter    = optional(string)
         }))
         extra_attributes = optional(object({
-          issuer_uri      = string
-          client_id       = string
-          client_secret   = string
+          issuer_uri = string
+          client_id  = string
+          client_secret = object({
+            value      = optional(string)
+            path       = optional(string)
+            wo_version = optional(number)
+          })
           attributes_type = optional(string)
           query_filter    = optional(string)
         }))
@@ -156,6 +168,25 @@ variable "workforce_identity_pools" {
       ]
     ]))
     error_message = "Supported AzureAD attribute types in OAuth 2.0 client extra attributes are: AZURE_AD_GROUPS_MAIL, AZURE_AD_GROUPS_ID."
+  }
+  validation {
+    condition = alltrue(flatten([
+      for pool in values(var.workforce_identity_pools) : [
+        for prov in values(pool.providers) : [
+          for s in [
+            try(prov.identity_provider.oidc.client_secret, null),
+            try(
+              prov.oauth2_client_config.extra_attributes.client_secret, null
+            ),
+            try(
+              prov.oauth2_client_config.extended_attributes.client_secret, null
+            ),
+          ] :
+          try(s.value, null) == null || try(s.path, null) == null
+        ]
+      ]
+    ]))
+    error_message = "Only one of client_secret.value and client_secret.path can be set."
   }
   validation {
     condition = alltrue(flatten([
