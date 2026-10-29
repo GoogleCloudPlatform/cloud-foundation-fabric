@@ -16,3 +16,8 @@
 project_id: $project_ids:net-core-0
 name: core-0
 delete_default_routes_on_create: true
+routes:
+  test-int-route:
+    dest_range: $cidr_ranges:test-dest
+    next_hop_type: ilb
+    next_hop: $addresses:core/test-int
