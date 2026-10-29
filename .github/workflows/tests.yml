@@ -290,6 +290,9 @@ jobs:
           pytest -vv --tb=line --junit-xml=test-results-raw.xml --ignore=tools \
             -k "(tests and schemas) or (fast and schema) or (examples and yaml)"
 
+      - name: Run fast-diagrammer tests
+        run: pytest -vv --tb=line tools/fast-diagrammer/tests
+
       - name: Create report
         uses: ./.github/actions/post-fabric-tests
         if: always()

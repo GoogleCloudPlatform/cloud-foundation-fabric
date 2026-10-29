@@ -19,8 +19,8 @@
 
 The 13 legacy entries (`LEGACY_ICONS`) are copied verbatim from the current
 icons.json, never regenerated from their SVGs: their `inner` markup is part
-of the byte-parity contract of the 2-networking goldens (spec §2.3 step D is
-the only sanctioned way to change them). Every other `<Name>.svg` is parsed
+of the byte-parity contract of the 2-networking goldens, so changing one is
+a deliberate golden update. Every other `<Name>.svg` is parsed
 with `xml.etree`, its viewBox normalised to a square, and its children
 serialised without the SVG namespace. Output order: legacy entries, then the
 `GCP_ICONS` registry order, then any remaining SVGs alphabetically.
@@ -93,7 +93,7 @@ def svg_to_entry(path: pathlib.Path) -> dict:
 
 def build(icons_dir: pathlib.Path = ICONS_DIR,
           icons_json: pathlib.Path = ICONS_JSON) -> str:
-  sys.path.insert(0, str(APP_ROOT))
+  """Fresh icons.json text (needs `fast_diagrammer` importable)."""
   from fast_diagrammer.scene.model import GCP_ICONS  # pylint: disable=import-outside-toplevel
 
   current = json.loads(icons_json.read_text(encoding="utf-8"))
@@ -130,4 +130,6 @@ def main() -> int:
 
 
 if __name__ == "__main__":
+  # Run as a script: make the package next to this tool importable.
+  sys.path.insert(0, str(APP_ROOT))
   sys.exit(main())

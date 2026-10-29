@@ -25,7 +25,7 @@
      "kind": "zone",
      "id": "DnsProj_net_core_0",
      "title": "Project: net-core-0",
-     "subtitle": "Centralized Cloud DNS & Core VPCs",
+     "subtitle": "Shared VPC host · 5 zones · 1 response policy · 4 VPCs",
      "style_name": "@ProjectZone",
      "icon": "CloudGeneric",
      "layout": "row",
@@ -40,7 +40,7 @@
      "children": [
       {
        "kind": "zone",
-       "id": "CoreUpstreamDns",
+       "id": "CoreUpstreamDns_net_core_0",
        "title": "Hub DNS Zones & RPZ",
        "subtitle": "",
        "style_name": "@SubGroupWhite",
@@ -88,8 +88,8 @@
         {
          "kind": "card",
          "id": "rpz_net_core_0_net_core_0",
-         "title": "RPZ: net-core-0 (42 PGA rules)",
-         "subtitle": "Bound VPCs: dev, hub, dmz, prod",
+         "title": "RPZ: net-core-0 (42 rules)",
+         "subtitle": "Bound VPCs: dev, hub, dmz, prod · 39 → private.googleapis.com, +2",
          "style_name": "@ProductCard",
          "icon": "CloudDNS",
          "width": 248.0,
@@ -104,7 +104,7 @@
       },
       {
        "kind": "zone",
-       "id": "CoreHubVpcCol",
+       "id": "CoreHubVpcCol_net_core_0",
        "title": "",
        "subtitle": "",
        "style_name": "@Ghost",
@@ -157,7 +157,7 @@
       },
       {
        "kind": "zone",
-       "id": "CorePeeringDns",
+       "id": "CorePeeringDns_net_core_0",
        "title": "Cross-VPC DNS Zones",
        "subtitle": "",
        "style_name": "@SubGroupWhite",
@@ -221,7 +221,7 @@
       },
       {
        "kind": "zone",
-       "id": "CoreClientVpcsCol",
+       "id": "CoreClientVpcsCol_net_core_0",
        "title": "",
        "subtitle": "",
        "style_name": "@Ghost",
@@ -257,7 +257,7 @@
            "kind": "card",
            "id": "dns_vpc_dmz",
            "title": "VPC: dmz",
-           "subtitle": "Client VPC",
+           "subtitle": "Client VPC · 1 bound zone",
            "style_name": "@ProductCard",
            "icon": "VirtualPrivateCloud",
            "width": 248.0,
@@ -291,7 +291,7 @@
            "kind": "card",
            "id": "dns_vpc_dev",
            "title": "VPC: dev",
-           "subtitle": "Client VPC",
+           "subtitle": "Client VPC · 2 bound zones",
            "style_name": "@ProductCard",
            "icon": "VirtualPrivateCloud",
            "width": 248.0,
@@ -325,7 +325,7 @@
            "kind": "card",
            "id": "dns_vpc_prod",
            "title": "VPC: prod",
-           "subtitle": "Client VPC",
+           "subtitle": "Client VPC · 2 bound zones",
            "style_name": "@ProductCard",
            "icon": "VirtualPrivateCloud",
            "width": 248.0,
@@ -337,6 +337,93 @@
            "badges": []
           }
          ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "kind": "zone",
+     "id": "SpokeDnsProjectsCol",
+     "title": "",
+     "subtitle": "",
+     "style_name": "@Ghost",
+     "icon": null,
+     "layout": "column",
+     "gap": 18.0,
+     "align": "center",
+     "dock_to": null,
+     "dock_side": null,
+     "dock_align": null,
+     "dock_gap": 56.0,
+     "max_cols": 4,
+     "badges": [],
+     "children": [
+      {
+       "kind": "zone",
+       "id": "DnsProj_net_dev_0",
+       "title": "Project: net-dev-0",
+       "subtitle": "Shared VPC host",
+       "style_name": "@ProjectZone",
+       "icon": "CloudGeneric",
+       "layout": "row",
+       "gap": 28.0,
+       "align": "center",
+       "dock_to": null,
+       "dock_side": null,
+       "dock_align": null,
+       "dock_gap": 56.0,
+       "max_cols": 4,
+       "badges": [],
+       "children": [
+        {
+         "kind": "card",
+         "id": "proj_empty_net_dev_0",
+         "title": "No DNS resources",
+         "subtitle": "no zones, policies or VPCs",
+         "style_name": "@ProductCard",
+         "icon": "CloudGeneric",
+         "width": 248.0,
+         "height": 58.0,
+         "stroke_color": "#dadce0",
+         "stroke_width": 1.0,
+         "fill": "#ffffff",
+         "dashed": false,
+         "badges": []
+        }
+       ]
+      },
+      {
+       "kind": "zone",
+       "id": "DnsProj_net_prod_0",
+       "title": "Project: net-prod-0",
+       "subtitle": "Shared VPC host",
+       "style_name": "@ProjectZone",
+       "icon": "CloudGeneric",
+       "layout": "row",
+       "gap": 28.0,
+       "align": "center",
+       "dock_to": null,
+       "dock_side": null,
+       "dock_align": null,
+       "dock_gap": 56.0,
+       "max_cols": 4,
+       "badges": [],
+       "children": [
+        {
+         "kind": "card",
+         "id": "proj_empty_net_prod_0",
+         "title": "No DNS resources",
+         "subtitle": "no zones, policies or VPCs",
+         "style_name": "@ProductCard",
+         "icon": "CloudGeneric",
+         "width": 248.0,
+         "height": 58.0,
+         "stroke_color": "#dadce0",
+         "stroke_width": 1.0,
+         "fill": "#ffffff",
+         "dashed": false,
+         "badges": []
         }
        ]
       }
@@ -409,7 +496,7 @@
    "dashed": false,
    "source_anchor": "left",
    "target_anchor": "right",
-   "dash": null,
+   "dash": "solid",
    "head": "filled"
   },
   {
@@ -422,7 +509,7 @@
    "dashed": true,
    "source_anchor": "right",
    "target_anchor": "left",
-   "dash": null,
+   "dash": "dashed",
    "head": "filled"
   },
   {
@@ -435,7 +522,7 @@
    "dashed": true,
    "source_anchor": "right",
    "target_anchor": "left",
-   "dash": null,
+   "dash": "dashed",
    "head": "filled"
   },
   {
@@ -448,8 +535,8 @@
    "dashed": false,
    "source_anchor": "left",
    "target_anchor": "right",
-   "dash": null,
-   "head": "filled"
+   "dash": "solid",
+   "head": "open"
   },
   {
    "src": "zone_net_core_0_peer_root",
@@ -461,7 +548,7 @@
    "dashed": true,
    "source_anchor": "right",
    "target_anchor": "left",
-   "dash": null,
+   "dash": "dashed",
    "head": "filled"
   },
   {
@@ -474,7 +561,7 @@
    "dashed": true,
    "source_anchor": "right",
    "target_anchor": "left",
-   "dash": null,
+   "dash": "dashed",
    "head": "filled"
   },
   {
@@ -487,7 +574,7 @@
    "dashed": true,
    "source_anchor": "right",
    "target_anchor": "left",
-   "dash": null,
+   "dash": "dashed",
    "head": "filled"
   },
   {
@@ -500,7 +587,7 @@
    "dashed": true,
    "source_anchor": "right",
    "target_anchor": "left",
-   "dash": null,
+   "dash": "dashed",
    "head": "filled"
   },
   {
@@ -513,7 +600,7 @@
    "dashed": true,
    "source_anchor": "right",
    "target_anchor": "left",
-   "dash": null,
+   "dash": "dashed",
    "head": "filled"
   },
   {
@@ -526,7 +613,7 @@
    "dashed": true,
    "source_anchor": "right",
    "target_anchor": "left",
-   "dash": null,
+   "dash": "dashed",
    "head": "filled"
   },
   {
@@ -539,9 +626,37 @@
    "dashed": true,
    "source_anchor": "right",
    "target_anchor": "left",
-   "dash": null,
+   "dash": "dashed",
    "head": "filled"
   }
  ],
- "legend": []
+ "legend": [
+  {
+   "label": "DNS forwarding to on-premises",
+   "kind": "edge",
+   "color": "#d93025",
+   "dash": "solid",
+   "head": "filled",
+   "fill": "#ffffff",
+   "dashed": false
+  },
+  {
+   "label": "Zone bound to VPC",
+   "kind": "edge",
+   "color": "#1a73e8",
+   "dash": "dashed",
+   "head": "filled",
+   "fill": "#ffffff",
+   "dashed": false
+  },
+  {
+   "label": "DNS peering",
+   "kind": "edge",
+   "color": "#9334e6",
+   "dash": "solid",
+   "head": "open",
+   "fill": "#ffffff",
+   "dashed": false
+  }
+ ]
 }

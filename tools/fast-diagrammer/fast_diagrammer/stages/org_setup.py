@@ -11,8 +11,19 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+"""FAST 0-org-setup -> SceneGraph builder (`hierarchy` view).
 
-"""FAST 0-org-setup -> SceneGraph builder (top-to-bottom hierarchy tree + lateral controls)."""
+A top-to-bottom tree: the organization card, folder cards, and one
+`@ProjectZone` per project holding cards for the resources the project YAML
+declares (embedded VPCs, log buckets, BigQuery datasets, GCS buckets,
+automation service accounts, CI/CD workload identity, KMS keyrings,
+observability alerts/metrics, Shared VPC attachment). Folders and projects
+whose parent lives outside the dataset hang under a dashed "external parent"
+placeholder instead of the organization. An "Organization controls" column
+docked on the left summarises org policies, custom roles and tags, org log
+sinks (with one edge per destination resource) and the billing account (with
+billing export edges).
+"""
 
 import pathlib
 from typing import Dict, List, Optional, Union
@@ -26,81 +37,110 @@ from ..datasets.org_setup import (
 )
 from ..scene.model import (
     Badge,
-    CardNode,
-    LegendEntry,
     SceneGraph,
     ZoneNode,
     make_card,
     make_edge,
     make_zone,
+    resolve_color,
+)
+from ._common import (
+    BILLING_EXPORT_DATASET,
+    MAX_CARD_BADGES_DEFAULT,
+    MAX_ZONE_BADGES_DEFAULT,
+    cap_badges,
+    card_width_for,
+    cid,
+    join_limited,
+    legend_card,
+    legend_edge,
 )
 
-__all__ = ["VIEWS", "build", "build_hierarchy"]
+__all__ = [
+    "MAX_CARD_BADGES_DEFAULT",
+    "MAX_ZONE_BADGES_DEFAULT",
+    "UNIFORM_BOX_WIDTH",
+    "VIEWS",
+    "build",
+    "build_hierarchy",
+]
 
 VIEWS = ("hierarchy",)
 
-MAX_CARD_BADGES_DEFAULT = 4
-MAX_ZONE_BADGES_DEFAULT = 6
-
-# Fixed outer width for every Folder card and every @ProjectZone container (§24 item 3):
-# - @ProjectZone has padding = 18.0 (left 18 + right 18 = 36.0), so inner cards have width 204.0 -> 204.0 + 36.0 = 240.0.
-# - @VpcZone inside @ProjectZone has padding = 28.0 (left 28 + right 28 = 56.0), so its inner card has width 148.0 -> 148.0 + 56.0 + 36.0 = 240.0.
+# Folder cards and project zones share one outer width so sibling boxes line
+# up; a box grows only when an identifier would not fit. A project zone has
+# 18 px padding per side (inner cards 204 px); an embedded VPC zone adds 28 px
+# per side (inner cards 148 px).
 UNIFORM_BOX_WIDTH = 240.0
 PROJECT_INNER_CARD_WIDTH = 204.0
 VPC_INNER_CARD_WIDTH = 148.0
 
+# Character budget for lists in 204 px card subtitles (whole items only).
+_LIST_BUDGET = 24
 
-def _cid(prefix: str, *parts: Optional[str]) -> str:
-  raw = "_".join([prefix] + [str(p) for p in parts if p is not None and str(p) != ""])
-  return "".join(ch if ch.isalnum() else "_" for ch in raw)
+# Fabric sink type -> project resource card the sink edge lands on. Sinks of
+# type `project` (and destinations the project YAML does not declare) land
+# on the project zone.
+SINK_KIND_BY_TYPE = {
+    "logging": "logging",
+    "bigquery": "bigquery",
+    "storage": "storage",
+    "pubsub": "pubsub",
+}
+
+# Edge styles; within the view no two share a (dash, head) pair. The tree
+# edges are plain lines (the layout already reads top to bottom).
+_HIERARCHY_EDGE = ("$SlateStroke", "solid", "none")
+_SINK_EDGE = ("$TealStroke", "dashdot", "filled")
+_BILLING_EDGE = ("$BillingGreen", "dotted", "open")
+_SVPC_EDGE = ("$GcpBlue", "solid", "filled")
 
 
-def _cap_badges(badges: List[Badge], limit: int, verbose: bool) -> List[Badge]:
-  if verbose or len(badges) <= limit:
-    return list(badges)
-  if limit <= 1:
-    return [Badge(text=f"+{len(badges)}", tone="neutral")]
-  kept = list(badges[: limit - 1])
-  kept.append(Badge(text=f"+{len(badges) - (limit - 1)}", tone="neutral"))
-  return kept
+def _plural(n: int, word: str) -> str:
+  return f"{n} {word if n == 1 else word + 's'}"
 
 
-def _clean_region(reg: str) -> str:
-  if not reg or "<" in reg or ">" in reg:
-    return "regional"
-  return reg
+def _sink_kind(sink: OrgSink) -> Optional[str]:
+  return SINK_KIND_BY_TYPE.get(str(sink.sink_type or "").strip())
 
 
-def _build_org_card_badges(ds: OrgSetupDataset, verbose: bool = False) -> List[Badge]:
+def _build_org_card_badges(ds: OrgSetupDataset,
+                           verbose: bool = False) -> List[Badge]:
+  """Org card badges: facts not already shown by the controls column first."""
   org = ds.organization
   cand: List[Badge] = []
-  if org.org_policies_count > 0:
-    cand.append(Badge(text=f"{org.org_policies_count} policies", tone="info"))
-  if org.custom_constraints_count > 0:
-    cand.append(Badge(text=f"{org.custom_constraints_count} custom", tone="warn"))
-  if org.custom_roles_count > 0:
-    cand.append(Badge(text=f"{org.custom_roles_count} roles", tone="neutral"))
-  if org.tag_keys_count > 0:
-    cand.append(
-        Badge(
-            text=f"{org.tag_keys_count} tags ({org.tag_values_count})",
-            tone="neutral",
-        )
-    )
   if org.data_access_logs:
-    dal_str = ", ".join(org.data_access_logs[:1])
-    cand.append(Badge(text=f"DAL: {dal_str}", tone="info"))
+    cand.append(
+        Badge(text=f"DAL: {join_limited(org.data_access_logs, 24)}",
+              tone="info"))
   if org.scc_sha_modules_count > 0:
     cand.append(Badge(text=f"{org.scc_sha_modules_count} SHA", tone="warn"))
-  if verbose and org.contacts_count > 0:
-    cand.append(Badge(text=f"{org.contacts_count} contacts", tone="neutral"))
-  return _cap_badges(cand, MAX_CARD_BADGES_DEFAULT, verbose)
+  if org.contacts_count > 0:
+    cand.append(
+        Badge(text=_plural(org.contacts_count, "contact"), tone="neutral"))
+  if verbose:
+    # The counts below are also in the Organization controls cards.
+    if org.org_policies_count > 0:
+      cand.append(Badge(text=f"{org.org_policies_count} policies", tone="info"))
+    if org.custom_constraints_count > 0:
+      cand.append(
+          Badge(text=f"{org.custom_constraints_count} custom", tone="warn"))
+    if org.custom_roles_count > 0:
+      cand.append(Badge(text=f"{org.custom_roles_count} roles", tone="neutral"))
+    if org.tag_keys_count > 0:
+      cand.append(
+          Badge(
+              text=(f"{_plural(org.tag_keys_count, 'tag')} "
+                    f"({org.tag_values_count})"), tone="neutral"))
+  return cap_badges(cand, MAX_CARD_BADGES_DEFAULT, verbose)
 
 
-def _build_folder_badges(fspec: FolderSpec, verbose: bool = False) -> List[Badge]:
+def _build_folder_badges(fspec: FolderSpec,
+                         verbose: bool = False) -> List[Badge]:
   cand: List[Badge] = []
   for pill in fspec.tag_pills:
-    short_pill = pill.replace("environment=", "env=").replace("project-factory", "pf")
+    short_pill = pill.replace("environment=",
+                              "env=").replace("project-factory", "pf")
     cand.append(Badge(text=short_pill, tone="info"))
   if fspec.has_iam:
     cand.append(Badge(text="IAM", tone="neutral"))
@@ -108,25 +148,41 @@ def _build_folder_badges(fspec: FolderSpec, verbose: bool = False) -> List[Badge
     cand.append(Badge(text=f"{fspec.org_policies_count} policies", tone="warn"))
   if fspec.has_scc_sha:
     cand.append(Badge(text="SCC SHA", tone="warn"))
-  return _cap_badges(cand, 2 if not verbose else MAX_CARD_BADGES_DEFAULT, verbose)
+  return cap_badges(cand, 2 if not verbose else MAX_CARD_BADGES_DEFAULT,
+                    verbose)
 
 
-def _build_project_zone_badges(proj: ProjectSpec, verbose: bool = False) -> List[Badge]:
-  """Builds @ProjectZone header badges (0 by default so outer width stays 240.0 px)."""
+def _build_project_zone_badges(proj: ProjectSpec,
+                               verbose: bool = False) -> List[Badge]:
+  """@ProjectZone header badges; none by default so boxes keep their width."""
   if not verbose:
     return []
   cand: List[Badge] = []
   if proj.shared_vpc_host:
     cand.append(Badge(text="Shared VPC host", tone="info"))
   if proj.shared_vpc_service_of:
-    cand.append(Badge(text=f"service of {proj.shared_vpc_service_of}", tone="info"))
+    cand.append(
+        Badge(text=f"service of {proj.shared_vpc_service_of}", tone="info"))
   if proj.is_observability_project:
     cand.append(Badge(text="Observability project", tone="info"))
   if proj.iam_principals_count > 0:
     cand.append(Badge(text=f"IAM: {proj.iam_principals_count}", tone="neutral"))
   if proj.services:
     cand.append(Badge(text=f"{len(proj.services)} APIs", tone="neutral"))
-  return _cap_badges(cand, MAX_ZONE_BADGES_DEFAULT, verbose)
+  return cap_badges(cand, MAX_ZONE_BADGES_DEFAULT, verbose)
+
+
+def _edge(src: str, dst: str, style, label: str = "", **kw):
+  color, dash, head = style
+  return make_edge(src, dst, arrow="-.->" if dash != "solid" else "-->",
+                   label=label, color=color,
+                   stroke_width=kw.pop("stroke_width", 1.8), dashed=dash
+                   != "solid", dash=dash, head=head, **kw)
+
+
+def _tree_edge(src: str, dst: str):
+  return _edge(src, dst, _HIERARCHY_EDGE, source_anchor="bottom",
+               target_anchor="top")
 
 
 def build_hierarchy(
@@ -135,15 +191,26 @@ def build_hierarchy(
     *,
     verbose_badges: bool = False,
     legend: bool = True,
+    cicd_workflows: Optional[str] = None,
 ) -> SceneGraph:
-  """Builds the top-to-bottom tree + lateral controls 0-org-setup SceneGraph."""
+  """Builds the 0-org-setup hierarchy tree with its controls column.
+
+  `cicd_workflows` is the stage `factories_config.paths.cicd_workflows` file
+  (relative to the dataset); unset, like the stage default, means no CI/CD
+  workflows are read.
+  """
   if isinstance(dataset, OrgSetupDataset):
+    if cicd_workflows is not None:
+      raise ValueError("cicd_workflows applies when loading a dataset path, "
+                       "not to an already loaded OrgSetupDataset")
     ds = dataset
   else:
-    ds = load_org_setup_dataset(dataset)
+    paths = {"cicd_workflows": cicd_workflows} if cicd_workflows else None
+    ds = load_org_setup_dataset(dataset, paths=paths)
 
   name = dataset_name or ds.dataset_name
-  scene = SceneGraph(dataset_name=name, view_kind="hierarchy", stage="0-org-setup")
+  scene = SceneGraph(dataset_name=name, view_kind="hierarchy",
+                     stage="0-org-setup")
 
   org = ds.organization
   org_title = f"Organization: {org.domain}" if org.domain else "Organization"
@@ -154,29 +221,22 @@ def build_hierarchy(
     sub_parts.append(f"prefix: {org.prefix}")
   org_subtitle = " · ".join(sub_parts)
 
-  # Main hierarchy tree zone (invisible @Ghost vertical tree so Organization,
-  # Folders, and Projects are tree nodes connected by parent->child edges).
-  main_tree = scene.add_zone(
-      make_zone(
-          "main_tree",
-          "@Ghost",
-          layout="column",
-          gap=52.0,
-          align="center",
-      )
-  )
+  # Sinks grouped by destination project and kind, needed while projects are
+  # emitted so that every destination gets a card to land on.
+  sinks_by_dest: Dict[str, Dict[str, List[OrgSink]]] = {}
+  for sk in org.sinks:
+    if sk.target_project and sk.target_project in ds.projects:
+      sinks_by_dest.setdefault(sk.target_project,
+                               {}).setdefault(_sink_kind(sk) or "",
+                                              []).append(sk)
 
-  # Tier 0: Organization root card at the top of the tree
+  # The tree is an invisible column: organization, folders, projects.
+  main_tree = scene.add_zone(
+      make_zone("main_tree", "@Ghost", layout="column", gap=52.0,
+                align="center"))
   org_tier = scene.add_zone(
-      make_zone(
-          "tier_org",
-          "@Ghost",
-          layout="column",
-          gap=16.0,
-          align="center",
-      ),
-      parent=main_tree,
-  )
+      make_zone("tier_org", "@Ghost", layout="column", gap=16.0,
+                align="center"), parent=main_tree)
   org_card = scene.add_card(
       make_card(
           "org_root_card",
@@ -184,43 +244,35 @@ def build_hierarchy(
           org_subtitle,
           style="@HubCard",
           icon="Organization",
-          width=280.0,
+          width=card_width_for(org_title, org_subtitle, 280.0),
           stroke_color="$SlateStroke",
           stroke_width=2.0,
           badges=_build_org_card_badges(ds, verbose=verbose_badges),
-      ),
-      parent=org_tier,
-  )
+      ), parent=org_tier)
 
-  # Track IDs for semantic edges:
-  # - folder_card_id[fkey]: the tree card representing folder `fkey`
-  # - project_zone_id[pkey]: the outer `@ProjectZone` ID for `Organization/Folder -> Project` edges
-  # - project_log_card[pkey]: the `[Log Buckets]` card inside `@ProjectZone` for log sink edges
-  # - project_bq_card[pkey]: the `[BigQuery Dataset]` card inside `@ProjectZone` for billing export edges
-  # - project_svpc_src_card[pkey]: the `[Shared VPC Service]` card inside a service project
-  # - project_vpc_zone_id[pkey]: the `@VpcZone` ID inside a host project for Shared VPC edges
-  folder_card_id: Dict[str, str] = {}
+  # Edge anchors per project, keyed by project key.
   project_zone_id: Dict[str, str] = {}
-  project_log_card: Dict[str, str] = {}
-  project_bq_card: Dict[str, str] = {}
+  project_dest_card: Dict[str, Dict[str, str]] = {}
   project_svpc_src_card: Dict[str, str] = {}
   project_vpc_zone_id: Dict[str, str] = {}
 
-  def emit_project_zone(pkey: str, parent_zone: ZoneNode) -> ZoneNode:
-    """Emits a 240px-wide @ProjectZone container with its internal resource cards."""
-    pspec = ds.projects[pkey]
-    # Keep title <= 18 chars so layout_scene min_title_w (len*9 + 70) <= 240.0
-    z_title = f"Project: {pspec.key}"
-    if len(z_title) > 18:
-      z_title = f"Project {pspec.key}"
-    z_sub = pspec.name if len(pspec.name) <= 22 else pspec.name[:22]
+  def inner_card(card_id, title, subtitle, icon, parent, **kw):
+    return scene.add_card(
+        make_card(
+            card_id, title, subtitle, style=kw.pop("style", "@ProductCard"),
+            icon=icon, width=card_width_for(title, subtitle,
+                                            PROJECT_INNER_CARD_WIDTH),
+            height=52.0, **kw), parent=parent)
 
+  def emit_project_zone(pkey: str, parent_zone: ZoneNode) -> ZoneNode:
+    """Emits the @ProjectZone of `pkey` with its resource cards."""
+    pspec = ds.projects[pkey]
     pzone = scene.add_zone(
         make_zone(
-            _cid("proj_zone", pspec.key),
+            cid("proj_zone", pspec.key),
             "@ProjectZone",
-            title=z_title,
-            subtitle=z_sub,
+            title=pspec.key,
+            subtitle=pspec.name if pspec.name != pspec.key else "",
             icon="Project",
             layout="column",
             gap=8.0,
@@ -230,15 +282,16 @@ def build_hierarchy(
         parent=parent_zone,
     )
     project_zone_id[pkey] = pzone.id
+    dest = project_dest_card.setdefault(pkey, {})
+    sink_dest = sinks_by_dest.get(pkey, {})
     has_inner = False
 
-    # 1. Embedded VPCs (e.g. starter-gcd dev-net-0 / prod-net-0)
     for vspec in pspec.vpcs:
       vzone = scene.add_zone(
           make_zone(
-              _cid("vpc_zone", pspec.key, vspec.key),
+              cid("vpc_zone", pspec.key, vspec.key),
               "@VpcZone",
-              title=vspec.name[:13],
+              title=vspec.name,
               icon="VirtualPrivateCloud",
               layout="column",
               gap=8.0,
@@ -246,212 +299,126 @@ def build_hierarchy(
           ),
           parent=pzone,
       )
-      if pkey not in project_vpc_zone_id:
-        project_vpc_zone_id[pkey] = vzone.id
+      project_vpc_zone_id.setdefault(pkey, vzone.id)
       if vspec.subnets:
-        s0 = vspec.subnets[0]
-        v_sub = s0.ip_cidr_range or s0.name
+        v_sub = join_limited((s.ip_cidr_range or s.name for s in vspec.subnets),
+                             16)
       else:
         v_sub = f"{vspec.ingress_rule_count} fw rules"
       scene.add_card(
           make_card(
-              _cid("vpc_card", pspec.key, vspec.key),
+              cid("vpc_card", pspec.key, vspec.key),
               "Subnets/FW",
-              v_sub[:14],
+              v_sub,
               style="@ProductCard",
               icon="Subnet",
-              width=VPC_INNER_CARD_WIDTH,
+              width=card_width_for("Subnets/FW", v_sub, VPC_INNER_CARD_WIDTH),
               height=50.0,
           ),
           parent=vzone,
       )
       has_inner = True
 
-    # 2. Log buckets (e.g. log-0 in classic/hardened, iac-0 in starter-gcd)
-    if pspec.log_buckets:
-      non_def = [b for b in pspec.log_buckets if b != "_Default"]
-      shown = non_def if non_def else pspec.log_buckets
-      lb_sub = ", ".join(shown[:3])
-      if len(lb_sub) > 22:
-        lb_sub = f"{len(shown)} log buckets"
-      lb_badges = [Badge(text="CMEK", tone="warn")] if pspec.log_buckets_cmek else []
-      c_lb = scene.add_card(
-          make_card(
-              _cid("proj_log_buckets", pspec.key),
-              f"Log Buckets ({len(shown)})",
-              lb_sub,
-              style="@ProductCard",
-              icon="CloudLogging",
-              width=PROJECT_INNER_CARD_WIDTH,
-              height=52.0,
-              badges=lb_badges,
-          ),
-          parent=pzone,
-      )
-      project_log_card[pkey] = c_lb.id
+    # The `_Default` bucket entry only configures the built-in bucket.
+    buckets = [b for b in pspec.log_buckets if b != "_Default"]
+    if buckets:
+      lb_badges = ([Badge(text="CMEK", tone="warn")]
+                   if pspec.log_buckets_cmek else [])
+      c_lb = inner_card(cid("proj_log_buckets",
+                            pspec.key), f"Log Buckets ({len(buckets)})",
+                        join_limited(buckets, _LIST_BUDGET), "CloudLogging",
+                        pzone, badges=lb_badges)
+      dest["logging"] = c_lb.id
       has_inner = True
 
-    # 3. BigQuery datasets (e.g. billing-0 in classic/hardened, iac-0 in starter-gcd)
     if pspec.datasets:
-      bq_sub = ", ".join(pspec.datasets[:2])[:22]
-      bq_badges = [Badge(text="CMEK", tone="warn")] if pspec.datasets_cmek else []
-      c_bq = scene.add_card(
-          make_card(
-              _cid("proj_bq", pspec.key),
-              "BigQuery Dataset",
-              bq_sub,
-              style="@ProductCard",
-              icon="BigQuery",
-              width=PROJECT_INNER_CARD_WIDTH,
-              height=52.0,
-              badges=bq_badges,
-          ),
-          parent=pzone,
-      )
-      project_bq_card[pkey] = c_bq.id
+      bq_badges = ([Badge(text="CMEK", tone="warn")]
+                   if pspec.datasets_cmek else [])
+      title = ("BigQuery Dataset" if len(pspec.datasets) == 1 else
+               f"BigQuery Datasets ({len(pspec.datasets)})")
+      c_bq = inner_card(cid("proj_bq", pspec.key), title,
+                        join_limited(pspec.datasets, _LIST_BUDGET), "BigQuery",
+                        pzone, badges=bq_badges)
+      dest["bigquery"] = c_bq.id
       has_inner = True
 
-    # 4. GCS buckets (e.g. iac-0 state & outputs buckets)
     if pspec.buckets:
-      b_sub = f"{len(pspec.buckets)} state/output buckets"
-      scene.add_card(
-          make_card(
-              _cid("proj_gcs", pspec.key),
-              f"GCS Buckets ({len(pspec.buckets)})",
-              b_sub,
-              style="@ProductCard",
-              icon="CloudStorage",
-              width=PROJECT_INNER_CARD_WIDTH,
-              height=52.0,
-          ),
-          parent=pzone,
-      )
+      c_gcs = inner_card(cid("proj_gcs",
+                             pspec.key), f"GCS Buckets ({len(pspec.buckets)})",
+                         join_limited(pspec.buckets, _LIST_BUDGET),
+                         "CloudStorage", pzone)
+      dest["storage"] = c_gcs.id
       has_inner = True
 
-    # 5. Service accounts (e.g. iac-0 stage automation SAs)
+    if sink_dest.get("pubsub"):
+      topics = sorted(
+          {sk.target_resource or sk.name for sk in sink_dest["pubsub"]})
+      c_ps = inner_card(cid("proj_pubsub",
+                            pspec.key), f"Pub/Sub Topics ({len(topics)})",
+                        join_limited(topics, _LIST_BUDGET), "CloudGeneric",
+                        pzone)
+      dest["pubsub"] = c_ps.id
+      has_inner = True
+
     if pspec.service_accounts:
       sa_cnt = len(pspec.service_accounts)
-      sa_sub = f"{sa_cnt} stage SAs"
-      scene.add_card(
-          make_card(
-              _cid("proj_sas", pspec.key),
-              f"Automation SAs ({sa_cnt})",
-              sa_sub,
-              style="@ProductCard",
-              icon="ServiceAccount",
-              width=PROJECT_INNER_CARD_WIDTH,
-              height=52.0,
-          ),
-          parent=pzone,
-      )
+      inner_card(cid("proj_sas", pspec.key), f"Automation SAs ({sa_cnt})",
+                 join_limited(pspec.service_accounts, _LIST_BUDGET),
+                 "ServiceAccount", pzone)
       has_inner = True
 
-    # 6. CI/CD Workload Identity Federation (when cicd.yaml points to this project)
     for wf in pspec.cicd_workflows:
-      repo_desc = f"{wf.repo_type} {wf.repo_name}".strip()[:22] or wf.name[:22]
-      scene.add_card(
-          make_card(
-              _cid("proj_cicd", pspec.key, wf.name),
-              "CI/CD WIF",
-              repo_desc,
-              style="@ProductCard",
-              icon="WorkloadIdentity",
-              width=PROJECT_INNER_CARD_WIDTH,
-              height=52.0,
-          ),
-          parent=pzone,
-      )
+      repo_desc = f"{wf.repo_type} {wf.repo_name}".strip() or wf.name
+      inner_card(cid("proj_cicd", pspec.key, wf.name), "CI/CD WIF", repo_desc,
+                 "WorkloadIdentity", pzone)
       has_inner = True
 
-    # 7. KMS keyring / CMEK keys (e.g. hardened log-0, billing-0, iac-0)
     if pspec.kms_keyrings or pspec.cmek_services:
-      if pspec.kms_keyrings:
-        kms_sub = ", ".join(pspec.kms_keyrings[:2])[:22]
-      else:
-        kms_sub = ", ".join(pspec.cmek_services.keys())[:22]
-      scene.add_card(
-          make_card(
-              _cid("proj_kms", pspec.key),
-              "KMS Keyring",
-              kms_sub,
-              style="@ProductCard",
-              icon="KeyManagementService",
-              width=PROJECT_INNER_CARD_WIDTH,
-              height=52.0,
-              badges=[Badge(text="CMEK", tone="warn")],
-          ),
-          parent=pzone,
-      )
+      kms_items = pspec.kms_keyrings or list(pspec.cmek_services.keys())
+      inner_card(cid("proj_kms", pspec.key), "KMS Keyring",
+                 join_limited(kms_items, _LIST_BUDGET), "KeyManagementService",
+                 pzone, badges=[Badge(text="CMEK", tone="warn")])
       has_inner = True
 
-    # 8. Observability factory (alerts & logging metrics)
-    if pspec.has_observability_factory:
-      obs_sub = (
-          f"{pspec.observability_alerts_count} alerts · "
-          f"{pspec.observability_metrics_count} metrics"
-      )
-      scene.add_card(
-          make_card(
-              _cid("proj_obs", pspec.key),
-              "Observability",
-              obs_sub,
-              style="@ProductCard",
-              icon="CloudMonitoring",
-              width=PROJECT_INNER_CARD_WIDTH,
-              height=52.0,
-          ),
-          parent=pzone,
-      )
+    obs_alerts = pspec.observability_alerts_count
+    obs_metrics = pspec.observability_metrics_count
+    if pspec.has_observability_factory and (obs_alerts or obs_metrics):
+      inner_card(cid("proj_obs", pspec.key), "Observability",
+                 f"{obs_alerts} alerts · {obs_metrics} metrics",
+                 "CloudMonitoring", pzone)
       has_inner = True
 
-    # 9. Shared VPC service attachment card (e.g. starter-gcd dev-app-0 / prod-app-0)
     if pspec.shared_vpc_service_of:
-      svpc_sub = f"host: {pspec.shared_vpc_service_of}"[:22]
-      c_svpc = scene.add_card(
-          make_card(
-              _cid("proj_svpc_svc", pspec.key),
-              "Shared VPC Service",
-              svpc_sub,
-              style="@ProductCard",
-              icon="VirtualPrivateCloud",
-              width=PROJECT_INNER_CARD_WIDTH,
-              height=52.0,
-          ),
-          parent=pzone,
-      )
+      c_svpc = inner_card(cid("proj_svpc_svc", pspec.key), "Shared VPC Service",
+                          f"host: {pspec.shared_vpc_service_of}",
+                          "VirtualPrivateCloud", pzone)
       project_svpc_src_card[pkey] = c_svpc.id
       has_inner = True
 
-    # Fallback if a project has no specific internal resource cards (e.g. bare project fixture)
     if not has_inner:
-      svcs_sub = (
-          f"{len(pspec.services)} enabled APIs"
-          if pspec.services
-          else pspec.name[:22]
-      )
-      scene.add_card(
-          make_card(
-              _cid("proj", pspec.key),
-              pspec.key[:18],
-              svcs_sub,
-              style="@ProjectCard",
-              icon="Project",
-              width=PROJECT_INNER_CARD_WIDTH,
-              height=52.0,
-          ),
-          parent=pzone,
-      )
+      svcs_sub = (f"{len(pspec.services)} enabled APIs"
+                  if pspec.services else "no resources declared")
+      inner_card(cid("proj", pspec.key), pspec.key, svcs_sub, "Project", pzone,
+                 style="@ProjectCard")
 
     return pzone
 
-  def emit_folder_branch(
-      fkey: str, parent_zone: ZoneNode, parent_card_id: str
-  ) -> ZoneNode:
-    """Emits a tree branch for folder `fkey`, with sibling sub-folders and sibling projects in rows."""
+  def emit_projects_row(row_id: str, pkeys: List[str], parent_zone: ZoneNode,
+                        parent_card_id: str, gap: float) -> None:
+    row = scene.add_zone(
+        make_zone(row_id, "@Ghost", layout="row", gap=gap, align="start"),
+        parent=parent_zone)
+    for pk in pkeys:
+      pzone = emit_project_zone(pk, row)
+      scene.add_edge(_tree_edge(parent_card_id, pzone.id))
+
+  def emit_folder_branch(fkey: str, parent_zone: ZoneNode,
+                         parent_card_id: str) -> ZoneNode:
+    """Emits folder `fkey` with sub-folders and projects in sibling rows."""
     fspec = ds.folders[fkey]
     branch_col = scene.add_zone(
         make_zone(
-            _cid("branch_folder", fspec.key),
+            cid("branch_folder", fspec.key),
             "@Ghost",
             layout="column",
             gap=44.0,
@@ -459,48 +426,29 @@ def build_hierarchy(
         ),
         parent=parent_zone,
     )
-
     f_sub = fspec.key if fspec.key.lower() != fspec.name.lower() else "folder"
     fcard = scene.add_card(
         make_card(
-            _cid("folder_card", fspec.key),
-            f"Folder: {fspec.name}"[:19],
-            f_sub[:22],
+            cid("folder_card", fspec.key),
+            fspec.name,
+            f_sub,
             style="@ProjectCard",
             icon="Folder",
-            width=UNIFORM_BOX_WIDTH,
+            width=card_width_for(fspec.name, f_sub, UNIFORM_BOX_WIDTH),
             height=50.0,
             stroke_color="$FolderGrey",
             stroke_width=1.5,
-            fill="#f1f3f4",
+            fill=resolve_color("$FolderFill"),
             badges=_build_folder_badges(fspec, verbose=verbose_badges),
         ),
         parent=branch_col,
     )
-    folder_card_id[fkey] = fcard.id
+    scene.add_edge(_tree_edge(parent_card_id, fcard.id))
 
-    # Tree edge: parent (Organization or parent Folder) -> this Folder card
-    scene.add_edge(
-        make_edge(
-            parent_card_id,
-            fcard.id,
-            arrow="-->",
-            label="",
-            color="$SlateStroke",
-            stroke_width=1.8,
-            dashed=False,
-            dash="solid",
-            head="filled",
-            source_anchor="bottom",
-            target_anchor="top",
-        )
-    )
-
-    # All sibling sub-folders MUST sit at the same Y height (layout="row", §24 item 2)
     if fspec.children_folders:
       sub_row = scene.add_zone(
           make_zone(
-              _cid("subfolders_row", fspec.key),
+              cid("subfolders_row", fspec.key),
               "@Ghost",
               layout="row",
               gap=20.0,
@@ -511,41 +459,34 @@ def build_hierarchy(
       for cfk in fspec.children_folders:
         emit_folder_branch(cfk, sub_row, fcard.id)
 
-    # All sibling projects under this folder MUST sit at the same Y height (layout="row", §25 item 2)
-    # and Folder -> Project edges target the outer @ProjectZone box (§25 item 1).
     if fspec.children_projects:
-      proj_row = scene.add_zone(
-          make_zone(
-              _cid("folder_projects_row", fspec.key),
-              "@Ghost",
-              layout="row",
-              gap=44.0,
-              align="start",
-          ),
-          parent=branch_col,
-      )
-      for cpk in fspec.children_projects:
-        pzone = emit_project_zone(cpk, proj_row)
-        scene.add_edge(
-            make_edge(
-                fcard.id,
-                pzone.id,
-                arrow="-->",
-                label="",
-                color="$SlateStroke",
-                stroke_width=1.8,
-                dashed=False,
-                dash="solid",
-                head="filled",
-                source_anchor="bottom",
-                target_anchor="top",
-            )
-        )
-
+      emit_projects_row(cid("folder_projects_row", fspec.key),
+                        list(fspec.children_projects), branch_col, fcard.id,
+                        44.0)
     return branch_col
 
-  # Tier 1: Sibling root folders row (same Y height)
-  if ds.root_folder_keys:
+  # Folders and projects whose parent is outside the dataset.
+  external: Dict[str, Dict[str, List[str]]] = {}
+  for fkey in ds.root_folder_keys:
+    ext = ds.folders[fkey].parent_external
+    if ext:
+      external.setdefault(ext, {
+          "folders": [],
+          "projects": []
+      })["folders"].append(fkey)
+  for pkey in ds.root_project_keys:
+    ext = ds.projects[pkey].parent_external
+    if ext:
+      external.setdefault(ext, {
+          "folders": [],
+          "projects": []
+      })["projects"].append(pkey)
+  ext_folders = {k for v in external.values() for k in v["folders"]}
+  ext_projects = {k for v in external.values() for k in v["projects"]}
+  org_folders = [k for k in ds.root_folder_keys if k not in ext_folders]
+  org_projects = [k for k in ds.root_project_keys if k not in ext_projects]
+
+  if org_folders or external:
     folders_row = scene.add_zone(
         make_zone(
             "tier_folders",
@@ -556,50 +497,49 @@ def build_hierarchy(
         ),
         parent=main_tree,
     )
-    for rfk in ds.root_folder_keys:
+    for rfk in org_folders:
       emit_folder_branch(rfk, folders_row, org_card.id)
+    for ext in sorted(external):
+      ext_col = scene.add_zone(
+          make_zone(cid("branch_external", ext), "@Ghost", layout="column",
+                    gap=44.0, align="center"), parent=folders_row)
+      ext_card = scene.add_card(
+          make_card(
+              cid("external_parent", ext),
+              "External parent",
+              ext,
+              style="@ProjectCard",
+              icon="Folder",
+              width=card_width_for("External parent", ext, UNIFORM_BOX_WIDTH),
+              height=50.0,
+              stroke_color="$FolderGrey",
+              stroke_width=1.5,
+              dashed=True,
+              badges=[Badge(text="outside dataset", tone="neutral")],
+          ), parent=ext_col)
+      members = external[ext]
+      if members["folders"]:
+        sub_row = scene.add_zone(
+            make_zone(cid("external_folders_row", ext), "@Ghost", layout="row",
+                      gap=20.0, align="start"), parent=ext_col)
+        for fk in members["folders"]:
+          emit_folder_branch(fk, sub_row, ext_card.id)
+      if members["projects"]:
+        emit_projects_row(cid("external_projects_row", ext),
+                          members["projects"], ext_col, ext_card.id, 44.0)
 
-  # Tier 2: Sibling org-root projects row (same Y height, §24 item 5 & §25 item 2)
-  # with Organization -> Project edges targeting the outer @ProjectZone box (§25 item 1).
-  if ds.root_project_keys:
-    org_proj_zone = scene.add_zone(
-        make_zone(
-            "org_root_projects",
-            "@Ghost",
-            layout="row",
-            gap=24.0,
-            align="start",
-        ),
-        parent=main_tree,
+  if org_projects:
+    # Projects that hold sink or billing export destinations sit on the left,
+    # closest to the Organization controls column.
+    ordered = sorted(
+        org_projects,
+        key=lambda pk: (0 if ds.projects[pk].log_buckets else
+                        (1 if ds.projects[pk].datasets else 2), pk),
     )
-    # Order org-root projects so log-0 and billing-0 sit on the left closest to Organization controls
-    ordered_root_projs = sorted(
-        ds.root_project_keys,
-        key=lambda pk: (
-            0 if ds.projects[pk].log_buckets else (1 if ds.projects[pk].datasets else 2),
-            pk,
-        ),
-    )
-    for rpk in ordered_root_projs:
-      pzone = emit_project_zone(rpk, org_proj_zone)
-      scene.add_edge(
-          make_edge(
-              org_card.id,
-              pzone.id,
-              arrow="-->",
-              label="",
-              color="$SlateStroke",
-              stroke_width=1.8,
-              dashed=False,
-              dash="solid",
-              head="filled",
-              source_anchor="bottom",
-              target_anchor="top",
-          )
-      )
+    emit_projects_row("org_root_projects", ordered, main_tree, org_card.id,
+                      24.0)
 
-  # Lateral "Organization controls" panel (vertical column docked to the left of main_tree)
-  # NO edges from Organization controls to Organization (§24 item 1: implicit!).
+  # Organization controls: implicit org-level settings, no edge to the org.
   controls_zone = scene.add_zone(
       make_zone(
           "org_controls",
@@ -612,91 +552,46 @@ def build_hierarchy(
           dock_side="left",
           dock_align="start",
           dock_gap=44.0,
-      )
-  )
+      ))
 
-  # 1. [Org Policies & Constraints] card (no edge to Organization)
+  def control_card(card_id, title, subtitle, icon):
+    return scene.add_card(
+        make_card(
+            card_id, title, subtitle, style="@OrgControlCard", icon=icon,
+            width=card_width_for(title, subtitle, PROJECT_INNER_CARD_WIDTH)),
+        parent=controls_zone)
+
   pol_sub = f"{org.org_policies_count} policies"
   if org.custom_constraints_count > 0:
     pol_sub += f" · {org.custom_constraints_count} custom"
-  scene.add_card(
-      make_card(
-          "ctrl_org_policies",
-          "Org Policies",
-          pol_sub,
-          style="@OrgControlCard",
-          icon="OrganizationPolicy",
-          width=PROJECT_INNER_CARD_WIDTH,
-      ),
-      parent=controls_zone,
-  )
+  control_card("ctrl_org_policies", "Org Policies", pol_sub,
+               "OrganizationPolicy")
+  control_card(
+      "ctrl_custom_roles", "Custom Roles & Tags",
+      f"{_plural(org.custom_roles_count, 'role')} · "
+      f"{_plural(org.tag_keys_count, 'tag')} ({org.tag_values_count})", "IAM")
 
-  # 2. [Custom Roles & Tags] card (no edge to Organization)
-  roles_tags_sub = (
-      f"{org.custom_roles_count} roles · "
-      f"{org.tag_keys_count} tags ({org.tag_values_count})"
-  )
-  scene.add_card(
-      make_card(
-          "ctrl_custom_roles",
-          "Custom Roles & Tags",
-          roles_tags_sub,
-          style="@OrgControlCard",
-          icon="IAM",
-          width=PROJECT_INNER_CARD_WIDTH,
-      ),
-      parent=controls_zone,
-  )
-
-  # 3. [Org Log Sinks] card -> routes ONLY to [Log Buckets] card with label "logsink" (§25 item 3)
-  sink_names = [s.name for s in org.sinks]
-  if sink_names:
-    sink_sub = ", ".join(sink_names[:3])[:22]
-  else:
-    sink_sub = "no org sinks"
-  c_sinks = scene.add_card(
-      make_card(
-          "ctrl_log_sinks",
-          f"Org Log Sinks ({len(org.sinks)})",
-          sink_sub,
-          style="@OrgControlCard",
-          icon="CloudLogging",
-          width=PROJECT_INNER_CARD_WIDTH,
-      ),
-      parent=controls_zone,
-  )
-
-  sinks_by_proj: Dict[str, List[OrgSink]] = {}
-  for sk in org.sinks:
-    if sk.target_project and sk.target_project in ds.projects:
-      sinks_by_proj.setdefault(sk.target_project, []).append(sk)
-
-  for t_proj in sinks_by_proj:
-    dst_cid = project_log_card.get(t_proj) or project_zone_id.get(t_proj)
-    if dst_cid:
+  c_sinks = control_card(
+      "ctrl_log_sinks", f"Org Log Sinks ({len(org.sinks)})",
+      join_limited((s.name for s in org.sinks), _LIST_BUDGET,
+                   empty="no org sinks"), "CloudLogging")
+  for t_proj in sorted(sinks_by_dest):
+    for kind in sorted(sinks_by_dest[t_proj]):
+      # A destination the project YAML does not declare lands on the zone.
+      dst = (project_dest_card.get(t_proj, {}).get(kind) or
+             project_zone_id[t_proj])
+      n = len(sinks_by_dest[t_proj][kind])
       scene.add_edge(
-          make_edge(
-              c_sinks.id,
-              dst_cid,
-              arrow="-.->",
-              label="logsink",
-              color="$TealStroke",
-              stroke_width=1.8,
-              dashed=True,
-              dash="dashdot",
-              head="filled",
-          )
-      )
+          _edge(c_sinks.id, dst, _SINK_EDGE,
+                "logsink" if n == 1 else f"logsink ({n})"))
 
-  # 4. [Billing Account] inside lateral Organization controls panel -> [BigQuery Dataset]
-  # with concise label "billing export" (§24 item 1)
   if ds.billing_accounts:
-    ba = ds.billing_accounts[0]
     bzone = scene.add_zone(
         make_zone(
             "billing_zone",
             "@BillingZone",
-            title="Billing Account",
+            title=("Billing Account" if len(ds.billing_accounts) == 1 else
+                   f"Billing Accounts ({len(ds.billing_accounts)})"),
             icon="BillingAccount",
             layout="column",
             gap=8.0,
@@ -704,96 +599,63 @@ def build_hierarchy(
         ),
         parent=controls_zone,
     )
-    ba_sub = (
-        f"{ba.iam_bindings_additive_count} additive IAM bindings"
-        if ba.iam_bindings_additive_count > 0
-        else "Org billing account"
-    )
-    bcard = scene.add_card(
-        make_card(
-            _cid("billing_acct", ba.key),
-            ba.id[:18],
-            ba_sub[:22],
-            style="@ProductCard",
-            icon="BillingAccount",
-            width=180.0,
-            stroke_color="$BillingGreen",
-            stroke_width=1.5,
-        ),
-        parent=bzone,
-    )
+    billing_cards: Dict[str, str] = {}
+    for ba in ds.billing_accounts:
+      ba_sub = (
+          f"{_plural(ba.iam_bindings_additive_count, 'additive IAM binding')}"
+          if ba.iam_bindings_additive_count > 0 else
+          ("Org billing account"
+           if ba.id == org.billing_account_id else "Billing account"))
+      bcard = scene.add_card(
+          make_card(
+              cid("billing_acct", ba.key),
+              ba.id,
+              ba_sub,
+              style="@ProductCard",
+              icon="BillingAccount",
+              width=card_width_for(ba.id, ba_sub, 180.0),
+              stroke_color="$BillingGreen",
+              stroke_width=1.5,
+          ),
+          parent=bzone,
+      )
+      billing_cards[ba.id] = bcard.id
+    # The export dataset receives the organization's billing account data.
+    export_src = billing_cards.get(
+        org.billing_account_id) or billing_cards[ds.billing_accounts[0].id]
     for pkey, pspec in ds.projects.items():
-      if "billing_export" in pspec.datasets:
-        dst_bq = project_bq_card.get(pkey) or project_zone_id.get(pkey)
+      if BILLING_EXPORT_DATASET in pspec.datasets:
+        dst_bq = project_dest_card.get(pkey, {}).get("bigquery")
         if dst_bq:
           scene.add_edge(
-              make_edge(
-                  bcard.id,
-                  dst_bq,
-                  arrow="-.->",
-                  label="billing export",
-                  color="$BillingGreen",
-                  stroke_width=1.8,
-                  dashed=True,
-                  dash="dotted",
-                  head="open",
-              )
-          )
+              _edge(export_src, dst_bq, _BILLING_EDGE, "billing export"))
 
-  # 5. Shared VPC service -> host @VpcZone edges (§23 item 2 & §25 item 2)
   for pkey, pspec in ds.projects.items():
     host_key = pspec.shared_vpc_service_of
     if not host_key:
       continue
-    src_cid = project_svpc_src_card.get(pkey) or project_zone_id.get(pkey)
+    src_cid = project_svpc_src_card.get(pkey)
     dst_zid = project_vpc_zone_id.get(host_key) or project_zone_id.get(host_key)
     if src_cid and dst_zid:
       scene.add_edge(
-          make_edge(
-              src_cid,
-              dst_zid,
-              arrow="-->",
-              label="Shared VPC service",
-              color="$GcpBlue",
-              stroke_width=2.0,
-              dashed=False,
-              dash="solid",
-              head="filled",
-          )
-      )
+          _edge(src_cid, dst_zid, _SVPC_EDGE, "Shared VPC service",
+                stroke_width=2.0))
 
-  # 6. Legend
   if legend:
-    scene.legend = [
-        LegendEntry(
-            label="Resource hierarchy parent → child (solid)",
-            kind="edge",
-            color="#5f6368",
-            dash="solid",
-            head="filled",
-        ),
-        LegendEntry(
-            label="Org log sink routing (dash-dot, filled)",
-            kind="edge",
-            color="#007b83",
-            dash="dashdot",
-            head="filled",
-        ),
-        LegendEntry(
-            label="BigQuery billing export (dotted, open)",
-            kind="edge",
-            color="#1e8e3e",
-            dash="dotted",
-            head="open",
-        ),
-        LegendEntry(
-            label="Shared VPC service → host VPC (solid blue)",
-            kind="edge",
-            color="#1a73e8",
-            dash="solid",
-            head="filled",
-        ),
+    labels = {e.label.split(" (")[0] for e in scene.edges}
+    entries = [
+        legend_edge("Resource hierarchy parent → child", *_HIERARCHY_EDGE)
     ]
+    if "logsink" in labels:
+      entries.append(legend_edge("Org log sink routing", *_SINK_EDGE))
+    if "billing export" in labels:
+      entries.append(legend_edge("BigQuery billing export", *_BILLING_EDGE))
+    if "Shared VPC service" in labels:
+      entries.append(legend_edge("Shared VPC service → host VPC", *_SVPC_EDGE))
+    if external:
+      entries.append(
+          legend_card("Parent outside the dataset", "$FolderGrey", dashed=True))
+    scene.legend = entries
 
   return scene
 
@@ -805,7 +667,7 @@ def build(
     *,
     verbose_badges: bool = False,
     legend: bool = True,
-    **_kwargs: object,
+    cicd_workflows: Optional[str] = None,
 ) -> SceneGraph:
   """Returns the SceneGraph for `view` of a 0-org-setup dataset."""
   if view != "hierarchy":
@@ -815,4 +677,5 @@ def build(
       dataset_name=dataset_name,
       verbose_badges=verbose_badges,
       legend=legend,
+      cicd_workflows=cicd_workflows,
   )

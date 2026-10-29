@@ -13,18 +13,24 @@
 # limitations under the License.
 """Pure-Python flexbox layout + closest-side anchor solving.
 
-Ported verbatim from the scratch `engine_1_pyflex_drawio.py` (golden parity);
-additions (card/zone badges, `grid` zones, `@OrganizationZone` header) only
-take effect when the corresponding model fields are set.
+Zones are measured bottom-up and placed top-down (`row`, `column` or `grid`
+children, centred or start-aligned); docked root zones sit beside the zone
+they dock to. Edge anchors are then solved from the placed geometry, and
+cards grow when one of their sides needs more ports than fit at the router's
+minimum port pitch. Card/zone badges and `grid` zones only take effect when
+the corresponding model fields are set.
 """
 
 from typing import Dict, List, Tuple, Union
 
-from .model import Badge, CardNode, EdgeSpec, STYLE_PRESETS, SceneGraph, ZoneNode
-from .router import _segment_hits_any_card, edge_obstacles
+from .model import (Badge, CardNode, EdgeSpec, STYLE_PRESETS, SceneGraph,
+                    ZoneNode, validate_scene)
+from .router import (PORT_MARGIN, PORT_PITCH, _segment_hits_any_card,
+                     ancestor_index, edge_obstacles)
 
 # Minimum vertical gap (in px) required between two vertically stacked cards
-# to allow a straight `bottom -> top` arrow (2 arrowheads + 17px label pill + stems).
+# to allow a straight `bottom -> top` arrow (2 arrowheads + 17px label pill +
+# stems).
 MIN_VERTICAL_ARROW_GAP = 48.0
 
 # Badge pill geometry (shared with emit_svg).
@@ -42,10 +48,9 @@ def badge_width(text: str) -> float:
   return max(24.0, len(text) * 5.4 + 12.0)
 
 
-def layout_badges(badges: List[Badge],
-                  max_w: float,
-                  max_rows: int = BADGE_MAX_ROWS
-                 ) -> List[List[Tuple[Badge, float]]]:
+def layout_badges(
+    badges: List[Badge], max_w: float,
+    max_rows: int = BADGE_MAX_ROWS) -> List[List[Tuple[Badge, float]]]:
   """Greedy-wraps badges into at most `max_rows` rows of width `max_w`.
 
   Overflowing badges collapse into a trailing `+N` neutral pill.
@@ -98,25 +103,22 @@ def card_badge_rows(c: CardNode) -> List[List[Tuple[Badge, float]]]:
 def zone_badge_strip_width(z: ZoneNode) -> float:
   if not z.badges:
     return 0.0
-  return sum(badge_width(b.text) for b in z.badges) + BADGE_GAP * (
-      len(z.badges) - 1)
+  return sum(
+      badge_width(b.text) for b in z.badges) + BADGE_GAP * (len(z.badges) - 1)
 
 
 def _zone_header_height(z: ZoneNode) -> float:
+  """Title band height from the preset (`headerHeight*`, default 32 / 48)."""
   if z.style_name == "@Ghost" or (not z.title and not z.subtitle):
     return 0.0
-  if z.style_name in ("@ArchitectureRoot", "@OrganizationZone"):
-    return 66.0 if z.subtitle else 42.0
+  preset = STYLE_PRESETS.get(z.style_name, {})
   if z.subtitle:
-    return 48.0
-  return 32.0
+    return float(preset.get("headerHeightSubtitle", 48.0))
+  return float(preset.get("headerHeight", 32.0))
 
 
 def _zone_padding(z: ZoneNode) -> float:
-  if z.style_name == "@Ghost":
-    return 0.0
-  if z.style_name == "@VpcZone":
-    return 28.0
+  """Inner padding from the preset (`@Ghost` has 0, default 16)."""
   preset = STYLE_PRESETS.get(z.style_name, {})
   return float(preset.get("padding", 16.0))
 
@@ -157,25 +159,28 @@ def measure_node(node: Union[ZoneNode, CardNode]) -> Tuple[float, float]:
   gap = node.gap
 
   if node.layout == "row":
-    content_w = sum(w for w, _ in child_sizes) + gap * max(0, len(child_sizes) - 1)
+    content_w = sum(
+        w for w, _ in child_sizes) + gap * max(0,
+                                               len(child_sizes) - 1)
     content_h = max(h for _, h in child_sizes)
   elif node.layout == "grid":
     rows = _grid_rows(node)
     row_ws = [
-        sum(_child_w(c) for c in r) + gap * max(0, len(r) - 1) for r in rows
+        sum(_child_w(c) for c in r) + gap * max(0,
+                                                len(r) - 1) for r in rows
     ]
     row_hs = [max(_child_h(c) for c in r) for r in rows]
     content_w = max(row_ws)
     content_h = sum(row_hs) + gap * max(0, len(rows) - 1)
   else:
     content_w = max(w for w, _ in child_sizes)
-    content_h = sum(h for _, h in child_sizes) + gap * max(0, len(child_sizes) - 1)
+    content_h = sum(
+        h for _, h in child_sizes) + gap * max(0,
+                                               len(child_sizes) - 1)
 
-  min_title_w = (
-      max(len(node.title) * 9.0 + 70.0, len(node.subtitle) * 7.2 + 70.0)
-      if node.title
-      else 0.0
-  )
+  min_title_w = (max(
+      len(node.title) * 9.0 + 70.0,
+      len(node.subtitle) * 7.2 + 70.0) if node.title else 0.0)
   if node.badges and node.title:
     min_title_w = max(min_title_w, _badge_title_min_w(node))
   node.w = max(content_w + pad * 2, min_title_w)
@@ -189,7 +194,7 @@ def _badge_title_min_w(node: ZoneNode) -> float:
   icon_w = 0.0
   if node.icon:
     icon_w = (26.0 if node.style_name in ("@ArchitectureRoot",
-                                         "@OrganizationZone") else 20.0) + 10.0
+                                          "@OrganizationZone") else 20.0) + 10.0
   title_w = len(node.title) * fsize * 0.6
   return 18.0 + icon_w + title_w + 24.0 + zone_badge_strip_width(node) + 16.0
 
@@ -212,13 +217,15 @@ def place_node(node: Union[ZoneNode, CardNode], x: float, y: float) -> None:
 
   if node.layout == "row":
     total_w = sum(
-        (ch.w if isinstance(ch, ZoneNode) else ch.width) for ch in node.children
-    ) + node.gap * max(0, len(node.children) - 1)
+        (ch.w if isinstance(ch, ZoneNode) else ch.width)
+        for ch in node.children) + node.gap * max(0,
+                                                  len(node.children) - 1)
     cur_x = inner_x + max(0.0, (inner_w - total_w) / 2.0)
     for ch in node.children:
       cw = ch.w if isinstance(ch, ZoneNode) else ch.width
       ch_h = ch.h if isinstance(ch, ZoneNode) else ch.height
-      cy = inner_y + (inner_h - ch_h) / 2.0 if node.align == "center" else inner_y
+      cy = inner_y + (inner_h -
+                      ch_h) / 2.0 if node.align == "center" else inner_y
       place_node(ch, cur_x, cy)
       cur_x += cw + node.gap
   elif node.layout == "grid":
@@ -226,8 +233,8 @@ def place_node(node: Union[ZoneNode, CardNode], x: float, y: float) -> None:
     for row in _grid_rows(node):
       row_w = sum(_child_w(c) for c in row) + node.gap * max(0, len(row) - 1)
       row_h = max(_child_h(c) for c in row)
-      cur_x = inner_x + (max(0.0, (inner_w - row_w) / 2.0)
-                         if node.align == "center" else 0.0)
+      cur_x = inner_x + (max(0.0, (inner_w - row_w) /
+                             2.0) if node.align == "center" else 0.0)
       for ch in row:
         ch_h = _child_h(ch)
         cy = cur_y + (row_h - ch_h) / 2.0 if node.align == "center" else cur_y
@@ -236,8 +243,9 @@ def place_node(node: Union[ZoneNode, CardNode], x: float, y: float) -> None:
       cur_y += row_h + node.gap
   else:
     total_h = sum(
-        (ch.h if isinstance(ch, ZoneNode) else ch.height) for ch in node.children
-    ) + node.gap * max(0, len(node.children) - 1)
+        (ch.h if isinstance(ch, ZoneNode) else ch.height)
+        for ch in node.children) + node.gap * max(0,
+                                                  len(node.children) - 1)
     cur_y = inner_y + max(0.0, (inner_h - total_h) / 2.0)
     for ch in node.children:
       cw = ch.w if isinstance(ch, ZoneNode) else ch.width
@@ -247,7 +255,8 @@ def place_node(node: Union[ZoneNode, CardNode], x: float, y: float) -> None:
       cur_y += ch_h + node.gap
 
 
-def shift_subtree(node: Union[ZoneNode, CardNode], dx: float, dy: float) -> None:
+def shift_subtree(node: Union[ZoneNode, CardNode], dx: float,
+                  dy: float) -> None:
   node.x += dx
   node.y += dy
   if isinstance(node, ZoneNode):
@@ -294,18 +303,46 @@ def _keeps_vertical_anchors(e: EdgeSpec, sy1: float, sy2: float, ty1: float,
   return False
 
 
+# Upper bound on "grow cards, then lay out again" rounds in `layout_scene`.
+MAX_GROW_PASSES = 4
+
+
 def layout_scene(scene: SceneGraph) -> Tuple[float, float]:
-  if _is_multistage(scene):
+  """Lays out zones and cards and solves edge anchors (mutates the scene).
+
+  Returns the canvas size. Raises ValueError (from `validate_scene`) when the
+  scene holds values the layout cannot honour. When a card side needs more
+  ports than fit at `PORT_PITCH`, the card grows and the layout runs again
+  from the builder anchors.
+  """
+  validate_scene(scene)
+  multi = _is_multistage(scene)
+  if multi:
     for c in scene.cards.values():
       fit_card_width(c)
-  primary_roots = [z for z in scene.root_zones if not z.dock_to]
-  docked_roots = [z for z in scene.root_zones if z.dock_to]
-
-  # 2-networking row-gap floor (parity locked); multi-stage builders own their gaps.
-  if not _is_multistage(scene):
+  else:
+    # 2-networking row-gap floor (parity locked); multi-stage builders own
+    # their gaps.
     for z in scene.zones.values():
       if z.layout == "row":
         z.gap = max(z.gap, 68.0 if scene.view_kind == "dns" else 56.0)
+
+  builder_anchors = [(e.source_anchor, e.target_anchor) for e in scene.edges]
+  size = (0.0, 0.0)
+  for attempt in range(MAX_GROW_PASSES + 1):
+    for e, (sa, ta) in zip(scene.edges, builder_anchors):
+      e.source_anchor, e.target_anchor = sa, ta
+    size = _place_roots(scene)
+    _solve_anchors(scene, multi)
+    if attempt == MAX_GROW_PASSES or not _grow_cards_for_ports(scene):
+      break
+  return size
+
+
+def _place_roots(scene: SceneGraph) -> Tuple[float, float]:
+  """Places primary roots left to right, then docked roots beside targets."""
+  primary_roots = [z for z in scene.root_zones if not z.dock_to]
+  docked_roots = [z for z in scene.root_zones if z.dock_to]
 
   cur_x = 32.0
   cur_y = 32.0
@@ -314,21 +351,19 @@ def layout_scene(scene: SceneGraph) -> Tuple[float, float]:
     place_node(rz, cur_x, cur_y)
     cur_x += rz.w + 48.0
 
+  # `validate_scene` guarantees every dock target sits in a primary root.
+  right_x = cur_x - 48.0
   for dz in docked_roots:
     measure_node(dz)
-    target = scene.zones.get(dz.dock_to or "")
-    if target and dz.dock_side == "left":
-      gcp_root = primary_roots[0] if primary_roots else target
-      dx_pos = gcp_root.x - dz.w - dz.dock_gap
-      dy_pos = (
-          target.y
-          if dz.dock_align == "start"
-          else (target.y + (target.h - dz.h) / 2.0)
-      )
-      place_node(dz, dx_pos, dy_pos)
+    target = scene.zones[dz.dock_to]
+    dy_pos = (target.y if dz.dock_align == "start" else
+              (target.y + (target.h - dz.h) / 2.0))
+    if dz.dock_side == "left":
+      dx_pos = primary_roots[0].x - dz.w - dz.dock_gap
     else:
-      place_node(dz, cur_x, cur_y)
-      cur_x += dz.w + 48.0
+      dx_pos = right_x + dz.dock_gap
+      right_x = dx_pos + dz.w
+    place_node(dz, dx_pos, dy_pos)
 
   all_zones = list(scene.zones.values())
   min_x = min((z.x for z in all_zones), default=32.0)
@@ -341,12 +376,16 @@ def layout_scene(scene: SceneGraph) -> Tuple[float, float]:
 
   max_x = max((z.x + z.w for z in all_zones), default=1200.0) + 32.0
   max_y = max((z.y + z.h for z in all_zones), default=800.0) + 32.0
+  return max_x, max_y
 
-  # Pass 1 of anchor solving: resolve cross-column edges (`right -> left` / `left -> right`)
-  # and count how many cross-column edges use each card's `left` vs `right` side.
+
+def _solve_anchors(scene: SceneGraph, multi: bool) -> None:
+  """Chooses source/target anchors for every edge from placed geometry."""
+  # Pass 1: resolve cross-column edges (`right -> left` / `left -> right`)
+  # and count how many cross-column edges use each card's `left` vs `right`
+  # side.
   cross_side_load: Dict[Tuple[str, str], int] = {}
   same_col_edges: List[EdgeSpec] = []
-  multi = _is_multistage(scene)
 
   for e in scene.edges:
     s = _endpoint(scene, e.src)
@@ -358,20 +397,29 @@ def layout_scene(scene: SceneGraph) -> Tuple[float, float]:
 
     if multi and _keeps_vertical_anchors(e, sy1, sy2, ty1, ty2):
       continue  # explicit tree edge (bottom -> top / top -> bottom) is kept
-    if sx2 + 10.0 < tx1:
+    # Boxes side by side (overlapping y ranges) are cross-column even when
+    # they touch; a same-side bracket between them would fold back on itself.
+    side_by_side = sy1 < ty2 and ty1 < sy2
+    if sx2 + 10.0 < tx1 or (side_by_side and sx2 <= tx1):
       e.source_anchor, e.target_anchor = "right", "left"
-      cross_side_load[(e.src, "right")] = cross_side_load.get((e.src, "right"), 0) + 1
-      cross_side_load[(e.dst, "left")] = cross_side_load.get((e.dst, "left"), 0) + 1
-    elif tx2 + 10.0 < sx1:
+      cross_side_load[(e.src, "right")] = cross_side_load.get(
+          (e.src, "right"), 0) + 1
+      cross_side_load[(e.dst, "left")] = cross_side_load.get(
+          (e.dst, "left"), 0) + 1
+    elif tx2 + 10.0 < sx1 or (side_by_side and tx2 <= sx1):
       e.source_anchor, e.target_anchor = "left", "right"
-      cross_side_load[(e.src, "left")] = cross_side_load.get((e.src, "left"), 0) + 1
-      cross_side_load[(e.dst, "right")] = cross_side_load.get((e.dst, "right"), 0) + 1
+      cross_side_load[(e.src, "left")] = cross_side_load.get(
+          (e.src, "left"), 0) + 1
+      cross_side_load[(e.dst, "right")] = cross_side_load.get(
+          (e.dst, "right"), 0) + 1
     else:
       same_col_edges.append(e)
 
-  # Pass 2 of anchor solving: resolve same-column edges using:
-  #   (a) Minimum vertical clearance threshold (`dy_gap >= MIN_VERTICAL_ARROW_GAP` and unblocked)
-  #   (b) Least-congested side selection (`left -> left` vs `right -> right`) when `dy_gap < MIN_VERTICAL_ARROW_GAP` or blocked!
+  # Pass 2: resolve same-column edges. A straight vertical edge needs an
+  # unblocked gap of at least MIN_VERTICAL_ARROW_GAP; otherwise the edge
+  # becomes a same-side C-bracket on the side (`left` or `right`) with fewer
+  # cross-column connections on the pair and its column neighbours.
+  ancestors = ancestor_index(scene) if multi else None
   for e in same_col_edges:
     s = _endpoint(scene, e.src)
     t = _endpoint(scene, e.dst)
@@ -385,17 +433,15 @@ def layout_scene(scene: SceneGraph) -> Tuple[float, float]:
       # Only what sits in the vertical gap between the two boxes counts, and
       # never the contents of an endpoint zone or the zones holding either.
       g1, g2 = (sy2, ty1) if scy < tcy else (ty2, sy1)
-      obs = edge_obstacles(scene, e.src, e.dst)
+      obs = edge_obstacles(scene, e.src, e.dst, ancestors)
       blocked = g2 <= g1 or any(
           _segment_hits_any_card(x, g1, x, g2, obs, (e.src, e.dst), pad=2.0)
           for x in (scx, tcx))
     else:
-      blocked = any(
-          other_id not in (e.src, e.dst)
-          and abs((oc.x + oc.width / 2.0) - scx) < 60.0
-          and ymin < (oc.y + oc.height / 2.0) < ymax
-          for other_id, oc in scene.cards.items()
-      )
+      blocked = any(other_id not in (e.src, e.dst) and
+                    abs((oc.x + oc.width / 2.0) -
+                        scx) < 60.0 and ymin < (oc.y + oc.height / 2.0) < ymax
+                    for other_id, oc in scene.cards.items())
     dy_gap = (ty1 - sy2) if scy < tcy else (sy1 - ty2)
 
     if not blocked and dy_gap >= MIN_VERTICAL_ARROW_GAP:
@@ -404,27 +450,77 @@ def layout_scene(scene: SceneGraph) -> Tuple[float, float]:
       else:
         e.source_anchor, e.target_anchor = "top", "bottom"
     else:
-      # Score `left` vs `right` on the pair (src, dst) and their column neighbors:
-      # Prefer the side with fewer cross-column connections on src and dst.
-      left_load = (
-          cross_side_load.get((e.src, "left"), 0) * 10
-          + cross_side_load.get((e.dst, "left"), 0) * 10
-          + sum(
-              cross_side_load.get((cid, "left"), 0)
-              for cid, oc in scene.cards.items()
-              if abs((oc.x + oc.width / 2.0) - scx) < 60.0
-          )
-      )
-      right_load = (
-          cross_side_load.get((e.src, "right"), 0) * 10
-          + cross_side_load.get((e.dst, "right"), 0) * 10
-          + sum(
-              cross_side_load.get((cid, "right"), 0)
-              for cid, oc in scene.cards.items()
-              if abs((oc.x + oc.width / 2.0) - scx) < 60.0
-          )
-      )
+      # Prefer the side with fewer cross-column connections on src and dst
+      # (weighted x10) and on the cards of the same column.
+      left_load = (cross_side_load.get(
+          (e.src, "left"), 0) * 10 + cross_side_load.get(
+              (e.dst, "left"), 0) * 10 + sum(
+                  cross_side_load.get((cid, "left"), 0)
+                  for cid, oc in scene.cards.items()
+                  if abs((oc.x + oc.width / 2.0) - scx) < 60.0))
+      right_load = (cross_side_load.get(
+          (e.src, "right"), 0) * 10 + cross_side_load.get(
+              (e.dst, "right"), 0) * 10 + sum(
+                  cross_side_load.get((cid, "right"), 0)
+                  for cid, oc in scene.cards.items()
+                  if abs((oc.x + oc.width / 2.0) - scx) < 60.0))
       chosen_side = "right" if right_load <= left_load else "left"
+      if multi:
+        # Multi-stage: never pick a side whose bracket runs through a box
+        # when the other side is clear.
+        blocked_side = {
+            side: _bracket_blocked(e, s, t, side, obs)
+            for side in ("left", "right")
+        }
+        if blocked_side[chosen_side] and not blocked_side[_OTHER[chosen_side]]:
+          chosen_side = _OTHER[chosen_side]
       e.source_anchor, e.target_anchor = chosen_side, chosen_side
 
-  return max_x, max_y
+
+_OTHER = {"left": "right", "right": "left"}
+
+
+def _bracket_blocked(e: EdgeSpec, s, t, side: str, obstacles) -> bool:
+  """True when a same-side C-bracket on `side` would cross an obstacle."""
+  scy, tcy = s.y + s.height / 2.0, t.y + t.height / 2.0
+  if side == "right":
+    sx, tx = s.x + s.width, t.x + t.width
+    out_x = max(sx, tx) + 22.0
+  else:
+    sx, tx = s.x, t.x
+    out_x = min(sx, tx) - 22.0
+  ignore = (e.src, e.dst)
+  return (
+      _segment_hits_any_card(sx, scy, out_x, scy, obstacles, ignore, pad=2.0) or
+      _segment_hits_any_card(out_x, scy, out_x, tcy, obstacles, ignore,
+                             pad=2.0) or
+      _segment_hits_any_card(tx, tcy, out_x, tcy, obstacles, ignore, pad=2.0))
+
+
+def _grow_cards_for_ports(scene: SceneGraph) -> bool:
+  """Grows cards whose sides carry more ports than fit at `PORT_PITCH`.
+
+  Mirrors the router's slotting: every edge with two resolvable endpoints
+  takes one port on each endpoint side. Zones never grow (their size comes
+  from their children). Returns True when any card changed size.
+  """
+  counts: Dict[Tuple[str, str], int] = {}
+  for e in scene.edges:
+    if not _endpoint(scene, e.src) or not _endpoint(scene, e.dst):
+      continue
+    for key in ((e.src, e.source_anchor), (e.dst, e.target_anchor)):
+      counts[key] = counts.get(key, 0) + 1
+  grew = False
+  for (cid, side), n in sorted(counts.items()):
+    card = scene.cards.get(cid)
+    if card is None or n < 2:
+      continue
+    need = 2.0 * PORT_MARGIN + PORT_PITCH * (n - 1)
+    if side in ("left", "right"):
+      if card.height < need:
+        card.height = need
+        grew = True
+    elif card.width < need:
+      card.width = need
+      grew = True
+  return grew

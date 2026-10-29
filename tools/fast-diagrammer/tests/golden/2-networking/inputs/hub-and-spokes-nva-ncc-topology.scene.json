@@ -25,7 +25,7 @@
      "kind": "zone",
      "id": "Proj_net_core_0",
      "title": "Project: net-core-0",
-     "subtitle": "Shared VPC Host (Core Networking)",
+     "subtitle": "Shared VPC host · core networking",
      "style_name": "@ProjectZone",
      "icon": "CloudGeneric",
      "layout": "row",
@@ -40,7 +40,7 @@
      "children": [
       {
        "kind": "zone",
-       "id": "CoreLeftVpcs",
+       "id": "CoreLeftVpcs_net_core_0",
        "title": "",
        "subtitle": "",
        "style_name": "@Ghost",
@@ -168,7 +168,7 @@
       },
       {
        "kind": "zone",
-       "id": "CoreProjectMid",
+       "id": "CoreProjectMid_net_core_0",
        "title": "",
        "subtitle": "",
        "style_name": "@Ghost",
@@ -200,7 +200,7 @@
         },
         {
          "kind": "zone",
-         "id": "NvaCluster",
+         "id": "NvaCluster_net_core_0",
          "title": "NVA VM Instances",
          "subtitle": "",
          "style_name": "@SubGroupWhite",
@@ -218,7 +218,7 @@
           {
            "kind": "card",
            "id": "nva_primary",
-           "title": "nva-primary (ew1 b/c)",
+           "title": "NVA: primary (ew1 b/c)",
            "subtitle": "2 NICs · BGP ASN 64513",
            "style_name": "@ProductCard",
            "icon": "ComputeEngine",
@@ -233,7 +233,7 @@
           {
            "kind": "card",
            "id": "nva_secondary",
-           "title": "nva-secondary (ew8 b/c)",
+           "title": "NVA: secondary (ew8 b/c)",
            "subtitle": "2 NICs · BGP ASN 64513",
            "style_name": "@ProductCard",
            "icon": "ComputeEngine",
@@ -251,7 +251,7 @@
       },
       {
        "kind": "zone",
-       "id": "CoreRightVpcs",
+       "id": "CoreRightVpcs_net_core_0",
        "title": "",
        "subtitle": "",
        "style_name": "@Ghost",
@@ -370,7 +370,7 @@
        "kind": "zone",
        "id": "Proj_net_dev_0",
        "title": "Project: net-dev-0",
-       "subtitle": "Shared VPC Host (Spoke)",
+       "subtitle": "Shared VPC host · spoke",
        "style_name": "@ProjectZone",
        "icon": "CloudGeneric",
        "layout": "column",
@@ -423,7 +423,7 @@
        "kind": "zone",
        "id": "Proj_net_prod_0",
        "title": "Project: net-prod-0",
-       "subtitle": "Shared VPC Host (Spoke)",
+       "subtitle": "Shared VPC host · spoke",
        "style_name": "@ProjectZone",
        "icon": "CloudGeneric",
        "layout": "column",
@@ -541,7 +541,7 @@
    "dashed": false,
    "source_anchor": "bottom",
    "target_anchor": "top",
-   "dash": null,
+   "dash": "solid",
    "head": "filled"
   },
   {
@@ -551,10 +551,10 @@
    "label": "eBGP",
    "color": "#1a73e8",
    "stroke_width": 2.0,
-   "dashed": false,
+   "dashed": true,
    "source_anchor": "bottom",
    "target_anchor": "top",
-   "dash": null,
+   "dash": "dashdot",
    "head": "filled"
   },
   {
@@ -567,8 +567,8 @@
    "dashed": true,
    "source_anchor": "bottom",
    "target_anchor": "top",
-   "dash": null,
-   "head": "filled"
+   "dash": "dashdot",
+   "head": "open"
   },
   {
    "src": "nic_ra_routing",
@@ -577,10 +577,10 @@
    "label": "nic0",
    "color": "#1e8e3e",
    "stroke_width": 2.0,
-   "dashed": false,
+   "dashed": true,
    "source_anchor": "right",
    "target_anchor": "left",
-   "dash": null,
+   "dash": "dotted",
    "head": "filled"
   },
   {
@@ -593,8 +593,8 @@
    "dashed": true,
    "source_anchor": "right",
    "target_anchor": "left",
-   "dash": null,
-   "head": "filled"
+   "dash": "dotted",
+   "head": "open"
   },
   {
    "src": "rtr_transit_ra_primary",
@@ -603,10 +603,10 @@
    "label": "eBGP",
    "color": "#1a73e8",
    "stroke_width": 2.0,
-   "dashed": false,
+   "dashed": true,
    "source_anchor": "bottom",
    "target_anchor": "top",
-   "dash": null,
+   "dash": "dashdot",
    "head": "filled"
   },
   {
@@ -619,8 +619,8 @@
    "dashed": true,
    "source_anchor": "bottom",
    "target_anchor": "top",
-   "dash": null,
-   "head": "filled"
+   "dash": "dashdot",
+   "head": "open"
   },
   {
    "src": "nic_ra_transit",
@@ -629,10 +629,10 @@
    "label": "nic1",
    "color": "#1e8e3e",
    "stroke_width": 2.0,
-   "dashed": false,
+   "dashed": true,
    "source_anchor": "right",
    "target_anchor": "left",
-   "dash": null,
+   "dash": "dotted",
    "head": "filled"
   },
   {
@@ -645,8 +645,8 @@
    "dashed": true,
    "source_anchor": "right",
    "target_anchor": "left",
-   "dash": null,
-   "head": "filled"
+   "dash": "dotted",
+   "head": "open"
   },
   {
    "src": "ncc_hub_transit",
@@ -655,11 +655,11 @@
    "label": "VPC Spoke (edge)",
    "color": "#1e8e3e",
    "stroke_width": 2.0,
-   "dashed": false,
+   "dashed": true,
    "source_anchor": "right",
    "target_anchor": "left",
-   "dash": null,
-   "head": "filled"
+   "dash": "dashed",
+   "head": "open"
   },
   {
    "src": "ncc_hub_transit",
@@ -668,11 +668,11 @@
    "label": "VPC Spoke (edge)",
    "color": "#1e8e3e",
    "stroke_width": 2.0,
-   "dashed": false,
+   "dashed": true,
    "source_anchor": "right",
    "target_anchor": "left",
-   "dash": null,
-   "head": "filled"
+   "dash": "dashed",
+   "head": "open"
   },
   {
    "src": "vpn_routing_to_onprem",
@@ -681,11 +681,11 @@
    "label": "Hybrid Spoke",
    "color": "#1a73e8",
    "stroke_width": 2.0,
-   "dashed": false,
+   "dashed": true,
    "source_anchor": "right",
    "target_anchor": "left",
-   "dash": null,
-   "head": "filled"
+   "dash": "dashdot",
+   "head": "none"
   },
   {
    "src": "site_onprem",
@@ -697,8 +697,8 @@
    "dashed": false,
    "source_anchor": "right",
    "target_anchor": "left",
-   "dash": null,
-   "head": "filled"
+   "dash": "solid",
+   "head": "open"
   },
   {
    "src": "nic_ra_routing",
@@ -710,8 +710,8 @@
    "dashed": true,
    "source_anchor": "right",
    "target_anchor": "left",
-   "dash": null,
-   "head": "filled"
+   "dash": "dotted",
+   "head": "none"
   },
   {
    "src": "nic_ra_transit",
@@ -723,9 +723,91 @@
    "dashed": true,
    "source_anchor": "right",
    "target_anchor": "left",
-   "dash": null,
-   "head": "filled"
+   "dash": "dotted",
+   "head": "none"
   }
  ],
- "legend": []
+ "legend": [
+  {
+   "label": "Cloud Router BGP session",
+   "kind": "edge",
+   "color": "#1a73e8",
+   "dash": "solid",
+   "head": "filled",
+   "fill": "#ffffff",
+   "dashed": false
+  },
+  {
+   "label": "Router appliance eBGP",
+   "kind": "edge",
+   "color": "#1a73e8",
+   "dash": "dashdot",
+   "head": "filled",
+   "fill": "#ffffff",
+   "dashed": false
+  },
+  {
+   "label": "Router appliance eBGP (secondary region)",
+   "kind": "edge",
+   "color": "#d97706",
+   "dash": "dashdot",
+   "head": "open",
+   "fill": "#ffffff",
+   "dashed": false
+  },
+  {
+   "label": "NVA NIC (router appliance or ILB)",
+   "kind": "edge",
+   "color": "#1e8e3e",
+   "dash": "dotted",
+   "head": "filled",
+   "fill": "#ffffff",
+   "dashed": false
+  },
+  {
+   "label": "NVA NIC (secondary region)",
+   "kind": "edge",
+   "color": "#d97706",
+   "dash": "dotted",
+   "head": "open",
+   "fill": "#ffffff",
+   "dashed": false
+  },
+  {
+   "label": "NCC VPC spoke",
+   "kind": "edge",
+   "color": "#1e8e3e",
+   "dash": "dashed",
+   "head": "open",
+   "fill": "#ffffff",
+   "dashed": false
+  },
+  {
+   "label": "NCC hybrid spoke",
+   "kind": "edge",
+   "color": "#1a73e8",
+   "dash": "dashdot",
+   "head": "none",
+   "fill": "#ffffff",
+   "dashed": false
+  },
+  {
+   "label": "HA VPN to on-premises",
+   "kind": "edge",
+   "color": "#d93025",
+   "dash": "solid",
+   "head": "open",
+   "fill": "#ffffff",
+   "dashed": false
+  },
+  {
+   "label": "NCC router appliance spoke",
+   "kind": "edge",
+   "color": "#9334e6",
+   "dash": "dotted",
+   "head": "none",
+   "fill": "#ffffff",
+   "dashed": false
+  }
+ ]
 }

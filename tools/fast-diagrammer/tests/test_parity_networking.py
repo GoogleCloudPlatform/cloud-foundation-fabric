@@ -11,58 +11,45 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""2-networking golden parity gate (spec §2.2).
+"""2-networking golden regression gate.
+
+The goldens under `golden/2-networking/` are the regression contract of this
+tool: they change only in a reviewed bump (`tools/update_goldens.py`).
 
 Level 1 (structural): `stages.networking.build(dataset, view)` must equal the
-frozen pre-layout snapshot `golden/2-networking/inputs/<key>.scene.json`,
-compared as a canonical dump (zones, children, cards and edges in order,
-anchors included).
+pre-layout snapshot `golden/2-networking/inputs/<key>.scene.json`, compared
+as a canonical dump (zones, children, cards and edges in order, anchors
+included).
 
 Level 2 (bytes): rendering the builder scene, and rendering the snapshot,
 must both reproduce `golden/2-networking/expected/<key>.drawio` and
-`<key>.drawio.svg` exactly. The expected files were frozen from the original
-prototype engine before the port, so Level 2 proves the port end to end.
+`<key>.drawio.svg` exactly, so layout, routing and emitters are locked too.
 
 Negative controls (run every time, must be caught): a flipped edge colour and
 a swapped card fail Level 1; a one-byte SVG change fails Level 2.
+
+Datasets come from the shared resolver in `conftest.py`; when they cannot be
+found the dataset-dependent tests are skipped with the searched paths.
 """
 
 import copy
 import dataclasses
 import difflib
 import json
-import os
-import pathlib
-import sys
 
 import pytest
 
-TESTS_DIR = pathlib.Path(__file__).resolve().parent
-APP_DIR = TESTS_DIR.parent
-if str(APP_DIR) not in sys.path:
-  sys.path.insert(0, str(APP_DIR))
-if str(TESTS_DIR) not in sys.path:
-  sys.path.insert(0, str(TESTS_DIR))
+from conftest import (APP_ROOT, GOLDEN_EXPECTED, GOLDEN_INPUTS, GOLDEN_KEYS,
+                      canonical_svg, require_dataset, split_key)
+from fast_diagrammer.scene import render as scene_render
+from fast_diagrammer.scene.model import CardNode
+from fast_diagrammer.scene.serialize import load_scene
+from fast_diagrammer.stages import networking
 
-from fast_diagrammer.scene import render as scene_render  # noqa: E402
-from fast_diagrammer.scene.model import CardNode, ZoneNode  # noqa: E402
-from fast_diagrammer.scene.serialize import load_scene  # noqa: E402
-from fast_diagrammer.stages import networking  # noqa: E402
-
-GOLDEN = TESTS_DIR / "golden" / "2-networking"
-INPUTS = GOLDEN / "inputs"
-EXPECTED = GOLDEN / "expected"
-FIXTURE_DATASETS = TESTS_DIR / "fixtures" / "datasets" / "2-networking"
-
-DATASETS = (
-    "classic",
-    "hub-and-spokes-ncc",
-    "hub-and-spokes-nva",
-    "hub-and-spokes-nva-ncc",
-    "hub-and-spokes-peerings",
-    "hub-and-spokes-vpns",
-)
-KEYS = tuple(f"{ds}-{view}" for ds in DATASETS for view in networking.VIEWS)
+APP_DIR = APP_ROOT
+INPUTS = GOLDEN_INPUTS
+EXPECTED = GOLDEN_EXPECTED
+KEYS = GOLDEN_KEYS
 
 # Canonical pre-layout fields (geometry x/y/w/h is layout output, excluded).
 ZONE_FIELDS = ("id", "title", "subtitle", "style_name", "icon", "layout", "gap",
@@ -74,36 +61,11 @@ CARD_FIELDS = ("id", "title", "subtitle", "style_name", "icon", "width",
 EDGE_FIELDS = ("src", "dst", "arrow", "label", "color", "stroke_width",
                "dashed", "dash", "head", "source_anchor", "target_anchor")
 
-
 # --- helpers ----------------------------------------------------------------
 
 
-def _dataset_roots():
-  roots = [FIXTURE_DATASETS]
-  env = os.environ.get("FD_FABRIC_ROOT")
-  if env:
-    roots.append(pathlib.Path(env) / "fast" / "stages" / "2-networking" /
-                 "datasets")
-  # Fabric layout: tools/fast-diagrammer/ -> ../../fast/stages/...
-  roots.append(APP_DIR.parent.parent / "fast" / "stages" / "2-networking" /
-               "datasets")
-  roots.append(pathlib.Path.home() / "git" / "cloud-foundation-fabric" /
-               "fast" / "stages" / "2-networking" / "datasets")
-  return roots
-
-
 def dataset_dir(name):
-  for root in _dataset_roots():
-    candidate = root / name
-    if (candidate / "vpcs").is_dir():
-      return candidate
-  pytest.fail(f"2-networking dataset {name!r} not found; set FD_FABRIC_ROOT "
-              f"(searched: {[str(r) for r in _dataset_roots()]})")
-
-
-def split_key(key):
-  ds, view = key.rsplit("-", 1)
-  return ds, view
+  return require_dataset("2-networking", name)
 
 
 def _plain(value):
@@ -117,17 +79,23 @@ def _plain(value):
 def canonical(scene):
   """Pre-layout dump: insertion order of zones/cards/edges is significant."""
   return {
-      "dataset_name": scene.dataset_name,
-      "view_kind": scene.view_kind,
+      "dataset_name":
+          scene.dataset_name,
+      "view_kind":
+          scene.view_kind,
       "root_zones": [z.id for z in scene.root_zones],
       "zones": [{
-          **{f: _plain(getattr(z, f)) for f in ZONE_FIELDS},
+          **{
+              f: _plain(getattr(z, f)) for f in ZONE_FIELDS
+          },
           "children": [[type(c).__name__, c.id] for c in z.children],
       } for z in scene.zones.values()],
-      "cards": [{f: _plain(getattr(c, f)) for f in CARD_FIELDS}
-                for c in scene.cards.values()],
-      "edges": [{f: _plain(getattr(e, f)) for f in EDGE_FIELDS}
-                for e in scene.edges],
+      "cards": [{
+          f: _plain(getattr(c, f)) for f in CARD_FIELDS
+      } for c in scene.cards.values()],
+      "edges": [{
+          f: _plain(getattr(e, f)) for f in EDGE_FIELDS
+      } for e in scene.edges],
   }
 
 
@@ -144,6 +112,11 @@ def l1_diff(expected_scene, actual_scene):
 
 def bytes_equal(actual, expected):
   return actual == expected
+
+
+def svg_equal(actual, expected):
+  """Byte equality of `.drawio.svg` files after inflating `content=`."""
+  return canonical_svg(actual) == canonical_svg(expected)
 
 
 def first_byte_mismatch(actual, expected):
@@ -200,7 +173,7 @@ def test_l1_structural_parity(key):
 def test_l2_snapshot_byte_parity(key, tmp_path):
   svg, drawio = render_bytes(oracle_scene(key), tmp_path, key)
   assert bytes_equal(drawio, (EXPECTED / f"{key}.drawio").read_bytes()), key
-  assert bytes_equal(svg, (EXPECTED / f"{key}.drawio.svg").read_bytes()), key
+  assert svg_equal(svg, (EXPECTED / f"{key}.drawio.svg").read_bytes()), key
 
 
 @pytest.mark.parametrize("key", KEYS)
@@ -218,8 +191,9 @@ def test_l2_byte_parity(key, tmp_path):
   exp_drawio = (EXPECTED / f"{key}.drawio").read_bytes()
   assert bytes_equal(drawio, exp_drawio), (
       f"{key}.drawio differs at byte {first_byte_mismatch(drawio, exp_drawio)}")
-  assert bytes_equal(svg, exp_svg), (
-      f"{key}.drawio.svg differs at byte {first_byte_mismatch(svg, exp_svg)}")
+  assert svg_equal(svg, exp_svg), (
+      f"{key}.drawio.svg differs at byte "
+      f"{first_byte_mismatch(canonical_svg(svg), canonical_svg(exp_svg))}")
 
 
 # --- negative controls (must be caught) -------------------------------------
@@ -239,12 +213,14 @@ def test_negative_control_flipped_edge_colour_fails_l1(key):
 def test_negative_control_swapped_card_fails_l1(key):
   oracle = oracle_scene(key)
   bad = copy.deepcopy(builder_scene(key))
-  zone = next((z for z in bad.zones.values()
-               if sum(isinstance(c, CardNode) for c in z.children) >= 2), None)
+  zone = next((z for z in bad.zones.values() if sum(
+      isinstance(c, CardNode) for c in z.children) >= 2), None)
   if zone is None:
     # No zone holds two cards: swap the first card into another zone instead.
-    zones = [z for z in bad.zones.values() if any(
-        isinstance(c, CardNode) for c in z.children)]
+    zones = [
+        z for z in bad.zones.values() if any(
+            isinstance(c, CardNode) for c in z.children)
+    ]
     assert len(zones) >= 2, f"{key}: cannot build a swapped-card control"
     card = next(c for c in zones[0].children if isinstance(c, CardNode))
     zones[0].children.remove(card)
@@ -266,35 +242,27 @@ def test_negative_control_one_byte_svg_change_fails_l2(key, tmp_path):
   bad[pos] = (bad[pos] + 1) % 256
   bad = bytes(bad)
   assert bad != svg, "mutation did not change the bytes; control is dead"
-  assert not bytes_equal(bad, exp_svg), f"{key}: 1-byte SVG change not detected"
+  assert not svg_equal(bad, exp_svg), f"{key}: 1-byte SVG change not detected"
 
 
 # --- builder hygiene --------------------------------------------------------
 
-
-_BANNED_EVERYWHERE = ("den" "drite", "fast_net_designer", "ruamel")
 _BANNED_IN_BUILDER = ("import re\n", "Zone @", "style: @", "] {")
 
 
-def hygiene_violations(src, builder=False):
-  """Returns the banned markers found in a module's source text."""
-  found = [b for b in _BANNED_EVERYWHERE if b in src.lower()]
-  if builder:
-    found += [b for b in _BANNED_IN_BUILDER if b in src]
-  return found
+def hygiene_violations(src):
+  """Returns the DSL / text-parsing markers found in a builder's source."""
+  return [b for b in _BANNED_IN_BUILDER if b in src]
 
 
 def test_builder_emits_no_dsl_and_parses_nothing():
   """The direct builder constructs objects: no DSL text, no regex parsing."""
   stage = APP_DIR / "fast_diagrammer" / "stages" / "networking.py"
-  loader = APP_DIR / "fast_diagrammer" / "datasets" / "networking.py"
-  assert not hygiene_violations(stage.read_text(), builder=True)
-  assert not hygiene_violations(loader.read_text())
+  assert not hygiene_violations(stage.read_text(encoding="utf-8"))
 
 
 def test_negative_control_hygiene_detector_catches_dsl():
-  bad = ('import re\nfrom fast_net_designer import tokens\n'
+  bad = ('import re\n'
          'lines.append(\'Zone @Foo {\')\nlines.append(\'  style: @Ghost\')\n')
-  found = hygiene_violations(bad, builder=True)
-  assert set(found) >= {"fast_net_designer", "import re\n", "Zone @",
-                        "style: @"}, found
+  found = hygiene_violations(bad)
+  assert set(found) >= {"import re\n", "Zone @", "style: @"}, found

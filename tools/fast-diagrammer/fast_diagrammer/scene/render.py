@@ -18,13 +18,14 @@ import json
 import pathlib
 from typing import Dict, List, Optional, Tuple, Union
 
-from .emit_drawio import build_drawio_xml
+from .emit_drawio import build_drawio_model, wrap_mxfile
 from .emit_svg import build_svg, legend_size
 from .layout import layout_scene
 from .model import CardNode, SceneGraph, ZoneNode
 from .router import route_all_edges, verify_no_arrow_overlaps
 
-ICONS_JSON = pathlib.Path(__file__).resolve().parent.parent / "icons" / "icons.json"
+ICONS_JSON = pathlib.Path(
+    __file__).resolve().parent.parent / "icons" / "icons.json"
 
 PathLike = Union[str, pathlib.Path]
 
@@ -46,15 +47,16 @@ class RenderResult:
 
 def load_icons(path: Optional[PathLike] = None) -> Dict[str, Dict[str, str]]:
   """Loads `{name: {viewBox, inner}}` (default: the packaged icons.json)."""
-  return json.loads(pathlib.Path(path or ICONS_JSON).read_text(encoding="utf-8"))
+  return json.loads(
+      pathlib.Path(path or ICONS_JSON).read_text(encoding="utf-8"))
 
 
-def unknown_icons(scene: SceneGraph, icons_map: Dict[str, Dict[str, str]]
-                 ) -> List[str]:
+def unknown_icons(scene: SceneGraph,
+                  icons_map: Dict[str, Dict[str, str]]) -> List[str]:
   """Icon names referenced by the scene but absent from `icons_map` (sorted).
 
-  The renderer falls back to `CloudGeneric` for these; networking keeps
-  `CloudLoadBalancing` / `Routes` on purpose (they land in drawio labels).
+  Both emitters draw `CloudGeneric` for these; networking keeps
+  `CloudLoadBalancing` / `Routes` on purpose so the fallback is reported.
   """
   names = set()
 
@@ -73,10 +75,10 @@ def unknown_icons(scene: SceneGraph, icons_map: Dict[str, Dict[str, str]]
   return sorted(n for n in names if n not in icons_map)
 
 
-def _legend_box(scene: SceneGraph, canvas_w: float, canvas_h: float,
-                polylines: Dict[int, List[Tuple[float, float]]]
-               ) -> Tuple[Optional[Tuple[float, float, float, float]], float,
-                          float]:
+def _legend_box(
+    scene: SceneGraph, canvas_w: float, canvas_h: float,
+    polylines: Dict[int, List[Tuple[float, float]]]
+) -> Tuple[Optional[Tuple[float, float, float, float]], float, float]:
   if not scene.legend:
     return None, canvas_w, canvas_h
   lw, lh = legend_size(scene)
@@ -90,8 +92,7 @@ def _legend_box(scene: SceneGraph, canvas_w: float, canvas_h: float,
 
 
 def render_scene(scene: SceneGraph,
-                 icons_map: Optional[Dict[str, Dict[str, str]]] = None,
-                 *,
+                 icons_map: Optional[Dict[str, Dict[str, str]]] = None, *,
                  check_overlaps: bool = True) -> RenderResult:
   """Lays out, routes and serialises `scene` in memory (mutates geometry).
 
@@ -101,15 +102,20 @@ def render_scene(scene: SceneGraph,
     icons_map = load_icons()
   canvas_w, canvas_h = layout_scene(scene)
   port_coords, polylines, label_pos = route_all_edges(scene)
-  errs = verify_no_arrow_overlaps(polylines)
+  errs = verify_no_arrow_overlaps(polylines, scene)
   if errs and check_overlaps:
     raise OverlapError(
         f"Arrow overlap gate failed on {scene.dataset_name}-{scene.view_kind}: {errs}"
     )
   legend_box, canvas_w, canvas_h = _legend_box(scene, canvas_w, canvas_h,
                                                polylines)
-  drawio_xml = build_drawio_xml(scene, port_coords, polylines, legend_box)
-  svg = build_svg(scene, icons_map, canvas_w, canvas_h, drawio_xml, polylines,
+  model_xml = build_drawio_model(scene, port_coords, polylines, legend_box,
+                                 icons_map)
+  drawio_xml = wrap_mxfile(scene, model_xml)
+  # The SVG embeds the same mxfile in draw.io's compressed form: the icon
+  # data URIs would otherwise more than double the file.
+  svg = build_svg(scene, icons_map, canvas_w, canvas_h,
+                  wrap_mxfile(scene, model_xml, compressed=True), polylines,
                   label_pos, legend_box)
   return RenderResult(
       svg=svg,
@@ -122,11 +128,8 @@ def render_scene(scene: SceneGraph,
   )
 
 
-def render(scene: SceneGraph,
-           icons_map: Optional[Dict[str, Dict[str, str]]],
-           out_svg: PathLike,
-           out_drawio: PathLike,
-           *,
+def render(scene: SceneGraph, icons_map: Optional[Dict[str, Dict[str, str]]],
+           out_svg: PathLike, out_drawio: PathLike, *,
            check_overlaps: bool = True) -> RenderResult:
   """Renders `scene` and writes `<x>.drawio.svg` and `<x>.drawio` (UTF-8)."""
   result = render_scene(scene, icons_map, check_overlaps=check_overlaps)

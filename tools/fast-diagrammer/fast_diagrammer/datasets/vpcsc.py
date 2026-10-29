@@ -11,14 +11,22 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+"""Loader for FAST 1-vpcsc YAML datasets with symbolic set resolution.
 
-"""Loader for FAST 1-vpcsc YAML datasets with symbolic set resolution."""
+Access levels, ingress / egress policies and perimeters are read from
+`<dir>/**/*.yaml` and keyed by their relative path without extension
+(`perimeters/prod/landing.yaml` -> `prod/landing`), like
+`modules/vpc-sc/factory.tf`. Defaults follow that file too, e.g.
+`vpc_accessible_services.allow_all_restricted_services` defaults to `true`.
+"""
 
 from dataclasses import dataclass, field
 import pathlib
 from typing import Any, Dict, List, Optional, Tuple
 
 from .. import tokens, yamlio
+from ..yamlio import DatasetError
+from .base import _display_name
 from .org_setup import OrgSetupDataset, load_org_setup_dataset
 
 
@@ -32,8 +40,23 @@ def _load_yaml_file(path: pathlib.Path) -> Any:
   return yamlio.load_or_empty(path)
 
 
-def _sorted_yaml_files(directory: pathlib.Path) -> List[pathlib.Path]:
-  return yamlio.yaml_files(directory)
+def _factory_docs(root: pathlib.Path, name: str) -> List[Tuple[str, Any]]:
+  """`(key, doc)` for `<root>/<name>/**/*.yaml`, key = relative path."""
+  directory = root / name
+  return [(yamlio.relative_key(p, directory), yamlio.load(p))
+          for p in yamlio.rglob_yaml(directory, within=root)]
+
+
+def _m(value: Any, path: Any, key: str) -> dict:
+  return yamlio.mapping(value, path, key)
+
+
+def _strs(value: Any) -> List[str]:
+  if value is None:
+    return []
+  if isinstance(value, list):
+    return [str(x) for x in value]
+  return [str(value)]
 
 
 @dataclass
@@ -70,9 +93,17 @@ class OperationSpec:
 
 @dataclass
 class IngressPolicySpec:
+  """One ingress policy.
+
+  `from_identity_type` is `from.identity_type` (`ANY_IDENTITY`,
+  `ANY_USER_ACCOUNT`, `ANY_SERVICE_ACCOUNT`) or `None`;
+  `from_psc_endpoints` is `from.psc_endpoints`.
+  """
   key: str
   from_access_levels: List[str] = field(default_factory=list)
   from_identities: List[str] = field(default_factory=list)
+  from_identity_type: Optional[str] = None
+  from_psc_endpoints: List[str] = field(default_factory=list)
   from_resources: List[str] = field(default_factory=list)
   to_resources: List[str] = field(default_factory=list)
   to_operations: List[OperationSpec] = field(default_factory=list)
@@ -82,9 +113,12 @@ class IngressPolicySpec:
 
 @dataclass
 class EgressPolicySpec:
+  """One egress policy; `from_*` fields as on `IngressPolicySpec`."""
   key: str
   from_access_levels: List[str] = field(default_factory=list)
   from_identities: List[str] = field(default_factory=list)
+  from_identity_type: Optional[str] = None
+  from_psc_endpoints: List[str] = field(default_factory=list)
   from_resources: List[str] = field(default_factory=list)
   to_resources: List[str] = field(default_factory=list)
   to_external_resources: List[str] = field(default_factory=list)
@@ -95,8 +129,9 @@ class EgressPolicySpec:
 
 @dataclass
 class VpcAccessibleServicesSpec:
+  """`vpc_accessible_services` with `modules/vpc-sc/factory.tf` defaults."""
   enable_restriction: bool = True
-  allow_all_restricted_services: bool = False
+  allow_all_restricted_services: bool = True
   allowed_services: List[str] = field(default_factory=list)
 
 
@@ -174,7 +209,13 @@ def resolve_symbolic_ref(
     egress_policies: Dict[str, EgressPolicySpec],
     org_dataset: Optional[OrgSetupDataset] = None,
 ) -> SetRef:
-  """Resolves a symbolic $ns:key reference per §4.3 of the design spec."""
+  """Resolves a symbolic `$ns:key` reference to a `SetRef`.
+
+  Order: `defaults.yaml` context entries (except the always stage-generated
+  `identity_sets.logging_identities`), then the sets the 1-vpcsc stage
+  generates (optionally enriched by an org-setup dataset), then the
+  dataset's own access levels and policies; anything else is unresolved.
+  """
   s = str(raw).strip()
   tok = _parse_token(s)
   if not tok:
@@ -190,9 +231,12 @@ def resolve_symbolic_ref(
 
   ns, key = tok
 
-  # 1. Check defaults.yaml context.<ns>.<key> first if explicitly defined
+  # 1. Check defaults.yaml context.<ns>.<key> first if explicitly defined.
+  # Exception: the stage always generates identity_sets.logging_identities
+  # and merges it over the context (fast/stages/1-vpcsc/main.tf).
   ctx_ns = context.get(ns) or {}
-  if key in ctx_ns:
+  stage_wins = ns == "identity_sets" and key == "logging_identities"
+  if key in ctx_ns and not stage_wins:
     val = ctx_ns[key]
     members = [str(x) for x in val] if isinstance(val, list) else [str(val)]
     return SetRef(
@@ -205,7 +249,7 @@ def resolve_symbolic_ref(
         unresolved=False,
     )
 
-  # 2. Built-in stage-generated sets & optional --org-dataset enrichment (§4.3)
+  # 2. Built-in stage-generated sets & optional --org-dataset enrichment
   if ns == "resource_sets" and key == "discovered_projects":
     return SetRef(
         raw=s,
@@ -291,7 +335,9 @@ def resolve_symbolic_ref(
     )
 
   if ns == "service_sets" and key == "restricted_services":
-    short_names = [svc.removesuffix(".googleapis.com") for svc in restricted_services]
+    short_names = [
+        svc.removesuffix(".googleapis.com") for svc in restricted_services
+    ]
     return SetRef(
         raw=s,
         namespace=ns,
@@ -360,7 +406,8 @@ def resolve_symbolic_ref(
         unresolved=False,
     )
 
-  if ns == "project_numbers" and org_dataset is not None and key in org_dataset.projects:
+  if (ns == "project_numbers" and org_dataset is not None and
+      key in org_dataset.projects):
     proj = org_dataset.projects[key]
     return SetRef(
         raw=s,
@@ -372,7 +419,8 @@ def resolve_symbolic_ref(
         unresolved=False,
     )
 
-  if ns == "folder_ids" and org_dataset is not None and key in org_dataset.folders:
+  if (ns == "folder_ids" and org_dataset is not None and
+      key in org_dataset.folders):
     fld = org_dataset.folders[key]
     return SetRef(
         raw=s,
@@ -432,8 +480,7 @@ def _parse_operations(ops_raw: Any) -> Tuple[List[OperationSpec], str]:
             service_name=sname,
             method_selectors=m_sel,
             permission_selectors=p_sel,
-        )
-    )
+        ))
   if has_wildcard:
     summary = "all services"
   elif len(services) == 1:
@@ -447,6 +494,10 @@ def _parse_operations(ops_raw: Any) -> Tuple[List[OperationSpec], str]:
   return ops, summary
 
 
+def _default_true(value: Any) -> bool:
+  return True if value is None else bool(value)
+
+
 def _parse_perimeter_block(mode: str, raw: Any) -> Optional[PerimeterBlockSpec]:
   if not isinstance(raw, dict):
     return None
@@ -454,32 +505,108 @@ def _parse_perimeter_block(mode: str, raw: Any) -> Optional[PerimeterBlockSpec]:
   vas: Optional[VpcAccessibleServicesSpec] = None
   if isinstance(vas_raw, dict):
     vas = VpcAccessibleServicesSpec(
-        enable_restriction=bool(vas_raw.get("enable_restriction", True)),
-        allow_all_restricted_services=bool(vas_raw.get("allow_all_restricted_services", False)),
-        allowed_services=[str(x) for x in (vas_raw.get("allowed_services") or [])],
+        enable_restriction=_default_true(vas_raw.get("enable_restriction")),
+        allow_all_restricted_services=_default_true(
+            vas_raw.get("allow_all_restricted_services")),
+        allowed_services=_strs(vas_raw.get("allowed_services")),
     )
   return PerimeterBlockSpec(
       mode=mode,
-      access_levels=[str(x) for x in (raw.get("access_levels") or [])],
-      resources=[str(x) for x in (raw.get("resources") or [])],
-      restricted_services=[str(x) for x in (raw.get("restricted_services") or [])],
-      ingress_policies=[str(x) for x in (raw.get("ingress_policies") or [])],
-      egress_policies=[str(x) for x in (raw.get("egress_policies") or [])],
+      access_levels=_strs(raw.get("access_levels")),
+      resources=_strs(raw.get("resources")),
+      restricted_services=_strs(raw.get("restricted_services")),
+      ingress_policies=_strs(raw.get("ingress_policies")),
+      egress_policies=_strs(raw.get("egress_policies")),
       vpc_accessible_services=vas,
   )
 
 
-def _blocks_equal(a: Optional[PerimeterBlockSpec], b: Optional[PerimeterBlockSpec]) -> bool:
+def _conditions(value: Any) -> List[Any]:
+  """`for c in try(v.conditions, [])`: a list, or the values of a map."""
+  if isinstance(value, dict):
+    return list(value.values())
+  return value if isinstance(value, list) else []
+
+
+def _parse_access_level(key: str, adoc: Any) -> AccessLevelSpec:
+  if not isinstance(adoc, dict):
+    adoc = {}
+  comb = str(adoc.get("combining_function") or "AND")
+  regions: List[str] = []
+  ips: List[str] = []
+  members: List[str] = []
+  req_als: List[str] = []
+  has_dev = False
+  vpc_sub_cnt = 0
+  negate = False
+  for cond in _conditions(adoc.get("conditions")):
+    if not isinstance(cond, dict):
+      continue
+    regions.extend(_strs(cond.get("regions")))
+    ips.extend(_strs(cond.get("ip_subnetworks")))
+    members.extend(_strs(cond.get("members")))
+    req_als.extend(_strs(cond.get("required_access_levels")))
+    if cond.get("device_policy"):
+      has_dev = True
+    if isinstance(cond.get("vpc_subnets"), dict):
+      vpc_sub_cnt += len(cond["vpc_subnets"])
+    if cond.get("negate"):
+      negate = True
+
+  parts: List[str] = []
+  if regions:
+    parts.append(f"regions: {', '.join(regions)}")
+  if ips:
+    parts.append(f"ip: {len(ips)} ranges" if len(ips) > 1 else f"ip: {ips[0]}")
+  if members:
+    parts.append(f"members: {len(members)}")
+  if has_dev:
+    parts.append("device policy")
+  if req_als:
+    clean_reqs = [r.removeprefix("$access_levels:") for r in req_als]
+    parts.append(f"required: {', '.join(clean_reqs)}")
+  if vpc_sub_cnt:
+    parts.append(f"vpc subnets: {vpc_sub_cnt}")
+  if negate:
+    parts.append("negated")
+  if comb != "AND":
+    parts.append(f"combining: {comb}")
+  return AccessLevelSpec(
+      key=key,
+      combining_function=comb,
+      regions=regions,
+      ip_subnetworks=ips,
+      members=members,
+      required_access_levels=req_als,
+      has_device_policy=has_dev,
+      vpc_subnets_count=vpc_sub_cnt,
+      negate=negate,
+      summary=" · ".join(parts) if parts else "custom condition",
+  )
+
+
+def _policy_parts(root: pathlib.Path, kind: str, key: str, doc: Any):
+  """`(from, to, identity_type)` mappings of a policy document."""
+  path = root / kind / f"{key}.yaml"
+  if not isinstance(doc, dict):
+    doc = {}
+  frm = _m(doc.get("from"), path, "from")
+  to = _m(doc.get("to"), path, "to")
+  identity_type = frm.get("identity_type")
+  if identity_type is not None and not isinstance(identity_type, str):
+    raise DatasetError(path, "from.identity_type", "expected a string")
+  return frm, to, identity_type
+
+
+def _blocks_equal(a: Optional[PerimeterBlockSpec],
+                  b: Optional[PerimeterBlockSpec]) -> bool:
   if a is None or b is None:
     return False
-  return (
-      a.access_levels == b.access_levels
-      and a.resources == b.resources
-      and a.restricted_services == b.restricted_services
-      and a.ingress_policies == b.ingress_policies
-      and a.egress_policies == b.egress_policies
-      and a.vpc_accessible_services == b.vpc_accessible_services
-  )
+  return (a.access_levels == b.access_levels and a.resources == b.resources and
+          a.restricted_services == b.restricted_services and
+          a.ingress_policies == b.ingress_policies and
+          a.egress_policies == b.egress_policies and
+          a.vpc_accessible_services == b.vpc_accessible_services)
 
 
 def load_vpcsc_dataset(
@@ -498,137 +625,80 @@ def load_vpcsc_dataset(
   elif org_dataset_dir is not None:
     org_ds = load_org_setup_dataset(org_dataset_dir)
 
-  defaults_doc = _load_yaml_file(root / "defaults.yaml")
+  defaults_path = root / "defaults.yaml"
+  defaults_doc = _load_yaml_file(defaults_path)
   if not isinstance(defaults_doc, dict):
     defaults_doc = {}
-  raw_ctx = defaults_doc.get("context") or {}
+  raw_ctx = _m(defaults_doc.get("context"), defaults_path, "context")
   context: Dict[str, Dict[str, Any]] = {}
-  if isinstance(raw_ctx, dict):
-    for ns, mapping in raw_ctx.items():
-      if isinstance(mapping, dict):
-        context[str(ns)] = dict(mapping)
+  for ns, mapping in raw_ctx.items():
+    if isinstance(mapping, dict):
+      context[ns] = dict(mapping)
 
-  # Restricted services list
-  rs_raw = _load_yaml_file(root / "restricted-services.yaml")
-  restricted_services = [str(s) for s in rs_raw] if isinstance(rs_raw, list) else []
+  # Restricted services list (an empty file is an empty list)
+  rs_path = root / "restricted-services.yaml"
+  rs_raw = _load_yaml_file(rs_path)
+  if rs_raw == {}:
+    rs_raw = []
+  restricted_services = [str(s) for s in yamlio.sequence(rs_raw, rs_path, None)]
 
-  # Access levels
-  access_levels: Dict[str, AccessLevelSpec] = {}
-  for alf in _sorted_yaml_files(root / "access-levels"):
-    adoc = _load_yaml_file(alf)
-    if not isinstance(adoc, dict):
-      adoc = {}
-    comb = str(adoc.get("combining_function") or "AND")
-    regions: List[str] = []
-    ips: List[str] = []
-    members: List[str] = []
-    req_als: List[str] = []
-    has_dev = False
-    vpc_sub_cnt = 0
-    negate = False
-    for cond in adoc.get("conditions") or []:
-      if not isinstance(cond, dict):
-        continue
-      regions.extend(str(r) for r in (cond.get("regions") or []))
-      ips.extend(str(ip) for ip in (cond.get("ip_subnetworks") or []))
-      members.extend(str(m) for m in (cond.get("members") or []))
-      req_als.extend(str(r) for r in (cond.get("required_access_levels") or []))
-      if cond.get("device_policy"):
-        has_dev = True
-      if isinstance(cond.get("vpc_subnets"), dict):
-        vpc_sub_cnt += len(cond["vpc_subnets"])
-      if cond.get("negate"):
-        negate = True
+  access_levels: Dict[str, AccessLevelSpec] = {
+      key: _parse_access_level(key, adoc)
+      for key, adoc in _factory_docs(root, "access-levels")
+  }
 
-    parts: List[str] = []
-    if regions:
-      parts.append(f"regions: {', '.join(regions)}")
-    if ips:
-      parts.append(f"ip: {len(ips)} ranges" if len(ips) > 1 else f"ip: {ips[0]}")
-    if members:
-      parts.append(f"members: {len(members)}")
-    if has_dev:
-      parts.append("device policy")
-    if req_als:
-      clean_reqs = [r.removeprefix("$access_levels:") for r in req_als]
-      parts.append(f"required: {', '.join(clean_reqs)}")
-    if vpc_sub_cnt:
-      parts.append(f"vpc subnets: {vpc_sub_cnt}")
-    if negate:
-      parts.append("negated")
-    if comb != "AND":
-      parts.append(f"combining: {comb}")
-
-    access_levels[alf.stem] = AccessLevelSpec(
-        key=alf.stem,
-        combining_function=comb,
-        regions=regions,
-        ip_subnetworks=ips,
-        members=members,
-        required_access_levels=req_als,
-        has_device_policy=has_dev,
-        vpc_subnets_count=vpc_sub_cnt,
-        negate=negate,
-        summary=" · ".join(parts) if parts else "custom condition",
-    )
-
-  # Ingress policies
   ingress_policies: Dict[str, IngressPolicySpec] = {}
-  for ipf in _sorted_yaml_files(root / "ingress-policies"):
-    idoc = _load_yaml_file(ipf)
-    if not isinstance(idoc, dict):
-      idoc = {}
-    frm = idoc.get("from") or {}
-    to = idoc.get("to") or {}
+  for key, idoc in _factory_docs(root, "ingress-policies"):
+    frm, to, identity_type = _policy_parts(root, "ingress-policies", key, idoc)
     ops, ops_sum = _parse_operations(to.get("operations"))
-    ingress_policies[ipf.stem] = IngressPolicySpec(
-        key=ipf.stem,
-        from_access_levels=[str(x) for x in (frm.get("access_levels") or [])],
-        from_identities=[str(x) for x in (frm.get("identities") or [])],
-        from_resources=[str(x) for x in (frm.get("resources") or [])],
-        to_resources=[str(x) for x in (to.get("resources") or [])],
+    ingress_policies[key] = IngressPolicySpec(
+        key=key,
+        from_access_levels=_strs(frm.get("access_levels")),
+        from_identities=_strs(frm.get("identities")),
+        from_identity_type=identity_type,
+        from_psc_endpoints=_strs(frm.get("psc_endpoints")),
+        from_resources=_strs(frm.get("resources")),
+        to_resources=_strs(to.get("resources")),
         to_operations=ops,
-        to_roles=[str(x) for x in (to.get("roles") or [])],
+        to_roles=_strs(to.get("roles")),
         ops_summary=ops_sum,
     )
 
-  # Egress policies
   egress_policies: Dict[str, EgressPolicySpec] = {}
-  for epf in _sorted_yaml_files(root / "egress-policies"):
-    edoc = _load_yaml_file(epf)
-    if not isinstance(edoc, dict):
-      edoc = {}
-    frm = edoc.get("from") or {}
-    to = edoc.get("to") or {}
+  for key, edoc in _factory_docs(root, "egress-policies"):
+    frm, to, identity_type = _policy_parts(root, "egress-policies", key, edoc)
     ops, ops_sum = _parse_operations(to.get("operations"))
-    egress_policies[epf.stem] = EgressPolicySpec(
-        key=epf.stem,
-        from_access_levels=[str(x) for x in (frm.get("access_levels") or [])],
-        from_identities=[str(x) for x in (frm.get("identities") or [])],
-        from_resources=[str(x) for x in (frm.get("resources") or [])],
-        to_resources=[str(x) for x in (to.get("resources") or [])],
-        to_external_resources=[str(x) for x in (to.get("external_resources") or [])],
+    egress_policies[key] = EgressPolicySpec(
+        key=key,
+        from_access_levels=_strs(frm.get("access_levels")),
+        from_identities=_strs(frm.get("identities")),
+        from_identity_type=identity_type,
+        from_psc_endpoints=_strs(frm.get("psc_endpoints")),
+        from_resources=_strs(frm.get("resources")),
+        to_resources=_strs(to.get("resources")),
+        to_external_resources=_strs(to.get("external_resources")),
         to_operations=ops,
-        to_roles=[str(x) for x in (to.get("roles") or [])],
+        to_roles=_strs(to.get("roles")),
         ops_summary=ops_sum,
     )
 
-  # Perimeters
   perimeters: Dict[str, PerimeterSpec] = {}
-  for prf in _sorted_yaml_files(root / "perimeters"):
-    pdoc = _load_yaml_file(prf)
+  for key, pdoc in _factory_docs(root, "perimeters"):
     if not isinstance(pdoc, dict):
       pdoc = {}
     status_blk = _parse_perimeter_block("status", pdoc.get("status"))
     spec_blk = _parse_perimeter_block("spec", pdoc.get("spec"))
     both_eq = _blocks_equal(status_blk, spec_blk)
-    both_diff = (status_blk is not None and spec_blk is not None and not both_eq)
-    perimeters[prf.stem] = PerimeterSpec(
-        key=prf.stem,
+    both_diff = (status_blk is not None and spec_blk is not None and
+                 not both_eq)
+    perimeters[key] = PerimeterSpec(
+        key=key,
         title=str(pdoc.get("title") or ""),
         description=str(pdoc.get("description") or ""),
-        use_explicit_dry_run_spec=bool(pdoc.get("use_explicit_dry_run_spec", False)),
-        ignore_resource_changes=bool(pdoc.get("ignore_resource_changes", False)),
+        use_explicit_dry_run_spec=bool(
+            pdoc.get("use_explicit_dry_run_spec", False)),
+        ignore_resource_changes=bool(pdoc.get("ignore_resource_changes",
+                                              False)),
         status=status_blk,
         spec=spec_blk,
         has_both_equal=both_eq,
@@ -636,7 +706,7 @@ def load_vpcsc_dataset(
     )
 
   ds = VpcscDataset(
-      dataset_name=root.name,
+      dataset_name=_display_name(dataset_dir, root),
       root_dir=root,
       org_dataset=org_ds,
       context=context,

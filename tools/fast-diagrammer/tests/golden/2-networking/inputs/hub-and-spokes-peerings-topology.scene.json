@@ -25,7 +25,7 @@
      "kind": "zone",
      "id": "Proj_net_core_0",
      "title": "Project: net-core-0",
-     "subtitle": "Shared VPC Host (Core Networking)",
+     "subtitle": "Shared VPC host · core networking",
      "style_name": "@ProjectZone",
      "icon": "CloudGeneric",
      "layout": "row",
@@ -40,7 +40,7 @@
      "children": [
       {
        "kind": "zone",
-       "id": "CoreLeftVpcs",
+       "id": "CoreLeftVpcs_net_core_0",
        "title": "",
        "subtitle": "",
        "style_name": "@Ghost",
@@ -79,21 +79,6 @@
            "subtitle": "Router: hybrid-connectivity-router",
            "style_name": "@ProductCard",
            "icon": "CloudVPN",
-           "width": 248.0,
-           "height": 58.0,
-           "stroke_color": "#dadce0",
-           "stroke_width": 1.0,
-           "fill": "#ffffff",
-           "dashed": false,
-           "badges": []
-          },
-          {
-           "kind": "card",
-           "id": "vlan_hub",
-           "title": "VLAN Attachments",
-           "subtitle": "to-onprem-vlan-0, to-onprem-vlan-1",
-           "style_name": "@ProductCard",
-           "icon": "CloudInterconnect",
            "width": 248.0,
            "height": 58.0,
            "stroke_color": "#dadce0",
@@ -174,7 +159,7 @@
        "kind": "zone",
        "id": "Proj_net_dev_0",
        "title": "Project: net-dev-0",
-       "subtitle": "Shared VPC Host (Spoke)",
+       "subtitle": "Shared VPC host · spoke",
        "style_name": "@ProjectZone",
        "icon": "CloudGeneric",
        "layout": "column",
@@ -242,7 +227,7 @@
        "kind": "zone",
        "id": "Proj_net_prod_0",
        "title": "Project: net-prod-0",
-       "subtitle": "Shared VPC Host (Spoke)",
+       "subtitle": "Shared VPC host · spoke",
        "style_name": "@ProjectZone",
        "icon": "CloudGeneric",
        "layout": "column",
@@ -375,20 +360,7 @@
    "dashed": false,
    "source_anchor": "bottom",
    "target_anchor": "top",
-   "dash": null,
-   "head": "filled"
-  },
-  {
-   "src": "vlan_hub",
-   "dst": "rtr_hub_hybrid_connectivity_router",
-   "arrow": "<-->",
-   "label": "BGP",
-   "color": "#1a73e8",
-   "stroke_width": 2.0,
-   "dashed": true,
-   "source_anchor": "bottom",
-   "target_anchor": "top",
-   "dash": null,
+   "dash": "solid",
    "head": "filled"
   },
   {
@@ -401,48 +373,63 @@
    "dashed": false,
    "source_anchor": "right",
    "target_anchor": "left",
-   "dash": null,
-   "head": "filled"
-  },
-  {
-   "src": "site_onprem",
-   "dst": "vlan_hub",
-   "arrow": "<-->",
-   "label": "Interconnect",
-   "color": "#d93025",
-   "stroke_width": 2.0,
-   "dashed": true,
-   "source_anchor": "right",
-   "target_anchor": "left",
-   "dash": null,
-   "head": "filled"
+   "dash": "solid",
+   "head": "open"
   },
   {
    "src": "peering_attachment_dev",
    "dst": "peering_attachment_hub",
-   "arrow": "<-->",
+   "arrow": "-->",
    "label": "VPC Peering",
    "color": "#1e8e3e",
    "stroke_width": 2.0,
-   "dashed": false,
+   "dashed": true,
    "source_anchor": "right",
    "target_anchor": "left",
-   "dash": null,
-   "head": "filled"
+   "dash": "dashed",
+   "head": "none"
   },
   {
    "src": "peering_attachment_hub",
    "dst": "peering_attachment_prod",
-   "arrow": "<-->",
+   "arrow": "-->",
    "label": "VPC Peering",
    "color": "#1e8e3e",
    "stroke_width": 2.0,
-   "dashed": false,
+   "dashed": true,
    "source_anchor": "right",
    "target_anchor": "left",
-   "dash": null,
-   "head": "filled"
+   "dash": "dashed",
+   "head": "none"
   }
  ],
- "legend": []
+ "legend": [
+  {
+   "label": "Cloud Router BGP session",
+   "kind": "edge",
+   "color": "#1a73e8",
+   "dash": "solid",
+   "head": "filled",
+   "fill": "#ffffff",
+   "dashed": false
+  },
+  {
+   "label": "HA VPN to on-premises",
+   "kind": "edge",
+   "color": "#d93025",
+   "dash": "solid",
+   "head": "open",
+   "fill": "#ffffff",
+   "dashed": false
+  },
+  {
+   "label": "VPC peering",
+   "kind": "edge",
+   "color": "#1e8e3e",
+   "dash": "dashed",
+   "head": "none",
+   "fill": "#ffffff",
+   "dashed": false
+  }
+ ]
 }

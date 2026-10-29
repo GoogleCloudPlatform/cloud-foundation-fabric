@@ -1,4 +1,4 @@
-# fast-net-diagrammer
+# fast-diagrammer
 
 Deterministic diagram generator for Cloud Foundation Fabric FAST stage
 datasets. It reads a dataset directory, builds a stage-agnostic scene graph in
@@ -9,13 +9,19 @@ orthogonally with zero overlaps, and writes two files per view:
   (open it in a browser, or edit it in diagrams.net);
 - `<dataset>-<view>.drawio`: the standalone draw.io model.
 
+The `.drawio` is plain, diffable mxfile XML in which every card and zone icon
+is an embedded image cell, so it opens fully editable in diagrams.net; the
+`.drawio.svg` carries the same diagram in its `content=` attribute in
+draw.io's native compressed form (raw deflate + base64), so it is editable in
+diagrams.net too. Review diffs on the `.drawio`.
+
 The package is `fast_diagrammer/` (Python 3.10+, stdlib plus `PyYAML`).
 
 | Stage | Views | What the diagram answers |
 |---|---|---|
 | `0-org-setup` | `hierarchy` | Where folders and projects live (exact project-factory parent rules), what each core project is for (≤4 badges), which org-level controls exist, billing account, log sink / billing export / Shared VPC edges. |
 | `1-vpcsc` | `perimeters` | What is inside each perimeter, enforced or dry-run, who can get in (ingress), who can get out (egress), under which access level. Stage-generated sets are dashed "set" cards with provenance. |
-| `2-networking` | `topology`, `dns` | Projects → VPCs → routers, VPN/VLAN, NCC, NVAs, peerings (topology); zones, resolvers, bind/peer/forward chains (dns). Byte-identical to the frozen goldens. |
+| `2-networking` | `topology`, `dns` | Projects → VPCs → routers, VPN/VLAN, NCC, NVAs, peerings (topology); zones, resolvers, bind/peer/forward chains (dns). Byte-identical to the goldens (`tests/golden/2-networking/`), the regression contract of this tool. |
 
 ```mermaid
 flowchart LR
@@ -33,7 +39,7 @@ flowchart LR
 Run from the root of the repository.
 
 ```bash
-pip install -r tools/fast-diagrammer/requirements.txt     # PyYAML only
+pip install PyYAML       # the only runtime dependency (already in tests/requirements.txt)
 
 # One dataset; the stage type is optional (auto-detected when omitted)
 python3 tools/fast-diagrammer fast/stages/0-org-setup/datasets/classic \
@@ -50,31 +56,47 @@ python3 tools/fast-diagrammer fast/stages/2-networking -t net /tmp/fd
 PYTHONPATH=tools/fast-diagrammer python3 -m fast_diagrammer \
   --fast-root fast/stages --out-dir /tmp/fd
 
-# Tests
+# Tests (pytest and PyYAML come from tests/requirements.txt)
 python3 -m pytest tools/fast-diagrammer/tests
 ```
+
+The tests are run in CI by the `schemas` job of `.github/workflows/tests.yml`.
+They read the reference datasets from this repository's `fast/stages/`; a
+copy of the tool outside the repository finds them through
+`FD_FABRIC_ROOT`, and without either the dataset-dependent tests are skipped
+with the searched paths as the reason.
 
 ## CLI
 
 | Argument / env | Default | Description |
 |---|---|---|
-| `INPUT_DIR` (positional), `-i/--input DIR`, `--dataset DIR` | one input required | A dataset (`.../datasets/classic`), a datasets folder (`.../datasets`) or a stage folder (`fast/stages/0-org-setup`). Folders render every dataset inside; sub-directories that are not datasets are skipped. |
+| `INPUT_DIR` (positional), `-i/--input DIR`, `--dataset DIR` | one input required | A dataset (`.../datasets/classic`), a datasets folder (`.../datasets`) or a stage folder (`fast/stages/0-org-setup`). Folders render every dataset inside; sub-directories that are not datasets are skipped, and so are symlinked datasets (`[skip] classic -> hub-and-spokes-peerings (symlink)`), which would only render an alias twice. A symlink given as a single dataset renders under the name it was given (`classic-*`). |
 | `--datasets-root DIR` | | Directory whose sub-directories are datasets. |
 | `--fast-root DIR` | | FAST `stages/` directory: every `*/datasets/*` of the supported stages (the stage comes from the stage directory name), written to `<out>/<stage>/`. |
-| `OUT_DIR` (second positional), `-o/--out-dir DIR` | required | Output directory. Inputs are never written. |
-| `-t/--type`, `-s/--stage` | `auto` | `org-setup` / `org` / `0-org-setup`, `vpc-sc` / `vpcsc` / `1-vpcsc`, `net` / `networking` / `2-networking`; `auto` uses fingerprint detection. |
-| `--views a,b` | all views of the stage | Subset of views to render. |
+| `OUT_DIR` (second positional), `-o/--out-dir DIR` | required | Output directory, created if missing. Inputs are never written: an output directory equal to or inside an input dataset is refused. |
+| `-t/--type`, `-s/--stage` | `auto` | `org-setup` / `org` / `0-org-setup`, `vpc-sc` / `vpcsc` / `1-vpcsc`, `net` / `networking` / `2-networking`; `auto` uses fingerprint detection. An explicit stage still runs the detection and warns when the dataset looks like another stage, or like none (a single dataset only: folder runs skip sub-directories that are not datasets). |
+| `--views a,b` | all views of the stage | Subset of views to render; a name that no rendered stage has is a usage error listing the valid views. |
 | `--org-dataset DIR` | unset | 1-vpcsc: resolve `logging_project`, `org_setup_projects` and sink identities from a 0-org-setup dataset. |
+| `--cicd-workflows FILE` | unset | 0-org-setup: read CI/CD workflows from `FILE`, relative to the dataset (the stage's `factories_config.paths.cicd_workflows`, unset by default), e.g. `cicd.yaml`; without it no CI/CD card is drawn, as the stage does not read the file either. |
 | `--verbose-badges` | off | Lift the default badge budget (4 per card, 6 per zone header). |
-| `--legend` / `--no-legend` | on | 0-org-setup / 1-vpcsc: force the bottom-left legend on or off (2-networking has no legend, so its output stays byte-identical). |
+| `--legend` / `--no-legend` | on | Force the bottom-left legend on or off, on every stage. |
 | `--rpz-bind-lines` | off | 2-networking dns: draw explicit dashed `Bind (RPZ)` edges. |
 | `--strict` | off | Non-zero exit on unknown icons (stages 0/1) or unresolved `$ns:key` sets. |
-| `--rasterizer "CMD {svg} {png}"` / `FD_RASTERIZER` | unset | Optional PNG step; a failure is a warning. PNG is never required. |
-| `FD_FABRIC_ROOT` | repo root, then `~/git/cloud-foundation-fabric` | Fabric checkout used by the tests to find the reference datasets. |
+| `--rasterizer "CMD {svg} {png}"` / `FD_RASTERIZER` | unset | Optional PNG step, run once per diagram with `{svg}` and `{png}` substituted. A failing command or a malformed template (`{oops}`, a lone `{`) is a warning. PNG is never required. |
+| `FD_FABRIC_ROOT` | unset | Tests only: Fabric checkout to read the reference datasets from when the tool does not sit inside one (the repository's own `fast/stages` wins). |
+
+Exit status: `0` when every requested diagram rendered; `1` when anything
+failed (stage detection of a single dataset, a build error, the overlap gate,
+`--strict`, an unwritable output directory); `2` on a usage error (including
+an input or `--org-dataset` that is not an existing directory) or when nothing
+was rendered (for example a stage folder with no supported dataset).
 
 Stage detection (first match wins): `perimeters/` or `restricted-services.yaml`
-→ `1-vpcsc`; `organization/` or `folders/` → `0-org-setup` (`starter-gcd` also
-has `vpcs/`, rendered as embedded VPCs); `vpcs/` → `2-networking`.
+→ `1-vpcsc`; `organization/` → `0-org-setup` (`starter-gcd` also has `vpcs/`,
+rendered as embedded VPCs); `vpcs/` together with `ncc-hubs/`, `nvas/` or a
+top-level `vpcs:` key in `defaults.yaml` → `2-networking`. `folders/` alone is
+not a fingerprint, so 2-project-factory and 2-security datasets are refused
+rather than misread.
 
 ## Visual vocabulary
 
@@ -101,17 +123,23 @@ Colour is never the only cue: every semantic also has a dash, head or shape.
 - `fast_diagrammer/stages/`: one builder per stage, contract
   `VIEWS` + `build(dataset_dir, view, dataset_name=None, **options)`.
 - `fast_diagrammer/{tokens,yamlio}.py`: `$type:key` helpers; YAML loader with
-  1.2 semantics (`NO` stays a string, dates stay strings).
-- `fast_diagrammer/icons/`: vendored SVGs and `icons.json`, built by
+  YAML 1.2 scalar semantics: `NO`, `on`, `yes` stay strings and dates stay
+  strings. Terraform's `yamldecode` reads plain `yes/no/on/off/y/n` as
+  booleans, so the tool warns on such unquoted values; quote them in the
+  dataset. Loader and builder warnings are printed as `[warn]` lines and never
+  change the exit status.
+- `fast_diagrammer/icons/`: the SVG glyphs and `icons.json`, built by
   `tools/build_icons.py` (`--check` in the gate). The 13 legacy networking
-  glyphs are kept verbatim; the 24 org-setup / VPC-SC glyphs are original
-  drawings made for this tool, not the official Google Cloud icon set.
+  glyphs and the 24 newer glyphs in `fast_diagrammer/icons/` are the author's
+  own drawings, made with Google-owned tooling and licensed under Apache 2.0
+  like the rest of this repository. They are not the official Google Cloud
+  icon set.
 - `__main__.py`, `fast_diagrammer.py`: entry points for `python3 <dir>` and
   `./fast_diagrammer.py`.
-- `tests/`: `test_layout_gates.py` (core),
-  `test_parity_networking.py`, `test_org_setup.py`, `test_vpcsc.py`,
-  `golden/2-networking/` (frozen byte-parity goldens and pre-layout scene
+- `tests/`: `test_layout_gates.py` (core gates and the CLI),
+  `test_parity_networking.py` (2-networking goldens), one `test_<area>.py`
+  per component (emitters, router, stage builders), and
+  `golden/2-networking/` (byte-level regression goldens and pre-layout scene
   snapshots, see its `README.md`; regenerate only in a reviewed bump with
-  `tools/update_goldens.py`),
-  `fixtures/datasets/2-networking/hub-and-spokes-nva-ncc/` (vendored from
-  cff-ncc-ra, not yet in Fabric).
+  `tools/fast-diagrammer/tools/update_goldens.py`). The tests read the
+  reference datasets from `fast/stages/*/datasets/`.

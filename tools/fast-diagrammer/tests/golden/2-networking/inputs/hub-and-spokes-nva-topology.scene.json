@@ -25,7 +25,7 @@
      "kind": "zone",
      "id": "Proj_net_core_0",
      "title": "Project: net-core-0",
-     "subtitle": "Shared VPC Host (Core Networking)",
+     "subtitle": "Shared VPC host · core networking",
      "style_name": "@ProjectZone",
      "icon": "CloudGeneric",
      "layout": "row",
@@ -40,7 +40,7 @@
      "children": [
       {
        "kind": "zone",
-       "id": "CoreLeftVpcs",
+       "id": "CoreLeftVpcs_net_core_0",
        "title": "",
        "subtitle": "",
        "style_name": "@Ghost",
@@ -89,21 +89,6 @@
           },
           {
            "kind": "card",
-           "id": "vlan_dmz",
-           "title": "VLAN Attachments",
-           "subtitle": "to-onprem-vlan-0, to-onprem-vlan-1",
-           "style_name": "@ProductCard",
-           "icon": "CloudInterconnect",
-           "width": 248.0,
-           "height": 58.0,
-           "stroke_color": "#dadce0",
-           "stroke_width": 1.0,
-           "fill": "#ffffff",
-           "dashed": false,
-           "badges": []
-          },
-          {
-           "kind": "card",
            "id": "rtr_dmz_hybrid_connectivity_router",
            "title": "Router: hybrid-connectivity-router",
            "subtitle": "ASN 64514 (ew1)",
@@ -123,7 +108,22 @@
            "title": "ILB & NVA nic0 (main)",
            "subtitle": "NVA nic0 · routes: 10.74.0.0/16",
            "style_name": "@ProductCard",
-           "icon": "CloudLoadBalancing",
+           "icon": "LoadBalancing",
+           "width": 248.0,
+           "height": 58.0,
+           "stroke_color": "#dadce0",
+           "stroke_width": 1.0,
+           "fill": "#ffffff",
+           "dashed": false,
+           "badges": []
+          },
+          {
+           "kind": "card",
+           "id": "routes_ilb_dmz",
+           "title": "Routes via ILB (3)",
+           "subtitle": "10.0.0.0/8, 172.16.0.0/12, +1",
+           "style_name": "@ProductCard",
+           "icon": "Networking",
            "width": 248.0,
            "height": 58.0,
            "stroke_color": "#dadce0",
@@ -153,7 +153,7 @@
       },
       {
        "kind": "zone",
-       "id": "CoreProjectMid",
+       "id": "CoreProjectMid_net_core_0",
        "title": "",
        "subtitle": "",
        "style_name": "@Ghost",
@@ -170,7 +170,7 @@
        "children": [
         {
          "kind": "zone",
-         "id": "NvaCluster",
+         "id": "NvaCluster_net_core_0",
          "title": "NVA VM Instances",
          "subtitle": "",
          "style_name": "@SubGroupWhite",
@@ -188,7 +188,7 @@
           {
            "kind": "card",
            "id": "nva_main",
-           "title": "nva-main (ew1 b/c)",
+           "title": "NVA: main (ew1 b/c)",
            "subtitle": "4 NICs · Static/ILB",
            "style_name": "@ProductCard",
            "icon": "ComputeEngine",
@@ -206,7 +206,7 @@
       },
       {
        "kind": "zone",
-       "id": "CoreRightVpcs",
+       "id": "CoreRightVpcs_net_core_0",
        "title": "",
        "subtitle": "",
        "style_name": "@Ghost",
@@ -244,7 +244,7 @@
            "title": "ILB & NVA nic1 (main)",
            "subtitle": "NVA nic1 · routes: 10.71.0.0/16",
            "style_name": "@ProductCard",
-           "icon": "CloudLoadBalancing",
+           "icon": "LoadBalancing",
            "width": 248.0,
            "height": 58.0,
            "stroke_color": "#dadce0",
@@ -278,7 +278,7 @@
            "title": "ILB & NVA nic3 (main)",
            "subtitle": "NVA nic3 · routes: 10.73.0.0/16",
            "style_name": "@ProductCard",
-           "icon": "CloudLoadBalancing",
+           "icon": "LoadBalancing",
            "width": 248.0,
            "height": 58.0,
            "stroke_color": "#dadce0",
@@ -291,9 +291,9 @@
            "kind": "card",
            "id": "route_dev_gateway",
            "title": "Route: gateway (0.0.0.0/0)",
-           "subtitle": "next-hop: ILB (dev)",
+           "subtitle": "next-hop: ILB (dev/main)",
            "style_name": "@ProductCard",
-           "icon": "Routes",
+           "icon": "Networking",
            "width": 248.0,
            "height": 58.0,
            "stroke_color": "#dadce0",
@@ -327,7 +327,7 @@
            "title": "ILB & NVA nic2 (main)",
            "subtitle": "NVA nic2 · routes: 10.72.0.0/16",
            "style_name": "@ProductCard",
-           "icon": "CloudLoadBalancing",
+           "icon": "LoadBalancing",
            "width": 248.0,
            "height": 58.0,
            "stroke_color": "#dadce0",
@@ -340,9 +340,9 @@
            "kind": "card",
            "id": "route_prod_gateway",
            "title": "Route: gateway (0.0.0.0/0)",
-           "subtitle": "next-hop: ILB (prod)",
+           "subtitle": "next-hop: ILB (prod/main)",
            "style_name": "@ProductCard",
-           "icon": "Routes",
+           "icon": "Networking",
            "width": 248.0,
            "height": 58.0,
            "stroke_color": "#dadce0",
@@ -352,6 +352,93 @@
            "badges": []
           }
          ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "kind": "zone",
+     "id": "SpokeProjectsCol",
+     "title": "",
+     "subtitle": "",
+     "style_name": "@Ghost",
+     "icon": null,
+     "layout": "column",
+     "gap": 18.0,
+     "align": "center",
+     "dock_to": null,
+     "dock_side": null,
+     "dock_align": null,
+     "dock_gap": 56.0,
+     "max_cols": 4,
+     "badges": [],
+     "children": [
+      {
+       "kind": "zone",
+       "id": "Proj_net_dev_0",
+       "title": "Project: net-dev-0",
+       "subtitle": "Shared VPC host",
+       "style_name": "@ProjectZone",
+       "icon": "CloudGeneric",
+       "layout": "column",
+       "gap": 12.0,
+       "align": "center",
+       "dock_to": null,
+       "dock_side": null,
+       "dock_align": null,
+       "dock_gap": 56.0,
+       "max_cols": 4,
+       "badges": [],
+       "children": [
+        {
+         "kind": "card",
+         "id": "proj_empty_net_dev_0",
+         "title": "No network resources",
+         "subtitle": "name: dev-net-spoke-0",
+         "style_name": "@ProductCard",
+         "icon": "CloudGeneric",
+         "width": 248.0,
+         "height": 58.0,
+         "stroke_color": "#dadce0",
+         "stroke_width": 1.0,
+         "fill": "#ffffff",
+         "dashed": false,
+         "badges": []
+        }
+       ]
+      },
+      {
+       "kind": "zone",
+       "id": "Proj_net_prod_0",
+       "title": "Project: net-prod-0",
+       "subtitle": "Shared VPC host",
+       "style_name": "@ProjectZone",
+       "icon": "CloudGeneric",
+       "layout": "column",
+       "gap": 12.0,
+       "align": "center",
+       "dock_to": null,
+       "dock_side": null,
+       "dock_align": null,
+       "dock_gap": 56.0,
+       "max_cols": 4,
+       "badges": [],
+       "children": [
+        {
+         "kind": "card",
+         "id": "proj_empty_net_prod_0",
+         "title": "No network resources",
+         "subtitle": "name: prod-net-spoke-0",
+         "style_name": "@ProductCard",
+         "icon": "CloudGeneric",
+         "width": 248.0,
+         "height": 58.0,
+         "stroke_color": "#dadce0",
+         "stroke_width": 1.0,
+         "fill": "#ffffff",
+         "dashed": false,
+         "badges": []
         }
        ]
       }
@@ -424,20 +511,7 @@
    "dashed": false,
    "source_anchor": "bottom",
    "target_anchor": "top",
-   "dash": null,
-   "head": "filled"
-  },
-  {
-   "src": "vlan_dmz",
-   "dst": "rtr_dmz_hybrid_connectivity_router",
-   "arrow": "<-->",
-   "label": "BGP",
-   "color": "#1a73e8",
-   "stroke_width": 2.0,
-   "dashed": true,
-   "source_anchor": "bottom",
-   "target_anchor": "top",
-   "dash": null,
+   "dash": "solid",
    "head": "filled"
   },
   {
@@ -447,10 +521,10 @@
    "label": "nic0 ILB",
    "color": "#1e8e3e",
    "stroke_width": 2.0,
-   "dashed": false,
+   "dashed": true,
    "source_anchor": "right",
    "target_anchor": "left",
-   "dash": null,
+   "dash": "dotted",
    "head": "filled"
   },
   {
@@ -460,10 +534,10 @@
    "label": "nic1 ILB",
    "color": "#1e8e3e",
    "stroke_width": 2.0,
-   "dashed": false,
+   "dashed": true,
    "source_anchor": "right",
    "target_anchor": "left",
-   "dash": null,
+   "dash": "dotted",
    "head": "filled"
   },
   {
@@ -473,10 +547,10 @@
    "label": "nic3 ILB",
    "color": "#1e8e3e",
    "stroke_width": 2.0,
-   "dashed": false,
+   "dashed": true,
    "source_anchor": "right",
    "target_anchor": "left",
-   "dash": null,
+   "dash": "dotted",
    "head": "filled"
   },
   {
@@ -486,10 +560,10 @@
    "label": "nic2 ILB",
    "color": "#1e8e3e",
    "stroke_width": 2.0,
-   "dashed": false,
+   "dashed": true,
    "source_anchor": "right",
    "target_anchor": "left",
-   "dash": null,
+   "dash": "dotted",
    "head": "filled"
   },
   {
@@ -502,22 +576,37 @@
    "dashed": false,
    "source_anchor": "right",
    "target_anchor": "left",
-   "dash": null,
-   "head": "filled"
-  },
-  {
-   "src": "site_onprem",
-   "dst": "vlan_dmz",
-   "arrow": "<-->",
-   "label": "Interconnect",
-   "color": "#d93025",
-   "stroke_width": 2.0,
-   "dashed": true,
-   "source_anchor": "right",
-   "target_anchor": "left",
-   "dash": null,
-   "head": "filled"
+   "dash": "solid",
+   "head": "open"
   }
  ],
- "legend": []
+ "legend": [
+  {
+   "label": "Cloud Router BGP session",
+   "kind": "edge",
+   "color": "#1a73e8",
+   "dash": "solid",
+   "head": "filled",
+   "fill": "#ffffff",
+   "dashed": false
+  },
+  {
+   "label": "NVA NIC (router appliance or ILB)",
+   "kind": "edge",
+   "color": "#1e8e3e",
+   "dash": "dotted",
+   "head": "filled",
+   "fill": "#ffffff",
+   "dashed": false
+  },
+  {
+   "label": "HA VPN to on-premises",
+   "kind": "edge",
+   "color": "#d93025",
+   "dash": "solid",
+   "head": "open",
+   "fill": "#ffffff",
+   "dashed": false
+  }
+ ]
 }

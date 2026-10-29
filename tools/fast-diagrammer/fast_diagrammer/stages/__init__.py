@@ -15,10 +15,11 @@
 
 Builder contract (every `stages/<module>.py`):
   VIEWS: tuple[str, ...]            # first entry is the default view
-  build(dataset_dir, view, dataset_name=None, **options) -> SceneGraph
-The CLI passes only the options a builder's signature accepts (or all of
-them when it takes `**kwargs`): rpz_bind_lines, verbose_badges, legend,
-org_dataset, strict.
+  build(dataset_dir, view, dataset_name=None, *, <options>) -> SceneGraph
+Each builder declares its keyword-only options explicitly, so an unknown
+option raises `TypeError`. The CLI passes only the options a builder's
+signature accepts out of: rpz_bind_lines, verbose_badges, legend,
+org_dataset, strict. Helpers shared by the builders live in `_common.py`.
 """
 
 import importlib
@@ -45,6 +46,7 @@ def get_builder(stage: str) -> ModuleType:
 def accepted_options(build_fn: Any, options: Dict[str, Any]) -> Dict[str, Any]:
   """Filters `options` down to what `build_fn` accepts by name."""
   sig = inspect.signature(build_fn)
-  if any(p.kind is inspect.Parameter.VAR_KEYWORD for p in sig.parameters.values()):
+  if any(
+      p.kind is inspect.Parameter.VAR_KEYWORD for p in sig.parameters.values()):
     return dict(options)
   return {k: v for k, v in options.items() if k in sig.parameters}

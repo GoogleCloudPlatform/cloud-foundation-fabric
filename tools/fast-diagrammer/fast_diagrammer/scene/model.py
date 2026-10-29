@@ -20,6 +20,8 @@ defaults to "off" so a networking scene renders exactly as before.
 """
 
 from dataclasses import dataclass, field
+import math
+import re
 from typing import Dict, List, Optional, Union
 
 PALETTE = {
@@ -33,8 +35,8 @@ PALETTE = {
     "$SubText": "#5f6368",
     "$CardBorder": "#dadce0",
     "$SurfaceWhite": "#ffffff",
-    # Multi-stage additions (spec §5.1). Every semantic colour also has a
-    # dash / head / shape cue so colour is never the only signal.
+    # Multi-stage additions. Every semantic colour also has a dash / head /
+    # shape cue so colour is never the only signal.
     "$VermilionStroke": "#d55e00",
     "$SlateStroke": "#5f6368",
     "$FolderGrey": "#9aa0a6",
@@ -49,6 +51,9 @@ PALETTE = {
 
 STYLE_PRESETS = {
     # ---- 2-networking presets: byte-parity locked, do not edit. ----
+    # Zone presets may carry layout-only keys that are never emitted:
+    # `padding` (inner padding) and `headerHeight` / `headerHeightSubtitle`
+    # (title band height without / with a subtitle; default 32 / 48).
     "@Ghost": {
         "fill": "transparent",
         "strokeColor": "none",
@@ -72,6 +77,8 @@ STYLE_PRESETS = {
         "icon": "GoogleCloud",
         "iconSize": 28,
         "dashed": False,
+        "headerHeight": 42,
+        "headerHeightSubtitle": 66,
     },
     "@ProjectZone": {
         "fill": "#e8f0fe",
@@ -89,7 +96,7 @@ STYLE_PRESETS = {
         "strokeColor": "#fbbc04",
         "strokeWidth": 1.5,
         "borderRadius": 10,
-        "padding": 14,
+        "padding": 28,
         "gap": 12,
         "fontColor": "#202124",
         "fontSize": 14,
@@ -145,7 +152,7 @@ STYLE_PRESETS = {
         "iconSize": 26,
         "padding": 10,
     },
-    # ---- Multi-stage zone presets (spec §5.2). ----
+    # ---- Multi-stage zone presets. ----
     "@OrganizationZone": {
         "fill": "#f8fafd",
         "strokeColor": "#5f6368",
@@ -158,6 +165,8 @@ STYLE_PRESETS = {
         "icon": "Organization",
         "iconSize": 26,
         "dashed": False,
+        "headerHeight": 42,
+        "headerHeightSubtitle": 66,
     },
     "@FolderZone": {
         "fill": "#f1f3f4",
@@ -231,7 +240,7 @@ STYLE_PRESETS = {
         "fontSize": 11,
         "dashed": False,
     },
-    # ---- Multi-stage card presets (spec §5.3). ----
+    # ---- Multi-stage card presets. ----
     "@ProjectCard": {
         "width": 236,
         "height": 58,
@@ -294,7 +303,7 @@ CARD_PRESETS = tuple(k for k, v in STYLE_PRESETS.items() if "width" in v)
 # Zone presets: everything else.
 ZONE_PRESETS = tuple(k for k, v in STYLE_PRESETS.items() if "width" not in v)
 
-# Badge pill tones (spec §5.3 `@BadgePill`): tone -> (fill, text colour).
+# Badge pill tones: tone -> (fill, text colour).
 BADGE_TONES = {
     "neutral": ("#f1f3f4", "#3c4043"),
     "info": ("#e8f0fe", "#1967d2"),
@@ -303,7 +312,7 @@ BADGE_TONES = {
     "ok": ("#e6f4ea", "#137333"),
 }
 
-# Edge dash vocabulary (spec §5.1). "dashed" keeps the legacy `6 4` bytes.
+# Edge dash vocabulary. "dashed" keeps the legacy `6 4` pattern.
 DASH_PATTERNS = {
     "solid": None,
     "dashed": "6 4",
@@ -311,14 +320,63 @@ DASH_PATTERNS = {
     "dashdot": "8 3 2 3",
 }
 EDGE_HEADS = ("filled", "open", "none")
+EDGE_ARROWS = ("-->", "<-->", "-.->")
+
+# Accepted enum values for the builder API and `validate_scene`.
+ANCHORS = ("left", "right", "top", "bottom")
+ZONE_LAYOUTS = ("row", "column", "grid")
+ZONE_ALIGNS = ("center", "start")
+DOCK_SIDES = ("left", "right")
+DOCK_ALIGNS = ("start", "center")
+
+_HEX_COLOR = re.compile(r"#[0-9a-fA-F]{6}")
+_KEYWORD_COLORS = ("transparent", "none")
+
+
+def _check_color(val: str, what: str) -> str:
+  """Returns `val` when it is `#rrggbb`, `transparent` or `none`."""
+  if isinstance(val, str) and (val in _KEYWORD_COLORS or
+                               _HEX_COLOR.fullmatch(val)):
+    return val
+  raise ValueError(
+      f"{what}: invalid colour {val!r} (expected #rrggbb, transparent, none "
+      f"or a palette token such as $GcpBlue)")
+
+
+def _check_choice(val, choices, what: str):
+  if val not in choices:
+    raise ValueError(f"{what}: {val!r} is not one of {', '.join(choices)}")
+  return val
+
+
+def _check_number(val, what: str, *, positive: bool = False) -> float:
+  """Returns `val` as a float; it must be finite and >= 0 (> 0 if positive)."""
+  if isinstance(val, bool) or not isinstance(val, (int, float)):
+    raise ValueError(f"{what}: expected a number, got {val!r}")
+  num = float(val)
+  if not math.isfinite(num) or num < 0 or (positive and num == 0):
+    bound = "> 0" if positive else ">= 0"
+    raise ValueError(f"{what}: must be finite and {bound}, got {val!r}")
+  return num
 
 
 def resolve_color(val: Optional[str]) -> str:
-  """Resolves a `$Token` through PALETTE; literal colours pass through."""
+  """Resolves a `$Token` through PALETTE and validates the result.
+
+  Empty values resolve to `#202124`. Literal colours must be `#rrggbb`,
+  `transparent` or `none`; anything else (including an unknown `$Token`)
+  raises ValueError, so no unchecked text reaches a style attribute.
+  """
   if not val:
     return "#202124"
+  if not isinstance(val, str):
+    raise ValueError(f"invalid colour {val!r}")
   val = val.strip().strip('"')
-  return PALETTE.get(val, val)
+  if val.startswith("$"):
+    if val not in PALETTE:
+      raise ValueError(f"unknown palette token {val!r}")
+    return PALETTE[val]
+  return _check_color(val, "colour")
 
 
 @dataclass
@@ -437,12 +495,13 @@ class SceneGraph:
 
   # -- construction helpers (insertion order == document order) --
 
-  def add_zone(self,
-               zone: ZoneNode,
+  def add_zone(self, zone: ZoneNode,
                parent: Optional[ZoneNode] = None) -> ZoneNode:
     """Registers `zone` under `parent` (or as a root) and returns it."""
     if zone.id in self.zones:
       raise ValueError(f"duplicate zone id: {zone.id}")
+    if zone.id in self.cards:
+      raise ValueError(f"zone id {zone.id!r} is already used by a card")
     zone.parent_zone_id = parent.id if parent else None
     self.zones[zone.id] = zone
     if parent is not None:
@@ -455,6 +514,8 @@ class SceneGraph:
     """Registers `card` inside `parent` and returns it."""
     if card.id in self.cards:
       raise ValueError(f"duplicate card id: {card.id}")
+    if card.id in self.zones:
+      raise ValueError(f"card id {card.id!r} is already used by a zone")
     card.parent_zone_id = parent.id if parent else None
     self.cards[card.id] = card
     if parent is not None:
@@ -466,36 +527,138 @@ class SceneGraph:
     return edge
 
 
-def make_zone(zid: str,
-              style: str = "@Ghost",
-              title: str = "",
-              subtitle: str = "",
-              *,
-              icon: Optional[str] = None,
-              layout: str = "column",
-              gap: Optional[float] = None,
-              align: str = "center",
-              dock_to: Optional[str] = None,
-              dock_side: Optional[str] = None,
-              dock_align: Optional[str] = None,
-              dock_gap: float = 56.0,
-              badges: Optional[List[Badge]] = None,
+def _check_badges(badges: List[Badge], what: str) -> List[Badge]:
+  for b in badges:
+    _check_choice(b.tone, tuple(BADGE_TONES), f"{what}: badge tone")
+  return badges
+
+
+def _check_zone(z: ZoneNode) -> None:
+  what = f"zone {z.id!r}"
+  _check_choice(z.style_name, ZONE_PRESETS, f"{what}: style")
+  _check_choice(z.layout, ZONE_LAYOUTS, f"{what}: layout")
+  _check_choice(z.align, ZONE_ALIGNS, f"{what}: align")
+  _check_number(z.gap, f"{what}: gap")
+  _check_number(z.dock_gap, f"{what}: dock_gap")
+  if isinstance(z.max_cols,
+                bool) or not isinstance(z.max_cols, int) or z.max_cols < 1:
+    raise ValueError(f"{what}: max_cols must be an integer >= 1, "
+                     f"got {z.max_cols!r}")
+  if (z.dock_to is None) != (z.dock_side is None):
+    raise ValueError(f"{what}: dock_to and dock_side must be set together")
+  if z.dock_side is not None:
+    _check_choice(z.dock_side, DOCK_SIDES, f"{what}: dock_side")
+  if z.dock_align is not None:
+    _check_choice(z.dock_align, DOCK_ALIGNS, f"{what}: dock_align")
+  _check_badges(z.badges, what)
+
+
+def _check_card(c: CardNode) -> None:
+  what = f"card {c.id!r}"
+  _check_choice(c.style_name, CARD_PRESETS, f"{what}: style")
+  _check_number(c.width, f"{what}: width", positive=True)
+  _check_number(c.height, f"{what}: height", positive=True)
+  _check_badges(c.badges, what)
+
+
+def _check_card_style(c: CardNode) -> None:
+  what = f"card {c.id!r}"
+  _check_number(c.stroke_width, f"{what}: stroke_width")
+  _check_color(c.stroke_color, f"{what}: stroke_color")
+  _check_color(c.fill, f"{what}: fill")
+
+
+def _check_edge(e: EdgeSpec, what: str) -> None:
+  _check_choice(e.source_anchor, ANCHORS, f"{what}: source_anchor")
+  _check_choice(e.target_anchor, ANCHORS, f"{what}: target_anchor")
+
+
+def _check_edge_style(e: EdgeSpec, what: str) -> None:
+  _check_choice(e.arrow, EDGE_ARROWS, f"{what}: arrow")
+  _check_color(e.color, f"{what}: color")
+  _check_number(e.stroke_width, f"{what}: stroke_width")
+  if e.dash is not None:
+    _check_choice(e.dash, tuple(DASH_PATTERNS), f"{what}: dash")
+  _check_choice(e.head, EDGE_HEADS, f"{what}: head")
+
+
+def validate_scene(scene: SceneGraph) -> None:
+  """Raises ValueError when the scene holds values layout cannot honour.
+
+  Covers scenes built without the `make_*` helpers (direct dataclass use,
+  `scene_from_dict`): unknown presets, layouts, alignments, dock settings,
+  badge tones and anchors; non-finite or non-positive card sizes; negative
+  gaps; card ids that collide with zone ids; cards or zones that are not in
+  the zone tree exactly once (they would never be laid out); and docked
+  zones whose `dock_to` is not a zone inside a primary (undocked) root.
+  Colours and other purely visual fields are checked by the `make_*`
+  helpers; the emitters sanitise whatever reaches them.
+  """
+  clash = sorted(set(scene.cards) & set(scene.zones))
+  if clash:
+    raise ValueError(f"ids used by both a card and a zone: {clash}")
+  seen: Dict[str, int] = {}
+  stack: List[Union[ZoneNode, CardNode]] = list(reversed(scene.root_zones))
+  while stack:
+    node = stack.pop()
+    seen[node.id] = seen.get(node.id, 0) + 1
+    if seen[node.id] > 1:
+      raise ValueError(f"{node.id!r} appears more than once in the zone tree")
+    if isinstance(node, ZoneNode):
+      stack.extend(reversed(node.children))
+  missing = sorted(
+      i for i in list(scene.zones) + list(scene.cards) if i not in seen)
+  if missing:
+    raise ValueError(f"not inside any root zone (never laid out): {missing}")
+  for z in scene.zones.values():
+    _check_zone(z)
+  for c in scene.cards.values():
+    _check_card(c)
+  for i, e in enumerate(scene.edges):
+    _check_edge(e, f"edge {i} ({e.src} -> {e.dst})")
+  for z in scene.root_zones:
+    if z.dock_to is None:
+      continue
+    target = scene.zones.get(z.dock_to)
+    if target is None:
+      raise ValueError(f"zone {z.id!r}: dock_to {z.dock_to!r} is not a zone")
+    root = target
+    while root.parent_zone_id:
+      root = scene.zones[root.parent_zone_id]
+    if root.dock_to is not None:
+      raise ValueError(
+          f"zone {z.id!r}: dock_to {z.dock_to!r} must sit inside an undocked "
+          "root zone")
+  for z in scene.zones.values():
+    if z.dock_to is not None and z.parent_zone_id is not None:
+      raise ValueError(f"zone {z.id!r}: only root zones can be docked")
+
+
+def make_zone(zid: str, style: str = "@Ghost", title: str = "",
+              subtitle: str = "", *, icon: Optional[str] = None,
+              layout: str = "column", gap: Optional[float] = None,
+              align: str = "center", dock_to: Optional[str] = None,
+              dock_side: Optional[str] = None, dock_align: Optional[str] = None,
+              dock_gap: float = 56.0, badges: Optional[List[Badge]] = None,
               max_cols: int = 4) -> ZoneNode:
   """Builds a ZoneNode the way the legacy scene-text parser would.
 
-  Parity rules mirrored: the preset `gap` applies unless `gap` is given
-  explicitly (an explicit `gap:` after `style:` wins); the preset `icon`
-  (only `@ArchitectureRoot` among the networking presets) applies unless
-  `icon` is given; `style=None`-like unknown presets keep gap 16.
+  The preset `gap` applies unless `gap` is given explicitly; the preset
+  `icon` (only `@ArchitectureRoot` among the networking presets) applies
+  unless `icon` is given. Raises ValueError for an unknown or card preset,
+  an unknown `layout` / `align` / `dock_side` / `dock_align`, a negative or
+  non-finite gap, `max_cols < 1`, or `dock_to` without `dock_side`.
   """
-  preset = STYLE_PRESETS.get(style, {})
+  if style not in ZONE_PRESETS:
+    raise ValueError(f"zone {zid!r}: unknown zone style {style!r}")
+  preset = STYLE_PRESETS[style]
   z_gap = 16.0
   if "gap" in preset:
     z_gap = float(preset["gap"])
   if gap is not None:
-    z_gap = float(gap)
+    z_gap = _check_number(gap, f"zone {zid!r}: gap")
   z_icon = icon if icon is not None else preset.get("icon") or None
-  return ZoneNode(
+  zone = ZoneNode(
       id=zid,
       title=title,
       subtitle=subtitle,
@@ -507,68 +670,67 @@ def make_zone(zid: str,
       dock_to=dock_to,
       dock_side=dock_side,
       dock_align=dock_align,
-      dock_gap=float(dock_gap),
+      dock_gap=_check_number(dock_gap, f"zone {zid!r}: dock_gap"),
       badges=list(badges or []),
       max_cols=max_cols,
   )
+  _check_zone(zone)
+  return zone
 
 
-def make_card(cid: str,
-              title: str,
-              subtitle: str = "",
-              style: str = "@ProductCard",
-              *,
-              icon: Optional[str] = None,
-              width: Optional[float] = None,
-              height: Optional[float] = None,
+def make_card(cid: str, title: str, subtitle: str = "",
+              style: str = "@ProductCard", *, icon: Optional[str] = None,
+              width: Optional[float] = None, height: Optional[float] = None,
               stroke_color: Optional[str] = None,
-              stroke_width: Optional[float] = None,
-              fill: Optional[str] = None,
+              stroke_width: Optional[float] = None, fill: Optional[str] = None,
               badges: Optional[List[Badge]] = None,
               dashed: Optional[bool] = None) -> CardNode:
   """Builds a CardNode the way the legacy scene-text parser would.
 
-  Unknown styles fall back to `@ProductCard` geometry (parser behaviour).
-  `stroke_color` accepts `$Palette` tokens. `icon` defaults to the preset
-  icon, else `CloudGeneric`.
+  `style` must be a card preset; `stroke_color` and `fill` accept
+  `$Palette` tokens; `width` / `height` must be finite and > 0. `icon`
+  defaults to the preset icon, else `CloudGeneric`. Raises ValueError on
+  invalid input.
   """
-  preset = STYLE_PRESETS.get(style)
-  if preset is None or "width" not in preset:
-    preset = STYLE_PRESETS["@ProductCard"]
-  return CardNode(
+  if style not in CARD_PRESETS:
+    raise ValueError(f"card {cid!r}: unknown card style {style!r}")
+  preset = STYLE_PRESETS[style]
+  card = CardNode(
       id=cid,
       title=title,
       subtitle=subtitle,
       style_name=style,
       icon=icon if icon is not None else preset.get("icon", "CloudGeneric"),
-      width=float(width if width is not None else preset["width"]),
-      height=float(height if height is not None else preset["height"]),
+      width=_check_number(width if width is not None else preset["width"],
+                          f"card {cid!r}: width", positive=True),
+      height=_check_number(height if height is not None else preset["height"],
+                           f"card {cid!r}: height", positive=True),
       stroke_color=(resolve_color(stroke_color)
                     if stroke_color is not None else preset["strokeColor"]),
-      stroke_width=float(stroke_width
-                         if stroke_width is not None else preset["strokeWidth"]),
-      fill=fill if fill is not None else preset.get("fill", "#ffffff"),
+      stroke_width=_check_number(
+          stroke_width if stroke_width is not None else preset["strokeWidth"],
+          f"card {cid!r}: stroke_width"),
+      fill=(resolve_color(fill) if fill is not None else preset.get(
+          "fill", "#ffffff")),
       badges=list(badges or []),
-      dashed=bool(dashed if dashed is not None else preset.get("dashed", False)),
+      dashed=bool(
+          dashed if dashed is not None else preset.get("dashed", False)),
   )
+  _check_card(card)
+  _check_card_style(card)
+  return card
 
 
-def make_edge(src: str,
-              dst: str,
-              arrow: str = "-->",
-              label: str = "",
-              color: Optional[str] = None,
-              *,
-              stroke_width: float = 2.0,
-              dashed: Optional[bool] = None,
-              dash: Optional[str] = None,
-              head: str = "filled",
-              source_anchor: str = "right",
+def make_edge(src: str, dst: str, arrow: str = "-->", label: str = "",
+              color: Optional[str] = None, *, stroke_width: float = 2.0,
+              dashed: Optional[bool] = None, dash: Optional[str] = None,
+              head: str = "filled", source_anchor: str = "right",
               target_anchor: str = "left") -> EdgeSpec:
   """Builds an EdgeSpec with parser semantics.
 
   `color` accepts `$Palette` tokens (default `#1a73e8`); `dashed` defaults to
-  `arrow == "-.->"` exactly like the legacy parser.
+  `arrow == "-.->"` exactly like the legacy parser. Anchors must be one of
+  `left`, `right`, `top`, `bottom`. Raises ValueError on invalid input.
   """
   if dash is not None and dash not in DASH_PATTERNS:
     raise ValueError(f"unknown dash style: {dash}")
@@ -576,24 +738,27 @@ def make_edge(src: str,
     raise ValueError(f"unknown edge head: {head}")
   is_dashed = (arrow == "-.->") if dashed is None else (bool(dashed) or
                                                         arrow == "-.->")
-  return EdgeSpec(
+  edge = EdgeSpec(
       src=src,
       dst=dst,
       arrow=arrow,
       label=label,
       color=resolve_color(color) if color else "#1a73e8",
-      stroke_width=float(stroke_width),
+      stroke_width=_check_number(stroke_width, "edge stroke_width"),
       dashed=is_dashed,
       source_anchor=source_anchor,
       target_anchor=target_anchor,
       dash=dash,
       head=head,
   )
+  _check_edge(edge, f"edge {src} -> {dst}")
+  _check_edge_style(edge, f"edge {src} -> {dst}")
+  return edge
 
 
 @dataclass(frozen=True)
 class IconSpec:
-  """Registry entry: `file` is the vendored SVG under `fast_diagrammer/icons/`."""
+  """Registry entry: `file` is the vendored SVG in `fast_diagrammer/icons/`."""
   file: str
   default_size: float = 26.0
 
@@ -613,7 +778,7 @@ _ICON_NAMES = (
     "CloudGeneric",
     "Networking",
     "Server",
-    # 0-org-setup / 1-vpcsc additions (spec §5.4).
+    # 0-org-setup / 1-vpcsc additions.
     "Organization",
     "Folder",
     "Project",

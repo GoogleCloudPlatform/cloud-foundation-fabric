@@ -13,8 +13,8 @@
 # limitations under the License.
 """FAST context tokens: `$type:key` strings used as foreign keys in datasets.
 
-Same semantics as the fast-net-designer helpers (parse / key_of /
-split_path and the networking constructors), plus `format_token`.
+Helpers to parse (`parse`, `key_of`, `split_path`) and build (`format_token`
+and the networking constructors) tokens such as `$networks:hub`.
 """
 
 import re

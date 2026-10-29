@@ -13,21 +13,30 @@
 # limitations under the License.
 """Obstacle-aware zero-overlap orthogonal edge router.
 
-Ported verbatim from the scratch `engine_1_pyflex_drawio.py` (golden parity):
-closest-side port slotting, 3-segment C-bracket routes for same-side edges,
-5-segment obstacle bridges for long spans that would cross cards, horizontal
-then vertical de-overlapping, and label pill placement. Pure function of the
-laid-out `SceneGraph`; it never moves cards.
+Ports are slotted on the anchored card side; same-side edges become nested
+3-segment C-brackets; long spans that would cross cards become 5-segment
+bridges over or under them; multi-stage tree edges (`bottom -> top`) get one
+fork-bar lane each in the corridor between tiers. Remaining inner segments are
+then de-overlapped horizontally and vertically, and label pills are placed.
+The router is a pure function of the laid-out `SceneGraph`; it never moves
+cards. `verify_no_arrow_overlaps` is the mechanical gate run on the result.
 """
 
+from dataclasses import dataclass, field
 import math
-from typing import Dict, List, Optional, Set, Tuple, Union
+from typing import Dict, FrozenSet, List, Optional, Set, Tuple, Union
 
 from .model import CardNode, SceneGraph, ZoneNode
 
+Point = Tuple[float, float]
+Polylines = Dict[int, List[Point]]
+PortCoords = Dict[Tuple[int, str], Tuple[float, float, float, float]]
+# (card ancestors, zone ancestors): id -> ids of every enclosing zone.
+AncestorIndex = Tuple[Dict[str, FrozenSet[str]], Dict[str, FrozenSet[str]]]
+
 # Zone styles that act as routing obstacles in multi-stage scenes (see
-# `is_multistage`). 2-networking keeps the original card-only obstacles and
-# `@VpcZone` / `@SubGroupWhite` bridge spans, so its bytes never change.
+# `is_multistage`). 2-networking keeps card-only obstacles and `@VpcZone` /
+# `@SubGroupWhite` bridge spans.
 OBSTACLE_ZONE_STYLES = (
     "@ProjectZone",
     "@VpcZone",
@@ -41,9 +50,23 @@ OBSTACLE_ZONE_STYLES = (
     "@OrganizationZone",
 )
 
-
 # Multi-stage parallel-bar spacing (the overlap gate flags < 5 px).
 H_SEP = 9.0
+# Tightest spacing between tree fork-bar lanes when a corridor is crowded.
+MIN_LANE_SEP = 6.0
+# Minimum distance between two ports on one side (the stub separation test
+# below treats < 9 px as a collision) and the margin kept from the corners.
+# `layout_scene` grows cards whose sides cannot hold their ports at this pitch.
+PORT_PITCH = 10.0
+PORT_MARGIN = 6.0
+# Horizontal stubs closer than this (with overlapping x ranges) collide.
+STUB_SEP = 9.0
+# Overlap gate thresholds: parallel segments closer than GATE_SEP that share
+# more than GATE_MIN_RUN px of length overlap.
+GATE_SEP = 5.0
+GATE_MIN_RUN = 4.0
+
+_INF = float("inf")
 
 
 def is_multistage(scene: SceneGraph) -> bool:
@@ -51,54 +74,82 @@ def is_multistage(scene: SceneGraph) -> bool:
   return bool(scene.stage) and scene.stage != "2-networking"
 
 
-def endpoint(scene: SceneGraph, eid: str) -> Optional[Union[CardNode, ZoneNode]]:
+def endpoint(scene: SceneGraph,
+             eid: str) -> Optional[Union[CardNode, ZoneNode]]:
   """Resolves an edge endpoint: a card id, else a zone id (else None)."""
   return scene.cards.get(eid) or scene.zones.get(eid)
 
 
-def _ancestor_ids(scene: SceneGraph, node) -> Set[str]:
-  out: Set[str] = set()
-  zid = node.parent_zone_id if node is not None else None
-  while zid:
-    out.add(zid)
-    z = scene.zones.get(zid)
-    zid = z.parent_zone_id if z is not None else None
-  return out
+def ancestor_index(scene: SceneGraph) -> AncestorIndex:
+  """Ancestor zone ids of every card and every zone, computed once."""
+  zone_anc: Dict[str, FrozenSet[str]] = {}
+  for zid in sorted(scene.zones):
+    chain: List[str] = []
+    cur: Optional[str] = zid
+    while cur is not None and cur not in zone_anc and cur not in chain:
+      chain.append(cur)
+      parent = scene.zones[cur].parent_zone_id
+      cur = parent if parent in scene.zones else None
+    acc: Set[str] = set()
+    if cur is not None and cur in zone_anc:
+      acc = set(zone_anc[cur]) | {cur}
+    for z in reversed(chain):
+      zone_anc[z] = frozenset(acc)
+      acc.add(z)
+  card_anc: Dict[str, FrozenSet[str]] = {}
+  for cid, c in scene.cards.items():
+    pz = c.parent_zone_id
+    card_anc[cid] = (zone_anc[pz] | {pz}) if pz in scene.zones else frozenset()
+  return card_anc, zone_anc
 
 
-def edge_obstacles(scene: SceneGraph, src_id: str, dst_id: str) -> Dict[str, object]:
+def _ancestors_of(index: AncestorIndex, scene: SceneGraph,
+                  eid: str) -> FrozenSet[str]:
+  card_anc, zone_anc = index
+  if eid in scene.cards:
+    return card_anc[eid]
+  return zone_anc.get(eid, frozenset())
+
+
+def edge_obstacles(
+    scene: SceneGraph, src_id: str, dst_id: str,
+    ancestors: Optional[AncestorIndex] = None) -> Dict[str, object]:
   """Boxes an edge between `src_id` and `dst_id` must avoid.
 
-  2-networking: exactly `scene.cards` (original behaviour). Multi-stage:
-  cards plus `OBSTACLE_ZONE_STYLES` zones, minus the endpoint zones, their
-  descendants and every ancestor of either endpoint (an edge may enter the
-  containers it starts or ends in, and must route around the others).
+  2-networking: exactly `scene.cards`. Multi-stage: cards plus
+  `OBSTACLE_ZONE_STYLES` zones, minus the endpoint zones, their descendants
+  and every ancestor of either endpoint (an edge may enter the containers it
+  starts or ends in, and must route around the others). Pass a prebuilt
+  `ancestor_index(scene)` when calling this for many edges.
   """
   if not is_multistage(scene):
     return scene.cards
-  src, dst = endpoint(scene, src_id), endpoint(scene, dst_id)
-  open_zones = _ancestor_ids(scene, src) | _ancestor_ids(scene, dst)
-  endpoint_zones = {i for i in (src_id, dst_id) if i in scene.zones and i not in scene.cards}
+  index = ancestors if ancestors is not None else ancestor_index(scene)
+  card_anc, zone_anc = index
+  open_zones = (_ancestors_of(index, scene, src_id) |
+                _ancestors_of(index, scene, dst_id))
+  endpoint_zones = {
+      i for i in (src_id, dst_id) if i in scene.zones and i not in scene.cards
+  }
   obstacles: Dict[str, object] = {}
   for cid, c in scene.cards.items():
-    if not (_ancestor_ids(scene, c) & endpoint_zones):
+    if not card_anc[cid] & endpoint_zones:
       obstacles[cid] = c
   for zid, z in scene.zones.items():
-    if (z.style_name in OBSTACLE_ZONE_STYLES and zid not in open_zones
-        and zid not in endpoint_zones
-        and not (_ancestor_ids(scene, z) & endpoint_zones)):
+    if (z.style_name in OBSTACLE_ZONE_STYLES and zid not in open_zones and
+        zid not in endpoint_zones and not zone_anc[zid] & endpoint_zones):
       obstacles[zid] = z
   return obstacles
 
 
 def _segment_hits_any_card(
-  x1: float,
-  y1: float,
-  x2: float,
-  y2: float,
-  cards: Dict[str, CardNode],
-  ignore_ids: Tuple[str, str],
-  pad: float = 6.0,
+    x1: float,
+    y1: float,
+    x2: float,
+    y2: float,
+    cards: Dict[str, CardNode],
+    ignore_ids: Tuple[str, str],
+    pad: float = 6.0,
 ) -> bool:
   xmin, xmax = min(x1, x2), max(x1, x2)
   ymin, ymax = min(y1, y2), max(y1, y2)
@@ -122,14 +173,14 @@ def _clear_z_channel(sx: float, sy: float, tx: float, ty: float, src_side: str,
   for cx in cands:
     if not lo + 12.0 <= cx <= hi - 12.0:
       continue
-    if not (_segment_hits_any_card(sx, sy, cx, sy, obstacles, ignore)
-            or _segment_hits_any_card(cx, sy, cx, ty, obstacles, ignore)
-            or _segment_hits_any_card(cx, ty, tx, ty, obstacles, ignore)):
+    if not (_segment_hits_any_card(sx, sy, cx, sy, obstacles, ignore) or
+            _segment_hits_any_card(cx, sy, cx, ty, obstacles, ignore) or
+            _segment_hits_any_card(cx, ty, tx, ty, obstacles, ignore)):
       return cx
   return None
 
 
-def _inner_range(pts: List[Tuple[float, float]], si: int, axis: int) -> Tuple[float, float]:
+def _inner_range(pts: List[Point], si: int, axis: int) -> Tuple[float, float]:
   """Allowed coordinate range for moving inner segment `si` along `axis`.
 
   When the segment currently lies between its neighbouring points (a Z or
@@ -141,29 +192,30 @@ def _inner_range(pts: List[Tuple[float, float]], si: int, axis: int) -> Tuple[fl
   lo, hi = min(a, b), max(a, b)
   if lo + 8.0 <= cur <= hi - 8.0:
     return lo + 8.0, hi - 8.0
-  return float("-inf"), float("inf")
+  return -_INF, _INF
 
 
-def _free_h_offset(scene: SceneGraph, pts: List[Tuple[float, float]], si: int,
-                   hy: float, hxmin: float, hxmax: float,
-                   placed_h: List[Tuple[float, float, float]], obstacles) -> float:
+def _free_h_offset(pts: List[Point], si: int, hy: float, hxmin: float,
+                   hxmax: float, placed_h: List[Tuple[float, float, float]],
+                   obstacles) -> float:
   """Multi-stage horizontal de-overlap: nearest free y, both directions.
 
   Free = no placed segment within `H_SEP` px over the same x range, no obstacle
   box hit, and inside `_inner_range`. Falls back to `hy` (the overlap gate
   then reports it) rather than pushing the bar into a card.
   """
-  del scene  # reserved for future zone-aware heuristics
   lo, hi = _inner_range(pts, si, axis=1)
   e_ids = ("", "")
 
   def free(y: float) -> bool:
     if not lo <= y <= hi:
       return False
-    if any(abs(y - py) < H_SEP and hxmax > pxmin - 8.0 and hxmin < pxmax + 8.0
-           for py, pxmin, pxmax in placed_h):
+    if any(
+        abs(y - py) < H_SEP and hxmax > pxmin - 8.0 and hxmin < pxmax + 8.0
+        for py, pxmin, pxmax in placed_h):
       return False
-    return y == hy or not _segment_hits_any_card(hxmin, y, hxmax, y, obstacles, e_ids, pad=3.0)
+    return y == hy or not _segment_hits_any_card(hxmin, y, hxmax, y, obstacles,
+                                                 e_ids, pad=3.0)
 
   if free(hy):
     return hy
@@ -179,33 +231,35 @@ def _vertical_clear(x: float, ya: float, yb: float, obstacles, ignore) -> bool:
 
 
 def _tree_route(x1: float, y1: float, x2: float, y2: float, obstacles,
-                ignore: Tuple[str, str]) -> List[Tuple[float, float]]:
+                ignore: Tuple[str, str]) -> List[Point]:
   """Multi-stage vertical route (`bottom -> top` / `top -> bottom`).
 
   The horizontal fork bar sits 20 px before the target row (not halfway, so
   it never runs through an intermediate tier); when the straight drop from
   the source port is blocked, a clear spine near `x1` carries it instead.
+  `_assign_tree_lanes` later spreads the bars of one corridor into lanes.
   """
   down = y2 > y1
   if abs(y2 - y1) <= 40.0:
     mid_y = (y1 + y2) / 2.0
   else:
     mid_y = y2 - 20.0 if down else y2 + 20.0
+
   def h_clear(xa: float, xb: float, y: float) -> bool:
     return not _segment_hits_any_card(xa, y, xb, y, obstacles, ignore, pad=3.0)
 
   tail_clear = _vertical_clear(x2, mid_y, y2, obstacles, ignore)
-  if (_vertical_clear(x1, y1, mid_y, obstacles, ignore) and h_clear(x1, x2, mid_y)
-      and tail_clear):
+  if (_vertical_clear(x1, y1, mid_y, obstacles, ignore) and
+      h_clear(x1, x2, mid_y) and tail_clear):
     return [(x1, y1), (x1, mid_y), (x2, mid_y), (x2, y2)]
   exit_y = y1 + 16.0 if down else y1 - 16.0
   centre = (x1 + x2) / 2.0
   cands = sorted({round(centre + 12.0 * k, 1) for k in range(-80, 81)},
                  key=lambda c: (abs(c - centre), c))
   for spine_x in cands:
-    if (h_clear(x1, spine_x, exit_y)
-        and _vertical_clear(spine_x, exit_y, mid_y, obstacles, ignore)
-        and h_clear(spine_x, x2, mid_y)):
+    if (h_clear(x1, spine_x, exit_y) and
+        _vertical_clear(spine_x, exit_y, mid_y, obstacles, ignore) and
+        h_clear(spine_x, x2, mid_y)):
       return [(x1, y1), (x1, exit_y), (spine_x, exit_y), (spine_x, mid_y),
               (x2, mid_y), (x2, y2)]
   return [(x1, y1), (x1, mid_y), (x2, mid_y), (x2, y2)]
@@ -216,15 +270,20 @@ def _bridge_leg_hits(s_out: float, sy: float, t_in: float, ty: float,
   xmin, xmax = min(s_out, t_in), max(s_out, t_in)
   ys_min, ys_max = [], []
   for oid, o in obstacles.items():
-    if oid not in ignore and (o.x + o.width) > xmin + 10.0 and o.x < xmax - 10.0:
+    if oid not in ignore and (o.x +
+                              o.width) > xmin + 10.0 and o.x < xmax - 10.0:
       ys_min.append(o.y)
       ys_max.append(o.y + o.height)
   if direction == "top":
     yb = min(ys_min, default=min(sy, ty)) - 16.0
   else:
     yb = max(ys_max, default=max(sy, ty)) + 16.0
-  return (int(_segment_hits_any_card(s_out, sy, s_out, yb, obstacles, ignore, pad=3.0))
-          + int(_segment_hits_any_card(t_in, yb, t_in, ty, obstacles, ignore, pad=3.0)))
+  return (
+      int(
+          _segment_hits_any_card(s_out, sy, s_out, yb, obstacles, ignore,
+                                 pad=3.0)) +
+      int(_segment_hits_any_card(t_in, yb, t_in, ty, obstacles, ignore,
+                                 pad=3.0)))
 
 
 def _pick_bridge_dir(default: str, s_out: float, sy: float, t_in: float,
@@ -237,7 +296,7 @@ def _pick_bridge_dir(default: str, s_out: float, sy: float, t_in: float,
   return default
 
 
-def _stub_segments(polylines: Dict[int, List[Tuple[float, float]]],
+def _stub_segments(polylines: Polylines,
                    horizontal: bool) -> List[Tuple[float, float, float]]:
   """(fixed_coord, min, max) of each polyline's first and last segment."""
   out = []
@@ -260,82 +319,106 @@ def _box_crosses_zone_border(scene: SceneGraph, bx1: float, by1: float,
     if z.style_name == "@Ghost":
       continue
     zx1, zy1, zx2, zy2 = z.x, z.y, z.x + z.w, z.y + z.h
-    overlaps = bx2 > zx1 - pad and bx1 < zx2 + pad and by2 > zy1 - pad and by1 < zy2 + pad
-    inside = bx1 >= zx1 + pad and bx2 <= zx2 - pad and by1 >= zy1 + pad and by2 <= zy2 - pad
+    overlaps = (bx2 > zx1 - pad and bx1 < zx2 + pad and by2 > zy1 - pad and
+                by1 < zy2 + pad)
+    inside = (bx1 >= zx1 + pad and bx2 <= zx2 - pad and by1 >= zy1 + pad and
+              by2 <= zy2 - pad)
     if overlaps and not inside:
       return True
   return False
 
 
-def _route_all_edges_non_overlapping(
-  scene: SceneGraph,
-) -> Tuple[
-  Dict[Tuple[int, str], Tuple[float, float, float, float]],
-  Dict[int, List[Tuple[float, float]]],
-  Dict[int, Tuple[float, float]],
-]:
-  """Routes all edges with obstacle avoidance, concentric same-side brackets, and zero-overlap de-collision."""
-  is_long_span: Dict[int, bool] = {}
-  bridge_dir: Dict[int, str] = {}
-  all_cards = list(scene.cards.values())
-  canvas_mid_y = (
-    (min(c.y for c in all_cards) + max(c.y + c.height for c in all_cards)) / 2.0
-    if all_cards
-    else 400.0
-  )
+def _port_fracs(n: int, length: float) -> List[float]:
+  """Fractions along a side of length `length` for `n` ports, in rank order.
 
-  multi = is_multistage(scene)
-  _obs_cache: Dict[int, Dict[str, object]] = {}
-  z_mid: Dict[int, float] = {}  # multi-stage: chosen clear Z channel x
+  Ports spread over the middle 60 % of the side; when that leaves less than
+  `PORT_PITCH` between neighbours the spread widens up to `PORT_MARGIN` from
+  the corners (`layout_scene` grows cards so the pitch always fits).
+  """
+  if n == 1:
+    return [0.5]
+  if length <= 0.0:
+    return [0.5] * n
+  want = PORT_PITCH * (n - 1)
+  if 0.60 * length >= want:
+    return [0.20 + 0.60 * (r / (n - 1)) for r in range(n)]
+  span = min(want, max(0.0, length - 2.0 * PORT_MARGIN))
+  lo = 0.5 - span / (2.0 * length)
+  return [lo + (span / length) * (r / (n - 1)) for r in range(n)]
 
-  def obstacles_of(edge_idx: int) -> Dict[str, object]:
-    if edge_idx not in _obs_cache:
-      ed = scene.edges[edge_idx]
-      _obs_cache[edge_idx] = edge_obstacles(scene, ed.src, ed.dst)
-    return _obs_cache[edge_idx]
 
+# --------------------------------------------------------------------------
+# Routing passes
+# --------------------------------------------------------------------------
+
+
+@dataclass
+class _Ctx:
+  """Per-call routing state shared by the passes."""
+  scene: SceneGraph
+  multi: bool
+  canvas_mid_y: float
+  ancestors: Optional[AncestorIndex]
+  is_long_span: Dict[int, bool] = field(default_factory=dict)
+  bridge_dir: Dict[int, str] = field(default_factory=dict)
+  z_mid: Dict[int, float] = field(default_factory=dict)
+  _obs: Dict[int, Dict[str, object]] = field(default_factory=dict)
+
+  def obstacles(self, idx: int) -> Dict[str, object]:
+    if idx not in self._obs:
+      e = self.scene.edges[idx]
+      self._obs[idx] = edge_obstacles(self.scene, e.src, e.dst, self.ancestors)
+    return self._obs[idx]
+
+
+def _classify_spans(ctx: _Ctx) -> None:
+  """Marks cross-column edges whose Z route would cross a box as bridges."""
+  scene = ctx.scene
   for idx, e in enumerate(scene.edges):
     s = endpoint(scene, e.src)
     t = endpoint(scene, e.dst)
     if not s or not t:
       continue
-    if (
-      e.source_anchor in ("left", "right")
-      and e.target_anchor in ("left", "right")
-      and e.source_anchor != e.target_anchor
-    ):
+    if (e.source_anchor in ("left", "right") and
+        e.target_anchor in ("left", "right") and
+        e.source_anchor != e.target_anchor):
       sx = s.x + s.width if e.source_anchor == "right" else s.x
       tx = t.x if e.target_anchor == "left" else t.x + t.width
       sy = s.y + s.height / 2.0
       ty = t.y + t.height / 2.0
       mid_x = (sx + tx) / 2.0
-      hits = (
-        _segment_hits_any_card(sx, sy, mid_x, sy, obstacles_of(idx), (e.src, e.dst))
-        or _segment_hits_any_card(mid_x, sy, mid_x, ty, obstacles_of(idx), (e.src, e.dst))
-        or _segment_hits_any_card(mid_x, ty, tx, ty, obstacles_of(idx), (e.src, e.dst))
-      )
-      if hits and multi:
-        cand = _clear_z_channel(sx, sy, tx, ty, e.source_anchor, obstacles_of(idx),
-                                (e.src, e.dst))
+      obs, ign = ctx.obstacles(idx), (e.src, e.dst)
+      hits = (_segment_hits_any_card(sx, sy, mid_x, sy, obs, ign) or
+              _segment_hits_any_card(mid_x, sy, mid_x, ty, obs, ign) or
+              _segment_hits_any_card(mid_x, ty, tx, ty, obs, ign))
+      if hits and ctx.multi:
+        cand = _clear_z_channel(sx, sy, tx, ty, e.source_anchor, obs, ign)
         if cand is not None:
-          z_mid[idx] = cand
+          ctx.z_mid[idx] = cand
           hits = False
-      is_long_span[idx] = hits
+      ctx.is_long_span[idx] = hits
       if hits:
-        bridge_dir[idx] = "top" if (sy + ty) / 2.0 <= canvas_mid_y else "bottom"
-        if multi:
-          bridge_dir[idx] = _pick_bridge_dir(
-              bridge_dir[idx], sx + (18.0 if e.source_anchor == "right" else -18.0),
-              sy, tx + (-18.0 if e.target_anchor == "left" else 18.0), ty,
-              obstacles_of(idx), (e.src, e.dst))
+        ctx.bridge_dir[idx] = ("top" if (sy + ty) /
+                               2.0 <= ctx.canvas_mid_y else "bottom")
+        if ctx.multi:
+          ctx.bridge_dir[idx] = _pick_bridge_dir(
+              ctx.bridge_dir[idx],
+              sx + (18.0 if e.source_anchor == "right" else -18.0), sy,
+              tx + (-18.0 if e.target_anchor == "left" else 18.0), ty, obs, ign)
     else:
-      is_long_span[idx] = False
+      ctx.is_long_span[idx] = False
 
-  # Assign staggered port slots on each card side.
-  # For same-side C-brackets (`left -> left` or `right -> right`), order ports so shorter vertical spans
-  # sit closer to the partner card (inner bracket) and longer spans sit further out (outer bracket),
-  # producing strictly concentric C-brackets that never cross each other!
-  side_slots: Dict[Tuple[str, str], List[Tuple[int, str, float]]] = {}
+
+def _assign_ports(ctx: _Ctx) -> PortCoords:
+  """Slots every edge end on its card side, ordered to avoid crossings.
+
+  Same-side C-brackets (`left -> left`, `right -> right`) sit at the end of
+  the side facing their partner, shorter spans nearer the partner, so the
+  brackets nest. Parallel brackets between one pair (equal spans) nest too:
+  the lower edge index takes the outer slot on both cards.
+  """
+  scene = ctx.scene
+  side_slots: Dict[Tuple[str, str], List[Tuple[int, str, float, int]]] = {}
   for idx, e in enumerate(scene.edges):
     s = endpoint(scene, e.src)
     t = endpoint(scene, e.dst)
@@ -343,93 +426,185 @@ def _route_all_edges_non_overlapping(
       continue
     tcx, tcy = t.x + t.width / 2.0, t.y + t.height / 2.0
     scx, scy = s.x + s.width / 2.0, s.y + s.height / 2.0
+    s_tie = t_tie = idx
 
-    if e.source_anchor == e.target_anchor and e.source_anchor in ("left", "right"):
-      # Concentric C-bracket port ordering:
-      # - Upward brackets (partner above card) sit at the TOP of the card side (-2000 + dist),
-      #   with shorter spans above longer spans so outer brackets wrap cleanly around inner brackets.
-      # - Downward brackets (partner below card) sit at the BOTTOM of the card side (+2000 - dist),
-      #   with shorter spans below longer spans, keeping middle ports for cross-column edges.
-      dist = abs(scy - tcy)
+    if e.source_anchor == e.target_anchor and e.source_anchor in ("left",
+                                                                  "right"):
+      # Upward brackets (partner above) take the top of the side, shorter
+      # spans above longer ones; downward brackets take the bottom, shorter
+      # spans below longer ones; middle slots stay free for cross-column
+      # edges. On the card whose partner is above, the outer (lower index)
+      # bracket must sit lowest, so the index tie-break is reversed there.
+      dist = round(abs(scy - tcy), 6)
       s_sort = (-2000.0 + dist) if tcy < scy else (2000.0 - dist)
       t_sort = (-2000.0 + dist) if scy < tcy else (2000.0 - dist)
-    elif is_long_span.get(idx):
-      b_bias = -1000.0 if bridge_dir.get(idx) == "top" else 1000.0
+      s_tie = -idx if tcy < scy else idx
+      t_tie = -idx if scy < tcy else idx
+    elif ctx.is_long_span.get(idx):
+      b_bias = -1000.0 if ctx.bridge_dir.get(idx) == "top" else 1000.0
       s_sort = b_bias + tcy * 0.1
       t_sort = b_bias + scy * 0.1
     else:
       s_sort = tcy if e.source_anchor in ("left", "right") else tcx
       t_sort = scy if e.target_anchor in ("left", "right") else scx
-    side_slots.setdefault((e.src, e.source_anchor), []).append((idx, "src", s_sort))
-    side_slots.setdefault((e.dst, e.target_anchor), []).append((idx, "dst", t_sort))
+    side_slots.setdefault((e.src, e.source_anchor), []).append(
+        (idx, "src", s_sort, s_tie))
+    side_slots.setdefault((e.dst, e.target_anchor), []).append(
+        (idx, "dst", t_sort, t_tie))
 
-  port_coords: Dict[Tuple[int, str], Tuple[float, float, float, float]] = {}
+  port_coords: PortCoords = {}
   for (cid, side), items in side_slots.items():
     card = endpoint(scene, cid)
-    items.sort(key=lambda it: (it[2], it[0]))
-    n = len(items)
-    for rank, (e_idx, role, _) in enumerate(items):
-      frac = 0.5 if n == 1 else 0.20 + 0.60 * (rank / (n - 1))
+    items.sort(key=lambda it: (it[2], it[3], it[0]))
+    length = card.height if side in ("left", "right") else card.width
+    fracs = _port_fracs(len(items), length)
+    for (e_idx, role, _, _), frac in zip(items, fracs):
+      along_x = card.x + card.width * frac
+      along_y = card.y + card.height * frac
       if side == "left":
-        px, py, nx, ny = card.x, card.y + card.height * frac, 0.0, frac
+        port_coords[(e_idx, role)] = (card.x, along_y, 0.0, frac)
       elif side == "right":
-        px, py, nx, ny = card.x + card.width, card.y + card.height * frac, 1.0, frac
+        port_coords[(e_idx, role)] = (card.x + card.width, along_y, 1.0, frac)
       elif side == "top":
-        px, py, nx, ny = card.x + card.width * frac, card.y, frac, 0.0
+        port_coords[(e_idx, role)] = (along_x, card.y, frac, 0.0)
       else:
-        px, py, nx, ny = card.x + card.width * frac, card.y + card.height, frac, 1.0
-      port_coords[(e_idx, role)] = (px, py, nx, ny)
+        port_coords[(e_idx, role)] = (along_x, card.y + card.height, frac, 1.0)
+  return port_coords
 
-  used_y_for_h_stubs: List[Tuple[float, float, float]] = []
+
+def _rel(v: float, origin: float, size: float) -> float:
+  """Relative position of `v` on a side; 0.5 for a zero-size side."""
+  return (v - origin) / size if size > 0.0 else 0.5
+
+
+def _separate_h_stubs(ctx: _Ctx, port_coords: PortCoords) -> None:
+  """Moves horizontal port stubs that collide with an earlier edge's stubs.
+
+  A stub collides when it is within `STUB_SEP` px of an already placed stub
+  whose x range overlaps (20 px margin). The port first takes the classic
+  10 px nudge (down for sources, up for targets, clamped 6 px inside the
+  card); if that spot is taken too, it moves to the nearest free 10 px step
+  along its side, and stays put when the side has none.
+  """
+  scene = ctx.scene
+  used: List[Tuple[float, float, float]] = []
+
+  def near(y: float, xmin: float, xmax: float):
+    return [
+        uy for uy, uxmin, uxmax in used if xmax > uxmin -
+        20.0 and xmin < uxmax + 20.0 and abs(y - uy) < STUB_SEP
+    ]
+
+  def move(card, y: float, xmin: float, xmax: float, first: float) -> float:
+    lo, hi = card.y + 6.0, card.y + card.height - 6.0
+    nudged = y
+    for uy, uxmin, uxmax in used:
+      if (xmax > uxmin - 20.0 and xmin < uxmax + 20.0 and
+          abs(nudged - uy) < STUB_SEP):
+        nudged = (min(hi, nudged +
+                      10.0) if first > 0 else max(lo, nudged - 10.0))
+    if not near(nudged, xmin, xmax):
+      return nudged
+    for k in range(1, 200):
+      inside = False
+      for sgn in (first, -first):
+        cand = y + sgn * 10.0 * k
+        if lo <= cand <= hi:
+          inside = True
+          if not near(cand, xmin, xmax):
+            return cand
+      if not inside:
+        break
+    return nudged
+
   for idx, e in enumerate(scene.edges):
     if (idx, "src") not in port_coords or (idx, "dst") not in port_coords:
       continue
-    if e.source_anchor in ("left", "right") and e.target_anchor in ("left", "right"):
-      x1, y1, nx1, ny1 = port_coords[(idx, "src")]
-      x2, y2, nx2, ny2 = port_coords[(idx, "dst")]
+    if e.source_anchor in ("left", "right") and e.target_anchor in ("left",
+                                                                    "right"):
+      x1, y1, nx1, _ = port_coords[(idx, "src")]
+      x2, y2, nx2, _ = port_coords[(idx, "dst")]
       xmin, xmax = min(x1, x2), max(x1, x2)
-      for uy, uxmin, uxmax in used_y_for_h_stubs:
-        if xmax > uxmin - 20.0 and xmin < uxmax + 20.0:
-          if abs(y1 - uy) < 9.0:
-            s_card = endpoint(scene, e.src)
-            y1 = min(s_card.y + s_card.height - 6.0, y1 + 10.0)
-            ny1 = (y1 - s_card.y) / s_card.height
-            port_coords[(idx, "src")] = (x1, y1, nx1, ny1)
-          if abs(y2 - uy) < 9.0:
-            t_card = endpoint(scene, e.dst)
-            y2 = max(t_card.y + 6.0, y2 - 10.0)
-            ny2 = (y2 - t_card.y) / t_card.height
-            port_coords[(idx, "dst")] = (x2, y2, nx2, ny2)
-      used_y_for_h_stubs.append((y1, xmin, xmax))
-      used_y_for_h_stubs.append((y2, xmin, xmax))
+      if near(y1, xmin, xmax):
+        s_card = endpoint(scene, e.src)
+        y1 = move(s_card, y1, xmin, xmax, 1.0)
+        port_coords[(idx, "src")] = (x1, y1, nx1,
+                                     _rel(y1, s_card.y, s_card.height))
+      if near(y2, xmin, xmax):
+        t_card = endpoint(scene, e.dst)
+        y2 = move(t_card, y2, xmin, xmax, -1.0)
+        port_coords[(idx, "dst")] = (x2, y2, nx2,
+                                     _rel(y2, t_card.y, t_card.height))
+      used.append((y1, xmin, xmax))
+      used.append((y2, xmin, xmax))
 
-  # Pre-rank same-side C-brackets per column side by vertical span |y1 - y2| so shorter spans
-  # take the inner track (`18px`) and longer spans take outer tracks (`32px`, `46px`, ...).
-  bracket_groups: Dict[Tuple[int, str], List[Tuple[float, int]]] = {}
-  for idx, e in enumerate(scene.edges):
+
+def _bracket_offsets(ctx: _Ctx, port_coords: PortCoords) -> Dict[int, float]:
+  """Track offset per same-side C-bracket: shorter spans take inner tracks.
+
+  Brackets are grouped per column side and ranked by vertical span (rounded
+  to 1/1000 px so float noise never decides the order, ties by edge index):
+  the shortest takes the 20 px track, longer ones 35, 50, ... px.
+  """
+  groups: Dict[Tuple[int, str], List[Tuple[float, int]]] = {}
+  for idx, e in enumerate(ctx.scene.edges):
     if (idx, "src") not in port_coords or (idx, "dst") not in port_coords:
       continue
-    if e.source_anchor == e.target_anchor and e.source_anchor in ("left", "right"):
+    if e.source_anchor == e.target_anchor and e.source_anchor in ("left",
+                                                                  "right"):
       x1, y1, _, _ = port_coords[(idx, "src")]
       _, y2, _, _ = port_coords[(idx, "dst")]
       col_bucket = int(round(x1 / 80.0))
-      bracket_groups.setdefault((col_bucket, e.source_anchor), []).append((abs(y2 - y1), idx))
-
-  bracket_offset: Dict[int, float] = {}
-  for (_, side), grp in bracket_groups.items():
-    grp.sort(key=lambda it: (it[0], it[1]))
+      groups.setdefault((col_bucket, e.source_anchor), []).append(
+          (round(abs(y2 - y1), 3), idx))
+  offsets: Dict[int, float] = {}
+  for _, grp in sorted(groups.items()):
+    grp.sort()
     for rank, (_, e_idx) in enumerate(grp):
-      bracket_offset[e_idx] = 20.0 + rank * 15.0
+      offsets[e_idx] = 20.0 + rank * 15.0
+  return offsets
 
-  polylines: Dict[int, List[Tuple[float, float]]] = {}
+
+def _bridge_span(ctx: _Ctx, idx: int, xmin: float,
+                 xmax: float) -> Tuple[List[float], List[float]]:
+  """Top / bottom y of every box a bridge between xmin..xmax must clear."""
+  scene = ctx.scene
+  e = scene.edges[idx]
+  ymins: List[float] = []
+  ymaxs: List[float] = []
+  if ctx.multi:
+    # Multi-stage: every obstacle box (cards + obstacle zones) in range.
+    for oid, o in ctx.obstacles(idx).items():
+      if oid not in (e.src, e.dst) and (o.x + o.width) > xmin + 10.0 and \
+          o.x < xmax - 10.0:
+        ymins.append(o.y)
+        ymaxs.append(o.y + o.height)
+    return ymins, ymaxs
+  for cid, c in scene.cards.items():
+    if cid not in (e.src, e.dst) and (c.x + c.width) > xmin + 10.0 and \
+        c.x < xmax - 10.0:
+      ymins.append(c.y)
+      ymaxs.append(c.y + c.height)
+  # Networking: VPC / sub-group zones count too, except the zones that hold
+  # (or are) either endpoint.
+  s, t = endpoint(scene, e.src), endpoint(scene, e.dst)
+  skip = {e.src, e.dst, s.parent_zone_id, t.parent_zone_id}
+  for z in scene.zones.values():
+    if z.style_name not in ("@VpcZone", "@SubGroupWhite") or z.id in skip:
+      continue
+    if (z.x + z.w) > xmin + 10.0 and z.x < xmax - 10.0:
+      ymins.append(z.y)
+      ymaxs.append(z.y + z.h)
+  return ymins, ymaxs
+
+
+def _initial_polylines(ctx: _Ctx, port_coords: PortCoords,
+                       bracket_offset: Dict[int, float]) -> Polylines:
+  """First-cut route per edge: bridge, Z, C-bracket or tree route."""
+  scene = ctx.scene
+  polylines: Polylines = {}
   top_bridge_tracks = 0
   bot_bridge_tracks = 0
-  inner_zones = [
-    z
-    for z in scene.zones.values()
-    if z.style_name in ("@VpcZone", "@SubGroupWhite")
-  ]
-
   for idx, e in enumerate(scene.edges):
     if (idx, "src") not in port_coords or (idx, "dst") not in port_coords:
       continue
@@ -437,32 +612,12 @@ def _route_all_edges_non_overlapping(
     x2, y2, _, _ = port_coords[(idx, "dst")]
     sa, ta = e.source_anchor, e.target_anchor
 
-    if is_long_span.get(idx):
+    if ctx.is_long_span.get(idx):
       s_out = x1 + 18.0 if sa == "right" else x1 - 18.0
       t_in = x2 - 18.0 if ta == "left" else x2 + 18.0
-      xmin, xmax = min(s_out, t_in), max(s_out, t_in)
-      span_ymins: List[float] = []
-      span_ymaxs: List[float] = []
-      if multi:
-        # Multi-stage: every obstacle box (cards + obstacle zones) in range.
-        for oid, o in obstacles_of(idx).items():
-          if oid not in (e.src, e.dst) and (o.x + o.width) > xmin + 10.0 and o.x < xmax - 10.0:
-            span_ymins.append(o.y)
-            span_ymaxs.append(o.y + o.height)
-      else:
-        for cid, c in scene.cards.items():
-          if cid not in (e.src, e.dst) and (c.x + c.width) > xmin + 10.0 and c.x < xmax - 10.0:
-            span_ymins.append(c.y)
-            span_ymaxs.append(c.y + c.height)
-        for z in inner_zones:
-          s_card, t_card = scene.cards[e.src], scene.cards[e.dst]
-          if z.id in (s_card.parent_zone_id, t_card.parent_zone_id):
-            continue
-          if (z.x + z.w) > xmin + 10.0 and z.x < xmax - 10.0:
-            span_ymins.append(z.y)
-            span_ymaxs.append(z.y + z.h)
-
-      if bridge_dir.get(idx) == "top":
+      span_ymins, span_ymaxs = _bridge_span(ctx, idx, min(s_out, t_in),
+                                            max(s_out, t_in))
+      if ctx.bridge_dir.get(idx) == "top":
         base_top = min(span_ymins, default=min(y1, y2)) - 16.0
         y_bridge = base_top - top_bridge_tracks * 14.0
         top_bridge_tracks += 1
@@ -470,58 +625,327 @@ def _route_all_edges_non_overlapping(
         base_bot = max(span_ymaxs, default=max(y1, y2)) + 16.0
         y_bridge = base_bot + bot_bridge_tracks * 14.0
         bot_bridge_tracks += 1
-      polylines[idx] = [
-        (x1, y1),
-        (s_out, y1),
-        (s_out, y_bridge),
-        (t_in, y_bridge),
-        (t_in, y2),
-        (x2, y2),
-      ]
+      polylines[idx] = [(x1, y1), (s_out, y1), (s_out, y_bridge),
+                        (t_in, y_bridge), (t_in, y2), (x2, y2)]
     elif sa in ("left", "right") and ta in ("left", "right") and sa != ta:
-      mid_x = z_mid.get(idx, (x1 + x2) / 2.0)
+      mid_x = ctx.z_mid.get(idx, (x1 + x2) / 2.0)
       polylines[idx] = [(x1, y1), (mid_x, y1), (mid_x, y2), (x2, y2)]
     elif sa == "left" and ta == "left":
-      off = bracket_offset.get(idx, 22.0)
-      out_x = min(x1, x2) - off
+      out_x = min(x1, x2) - bracket_offset.get(idx, 22.0)
       polylines[idx] = [(x1, y1), (out_x, y1), (out_x, y2), (x2, y2)]
     elif sa == "right" and ta == "right":
-      off = bracket_offset.get(idx, 22.0)
-      out_x = max(x1, x2) + off
+      out_x = max(x1, x2) + bracket_offset.get(idx, 22.0)
       polylines[idx] = [(x1, y1), (out_x, y1), (out_x, y2), (x2, y2)]
+    elif ctx.multi and sa in ("top", "bottom") and ta in ("top", "bottom"):
+      polylines[idx] = _tree_route(x1, y1, x2, y2, ctx.obstacles(idx),
+                                   (e.src, e.dst))
     else:
       mid_y = (y1 + y2) / 2.0
       polylines[idx] = [(x1, y1), (x1, mid_y), (x2, mid_y), (x2, y2)]
-      if multi and sa in ("top", "bottom") and ta in ("top", "bottom"):
-        polylines[idx] = _tree_route(x1, y1, x2, y2, obstacles_of(idx), (e.src, e.dst))
+  return polylines
 
-  # 4a. Strict Horizontal Bridge De-Overlapper FIRST:
+
+@dataclass
+class _Bar:
+  """A multi-stage tree route's fork bar, its stubs and feasible y window."""
+  idx: int
+  xu: float  # x of the stub that meets the upper card, at y = yu
+  yu: float
+  xl: float  # x of the stub that meets the lower card, at y = yl
+  yl: float
+  pref: float  # y chosen by `_tree_route`
+  lo: float
+  hi: float
+
+  @property
+  def xmin(self) -> float:
+    return min(self.xu, self.xl)
+
+  @property
+  def xmax(self) -> float:
+    return max(self.xu, self.xl)
+
+
+def _bar_window(
+    pts: List[Point], obstacles, ignore: Tuple[str, str],
+    fixed_h: List[Tuple[float, float, float]]) -> Optional[Tuple[float, float]]:
+  """Feasible y interval around the current bar y of a 4-point tree route.
+
+  A y is feasible when it stays 8 px inside the gap between the two cards,
+  the bar and both vertical stubs stay clear of obstacles (the same paddings
+  `_tree_route` checks) and the bar keeps `H_SEP` px from every fixed
+  horizontal stub over its x range. Returns None when the current y is not
+  feasible.
+  """
+  (x1, y1), (_, pref), (x2, _), (_, y2) = pts
+  if y1 <= y2:
+    xu, yu, xl, yl = x1, y1, x2, y2
+  else:
+    xu, yu, xl, yl = x2, y2, x1, y1
+  lo, hi = yu + 8.0, yl - 8.0
+  if not lo <= pref <= hi:
+    return None
+  xmin, xmax = min(x1, x2), max(x1, x2)
+  bands: List[Tuple[float, float]] = []  # open intervals of forbidden y
+  for oid, o in obstacles.items():
+    if oid in ignore:
+      continue
+    ox1, oy1, ox2, oy2 = o.x, o.y, o.x + o.width, o.y + o.height
+    if xmax > ox1 - 3.0 and xmin < ox2 + 3.0:
+      bands.append((oy1 - 3.0, oy2 + 3.0))
+    if ox1 - 5.0 < xu < ox2 + 5.0 and yu < oy2 + 5.0:
+      bands.append((oy1 - 5.0, _INF))
+    if ox1 - 5.0 < xl < ox2 + 5.0 and yl > oy1 - 5.0:
+      bands.append((-_INF, oy2 + 5.0))
+  for sy, sxmin, sxmax in fixed_h:
+    if xmax > sxmin - 8.0 and xmin < sxmax + 8.0:
+      bands.append((sy - H_SEP, sy + H_SEP))
+  for a, b in bands:
+    if a < pref < b:
+      return None
+    if b <= pref:
+      lo = max(lo, b)
+    else:
+      hi = min(hi, a)
+  return lo, hi
+
+
+def _x_overlap(a: _Bar, b: _Bar) -> bool:
+  return a.xmax > b.xmin - 8.0 and a.xmin < b.xmax + 8.0
+
+
+def _bars_clash(a: _Bar, ya: float, b: _Bar, yb: float, sep: float) -> bool:
+  """True when bars a (at ya) and b (at yb) would trip the overlap gate.
+
+  The bars clash when their x ranges overlap (8 px margin) and they sit
+  closer than `sep`, or when a vertical stub of one runs along a vertical
+  stub of the other on a shared x.
+  """
+  if _x_overlap(a, b) and abs(ya - yb) < sep:
+    return True
+  for xa, a0, a1 in ((a.xu, a.yu, ya), (a.xl, ya, a.yl)):
+    for xb, b0, b1 in ((b.xu, b.yu, yb), (b.xl, yb, b.yl)):
+      if abs(xa - xb) < GATE_SEP and min(a1, b1) - max(a0, b0) > GATE_MIN_RUN:
+        return True
+  return False
+
+
+_HARD = 1000
+
+
+def _cost_above(a: _Bar, b: _Bar) -> int:
+  """Crossings (or a forbidden overlap) created by putting bar a above b."""
+  cost = 0
+  if b.xmin < a.xl < b.xmax:
+    cost += 1  # a's lower stub crosses b's bar
+  if a.xmin < b.xu < a.xmax:
+    cost += 1  # b's upper stub crosses a's bar
+  if abs(a.xl - b.xu) < GATE_SEP:
+    cost += _HARD  # a's lower stub would run along b's upper stub
+  return cost
+
+
+def _lane_order(bars: List[_Bar], conflicts: Dict[int, List[int]]) -> List[int]:
+  """Top-to-bottom priority: fewest crossings, hard constraints honoured."""
+  n = len(bars)
+  score = [0] * n
+  must_above: Dict[int, Set[int]] = {i: set() for i in range(n)}
+  for i in range(n):
+    for j in conflicts[i]:
+      if j <= i:
+        continue
+      cij, cji = _cost_above(bars[i], bars[j]), _cost_above(bars[j], bars[i])
+      if cij < cji:
+        score[i] += 1
+        score[j] -= 1
+      elif cji < cij:
+        score[j] += 1
+        score[i] -= 1
+      if cji >= _HARD > cij:
+        must_above[j].add(i)
+      elif cij >= _HARD > cji:
+        must_above[i].add(j)
+  rank = sorted(range(n), key=lambda i: (-score[i], bars[i].idx))
+  # Stable topological order over the hard constraints, rank as priority;
+  # a cycle (impossible geometry) falls back to rank order.
+  order: List[int] = []
+  done: Set[int] = set()
+  while len(order) < n:
+    todo = [i for i in rank if i not in done]
+    ready = [i for i in todo if must_above[i] <= done]
+    pick = ready[0] if ready else todo[0]
+    order.append(pick)
+    done.add(pick)
+  return order
+
+
+def _lanes(order: List[int], conflicts: Dict[int, List[int]],
+           respect_order: bool) -> Dict[int, int]:
+  """Lane index per bar (0 = top).
+
+  Ordered mode puts every conflicting earlier bar above; first-fit mode only
+  keeps conflicting bars in distinct lanes (fewer lanes, more crossings).
+  """
+  lane: Dict[int, int] = {}
+  for i in order:
+    taken = {lane[j] for j in conflicts[i] if j in lane}
+    if respect_order:
+      lane[i] = 1 + max(taken) if taken else 0
+    else:
+      k = 0
+      while k in taken:
+        k += 1
+      lane[i] = k
+  return lane
+
+
+def _layout_group(bars: List[_Bar],
+                  members: List[int]) -> Optional[Dict[int, float]]:
+  """Lane y per bar of one group, or None when the lanes do not fit."""
+  group = [bars[g] for g in members]
+  n = len(group)
+  conflicts = {
+      k: [j for j in range(n) if j != k and _x_overlap(group[k], group[j])]
+      for k in range(n)
+  }
+  lo = max(b.lo for b in group)
+  hi = min(b.hi for b in group)
+  if hi < lo:
+    return None
+  order = _lane_order(group, conflicts)
+  pref = sum(b.pref for b in group) / n
+  for respect in (True, False):
+    lane = _lanes(order, conflicts, respect)
+    count = max(lane.values()) + 1
+    if count == 1:
+      ys = {k: min(max(group[k].pref, lo), hi) for k in range(n)}
+    else:
+      sep = min(H_SEP, (hi - lo) / (count - 1))
+      if sep < MIN_LANE_SEP:
+        continue
+      block = sep * (count - 1)
+      start = min(max(pref - block / 2.0, lo), hi - block)
+      ys = {k: start + lane[k] * sep for k in range(n)}
+    if not any(
+        _bars_clash(group[k], ys[k], group[j], ys[j], GATE_SEP)
+        for k in range(n)
+        for j in range(k + 1, n)):
+      return {members[k]: y for k, y in ys.items()}
+  return None
+
+
+def _assign_tree_lanes(ctx: _Ctx, polylines: Polylines) -> Set[int]:
+  """Spreads the fork bars of multi-stage tree routes into separate lanes.
+
+  Bars that collide at their current y form a group. Within a group bars
+  are ordered top to bottom to minimise crossings (the outer bars of a fan
+  sit nearer the parent) without letting one edge's stub run along
+  another's, then laid out `H_SEP` (down to `MIN_LANE_SEP`) px apart inside
+  the window they all share, centred on their current y. Groups that end up
+  colliding with each other are merged and laid out again. Returns the edge
+  indices whose bars are final; groups that do not fit are left to
+  `_deoverlap_horizontal`.
+  """
+  scene = ctx.scene
+  fixed_h = _stub_segments(polylines, horizontal=True)
+  bars: List[_Bar] = []
+  for idx in sorted(polylines):
+    e = scene.edges[idx]
+    pts = polylines[idx]
+    if (e.source_anchor not in ("top", "bottom") or
+        e.target_anchor not in ("top", "bottom") or len(pts) != 4 or
+        abs(pts[0][0] - pts[3][0]) <= 0.5):
+      continue
+    win = _bar_window(pts, ctx.obstacles(idx), (e.src, e.dst), fixed_h)
+    if win is None:
+      continue
+    (xa, ya), (xb, yb) = pts[0], pts[3]
+    if ya > yb:
+      (xa, ya), (xb, yb) = (xb, yb), (xa, ya)
+    bars.append(_Bar(idx, xa, ya, xb, yb, pts[1][1], win[0], win[1]))
+
+  n = len(bars)
+  parent = list(range(n))
+
+  def find(i: int) -> int:
+    while parent[i] != i:
+      parent[i] = parent[parent[i]]
+      i = parent[i]
+    return i
+
+  for i in range(n):
+    for j in range(i + 1, n):
+      if _bars_clash(bars[i], bars[i].pref, bars[j], bars[j].pref, H_SEP):
+        parent[find(i)] = find(j)
+
+  ys: Dict[int, float] = {}
+  for _ in range(n + 1):
+    groups: Dict[int, List[int]] = {}
+    for i in range(n):
+      groups.setdefault(find(i), []).append(i)
+    ys = {}
+    for members in groups.values():
+      if len(members) == 1:
+        ys[members[0]] = bars[members[0]].pref
+        continue
+      laid = _layout_group(bars, members)
+      if laid is not None:
+        ys.update(laid)
+    merged = False
+    placed = sorted(ys)
+    for a, i in enumerate(placed):
+      for j in placed[a + 1:]:
+        if find(i) != find(j) and _bars_clash(bars[i], ys[i], bars[j], ys[j],
+                                              MIN_LANE_SEP):
+          parent[find(i)] = find(j)
+          merged = True
+    if not merged:
+      break
+
+  for i, y in sorted(ys.items()):
+    b = bars[i]
+    pts = list(polylines[b.idx])
+    pts[1] = (pts[1][0], y)
+    pts[2] = (pts[2][0], y)
+    polylines[b.idx] = pts
+  return {bars[i].idx for i in ys}
+
+
+def _deoverlap_horizontal(ctx: _Ctx, polylines: Polylines,
+                          fixed: Set[int]) -> None:
+  """Moves inner horizontal segments off each other (and off fixed stubs).
+
+  Edges in `fixed` keep their bars, which act as obstacles for the others.
+  """
   h_segs: List[Tuple[int, int, float, float, float]] = []
+  placed_h: List[Tuple[float, float, float]] = []
   for idx, pts in polylines.items():
     for si in range(1, len(pts) - 2):
       p_a, p_b = pts[si], pts[si + 1]
       if abs(p_a[1] - p_b[1]) < 0.5 and abs(p_a[0] - p_b[0]) > 0.5:
-        h_segs.append((idx, si, p_a[1], min(p_a[0], p_b[0]), max(p_a[0], p_b[0])))
+        seg = (p_a[1], min(p_a[0], p_b[0]), max(p_a[0], p_b[0]))
+        if idx in fixed:
+          placed_h.append(seg)
+        else:
+          h_segs.append((idx, si) + seg)
 
   h_segs.sort(key=lambda it: (it[2], it[3], it[0]))
-  placed_h: List[Tuple[float, float, float]] = []
-  if multi:
-    # Multi-stage: the fixed first/last stubs are obstacles for movable
-    # inner segments too (the original pass only de-collides inner ones).
+  if ctx.multi:
+    # The fixed first/last stubs are obstacles for movable inner segments.
     placed_h.extend(_stub_segments(polylines, horizontal=True))
   for idx, si, hy, hxmin, hxmax in h_segs:
     new_y = hy
-    step_idx = 0
-    if multi:
-      new_y = _free_h_offset(scene, polylines[idx], si, hy, hxmin, hxmax, placed_h,
-                             obstacles_of(idx))
-    while not multi and any(
-      abs(new_y - py) < 12.0 and hxmax > pxmin - 8.0 and hxmin < pxmax + 8.0
-      for py, pxmin, pxmax in placed_h
-    ):
-      step_idx += 1
-      direction = -1.0 if hy < canvas_mid_y else 1.0
-      new_y = hy + step_idx * 14.0 * direction
+    if ctx.multi:
+      new_y = _free_h_offset(polylines[idx], si, hy, hxmin, hxmax, placed_h,
+                             ctx.obstacles(idx))
+    else:
+      step_idx = 0
+      while any(
+          abs(new_y - py) < 12.0 and hxmax > pxmin - 8.0 and hxmin < pxmax + 8.0
+          for py, pxmin, pxmax in placed_h):
+        step_idx += 1
+        direction = -1.0 if hy < ctx.canvas_mid_y else 1.0
+        new_y = hy + step_idx * 14.0 * direction
     placed_h.append((new_y, hxmin, hxmax))
     if abs(new_y - hy) > 0.1:
       pts = list(polylines[idx])
@@ -529,42 +953,44 @@ def _route_all_edges_non_overlapping(
       pts[si + 1] = (pts[si + 1][0], new_y)
       polylines[idx] = pts
 
-  # 4b. Strict Vertical Corridor De-Overlapper SECOND:
+
+def _deoverlap_vertical(ctx: _Ctx, polylines: Polylines) -> None:
+  """Moves inner vertical segments (Z channels, bridge legs, brackets)."""
+  scene = ctx.scene
   v_segs: List[Tuple[int, int, float, float, float]] = []
   for idx, pts in polylines.items():
     for si in range(1, len(pts) - 2):
       p_a, p_b = pts[si], pts[si + 1]
       if abs(p_a[0] - p_b[0]) < 0.5 and abs(p_a[1] - p_b[1]) > 0.5:
-        v_segs.append((idx, si, p_a[0], min(p_a[1], p_b[1]), max(p_a[1], p_b[1])))
+        v_segs.append((idx, si, p_a[0], min(p_a[1],
+                                            p_b[1]), max(p_a[1], p_b[1])))
 
   v_segs.sort(key=lambda it: (it[2], (it[3] + it[4]) / 2.0, it[0]))
   placed_v: List[Tuple[float, float, float]] = []
-  if multi:
+  if ctx.multi:
     placed_v.extend(_stub_segments(polylines, horizontal=False))
   for idx, si, vx, vymin, vymax in v_segs:
     e = scene.edges[idx]
     new_x = vx
     step_idx = 0
-    x_lo, x_hi = (_inner_range(polylines[idx], si, axis=0) if multi
-                  else (float("-inf"), float("inf")))
-    while (
-      any(
-        abs(new_x - px) < 10.0
-        and (vymax > pymin - 24.0 and vymin < pymax + 24.0)
-        for px, pymin, pymax in placed_v
-      )
-      or _segment_hits_any_card(new_x, vymin, new_x, vymax, obstacles_of(idx), (e.src, e.dst), pad=5.0)
-    ):
+    x_lo, x_hi = (_inner_range(polylines[idx], si, axis=0) if ctx.multi else
+                  (-_INF, _INF))
+    while (any(
+        abs(new_x - px) < 10.0 and
+        (vymax > pymin - 24.0 and vymin < pymax + 24.0)
+        for px, pymin, pymax in placed_v) or _segment_hits_any_card(
+            new_x, vymin, new_x, vymax, ctx.obstacles(idx),
+            (e.src, e.dst), pad=5.0)):
       step_idx += 1
       offset = ((step_idx + 1) // 2) * 11.0 * (1 if step_idx % 2 == 1 else -1)
       new_x = vx + offset
-      if multi and not x_lo <= new_x <= x_hi:
+      if ctx.multi and not x_lo <= new_x <= x_hi:
         if step_idx > 24:
           new_x = vx
           break
         continue
       if step_idx > 24:
-        if multi:
+        if ctx.multi:
           new_x = vx  # never keep a failed far offset (it can land in a card)
         break
     placed_v.append((new_x, vymin, vymax))
@@ -574,13 +1000,15 @@ def _route_all_edges_non_overlapping(
       pts[si + 1] = (new_x, pts[si + 1][1])
       polylines[idx] = pts
 
-  # 5. Compute optimal label position on the longest clear segment of each polyline:
-  label_pos: Dict[int, Tuple[float, float]] = {}
+
+def _place_labels(ctx: _Ctx, polylines: Polylines) -> Dict[int, Point]:
+  """Label pill centre per labelled edge, on its longest clear segment."""
+  scene = ctx.scene
+  label_pos: Dict[int, Point] = {}
   placed_pills: List[Tuple[float, float, float, float]] = []
 
-  def _pill_hits_other_edge(
-    edge_idx: int, bx1: float, by1: float, bx2: float, by2: float
-  ) -> bool:
+  def pill_hits_other_edge(edge_idx: int, bx1: float, by1: float, bx2: float,
+                           by2: float) -> bool:
     for o_idx, o_pts in polylines.items():
       if o_idx == edge_idx:
         continue
@@ -612,38 +1040,78 @@ def _route_all_edges_non_overlapping(
         candidates.append((seg_len + bonus, cx, cy))
     if not candidates:
       p_a, p_b = pts[0], pts[-1]
-      candidates.append((10.0, (p_a[0] + p_b[0]) / 2.0, (p_a[1] + p_b[1]) / 2.0))
+      candidates.append(
+          (10.0, (p_a[0] + p_b[0]) / 2.0, (p_a[1] + p_b[1]) / 2.0))
     candidates.sort(key=lambda c: -c[0])
 
     best_cand = (999999.0, candidates[0][1], candidates[0][2])
     for prio, cx, cy in candidates:
-      bx1, by1, bx2, by2 = cx - pw / 2.0, cy - ph / 2.0, cx + pw / 2.0, cy + ph / 2.0
-      hit_pill = sum(
-        1
-        for px1, py1, px2, py2 in placed_pills
-        if bx2 > px1 - 8.0 and bx1 < px2 + 8.0 and by2 > py1 - 6.0 and by1 < py2 + 6.0
-      )
-      hit_card = 1 if _segment_hits_any_card(bx1, by1, bx2, by2, scene.cards, ("", ""), pad=3.0) else 0
-      if multi and not hit_card and _box_crosses_zone_border(scene, bx1, by1, bx2, by2):
+      bx1, by1 = cx - pw / 2.0, cy - ph / 2.0
+      bx2, by2 = cx + pw / 2.0, cy + ph / 2.0
+      hit_pill = sum(1 for px1, py1, px2, py2 in placed_pills
+                     if bx2 > px1 - 8.0 and bx1 < px2 + 8.0 and by2 > py1 -
+                     6.0 and by1 < py2 + 6.0)
+      hit_card = 1 if _segment_hits_any_card(bx1, by1, bx2, by2, scene.cards,
+                                             ("", ""), pad=3.0) else 0
+      if ctx.multi and not hit_card and _box_crosses_zone_border(
+          scene, bx1, by1, bx2, by2):
         hit_card = 1
-      hit_other = 1 if _pill_hits_other_edge(idx, bx1, by1, bx2, by2) else 0
-      penalty = hit_pill * 10000.0 + hit_card * 5000.0 + hit_other * 200.0 - prio
+      hit_other = 1 if pill_hits_other_edge(idx, bx1, by1, bx2, by2) else 0
+      penalty = (hit_pill * 10000.0 + hit_card * 5000.0 + hit_other * 200.0 -
+                 prio)
       if penalty < best_cand[0]:
         best_cand = (penalty, cx, cy)
     chosen_x, chosen_y = best_cand[1], best_cand[2]
-    placed_pills.append(
-      (chosen_x - pw / 2.0, chosen_y - ph / 2.0, chosen_x + pw / 2.0, chosen_y + ph / 2.0)
-    )
+    placed_pills.append((chosen_x - pw / 2.0, chosen_y - ph / 2.0,
+                         chosen_x + pw / 2.0, chosen_y + ph / 2.0))
     label_pos[idx] = (chosen_x, chosen_y)
+  return label_pos
 
-  return port_coords, polylines, label_pos
+
+def route_all_edges(
+    scene: SceneGraph) -> Tuple[PortCoords, Polylines, Dict[int, Point]]:
+  """Routes every edge of a laid-out scene.
+
+  Returns `(port_coords, polylines, label_pos)`: per `(edge index, "src" |
+  "dst")` the port `(x, y, rel_x, rel_y)`, per edge index its orthogonal
+  polyline, and per labelled edge its pill centre. Edges with an unknown
+  endpoint are skipped.
+  """
+  all_cards = list(scene.cards.values())
+  canvas_mid_y = (
+      (min(c.y for c in all_cards) + max(c.y + c.height for c in all_cards)) /
+      2.0 if all_cards else 400.0)
+  multi = is_multistage(scene)
+  ctx = _Ctx(scene=scene, multi=multi, canvas_mid_y=canvas_mid_y,
+             ancestors=ancestor_index(scene) if multi else None)
+  _classify_spans(ctx)
+  port_coords = _assign_ports(ctx)
+  _separate_h_stubs(ctx, port_coords)
+  polylines = _initial_polylines(ctx, port_coords,
+                                 _bracket_offsets(ctx, port_coords))
+  fixed = _assign_tree_lanes(ctx, polylines) if multi else set()
+  _deoverlap_horizontal(ctx, polylines, fixed)
+  _deoverlap_vertical(ctx, polylines)
+  return port_coords, polylines, _place_labels(ctx, polylines)
 
 
-def verify_no_arrow_overlaps(polylines: Dict[int, List[Tuple[float, float]]]) -> List[str]:
-  """Mechanical gate verifying that no two edges have overlapping parallel segments."""
+# --------------------------------------------------------------------------
+# Overlap gate
+# --------------------------------------------------------------------------
+
+
+def verify_no_arrow_overlaps(polylines: Polylines,
+                             scene: Optional[SceneGraph] = None) -> List[str]:
+  """Mechanical gate over routed polylines; returns one message per issue.
+
+  Flags parallel segments (of two edges, or of one edge that retraces
+  itself) closer than `GATE_SEP` px that share more than `GATE_MIN_RUN` px.
+  With `scene`, also flags any segment that runs through a card other than
+  the edge's endpoints and the cards inside an endpoint zone.
+  """
   v_all: List[Tuple[int, float, float, float]] = []
   h_all: List[Tuple[int, float, float, float]] = []
-  for idx, pts in polylines.items():
+  for idx, pts in sorted(polylines.items()):
     for si in range(len(pts) - 1):
       x1, y1 = pts[si]
       x2, y2 = pts[si + 1]
@@ -653,27 +1121,42 @@ def verify_no_arrow_overlaps(polylines: Dict[int, List[Tuple[float, float]]]) ->
         h_all.append((idx, y1, min(x1, x2), max(x1, x2)))
 
   errors: List[str] = []
-  for i in range(len(v_all)):
-    e1, x1, ymin1, ymax1 = v_all[i]
-    for j in range(i + 1, len(v_all)):
-      e2, x2, ymin2, ymax2 = v_all[j]
-      if e1 != e2 and abs(x1 - x2) < 5.0 and min(ymax1, ymax2) - max(ymin1, ymin2) > 4.0:
-        errors.append(
-          f"Vertical overlap between edge {e1} and edge {e2} at x≈{x1:.1f}, y=[{max(ymin1,ymin2):.1f}..{min(ymax1,ymax2):.1f}]"
-        )
-  for i in range(len(h_all)):
-    e1, y1, xmin1, xmax1 = h_all[i]
-    for j in range(i + 1, len(h_all)):
-      e2, y2, xmin2, xmax2 = h_all[j]
-      # Fixed vs. the scratch engine, which compared against max(xmin1, xmax2)
-      # and therefore never reported a horizontal overlap. The 12 networking
-      # goldens are clean under the corrected predicate (render bytes unchanged).
-      if e1 != e2 and abs(y1 - y2) < 5.0 and min(xmax1, xmax2) - max(xmin1, xmin2) > 4.0:
-        errors.append(
-          f"Horizontal overlap between edge {e1} and edge {e2} at y≈{y1:.1f}, x=[{max(xmin1,xmin2):.1f}..{min(xmax1,xmax2):.1f}]"
-        )
+  for kind, segs, axis, span in (("Vertical", v_all, "x", "y"),
+                                 ("Horizontal", h_all, "y", "x")):
+    for i in range(len(segs)):
+      e1, c1, lo1, hi1 = segs[i]
+      for j in range(i + 1, len(segs)):
+        e2, c2, lo2, hi2 = segs[j]
+        if abs(c1 -
+               c2) < GATE_SEP and min(hi1, hi2) - max(lo1, lo2) > GATE_MIN_RUN:
+          what = (f"{kind} overlap between edge {e1} and edge {e2}"
+                  if e1 != e2 else f"{kind} retrace on edge {e1}")
+          errors.append(f"{what} at {axis}≈{c1:.1f}, {span}="
+                        f"[{max(lo1, lo2):.1f}..{min(hi1, hi2):.1f}]")
+  if scene is not None:
+    errors.extend(_card_crossings(polylines, scene))
   return errors
 
 
-# Public name for the router entry point.
-route_all_edges = _route_all_edges_non_overlapping
+def _card_crossings(polylines: Polylines, scene: SceneGraph) -> List[str]:
+  """Segments that pass through a card (1 px inset, so touching is fine)."""
+  card_anc, _ = ancestor_index(scene)
+  errors: List[str] = []
+  for idx, pts in sorted(polylines.items()):
+    if not 0 <= idx < len(scene.edges):
+      continue
+    e = scene.edges[idx]
+    ends = {e.src, e.dst}
+    for cid, c in scene.cards.items():
+      if cid in ends or card_anc[cid] & ends:
+        continue
+      bx1, by1 = c.x + 1.0, c.y + 1.0
+      bx2, by2 = c.x + c.width - 1.0, c.y + c.height - 1.0
+      for si in range(len(pts) - 1):
+        (x1, y1), (x2, y2) = pts[si], pts[si + 1]
+        if (max(x1, x2) > bx1 and min(x1, x2) < bx2 and max(y1, y2) > by1 and
+            min(y1, y2) < by2):
+          errors.append(f"Edge {idx} ({e.src} -> {e.dst}) crosses card {cid} "
+                        f"on segment {si}")
+          break
+  return errors
