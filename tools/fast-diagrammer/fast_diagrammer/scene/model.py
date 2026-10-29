@@ -469,6 +469,10 @@ class EdgeSpec:
   # Multi-stage additions. `dash=None` derives from `dashed` (True -> "dashed").
   dash: Optional[str] = None  # solid | dashed | dotted | dashdot
   head: str = "filled"  # filled | open | none
+  # Trunk edges leaving the same card side share one port (the side centre
+  # when nothing else uses that side) and one vertical trunk, like an org
+  # chart. Their mutual overlaps are the shared trunk, not a routing defect.
+  trunk: bool = False
 
   @property
   def dash_style(self) -> str:
@@ -725,12 +729,14 @@ def make_edge(src: str, dst: str, arrow: str = "-->", label: str = "",
               color: Optional[str] = None, *, stroke_width: float = 2.0,
               dashed: Optional[bool] = None, dash: Optional[str] = None,
               head: str = "filled", source_anchor: str = "right",
-              target_anchor: str = "left") -> EdgeSpec:
+              target_anchor: str = "left", trunk: bool = False) -> EdgeSpec:
   """Builds an EdgeSpec with parser semantics.
 
   `color` accepts `$Palette` tokens (default `#1a73e8`); `dashed` defaults to
   `arrow == "-.->"` exactly like the legacy parser. Anchors must be one of
-  `left`, `right`, `top`, `bottom`. Raises ValueError on invalid input.
+  `left`, `right`, `top`, `bottom`. `trunk` makes the edge share its source
+  port and trunk with the other trunk edges leaving the same card side.
+  Raises ValueError on invalid input.
   """
   if dash is not None and dash not in DASH_PATTERNS:
     raise ValueError(f"unknown dash style: {dash}")
@@ -750,6 +756,7 @@ def make_edge(src: str, dst: str, arrow: str = "-->", label: str = "",
       target_anchor=target_anchor,
       dash=dash,
       head=head,
+      trunk=bool(trunk),
   )
   _check_edge(edge, f"edge {src} -> {dst}")
   _check_edge_style(edge, f"edge {src} -> {dst}")

@@ -90,7 +90,7 @@ SINK_KIND_BY_TYPE = {
 
 # Edge styles; within the view no two share a (dash, head) pair. The tree
 # edges are plain lines (the layout already reads top to bottom).
-_HIERARCHY_EDGE = ("$SlateStroke", "solid", "none")
+_HIERARCHY_EDGE = ("$SlateStroke", "dashed", "none")
 _SINK_EDGE = ("$TealStroke", "dashdot", "filled")
 _BILLING_EDGE = ("$BillingGreen", "dotted", "open")
 _SVPC_EDGE = ("$GcpBlue", "solid", "filled")
@@ -181,8 +181,10 @@ def _edge(src: str, dst: str, style, label: str = "", **kw):
 
 
 def _tree_edge(src: str, dst: str):
+  # Every child of one parent hangs off a single trunk from the parent's
+  # bottom port (centre bottom unless other edges share that side).
   return _edge(src, dst, _HIERARCHY_EDGE, source_anchor="bottom",
-               target_anchor="top")
+               target_anchor="top", trunk=True)
 
 
 def build_hierarchy(

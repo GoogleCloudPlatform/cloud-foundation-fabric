@@ -55,6 +55,12 @@ def _node_to_dict(node: Union[ZoneNode, CardNode]) -> Dict[str, Any]:
   return out
 
 
+def _edge_to_dict(e: EdgeSpec) -> Dict[str, Any]:
+  # `trunk` is written only when set, so snapshots of scenes that do not use
+  # it stay byte-identical to the ones written before the field existed.
+  return {f: getattr(e, f) for f in _EDGE_FIELDS if f != "trunk" or e.trunk}
+
+
 def scene_to_dict(scene: SceneGraph) -> Dict[str, Any]:
   """Pre-layout snapshot as plain JSON-compatible data."""
   return {
@@ -63,9 +69,7 @@ def scene_to_dict(scene: SceneGraph) -> Dict[str, Any]:
       "view_kind": scene.view_kind,
       "stage": scene.stage,
       "root_zones": [_node_to_dict(z) for z in scene.root_zones],
-      "edges": [{
-          f: getattr(e, f) for f in _EDGE_FIELDS
-      } for e in scene.edges],
+      "edges": [_edge_to_dict(e) for e in scene.edges],
       "legend": [dataclasses.asdict(l) for l in scene.legend],
   }
 

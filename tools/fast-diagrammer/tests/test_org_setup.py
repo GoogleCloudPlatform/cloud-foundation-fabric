@@ -473,3 +473,23 @@ def test_cicd_workflows_option(stage_dataset):
   assert "proj_cicd_iac_0_org_setup" in scene.cards
   with pytest.raises(ValueError):
     build(load_org_setup_dataset(path), "hierarchy", cicd_workflows="cicd.yaml")
+
+
+def test_hierarchy_edges_are_dashed_trunks_from_one_port(stage_dataset):
+  """Every parent's children hang off one dashed trunk at its bottom centre."""
+  from fast_diagrammer.scene.layout import layout_scene
+  from fast_diagrammer.scene.router import (route_all_edges,
+                                            verify_no_arrow_overlaps)
+  for name in ("classic", "hardened", "starter-gcd"):
+    scene = build(stage_dataset("0-org-setup", name), "hierarchy")
+    layout_scene(scene)
+    ports, polylines, _ = route_all_edges(scene)
+    starts = {}
+    for i, e in enumerate(scene.edges):
+      if e.source_anchor == "bottom" and e.target_anchor == "top":
+        assert e.trunk and e.dash_style == "dashed", (name, e.src, e.dst)
+        starts.setdefault(e.src, set()).add(ports[(i, "src")])
+    assert starts, name
+    for src, pts in starts.items():
+      assert len(pts) == 1, (name, src, pts)
+    assert verify_no_arrow_overlaps(polylines, scene) == [], name

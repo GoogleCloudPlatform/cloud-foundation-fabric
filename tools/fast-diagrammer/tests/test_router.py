@@ -665,3 +665,65 @@ def test_router_passes_and_ancestor_index():
     assert (router.edge_obstacles(sc, src, dst,
                                   index) == router.edge_obstacles(sc, src, dst))
   assert set(router.edge_obstacles(sc, "c", "d")) == {"c", "d"}
+
+
+# --------------------------------------------------------------------------
+# Trunk edges: one shared source port and trunk per parent side
+# --------------------------------------------------------------------------
+
+
+def _trunk_scene(trunk=True):
+  """`_two_tier_scene` with every hierarchy edge marked as a trunk edge."""
+  sc = _two_tier_scene()
+  for e in sc.edges:
+    e.trunk = trunk
+  return sc
+
+
+def test_trunk_edges_share_the_centre_bottom_port():
+  sc = _trunk_scene()
+  ports, polylines, _ = _route(sc)
+  by_src = {}
+  for i, e in enumerate(sc.edges):
+    by_src.setdefault(e.src, set()).add(ports[(i, "src")])
+  for src, starts in by_src.items():
+    assert len(starts) == 1, src
+    (x, y, rel_x, rel_y), = starts
+    card = sc.cards[src]
+    assert (rel_x, rel_y) == (0.5, 1.0)
+    assert x == card.x + card.width / 2.0 and y == card.y + card.height
+  assert verify_no_arrow_overlaps(polylines, sc) == []
+
+
+def test_trunk_overlaps_are_only_accepted_within_one_trunk():
+  """Negative control: the same polylines fail the gate without `trunk`."""
+  sc = _trunk_scene()
+  _, polylines, _ = _route(sc)
+  assert verify_no_arrow_overlaps(polylines, sc) == []
+  assert verify_no_arrow_overlaps(polylines)  # no scene: no trunk exemption
+  for e in sc.edges:
+    e.trunk = False
+  assert verify_no_arrow_overlaps(polylines, sc)
+
+
+def test_trunk_slot_shares_a_side_with_other_edges():
+  sc = _fan_scene(3)
+  for e in sc.edges:
+    e.trunk = True
+  sc.add_card(make_card("x", "Extra", "x"), sc.zones["mid"])
+  sc.add_edge(make_edge("org", "x", source_anchor="bottom",
+                        target_anchor="top"))
+  ports, polylines, _ = _route(sc)
+  trunk_starts = {ports[(i, "src")] for i, e in enumerate(sc.edges) if e.trunk}
+  other = ports[(len(sc.edges) - 1, "src")]
+  assert len(trunk_starts) == 1 and other not in trunk_starts
+  assert verify_no_arrow_overlaps(polylines, sc) == []
+
+
+def test_trunk_is_serialized_only_when_set():
+  from fast_diagrammer.scene.serialize import scene_from_dict, scene_to_dict
+  plain = scene_to_dict(_two_tier_scene())
+  assert all("trunk" not in e for e in plain["edges"])
+  data = scene_to_dict(_trunk_scene())
+  assert all(e["trunk"] is True for e in data["edges"])
+  assert all(e.trunk for e in scene_from_dict(data).edges)

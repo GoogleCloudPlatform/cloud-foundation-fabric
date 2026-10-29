@@ -112,6 +112,7 @@ Colour is never the only cue: every semantic also has a dash, head or shape.
 | dashed `6 4`, open head | egress / outbound |
 | dotted `2 3` | policy binding (access level, billing export) |
 | dash-dot `8 3 2 3` | log sink routing |
+| dashed `6 4`, no head, one trunk per parent | resource hierarchy (organization → folder → project): every child of a parent hangs off a single trunk from the parent's bottom centre |
 | dashed card border | symbolic or discovered set, not a concrete resource |
 | pill badges | key facts (log buckets, CMEK, Shared VPC host, ENFORCED / DRY-RUN …) |
 

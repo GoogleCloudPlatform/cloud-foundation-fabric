@@ -231,13 +231,15 @@ def _vertical_clear(x: float, ya: float, yb: float, obstacles, ignore) -> bool:
 
 
 def _tree_route(x1: float, y1: float, x2: float, y2: float, obstacles,
-                ignore: Tuple[str, str]) -> List[Point]:
+                ignore: Tuple[str, str], trunk: bool = False) -> List[Point]:
   """Multi-stage vertical route (`bottom -> top` / `top -> bottom`).
 
   The horizontal fork bar sits 20 px before the target row (not halfway, so
   it never runs through an intermediate tier); when the straight drop from
   the source port is blocked, a clear spine near `x1` carries it instead.
   `_assign_tree_lanes` later spreads the bars of one corridor into lanes.
+  With `trunk`, the spine is searched around `x1` instead of the midpoint,
+  so the siblings of one trunk pick the same spine.
   """
   down = y2 > y1
   if abs(y2 - y1) <= 40.0:
@@ -253,7 +255,7 @@ def _tree_route(x1: float, y1: float, x2: float, y2: float, obstacles,
       h_clear(x1, x2, mid_y) and tail_clear):
     return [(x1, y1), (x1, mid_y), (x2, mid_y), (x2, y2)]
   exit_y = y1 + 16.0 if down else y1 - 16.0
-  centre = (x1 + x2) / 2.0
+  centre = x1 if trunk else (x1 + x2) / 2.0
   cands = sorted({round(centre + 12.0 * k, 1) for k in range(-80, 81)},
                  key=lambda c: (abs(c - centre), c))
   for spine_x in cands:
@@ -299,16 +301,23 @@ def _pick_bridge_dir(default: str, s_out: float, sy: float, t_in: float,
 def _stub_segments(polylines: Polylines,
                    horizontal: bool) -> List[Tuple[float, float, float]]:
   """(fixed_coord, min, max) of each polyline's first and last segment."""
+  return [seg for _, seg in _owned_stub_segments(polylines, horizontal)]
+
+
+def _owned_stub_segments(
+    polylines: Polylines,
+    horizontal: bool) -> List[Tuple[int, Tuple[float, float, float]]]:
+  """`_stub_segments` with the owning edge index of every stub."""
   out = []
-  for pts in polylines.values():
+  for idx, pts in polylines.items():
     if len(pts) < 2:
       continue
     for si in sorted({0, len(pts) - 2}):
       (ax, ay), (bx, by) = pts[si], pts[si + 1]
       if horizontal and abs(ay - by) < 0.5 and abs(ax - bx) > 0.5:
-        out.append((ay, min(ax, bx), max(ax, bx)))
+        out.append((idx, (ay, min(ax, bx), max(ax, bx))))
       elif not horizontal and abs(ax - bx) < 0.5 and abs(ay - by) > 0.5:
-        out.append((ax, min(ay, by), max(ay, by)))
+        out.append((idx, (ax, min(ay, by), max(ay, by))))
   return out
 
 
@@ -455,21 +464,58 @@ def _assign_ports(ctx: _Ctx) -> PortCoords:
   port_coords: PortCoords = {}
   for (cid, side), items in side_slots.items():
     card = endpoint(scene, cid)
-    items.sort(key=lambda it: (it[2], it[3], it[0]))
+    items = _merge_trunk_slots(scene, items)
+    items.sort(key=lambda it: (it[1], it[2], it[3]))
     length = card.height if side in ("left", "right") else card.width
     fracs = _port_fracs(len(items), length)
-    for (e_idx, role, _, _), frac in zip(items, fracs):
+    for (members, _, _, _), frac in zip(items, fracs):
       along_x = card.x + card.width * frac
       along_y = card.y + card.height * frac
-      if side == "left":
-        port_coords[(e_idx, role)] = (card.x, along_y, 0.0, frac)
-      elif side == "right":
-        port_coords[(e_idx, role)] = (card.x + card.width, along_y, 1.0, frac)
-      elif side == "top":
-        port_coords[(e_idx, role)] = (along_x, card.y, frac, 0.0)
-      else:
-        port_coords[(e_idx, role)] = (along_x, card.y + card.height, frac, 1.0)
+      for e_idx, role in members:
+        if side == "left":
+          port_coords[(e_idx, role)] = (card.x, along_y, 0.0, frac)
+        elif side == "right":
+          port_coords[(e_idx, role)] = (card.x + card.width, along_y, 1.0, frac)
+        elif side == "top":
+          port_coords[(e_idx, role)] = (along_x, card.y, frac, 0.0)
+        else:
+          port_coords[(e_idx, role)] = (along_x, card.y + card.height, frac,
+                                        1.0)
   return port_coords
+
+
+def _merge_trunk_slots(scene: SceneGraph, items):
+  """Groups the slots of one card side; trunk sources share a single slot.
+
+  Returns `(members, sort_key, tie, first_idx)` tuples where `members` lists
+  the `(edge index, role)` pairs drawn from that slot. The shared trunk slot
+  sorts by the mean of its members' keys, so it lands at the side centre
+  when the trunk edges are the only ones on that side.
+  """
+  out = []
+  trunk = [it for it in items if it[1] == "src" and scene.edges[it[0]].trunk]
+  for it in items:
+    if it in trunk:
+      continue
+    out.append(([(it[0], it[1])], it[2], it[3], it[0]))
+  if trunk:
+    key = sum(it[2] for it in trunk) / len(trunk)
+    first = min(it[0] for it in trunk)
+    out.append(([(it[0], it[1]) for it in trunk], key, first, first))
+  return out
+
+
+def trunk_key(scene: SceneGraph, idx: int) -> Optional[Tuple[str, str]]:
+  """`(source id, source side)` for a trunk edge, None for any other edge."""
+  if not 0 <= idx < len(scene.edges):
+    return None
+  e = scene.edges[idx]
+  return (e.src, e.source_anchor) if e.trunk else None
+
+
+def _same_trunk(scene: SceneGraph, a: int, b: int) -> bool:
+  ka = trunk_key(scene, a)
+  return ka is not None and ka == trunk_key(scene, b)
 
 
 def _rel(v: float, origin: float, size: float) -> float:
@@ -638,7 +684,7 @@ def _initial_polylines(ctx: _Ctx, port_coords: PortCoords,
       polylines[idx] = [(x1, y1), (out_x, y1), (out_x, y2), (x2, y2)]
     elif ctx.multi and sa in ("top", "bottom") and ta in ("top", "bottom"):
       polylines[idx] = _tree_route(x1, y1, x2, y2, ctx.obstacles(idx),
-                                   (e.src, e.dst))
+                                   (e.src, e.dst), trunk=e.trunk)
     else:
       mid_y = (y1 + y2) / 2.0
       polylines[idx] = [(x1, y1), (x1, mid_y), (x2, mid_y), (x2, y2)]
@@ -656,6 +702,7 @@ class _Bar:
   pref: float  # y chosen by `_tree_route`
   lo: float
   hi: float
+  trunk: Optional[Tuple[str, str]] = None  # `trunk_key` of the edge
 
   @property
   def xmin(self) -> float:
@@ -719,8 +766,11 @@ def _bars_clash(a: _Bar, ya: float, b: _Bar, yb: float, sep: float) -> bool:
 
   The bars clash when their x ranges overlap (8 px margin) and they sit
   closer than `sep`, or when a vertical stub of one runs along a vertical
-  stub of the other on a shared x.
+  stub of the other on a shared x. Bars of one trunk never clash: they
+  share their fork and trunk on purpose.
   """
+  if a.trunk is not None and a.trunk == b.trunk:
+    return False
   if _x_overlap(a, b) and abs(ya - yb) < sep:
     return True
   for xa, a0, a1 in ((a.xu, a.yu, ya), (a.xl, ya, a.yl)):
@@ -862,7 +912,9 @@ def _assign_tree_lanes(ctx: _Ctx, polylines: Polylines) -> Set[int]:
     (xa, ya), (xb, yb) = pts[0], pts[3]
     if ya > yb:
       (xa, ya), (xb, yb) = (xb, yb), (xa, ya)
-    bars.append(_Bar(idx, xa, ya, xb, yb, pts[1][1], win[0], win[1]))
+    bars.append(
+        _Bar(idx, xa, ya, xb, yb, pts[1][1], win[0], win[1],
+             trunk_key(scene, idx)))
 
   n = len(bars)
   parent = list(range(n))
@@ -919,6 +971,7 @@ def _deoverlap_horizontal(ctx: _Ctx, polylines: Polylines,
   """
   h_segs: List[Tuple[int, int, float, float, float]] = []
   placed_h: List[Tuple[float, float, float]] = []
+  owners: List[Optional[int]] = []  # edge index of each placed_h entry
   for idx, pts in polylines.items():
     for si in range(1, len(pts) - 2):
       p_a, p_b = pts[si], pts[si + 1]
@@ -926,17 +979,24 @@ def _deoverlap_horizontal(ctx: _Ctx, polylines: Polylines,
         seg = (p_a[1], min(p_a[0], p_b[0]), max(p_a[0], p_b[0]))
         if idx in fixed:
           placed_h.append(seg)
+          owners.append(idx)
         else:
           h_segs.append((idx, si) + seg)
 
   h_segs.sort(key=lambda it: (it[2], it[3], it[0]))
   if ctx.multi:
     # The fixed first/last stubs are obstacles for movable inner segments.
-    placed_h.extend(_stub_segments(polylines, horizontal=True))
+    stubs = _stub_segments(polylines, horizontal=True)
+    placed_h.extend(stubs)
+    owners.extend([None] * len(stubs))
   for idx, si, hy, hxmin, hxmax in h_segs:
     new_y = hy
     if ctx.multi:
-      new_y = _free_h_offset(polylines[idx], si, hy, hxmin, hxmax, placed_h,
+      others = [
+          seg for seg, own in zip(placed_h, owners)
+          if own is None or not _same_trunk(ctx.scene, idx, own)
+      ]
+      new_y = _free_h_offset(polylines[idx], si, hy, hxmin, hxmax, others,
                              ctx.obstacles(idx))
     else:
       step_idx = 0
@@ -947,6 +1007,7 @@ def _deoverlap_horizontal(ctx: _Ctx, polylines: Polylines,
         direction = -1.0 if hy < ctx.canvas_mid_y else 1.0
         new_y = hy + step_idx * 14.0 * direction
     placed_h.append((new_y, hxmin, hxmax))
+    owners.append(idx)
     if abs(new_y - hy) > 0.1:
       pts = list(polylines[idx])
       pts[si] = (pts[si][0], new_y)
@@ -967,10 +1028,17 @@ def _deoverlap_vertical(ctx: _Ctx, polylines: Polylines) -> None:
 
   v_segs.sort(key=lambda it: (it[2], (it[3] + it[4]) / 2.0, it[0]))
   placed_v: List[Tuple[float, float, float]] = []
+  owners: List[Optional[int]] = []  # edge index of each placed_v entry
   if ctx.multi:
-    placed_v.extend(_stub_segments(polylines, horizontal=False))
+    for sidx, seg in _owned_stub_segments(polylines, horizontal=False):
+      placed_v.append(seg)
+      owners.append(sidx)
   for idx, si, vx, vymin, vymax in v_segs:
     e = scene.edges[idx]
+    others = [
+        seg for seg, own in zip(placed_v, owners)
+        if own is None or not _same_trunk(scene, idx, own)
+    ]
     new_x = vx
     step_idx = 0
     x_lo, x_hi = (_inner_range(polylines[idx], si, axis=0) if ctx.multi else
@@ -978,7 +1046,7 @@ def _deoverlap_vertical(ctx: _Ctx, polylines: Polylines) -> None:
     while (any(
         abs(new_x - px) < 10.0 and
         (vymax > pymin - 24.0 and vymin < pymax + 24.0)
-        for px, pymin, pymax in placed_v) or _segment_hits_any_card(
+        for px, pymin, pymax in others) or _segment_hits_any_card(
             new_x, vymin, new_x, vymax, ctx.obstacles(idx),
             (e.src, e.dst), pad=5.0)):
       step_idx += 1
@@ -994,6 +1062,7 @@ def _deoverlap_vertical(ctx: _Ctx, polylines: Polylines) -> None:
           new_x = vx  # never keep a failed far offset (it can land in a card)
         break
     placed_v.append((new_x, vymin, vymax))
+    owners.append(idx)
     if abs(new_x - vx) > 0.1:
       pts = list(polylines[idx])
       pts[si] = (new_x, pts[si][1])
@@ -1107,7 +1176,8 @@ def verify_no_arrow_overlaps(polylines: Polylines,
   Flags parallel segments (of two edges, or of one edge that retraces
   itself) closer than `GATE_SEP` px that share more than `GATE_MIN_RUN` px.
   With `scene`, also flags any segment that runs through a card other than
-  the edge's endpoints and the cards inside an endpoint zone.
+  the edge's endpoints and the cards inside an endpoint zone, and accepts
+  overlaps between trunk edges of one source side (their shared trunk).
   """
   v_all: List[Tuple[int, float, float, float]] = []
   h_all: List[Tuple[int, float, float, float]] = []
@@ -1127,6 +1197,8 @@ def verify_no_arrow_overlaps(polylines: Polylines,
       e1, c1, lo1, hi1 = segs[i]
       for j in range(i + 1, len(segs)):
         e2, c2, lo2, hi2 = segs[j]
+        if (e1 != e2 and scene is not None and _same_trunk(scene, e1, e2)):
+          continue
         if abs(c1 -
                c2) < GATE_SEP and min(hi1, hi2) - max(lo1, lo2) > GATE_MIN_RUN:
           what = (f"{kind} overlap between edge {e1} and edge {e2}"
