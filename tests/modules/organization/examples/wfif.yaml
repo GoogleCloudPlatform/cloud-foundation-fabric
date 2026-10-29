@@ -38,6 +38,8 @@ values:
       client_secret:
       - value:
         - plain_text: client-secret
+          plain_text_wo: null
+          plain_text_wo_version: null
       issuer_uri: https://login.microsoftonline.com/abcd01234/v2.0
       query_parameters: []
     location: global
@@ -45,7 +47,9 @@ values:
     - client_id: https://analysis.windows.net/powerbi/connector/GoogleBigQuery
       client_secret:
       - value:
-        - plain_text: client-secret
+        - plain_text: null
+          plain_text_wo: null
+          plain_text_wo_version: '1'
       issuer_uri: https://sts.windows.net/abcd01234/
       jwks_json: null
       web_sso_config:
@@ -95,6 +99,8 @@ values:
       client_secret:
       - value:
         - plain_text: client-secret
+          plain_text_wo: null
+          plain_text_wo_version: null
       issuer_uri: https://login.microsoftonline.com/abcdef/v2.0
       query_parameters:
       - filter: mail:gcp

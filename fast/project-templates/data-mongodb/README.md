@@ -38,8 +38,10 @@ atlas_config = {
 }
 database_users = {
   my-db-user = {
-    password_wo         = "s3cr3t-p4ssw0rd"
-    password_wo_version = 1
+    password = {
+      value      = "s3cr3t-p4ssw0rd"
+      wo_version = 1
+    }
     labels = {
       environment = "test"
     }
@@ -64,16 +66,26 @@ vpc_config = {
 }
 # tftest skip
 ```
+
+## Secret values
+
+`database_users.*.password` is an object that follows the [shape used for secrets across modules](../../../adrs/modules/20261029-write-only-secrets.md):
+
+- `value` is the secret itself
+- `path` is the path to a file containing the secret, read via `file(pathexpand(path))` and relative to the root module; the file must exist at every plan
+- `wo_version` switches to the provider's write-only attribute, so that the secret is never stored in state; bump the number whenever the secret changes and needs to be sent again
+
+Only one of `value` and `path` can be set. Without `wo_version` the secret is stored in state, and that form should only be used when this is acceptable. With `wo_version` set, both `value` and `path` can be null once the secret has been applied, since the provider leaves the existing write-only value untouched until the version changes: this allows passing `value = try(file("secret.txt"), null)` and removing the file after the first apply.
 <!-- BEGIN TFDOC -->
 ## Variables
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
 | [atlas_config](variables.tf#L17) | MongoDB Atlas configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
-| [project_id](variables.tf#L84) | Project id where the registries will be created. | <code>string</code> | ✓ |  |
-| [vpc_config](variables.tf#L89) | VPC configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| [project_id](variables.tf#L78) | Project id where the registries will be created. | <code>string</code> | ✓ |  |
+| [vpc_config](variables.tf#L83) | VPC configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
 | [database_users](variables.tf#L33) | MongoDB Atlas database users configuration. The map key is used as the username. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [name](variables.tf#L77) | Prefix used for all resource names. | <code>string</code> |  | <code>&#34;mongodb&#34;</code> |
+| [name](variables.tf#L71) | Prefix used for all resource names. | <code>string</code> |  | <code>&#34;mongodb&#34;</code> |
 
 ## Outputs
 
@@ -102,8 +114,10 @@ module "test" {
   }
   database_users = {
     my-db-user = {
-      password_wo         = "s3cr3t-p4ssw0rd"
-      password_wo_version = 1
+      password = {
+        value      = "s3cr3t-p4ssw0rd"
+        wo_version = 1
+      }
       labels = {
         environment = "test"
       }

@@ -307,7 +307,7 @@ module "secret-manager" {
         "roles/secretmanager.secretAccessor" = [module.cf-http.service_account_iam_email]
       }
       versions = {
-        v1 = { data = "manual foo bar spam" }
+        v1 = { data = { value = "manual foo bar spam" } }
       }
     }
   }
