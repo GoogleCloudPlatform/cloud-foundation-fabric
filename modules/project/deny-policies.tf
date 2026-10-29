@@ -16,6 +16,35 @@
 
 # tfdoc:file:description IAM Deny policies.
 
+locals {
+  _deny_principals = distinct(flatten([
+    for policy in values(var.iam_deny_policies) : [
+      for rule in policy.rules : concat(
+        rule.denied_principals,
+        rule.exception_principals,
+      )
+    ]
+  ]))
+  _resolved_deny_principals = {
+    for p in local._deny_principals :
+    p => lookup(local.ctx.iam_principals, p, p)
+    if startswith(p, local.ctx_p)
+  }
+  principal_formats = {
+    user           = "principal://goog/subject/%s"
+    group          = "principalSet://goog/group/%s"
+    serviceAccount = "principal://iam.googleapis.com/projects/-/serviceAccounts/%s"
+  }
+  ctx_deny_principals = merge(
+    local.ctx.iam_principals,
+    {
+      for k, v in local._resolved_deny_principals :
+      k => format(local.principal_formats[split(":", v)[0]], split(":", v)[1])
+      if strcontains(v, ":") && contains(keys(local.principal_formats), split(":", v)[0])
+    }
+  )
+}
+
 resource "google_iam_deny_policy" "default" {
   for_each     = var.iam_deny_policies
   parent       = urlencode("cloudresourcemanager.googleapis.com/projects/${local.project.project_id}")
@@ -28,7 +57,7 @@ resource "google_iam_deny_policy" "default" {
       description = rule.value.description
       deny_rule {
         denied_principals = [
-          for p in rule.value.denied_principals : lookup(local.ctx.iam_principals, p, p)
+          for p in rule.value.denied_principals : lookup(local.ctx_deny_principals, p, p)
         ]
         dynamic "denial_condition" {
           for_each = rule.value.denial_condition == null ? [] : [""]
@@ -43,7 +72,7 @@ resource "google_iam_deny_policy" "default" {
         }
         denied_permissions = rule.value.denied_permissions
         exception_principals = [
-          for p in rule.value.exception_principals : lookup(local.ctx.iam_principals, p, p)
+          for p in rule.value.exception_principals : lookup(local.ctx_deny_principals, p, p)
         ]
         exception_permissions = rule.value.exception_permissions
       }
