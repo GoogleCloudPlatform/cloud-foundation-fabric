@@ -1,0 +1,47 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.ai-applications.google_discovery_engine_cmek_config.default["eu"]:
+    cmek_config_id: my-search-app
+    kms_key: projects/my-kms-project/locations/eu/keyRings/my-keyring/cryptoKeys/my-key
+    location: eu
+    project: project-id
+    set_default: true
+    single_region_keys: []
+  module.ai-applications.google_discovery_engine_cmek_config.default["us"]:
+    cmek_config_id: my-search-app
+    kms_key: projects/my-kms-project/locations/us/keyRings/my-keyring/cryptoKeys/my-key
+    location: us
+    project: project-id
+    set_default: true
+    single_region_keys: []
+  module.ai-applications.google_discovery_engine_data_store.default["data-store-1"]:
+    data_store_id: my-search-app-data-store-1
+    kms_key_name: projects/my-kms-project/locations/eu/keyRings/my-keyring/cryptoKeys/my-key
+    location: eu
+    project: project-id
+  module.ai-applications.google_discovery_engine_search_engine.default[0]:
+    data_store_ids:
+    - my-search-app-data-store-1
+    engine_id: my-search-app
+    location: eu
+    project: project-id
+
+counts:
+  google_discovery_engine_cmek_config: 2
+  google_discovery_engine_data_store: 1
+  google_discovery_engine_search_engine: 1
+  modules: 1
+  resources: 4

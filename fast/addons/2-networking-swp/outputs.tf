@@ -15,7 +15,19 @@
  */
 
 locals {
+  _o_cas = flatten([
+    for k, v in module.cas : [
+      for name, chain in v.ca_chains : {
+        chain = chain
+        key   = "${k}-${name}"
+      }
+    ]
+  ])
+  ca_chains = {
+    for k in local._o_cas : k.key => k.chain
+  }
   tfvars = {
+    swp_ca_chains = local.ca_chains
     swp_cas_pool_ids = {
       for k, v in module.cas : k => v.ca_pool_id
     }
@@ -54,6 +66,20 @@ output "ids" {
 output "service_attachments" {
   description = "Service attachment IDs."
   value       = local.tfvars.swp_service_attachment_ids
+}
+
+resource "local_file" "ca_chains" {
+  for_each        = var.outputs_location == null ? {} : local.ca_chains
+  file_permission = "0644"
+  filename        = "${try(pathexpand(var.outputs_location), "")}/ca-chains/2-networking-${var.name}/${each.key}.pem"
+  content         = each.value
+}
+
+resource "google_storage_bucket_object" "ca_chains" {
+  for_each = local.ca_chains
+  bucket   = var.automation.outputs_bucket
+  name     = "ca-chains/2-networking-${var.name}/${each.key}.pem"
+  content  = each.value
 }
 
 resource "local_file" "tfvars" {

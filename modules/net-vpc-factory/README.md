@@ -25,6 +25,7 @@ The code is meant to be executed by a principal with permissions over the networ
   - [Defaults](#defaults)
   - [Subnets](#subnets)
   - [Firewall rules](#firewall-rules)
+  - [Service connection policies](#service-connection-policies)
 - [Context-based interpolation](#context-based-interpolation)
   - [Project context ids](#project-context-ids)
   - [Other context ids](#other-context-ids)
@@ -100,6 +101,51 @@ data/vpcs/
     └── firewall-rules/
         ├── allow-ssh.yaml
         └── allow-internal.yaml
+```
+
+### Service connection policies
+
+Service connection policies for [service connectivity automation](https://cloud.google.com/vpc/docs/about-service-connectivity-automation) are defined in the `service_connection_policies` attribute of the VPC's `.config.yaml` file, and follow the format of the [`net-vpc`](../net-vpc/) module variable. Subnets can be referenced by their `region/name` key.
+
+```hcl
+module "net-vpc-factory" {
+  source = "./fabric/modules/net-vpc-factory"
+  context = {
+    locations = {
+      primary = "europe-west1"
+    }
+  }
+  factories_config = {
+    basepath = "data"
+  }
+}
+# tftest files=vpc,subnet modules=2 resources=6 inventory=service-connection-policies.yaml
+```
+
+```yaml
+# yaml-language-server: $schema=../schemas/vpc-factory.schema.json
+
+project_id: my-project
+name: vpc-0
+service_connection_policies:
+  cloudsql-primary:
+    location: $locations:primary
+    service_class: google-cloud-sql
+    psc_config:
+      subnetworks:
+        - europe-west1/primary-subnet
+      producer_instance_location: CUSTOM_RESOURCE_HIERARCHY_LEVELS
+      nodes:
+        - projects/my-service-project
+# tftest-file id=vpc path=data/vpcs/vpc-0/.config.yaml schema=vpc-factory.schema.json
+```
+
+```yaml
+# data/vpcs/vpc-0/subnets/primary-subnet.yaml
+name: primary-subnet
+region: $locations:primary
+ip_cidr_range: 10.10.0.0/24
+# tftest-file id=subnet path=data/vpcs/vpc-0/subnets/primary-subnet.yaml schema=subnet.schema.json
 ```
 
 ## Context-based interpolation

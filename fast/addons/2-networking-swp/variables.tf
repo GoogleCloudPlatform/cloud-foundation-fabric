@@ -22,9 +22,9 @@ variable "certificate_authority" {
     iam_bindings_additive = optional(map(any), {})
     iam_by_principals     = optional(map(list(string)), {})
     ca_configs = map(object({
-      deletion_protection                    = optional(string, true)
-      type                                   = optional(string, "SELF_SIGNED")
+      deletion_protection                    = optional(bool, true)
       is_ca                                  = optional(bool, true)
+      is_self_signed                         = optional(bool, true)
       lifetime                               = optional(string, null)
       pem_ca_certificate                     = optional(string, null)
       ignore_active_certificates_on_deletion = optional(bool, false)
@@ -81,14 +81,37 @@ variable "certificate_authority" {
     }))
     ca_pool_config = optional(object({
       create_pool = optional(object({
-        name = optional(string)
-        tier = optional(string, "DEVOPS")
+        enterprise_tier = optional(bool, false)
+        name            = optional(string)
+        publishing_options = optional(object({
+          encoding_format = optional(string)
+          publish_ca_cert = bool
+          publish_crl     = bool
+        }))
       }))
       use_pool = optional(object({
         id = string
       }))
     }))
   })
+  nullable = false
+}
+
+variable "context" {
+  description = "Context-specific interpolations."
+  type = object({
+    ca_ids          = optional(map(string), {})
+    ca_pools        = optional(map(string), {})
+    condition_vars  = optional(map(map(string)), {})
+    custom_roles    = optional(map(string), {})
+    iam_principals  = optional(map(string), {})
+    kms_keys        = optional(map(string), {})
+    locations       = optional(map(string), {})
+    project_ids     = optional(map(string), {})
+    storage_buckets = optional(map(string), {})
+    vpcs            = optional(map(string), {})
+  })
+  default  = {}
   nullable = false
 }
 

@@ -512,9 +512,10 @@ variable "release_channel" {
 variable "vpc_config" {
   description = "VPC-level configuration."
   type = object({
-    disable_default_snat = optional(bool)
-    network              = string
-    subnetwork           = string
+    disable_default_snat                  = optional(bool)
+    disable_l4_lb_firewall_reconciliation = optional(bool)
+    network                               = string
+    subnetwork                            = string
     secondary_range_blocks = optional(object({
       pods     = string
       services = string

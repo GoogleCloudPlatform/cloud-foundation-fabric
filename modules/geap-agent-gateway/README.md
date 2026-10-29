@@ -366,9 +366,9 @@ module "agent-gateway" {
 |---|---|:---:|
 | [access_policy_ids](outputs.tf#L17) | The IAM v3 access policy ids, keyed by policy key. |  |
 | [agent_gateway](outputs.tf#L24) | The Agent Gateway object. |  |
-| [authz_extension_ids](outputs.tf#L29) | The authorization extension ids, keyed by service. |  |
-| [authz_policy_ids](outputs.tf#L41) | The authorization policy ids, keyed by service. |  |
-| [connectivity_template_id](outputs.tf#L53) | The id of the agent connectivity template attached to the gateway. |  |
-| [id](outputs.tf#L58) | The Agent Gateway id. |  |
-| [policy_binding_ids](outputs.tf#L63) | The IAM v3 policy binding ids, keyed by policy key. |  |
+| [authz_extension_ids](outputs.tf#L32) | The authorization extension ids, keyed by service. |  |
+| [authz_policy_ids](outputs.tf#L44) | The authorization policy ids, keyed by service. |  |
+| [connectivity_template_id](outputs.tf#L56) | The id of the agent connectivity template attached to the gateway. |  |
+| [id](outputs.tf#L61) | The Agent Gateway id. |  |
+| [policy_binding_ids](outputs.tf#L66) | The IAM v3 policy binding ids, keyed by policy key. |  |
 <!-- END TFDOC -->

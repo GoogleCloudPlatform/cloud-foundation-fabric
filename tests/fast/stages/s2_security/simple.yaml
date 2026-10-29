@@ -13,6 +13,42 @@
 # limitations under the License.
 
 values:
+  google_storage_bucket_object.ca_chains["prod-ca-0-prod-ca-0-0"]:
+    bucket: test
+    cache_control: null
+    content_disposition: null
+    content_encoding: null
+    content_language: null
+    contexts: []
+    customer_encryption: []
+    deletion_policy: DELETE
+    detect_md5hash: null
+    event_based_hold: null
+    force_empty_content_type: null
+    metadata: null
+    name: ca-chains/2-security/prod-ca-0-prod-ca-0-0.pem
+    retention: []
+    source: null
+    temporary_hold: null
+    timeouts: null
+  google_storage_bucket_object.ca_chains["prod-sub-ca-0-prod-sub-ca-0-0"]:
+    bucket: test
+    cache_control: null
+    content_disposition: null
+    content_encoding: null
+    content_language: null
+    contexts: []
+    customer_encryption: []
+    deletion_policy: DELETE
+    detect_md5hash: null
+    event_based_hold: null
+    force_empty_content_type: null
+    metadata: null
+    name: ca-chains/2-security/prod-sub-ca-0-prod-sub-ca-0-0.pem
+    retention: []
+    source: null
+    temporary_hold: null
+    timeouts: null
   google_storage_bucket_object.tfvars[0]:
     bucket: test
     cache_control: null
@@ -49,6 +85,88 @@ values:
     source: fast_version.txt
     temporary_hold: null
     timeouts: null
+  module.cas-subordinate["prod-sub-ca-0"].google_privateca_ca_pool.default[0]:
+    deletion_policy: DELETE
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    encryption_spec: []
+    issuance_policy: []
+    labels: null
+    location: europe-west1
+    name: prod-sub-ca-0
+    project: fast-prod-sec-core-0
+    publishing_options: []
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    tier: ENTERPRISE
+    timeouts: null
+  module.cas-subordinate["prod-sub-ca-0"].google_privateca_certificate_authority.default["prod-sub-ca-0-0"]:
+    certificate_authority_id: prod-sub-ca-0-0
+    config:
+    - subject_config:
+      - subject:
+        - common_name: test.example.com
+          country_code: null
+          locality: null
+          organization: Test Example
+          organizational_unit: null
+          postal_code: null
+          province: null
+          street_address: null
+        subject_alt_name: []
+      subject_key_id: []
+      x509_config:
+      - additional_extensions: []
+        aia_ocsp_servers: null
+        ca_options:
+        - is_ca: true
+          max_issuer_path_length: null
+          non_ca: null
+          zero_max_issuer_path_length: null
+        key_usage:
+        - base_key_usage:
+          - cert_sign: true
+            content_commitment: false
+            crl_sign: true
+            data_encipherment: false
+            decipher_only: false
+            digital_signature: false
+            encipher_only: false
+            key_agreement: false
+            key_encipherment: true
+          extended_key_usage:
+          - client_auth: false
+            code_signing: false
+            email_protection: false
+            ocsp_signing: false
+            server_auth: true
+            time_stamping: false
+          unknown_extended_key_usages: []
+        name_constraints: []
+        policy_ids: []
+    deletion_policy: DELETE
+    deletion_protection: true
+    desired_state: null
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    gcs_bucket: null
+    ignore_active_certificates_on_deletion: false
+    key_spec:
+    - algorithm: RSA_PKCS1_2048_SHA256
+      cloud_kms_key_version: null
+    labels: null
+    lifetime: 315360000s
+    location: europe-west1
+    pem_ca_certificate: null
+    project: fast-prod-sec-core-0
+    skip_grace_period: true
+    subordinate_config:
+    - {}
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+    type: SUBORDINATE
+    user_defined_access_urls: []
   module.cas["prod-ca-0"].google_privateca_ca_pool.default[0]:
     deletion_policy: DELETE
     effective_labels:
@@ -448,19 +566,20 @@ counts:
   google_kms_crypto_key: 7
   google_kms_key_ring: 2
   google_logging_project_settings: 2
-  google_privateca_ca_pool: 1
-  google_privateca_certificate_authority: 1
+  google_privateca_ca_pool: 2
+  google_privateca_certificate_authority: 2
   google_project: 2
   google_project_iam_binding: 2
   google_project_iam_member: 6
   google_project_service: 12
   google_project_service_identity: 10
-  google_storage_bucket_object: 2
-  modules: 8
-  resources: 49
+  google_storage_bucket_object: 4
+  modules: 9
+  resources: 53
   terraform_data: 2
 
 outputs:
+  ca_ids: __missing__
   ca_pools: __missing__
   kms_keys_ids: __missing__
   tfvars: __missing__
