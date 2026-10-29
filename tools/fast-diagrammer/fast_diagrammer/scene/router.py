@@ -231,7 +231,8 @@ def _vertical_clear(x: float, ya: float, yb: float, obstacles, ignore) -> bool:
 
 
 def _tree_route(x1: float, y1: float, x2: float, y2: float, obstacles,
-                ignore: Tuple[str, str], trunk: bool = False) -> List[Point]:
+                ignore: Tuple[str, str], trunk: bool = False,
+                bus_y: Optional[float] = None) -> List[Point]:
   """Multi-stage vertical route (`bottom -> top` / `top -> bottom`).
 
   The horizontal fork bar sits 20 px before the target row (not halfway, so
@@ -239,7 +240,9 @@ def _tree_route(x1: float, y1: float, x2: float, y2: float, obstacles,
   the source port is blocked, a clear spine near `x1` carries it instead.
   `_assign_tree_lanes` later spreads the bars of one corridor into lanes.
   With `trunk`, the spine is searched around `x1` instead of the midpoint,
-  so the siblings of one trunk pick the same spine.
+  so the siblings of one trunk pick the same spine, and `bus_y` (the fork
+  bar of the trunk's nearest row) is tried first as the jog to that spine,
+  so a deeper branch runs along the trunk instead of beside it.
   """
   down = y2 > y1
   if abs(y2 - y1) <= 40.0:
@@ -254,16 +257,21 @@ def _tree_route(x1: float, y1: float, x2: float, y2: float, obstacles,
   if (_vertical_clear(x1, y1, mid_y, obstacles, ignore) and
       h_clear(x1, x2, mid_y) and tail_clear):
     return [(x1, y1), (x1, mid_y), (x2, mid_y), (x2, y2)]
-  exit_y = y1 + 16.0 if down else y1 - 16.0
+  exits = [y1 + 16.0 if down else y1 - 16.0]
+  if bus_y is not None and (y1 < bus_y < mid_y if down else mid_y < bus_y < y1):
+    exits.insert(0, bus_y)
   centre = x1 if trunk else (x1 + x2) / 2.0
   cands = sorted({round(centre + 12.0 * k, 1) for k in range(-80, 81)},
                  key=lambda c: (abs(c - centre), c))
-  for spine_x in cands:
-    if (h_clear(x1, spine_x, exit_y) and
-        _vertical_clear(spine_x, exit_y, mid_y, obstacles, ignore) and
-        h_clear(spine_x, x2, mid_y)):
-      return [(x1, y1), (x1, exit_y), (spine_x, exit_y), (spine_x, mid_y),
-              (x2, mid_y), (x2, y2)]
+  for exit_y in exits:
+    if not _vertical_clear(x1, y1, exit_y, obstacles, ignore):
+      continue
+    for spine_x in cands:
+      if (h_clear(x1, spine_x, exit_y) and
+          _vertical_clear(spine_x, exit_y, mid_y, obstacles, ignore) and
+          h_clear(spine_x, x2, mid_y)):
+        return [(x1, y1), (x1, exit_y), (spine_x, exit_y), (spine_x, mid_y),
+                (x2, mid_y), (x2, y2)]
   return [(x1, y1), (x1, mid_y), (x2, mid_y), (x2, y2)]
 
 
@@ -644,11 +652,69 @@ def _bridge_span(ctx: _Ctx, idx: int, xmin: float,
   return ymins, ymaxs
 
 
+def _trunk_bus_y(ctx: _Ctx,
+                 port_coords: PortCoords) -> Dict[Tuple[str, str], float]:
+  """Fork-bar y of each trunk's nearest row (20 px before its targets)."""
+  bus: Dict[Tuple[str, str], float] = {}
+  if not ctx.multi:
+    return bus
+  for idx, e in enumerate(ctx.scene.edges):
+    key = trunk_key(ctx.scene, idx)
+    if key is None or (idx, "dst") not in port_coords:
+      continue
+    if e.source_anchor not in ("top", "bottom"):
+      continue
+    y2 = port_coords[(idx, "dst")][1]
+    cand = y2 - 20.0 if e.source_anchor == "bottom" else y2 + 20.0
+    if key not in bus:
+      bus[key] = cand
+    elif e.source_anchor == "bottom":
+      bus[key] = min(bus[key], cand)
+    else:
+      bus[key] = max(bus[key], cand)
+  return bus
+
+
+def _snap_trunk_jogs(ctx: _Ctx, polylines: Polylines) -> None:
+  """Keeps a deeper branch's jog on its trunk's bar after lane assignment.
+
+  `_assign_tree_lanes` may move the bar of a trunk's nearest row; a 6-point
+  branch of the same trunk whose jog sat on the old bar follows it when the
+  moved jog and its two vertical legs stay clear.
+  """
+  scene = ctx.scene
+  bars: Dict[Tuple[str, str], Tuple[float, float]] = {}
+  for idx, pts in polylines.items():
+    key = trunk_key(scene, idx)
+    if key is not None and len(pts) == 4 and abs(pts[1][1] - pts[2][1]) < 0.5:
+      bars.setdefault(key, (pts[1][1], pts[1][1]))
+      lo, hi = bars[key]
+      bars[key] = (min(lo, pts[1][1]), max(hi, pts[1][1]))
+  for idx, pts in list(polylines.items()):
+    key = trunk_key(scene, idx)
+    if key is None or key not in bars or len(pts) != 6:
+      continue
+    e = scene.edges[idx]
+    new_y = bars[key][0] if e.source_anchor == "bottom" else bars[key][1]
+    if abs(new_y - pts[1][1]) < 0.5 or abs(new_y - pts[1][1]) > 2 * H_SEP:
+      continue
+    (x1, y1), (sx, _), (_, my) = pts[0], pts[2], pts[3]
+    obs, ign = ctx.obstacles(idx), (e.src, e.dst)
+    if (_vertical_clear(x1, y1, new_y, obs, ign) and
+        not _segment_hits_any_card(x1, new_y, sx, new_y, obs, ign, pad=3.0) and
+        _vertical_clear(sx, new_y, my, obs, ign)):
+      pts = list(pts)
+      pts[1] = (x1, new_y)
+      pts[2] = (sx, new_y)
+      polylines[idx] = pts
+
+
 def _initial_polylines(ctx: _Ctx, port_coords: PortCoords,
                        bracket_offset: Dict[int, float]) -> Polylines:
   """First-cut route per edge: bridge, Z, C-bracket or tree route."""
   scene = ctx.scene
   polylines: Polylines = {}
+  bus = _trunk_bus_y(ctx, port_coords)
   top_bridge_tracks = 0
   bot_bridge_tracks = 0
   for idx, e in enumerate(scene.edges):
@@ -684,7 +750,8 @@ def _initial_polylines(ctx: _Ctx, port_coords: PortCoords,
       polylines[idx] = [(x1, y1), (out_x, y1), (out_x, y2), (x2, y2)]
     elif ctx.multi and sa in ("top", "bottom") and ta in ("top", "bottom"):
       polylines[idx] = _tree_route(x1, y1, x2, y2, ctx.obstacles(idx),
-                                   (e.src, e.dst), trunk=e.trunk)
+                                   (e.src, e.dst), trunk=e.trunk,
+                                   bus_y=bus.get(trunk_key(scene, idx)))
     else:
       mid_y = (y1 + y2) / 2.0
       polylines[idx] = [(x1, y1), (x1, mid_y), (x2, mid_y), (x2, y2)]
@@ -1159,6 +1226,8 @@ def route_all_edges(
   polylines = _initial_polylines(ctx, port_coords,
                                  _bracket_offsets(ctx, port_coords))
   fixed = _assign_tree_lanes(ctx, polylines) if multi else set()
+  if multi:
+    _snap_trunk_jogs(ctx, polylines)
   _deoverlap_horizontal(ctx, polylines, fixed)
   _deoverlap_vertical(ctx, polylines)
   return port_coords, polylines, _place_labels(ctx, polylines)

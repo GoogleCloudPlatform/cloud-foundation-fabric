@@ -493,3 +493,20 @@ def test_hierarchy_edges_are_dashed_trunks_from_one_port(stage_dataset):
     for src, pts in starts.items():
       assert len(pts) == 1, (name, src, pts)
     assert verify_no_arrow_overlaps(polylines, scene) == [], name
+
+
+def test_deeper_branch_runs_along_its_trunk_bar(stage_dataset):
+  """org -> projects leaves along the org -> folders bar, not beside it."""
+  from fast_diagrammer.scene.layout import layout_scene
+  from fast_diagrammer.scene.router import route_all_edges
+  scene = build(stage_dataset("0-org-setup", "hardened"), "hierarchy")
+  layout_scene(scene)
+  _, polylines, _ = route_all_edges(scene)
+  org = [(i, pts)
+         for i, pts in polylines.items()
+         if scene.edges[i].src == "org_root_card" and scene.edges[i].trunk]
+  folder_bars = {pts[1][1] for _, pts in org if len(pts) == 4}
+  branches = [pts for _, pts in org if len(pts) == 6]
+  assert len(folder_bars) == 1 and branches
+  for pts in branches:
+    assert pts[1][1] in folder_bars, pts
