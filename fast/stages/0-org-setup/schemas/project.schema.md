@@ -32,7 +32,9 @@
   <br>*additional properties: false*
   - **prefix**: *string*
   - ⁺**project**: *string*
-  - **bucket**: *reference([bucket](#refs-bucket))*
+  - **bucket**: *oneof*
+    - *null*
+    - *reference([bucket](#refs-bucket))*
   - **service_accounts**: *object*
     <br>*additional properties: false*
     - **`^[a-z0-9-]+$`**: *object*
@@ -260,7 +262,7 @@
     - **ignore_safety_checks**: *string*
       <br>*enum: ['QUOTA_DECREASE_BELOW_USAGE', 'QUOTA_DECREASE_PERCENTAGE_TOO_HIGH', 'QUOTA_SAFETY_CHECK_UNSPECIFIED']*
 - **parent**: *string*
-- **prefix**: *string*
+- **prefix**: *(string|null)*
 - **project_reuse**: *object*
   <br>*additional properties: false*
   - **use_data_source**: *boolean*
@@ -639,7 +641,7 @@
     - items: *string*
 - **iam_folder_roles**<a name="refs-iam_folder_roles"></a>: *object*
   <br>*additional properties: false*
-  - **`^[a-z0-9-]+$`**: *array*
+  - **`^(?:(folders/)?[a-z0-9-]+|\$folder_ids:[a-z0-9_/-]+)$`**: *array*
     - items: *string*
 - **iam_organization_roles**<a name="refs-iam_organization_roles"></a>: *object*
   <br>*additional properties: false*
@@ -647,7 +649,7 @@
     - items: *string*
 - **iam_project_roles**<a name="refs-iam_project_roles"></a>: *object*
   <br>*additional properties: false*
-  - **`^(?:[a-z0-9-]|\$project_ids:[a-z0-9_-])+$`**: *array*
+  - **`^(?:([a-z0-9.]+:)?[a-z0-9-]+|\$project_ids:[a-z0-9_/-]+)$`**: *array*
     - items: *string*
 - **iam_sa_roles**<a name="refs-iam_sa_roles"></a>: *object*
   <br>*additional properties: false*
@@ -655,7 +657,7 @@
     - items: *string*
 - **iam_storage_roles**<a name="refs-iam_storage_roles"></a>: *object*
   <br>*additional properties: false*
-  - **`^[a-z0-9-]+$`**: *array*
+  - **`^(?:[a-z0-9_.-]+|\$storage_buckets:[a-z0-9_/-]+)$`**: *array*
     - items: *string*
 - **log_bucket**<a name="refs-log_bucket"></a>: *object*
   <br>*additional properties: false*

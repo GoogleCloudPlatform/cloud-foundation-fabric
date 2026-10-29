@@ -133,7 +133,6 @@ locals {
 }
 
 resource "google_iam_project_access_policy" "default" {
-  provider         = google-beta
   for_each         = local.access_policies_create
   project          = local.project_id
   location         = "global"
@@ -168,7 +167,6 @@ resource "google_iam_project_access_policy" "default" {
 }
 
 resource "google_iam_projects_policy_binding" "default" {
-  provider          = google-beta
   for_each          = local.access_policy_bindings
   project           = local.project_id
   location          = "global"

@@ -39,7 +39,7 @@ module "secret" {
   secrets = {
     my-secret = {
       versions = {
-        v1 = { data = "MYTOKEN" }
+        v1 = { data = { value = "MYTOKEN" } }
       }
     }
   }
