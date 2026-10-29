@@ -12,10 +12,14 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+# /// script
+# requires-python = ">=3.10"
+# dependencies = []
+# ///
 """Builds `fast_diagrammer/icons/icons.json` from the vendored `*.svg` files.
 
-  python3 tools/build_icons.py            # rewrite icons.json
-  python3 tools/build_icons.py --check    # exit 1 if icons.json is stale
+  uv run tools/fast-diagrammer/tools/build_icons.py            # rewrite icons.json
+  uv run tools/fast-diagrammer/tools/build_icons.py --check    # exit 1 if stale
 
 The 13 legacy entries (`LEGACY_ICONS`) are copied verbatim from the current
 icons.json, never regenerated from their SVGs: their `inner` markup is part

@@ -24,6 +24,6 @@ Regenerate only in a reviewed bump, from the repository root, and say in the
 commit message why the pictures changed:
 
 ```bash
-python3 tools/fast-diagrammer/tools/update_goldens.py --check   # list drift
-python3 tools/fast-diagrammer/tools/update_goldens.py           # rewrite
+uv run tools/fast-diagrammer/tools/update_goldens.py --check   # list drift
+uv run tools/fast-diagrammer/tools/update_goldens.py           # rewrite
 ```

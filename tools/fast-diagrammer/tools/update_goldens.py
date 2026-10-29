@@ -12,10 +12,17 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+# /// script
+# requires-python = ">=3.10"
+# dependencies = [
+#    "PyYAML>=6.0",
+#    "pytest",
+# ]
+# ///
 """Regenerates the 2-networking goldens (reviewed golden bumps only).
 
-  python3 tools/fast-diagrammer/tools/update_goldens.py --check   # report drift
-  python3 tools/fast-diagrammer/tools/update_goldens.py           # rewrite
+  uv run tools/fast-diagrammer/tools/update_goldens.py --check   # report drift
+  uv run tools/fast-diagrammer/tools/update_goldens.py           # rewrite
 
 The goldens are the regression contract of this tool: any change to the
 2-networking builder, the layout engine, the router or the emitters that

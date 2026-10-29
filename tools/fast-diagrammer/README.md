@@ -36,28 +36,32 @@ flowchart LR
 
 ## Quick start
 
-Run from the root of the repository.
+Run from the root of the repository. `fast_diagrammer.py` declares its only
+dependency (PyYAML) inline in [PEP 723](https://peps.python.org/pep-0723/)
+format, so `uv run` needs no virtual environment; plain `python3` works too
+once PyYAML is installed (it is part of `tests/requirements.txt`).
 
 ```bash
-pip install PyYAML       # the only runtime dependency (already in tests/requirements.txt)
-
 # One dataset; the stage type is optional (auto-detected when omitted)
-python3 tools/fast-diagrammer fast/stages/0-org-setup/datasets/classic \
-  --type org-setup --out-dir /tmp/fd
+uv run tools/fast-diagrammer/fast_diagrammer.py \
+  fast/stages/0-org-setup/datasets/classic --type org-setup --out-dir /tmp/fd
 
-# Executable script, short flags, VPC-SC enriched from the sibling org-setup dataset
-./tools/fast-diagrammer/fast_diagrammer.py fast/stages/1-vpcsc/datasets/hardened \
+# Short flags, VPC-SC enriched from the sibling org-setup dataset
+uv run tools/fast-diagrammer/fast_diagrammer.py fast/stages/1-vpcsc/datasets/hardened \
   -t vpc-sc -o /tmp/fd --org-dataset fast/stages/0-org-setup/datasets/hardened
 
 # A stage folder (or its datasets/ folder) renders every dataset inside it
-python3 tools/fast-diagrammer fast/stages/2-networking -t net /tmp/fd
+uv run tools/fast-diagrammer/fast_diagrammer.py fast/stages/2-networking -t net /tmp/fd
 
 # Every supported stage of a FAST checkout, written to /tmp/fd/<stage>/
-PYTHONPATH=tools/fast-diagrammer python3 -m fast_diagrammer \
-  --fast-root fast/stages --out-dir /tmp/fd
+uv run tools/fast-diagrammer/fast_diagrammer.py --fast-root fast/stages -o /tmp/fd
 
-# Tests (pytest and PyYAML come from tests/requirements.txt)
-python3 -m pytest tools/fast-diagrammer/tests
+# Without uv: the directory and module forms (PyYAML must be installed)
+python3 tools/fast-diagrammer fast/stages/2-networking -t net /tmp/fd
+PYTHONPATH=tools/fast-diagrammer python3 -m fast_diagrammer --fast-root fast/stages -o /tmp/fd
+
+# Tests
+uv run --with-requirements tests/requirements.txt pytest tools/fast-diagrammer/tests
 ```
 
 The tests are run in CI by the `schemas` job of `.github/workflows/tests.yml`.
@@ -135,7 +139,8 @@ Colour is never the only cue: every semantic also has a dash, head or shape.
   like the rest of this repository. They are not the official Google Cloud
   icon set.
 - `__main__.py`, `fast_diagrammer.py`: entry points for `python3 <dir>` and
-  `./fast_diagrammer.py`.
+  `uv run fast_diagrammer.py` (the script carries PEP 723 inline metadata;
+  `tools/update_goldens.py` and `tools/build_icons.py` do too).
 - `tests/`: `test_layout_gates.py` (core gates and the CLI),
   `test_parity_networking.py` (2-networking goldens), one `test_<area>.py`
   per component (emitters, router, stage builders), and

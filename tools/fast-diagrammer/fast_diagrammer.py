@@ -12,7 +12,13 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Executable entry point: `./tools/fast-diagrammer/fast_diagrammer.py IN -t net -o OUT`."""
+# /// script
+# requires-python = ">=3.10"
+# dependencies = [
+#    "PyYAML>=6.0",
+# ]
+# ///
+"""Executable entry point: `uv run tools/fast-diagrammer/fast_diagrammer.py IN -t net -o OUT`."""
 
 import pathlib
 import sys
