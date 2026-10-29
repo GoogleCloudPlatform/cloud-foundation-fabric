@@ -113,6 +113,16 @@ variable "factories_config" {
   default = {}
 }
 
+variable "firewall_policy_associations" {
+  description = "Network firewall policies to associate with this VPC, keyed by region or by `global` for the global policy. The association name defaults to the VPC name followed by the key."
+  type = map(object({
+    name   = optional(string)
+    policy = string
+  }))
+  default  = {}
+  nullable = false
+}
+
 variable "firewall_policy_enforcement_order" {
   description = "Order that Firewall Rules and Firewall Policies are evaluated. Can be either 'BEFORE_CLASSIC_FIREWALL' or 'AFTER_CLASSIC_FIREWALL'."
   type        = string
