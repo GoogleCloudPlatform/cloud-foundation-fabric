@@ -761,6 +761,8 @@ module "vpc" {
 
 Network firewall policies created via the `net-firewall-policy` module can be associated with the VPC from this module. The `firewall_policy_associations` variable is keyed by region, with the special `global` key used for the global network firewall policy. Association names default to the VPC name followed by the key.
 
+An association can be managed either from this module or from the `attachments` variable of the `net-firewall-policy` module, never from both at the same time.
+
 ```hcl
 module "fw-policy-global" {
   source    = "./fabric/modules/net-firewall-policy"
@@ -782,11 +784,11 @@ module "vpc" {
   name       = "my-network"
   firewall_policy_associations = {
     global = {
-      policy = module.fw-policy-global.id
+      policy_id = module.fw-policy-global.id
     }
     europe-west1 = {
-      name   = "my-network-regional"
-      policy = module.fw-policy-regional.id
+      name      = "my-network-regional"
+      policy_id = module.fw-policy-regional.id
     }
   }
 }
@@ -1019,7 +1021,7 @@ secondary_ip_ranges:
 | [description](variables.tf#L88) | An optional description of this resource (triggers recreation on change). | <code>string</code> |  | <code>&#34;Terraform-managed.&#34;</code> |
 | [dns_policy](variables.tf#L94) | DNS policy setup for the VPC. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [factories_config](variables.tf#L107) | Paths to data files and folders that enable factory functionality. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [firewall_policy_associations](variables.tf#L116) | Network firewall policies to associate with this VPC, keyed by region or by `global` for the global policy. The association name defaults to the VPC name followed by the key. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [firewall_policy_associations](variables.tf#L116) | Network firewall policies to associate with this VPC, keyed by region or by `global` for the global policy. The association name defaults to the VPC name followed by the key. Manage each association from one side only, either here or via the `attachments` variable of the policy module, never both. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [firewall_policy_enforcement_order](variables.tf#L126) | Order that Firewall Rules and Firewall Policies are evaluated. Can be either 'BEFORE_CLASSIC_FIREWALL' or 'AFTER_CLASSIC_FIREWALL'. | <code>string</code> |  | <code>&#34;AFTER_CLASSIC_FIREWALL&#34;</code> |
 | [internal_ranges](variables.tf#L137) | Internal range configuration for IPAM operations within the VPC network. | <code>list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#91;&#93;</code> |
 | [ipv6_config](variables.tf#L201) | Optional IPv6 configuration for this network. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |

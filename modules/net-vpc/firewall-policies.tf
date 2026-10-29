@@ -20,7 +20,7 @@ locals {
   firewall_policy_associations = {
     for k, v in var.firewall_policy_associations : k => {
       name   = coalesce(v.name, "${var.name}-${k}")
-      policy = v.policy
+      policy = v.policy_id
       region = lookup(local.ctx.locations, k, k)
     }
   }

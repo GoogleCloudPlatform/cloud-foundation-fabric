@@ -31,7 +31,7 @@ The binding lives with the party that decides it, which gives two interfaces wit
 
 - The target-side interface is canonical and mandatory. Every module whose resource can be a binding target exposes it (`tag_bindings` for tags, an association variable for firewall and Cloud Armor policies), regardless of whether a policy-side interface also exists. It exists only where the API allows the target, so `project` carries `cloud_armor_policy` and not `firewall_policy`; the asymmetry follows the API.
 - A policy-side interface is accepted as a second interface in the specific cases where centralized management is a definite usage pattern, signalled by the policy owner managing attachments across a hierarchy they do not own and/or by binding flags such as exclusions that are only meaningful from the policy's point of view. Hierarchical firewall policies and hierarchical Cloud Armor policies meet this test; tags do not.
-- A given binding is managed from one side only. Both interfaces being available does not mean both are used for the same association.
+- A given binding is managed from one side only. Both interfaces being available does not mean both are used for the same association, and the variable descriptions on both sides say so.
 
 Policy-side interfaces use a map keyed by a descriptive name, consistent with `net-firewall-policy`'s `attachments`, with values carrying the target and any binding-level flags. Target-side interfaces follow the cardinality the API allows for the target: a map where a target can carry several bindings (tags), a single object where it can carry one (hierarchical policies, which allow one direct association per node).
 
@@ -61,7 +61,7 @@ Target side, in `organization`, `folder` and `project`, as a singleton mirroring
 variable "cloud_armor_policy" {
   type = object({
     name              = optional(string)
-    policy            = string
+    policy_id         = string
     excluded_folders  = optional(list(string), [])
     excluded_projects = optional(list(string), [])
   })
@@ -78,8 +78,8 @@ A VPC carries one global network firewall policy and one regional policy per reg
 ```hcl
 variable "firewall_policy_associations" {
   type = map(object({
-    name   = optional(string)
-    policy = string
+    name      = optional(string)
+    policy_id = string
   }))
   default  = {}
   nullable = false

@@ -114,10 +114,10 @@ variable "factories_config" {
 }
 
 variable "firewall_policy_associations" {
-  description = "Network firewall policies to associate with this VPC, keyed by region or by `global` for the global policy. The association name defaults to the VPC name followed by the key."
+  description = "Network firewall policies to associate with this VPC, keyed by region or by `global` for the global policy. The association name defaults to the VPC name followed by the key. Manage each association from one side only, either here or via the `attachments` variable of the policy module, never both."
   type = map(object({
-    name   = optional(string)
-    policy = string
+    name      = optional(string)
+    policy_id = string
   }))
   default  = {}
   nullable = false
