@@ -1,4 +1,4 @@
-# Phase 2 & 3 Reference: Stage 2 Boundaries & Downstream Plumbing Contract
+# Phase 2 Reference: Stage 2 Boundaries & Downstream Plumbing Contract
 
 `fast/stages/2-networking` is a **foundational network plumbing stage**. It creates the projects, VPCs, subnets, IP reservations, routers, interconnects/VPNs, NCC hubs/spokes, base NVAs, DNS zones, and firewall policies that downstream stages consume.
 

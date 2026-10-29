@@ -1,35 +1,22 @@
-# Phase 1 & 2 Reference: Requirements-First Discovery & Topology Mapping
+# Phase 1 & 2 Reference: Requirements Discovery & Unified Topology/IPAM Proposal
 
-This reference governs **Phase 1 (Context & Functional Requirements)** and **Phase 2 (Topology & Mechanism Mapping)**. Rather than asking the user to pick a FAST dataset name upfront—or dumping unrelated questions in static blocks—guide them through a **Conditional Decision DAG** that adapts to their architecture footprint (or extracts it directly from an attached diagram).
-
----
-
-## 1. Entry Mode Detection & Upfront Fact Extraction
-
-Inspect the user's first message and any attached files before asking questions:
-
-### Mode A — Guided Consultative Interview (Default)
-- **Trigger:** The user asks for help designing or defining a `2-networking` dataset without providing a complete topology or diagram.
-- **Action:** Execute the **Conditional Interview DAG** in Section 2 below.
-  - **Strict Dependency Rule:** Never bundle a downstream question in the same `question` tool call as an upstream branching question it depends on. In particular, **never** ask about spoke-to-spoke reachability, hubs, or inter-VPC transit NVAs before knowing whether the user wants a **Single Shared VPC** or **Multi-VPC Hub & Spokes**.
-  - **Concrete Options Rule:** Every option in a multiple-choice question must be concrete (never offer a vague option like *"Single region (e.g. europe-west8 or europe-west1)"* that requires a second question to ask which region they meant).
-
-### Mode B — Reference Diagram or IP Table Ingestion
-- **Trigger:** The user attaches or points to an architecture diagram (`.png`, `.jpg`, `.svg`, `.pdf`, `.drawio`) or an IP/subnet table (Markdown, CSV, YAML).
-- **Action:**
-  1. Inspect the image or file and extract a structured **Diagram & Inventory Extraction Table**:
-     - **Extracted Facts:** Projects, VPCs (Single VPC vs. Hub & Spokes), regions, subnet CIDRs, interconnect/VPN links, NVA appliances, NCC hubs, VPC peerings, and DNS zones shown in the diagram.
-     - **Inferred Stage 2 Plumbing:** Special-purpose subnets or configurations implied by workload icons in the diagram (e.g., an ALB icon implies a regional `proxy_only: true` subnet; a GKE icon implies `pods` and `services` secondary ranges; a Cloud SQL/AlloyDB icon implies either `psa_configs` or a PSC endpoint).
-     - **Ambiguities & Missing Parameters:** Diagrams frequently omit how an NVA is wired (ILB sandwich vs. NCC Router Appliance BGP), whether an NCC hub is `MESH` or `STAR`, BGP ASNs, or whether spoke-to-spoke traffic is allowed.
-  2. Present this extraction table to the user, mark satisfied steps in Phase 1 and Phase 2 complete, and ask only the clarifying questions needed to resolve the ambiguities.
-
-### Mode C — Clone & Mutate an Existing Dataset
-- **Trigger:** The user names an existing dataset (e.g., *"Start from `hub-and-spokes-ncc`, use `us-central1` and `us-east4`, add a `uat` spoke, and drop VLAN attachments"*).
-- **Action:** Confirm the requested delta against the named dataset in `fast/stages/2-networking/datasets/<name>/`, skip directly to **Phase 3 (Step 5)** to confirm the IPAM/naming table for the new/modified resources, and proceed to generation.
+This reference governs **Phase 1 (Requirements Discovery)** and **Phase 2 (Topology, IPAM & Plumbing Proposal)**. Rather than asking the user to pick a FAST dataset name upfront—or dumping unrelated questions in static blocks—guide them through a **Conditional Decision DAG** and then present a **single unified Topology + Pre-Filled IPAM Proposal** for confirmation before generating YAML.
 
 ---
 
-## 2. Conditional Interview DAG (Step-by-Step Discovery)
+## 1. Silent Entry Detection (Never Ask a "Mode A/B/C" Question)
+
+Inspect the user's first message and any attached files silently—**never** ask the user a multiple-choice question about "which mode" they want or expose internal labels (`Mode A/B/C`):
+
+- **If the user starts with a general request (no diagram or detailed spec attached):** Start **Turn 1** of the Conditional Interview DAG (Section 2) immediately. You may include a brief one-line note in prose (*"If you have an architecture diagram, IP table, or existing dataset you'd like to adapt, feel free to share it at any point"*), then ask the Turn 1 baseline questions.
+- **If the user attaches or points to an architecture diagram (`.png`, `.jpg`, `.svg`, `.pdf`, `.drawio`) or an IP/subnet table / detailed prompt:**
+  1. Extract all stated facts (Projects, Single VPC vs. Hub & Spokes, regions, subnet CIDRs, interconnect/VPN links, NVAs, NCC hubs, peerings, DNS zones) and infer the required Stage 2 plumbing (e.g., GKE secondary ranges, `/23` `proxy_only: true` subnets for ALBs, `psa_configs` for Cloud SQL/AlloyDB, `$security_profile_groups:` for Cloud NGFW Enterprise).
+  2. Mark **Phase 1** completed and jump straight to **Phase 2 (Unified Topology, IPAM & Plumbing Proposal)** (Section 4), pre-filling sensible defaults for any unspecified CIDRs/ASNs and highlighting only the remaining ambiguities for confirmation.
+- **If the user asks to clone & mutate an existing in-tree dataset:** Jump straight to **Phase 2 (Section 4)** showing the proposed delta and IPAM table against `fast/stages/2-networking/datasets/<name>/`.
+
+---
+
+## 2. Phase 1: Conditional Interview DAG (Step-by-Step Discovery)
 
 Follow this conditional flow so you never ask moot questions (such as asking about hubs and spokes when the user selected a Single Shared VPC):
 
@@ -62,6 +49,12 @@ Follow this conditional flow so you never ask moot questions (such as asking abo
   │  2. Internet Egress (Cloud NAT / Air-gapped [or Centralized via NVA])      │
   │  3. Firewall Posture (Cloud-Native L4 Policies vs. Cloud NGFW Enterprise)  │
   │  4. Workload Plumbing (None / GKE / L7 ALB `proxy_only` / PSA / PSC / etc) │
+  └────────────────────────────────────┬───────────────────────────────────────┘
+                                       ▼
+  ┌────────────────────────────────────────────────────────────────────────────┐
+  │ Phase 2 (Step 3 — Single Unified Sign-Off Gate):                           │
+  │ Present Topology + Pre-Filled Regional IPAM/ASN/DNS Defaults + Output Path │
+  │ (User confirms defaults or tweaks CIDRs/names -> Proceed to Phase 3 Gen)   │
   └────────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -117,7 +110,7 @@ Once the Multi-VPC pattern is selected in Turn 2B, ask the remaining plumbing qu
 
 ---
 
-## 3. Step 3: Mapping Requirements to `2-networking` Topologies
+## 3. Mapping Requirements to `2-networking` Topologies
 
 ```text
   [Primary VPC Footprint Fork: Single VPC or Multi-VPC Hub & Spokes?]
@@ -154,26 +147,28 @@ Once the Multi-VPC pattern is selected in Turn 2B, ask the remaining plumbing qu
 
 ---
 
-## 4. Step 4: Normalized Topology & Plumbing Sign-Off Template
+## 4. Phase 2 (Step 3): Unified Topology, IPAM & Plumbing Proposal Template
 
-Before moving to **Phase 3 (Detailed IPAM & Parameter Confirmation)**, present a concise **Normalized Topology Specification** to the user and ask for confirmation:
+Do **not** split Topology Confirmation and IPAM Confirmation into two separate turns. As soon as Phase 1 requirements are gathered (or extracted upfront in Adaptive Mode), present a **single unified proposal** containing both the selected topology and pre-filled default CIDRs/ASNs/DNS domains, and ask the user once to confirm (or specify any custom CIDRs/names/output path) before generating the dataset in Phase 3:
 
 ```markdown
-### Proposed FAST `2-networking` Topology Specification
+### Proposed FAST `2-networking` Topology & IPAM Blueprint
 
 - **Topology Pattern:** [`Single Shared VPC` | `datasets/<chosen-dataset>`]
-- **Output Directory:** `<target-custom-dataset-dir>`
+- **Target Output Directory:** `<proposed-or-user-specified-path>` *(e.g. `./fast-config/2-networking/data/`)*
 - **Stage 0 Integration:** [FAST `0-org-setup` (`$folder_ids:networking`) | Standalone `.tfvars`]
 - **Regions (`context.locations`):** `<key-1>` = `<region-1>` [, `<key-2>` = `<region-2>`, ...]
 
-| Project Key (`projects/`) | VPC Key (`vpcs/`) | Role & Topology Attachment | Special Plumbing in `2-networking` |
-| :--- | :--- | :--- | :--- |
-| `net-core-0` | `main` (or `hub` / `routing` + `transit`) | [Single Shared VPC | Central Hub / Hybrid Transit / DNS] | [Subnets, HA VPN / VLANs, Cloud NAT, Cloud DNS, Firewall Policies, etc.] |
-| *(If Multi-VPC)* `net-dev-0` | `dev` | Non-Production Shared VPC Spoke | [Primary subnets, GKE secondaries, `/23` `proxy_only`, `psc`, `psa_configs`, Cloud NAT] |
-| *(If Multi-VPC)* `net-prod-0` | `prod` | Production Shared VPC Spoke | [Primary subnets, GKE secondaries, `/23` `proxy_only`, `psc`, `psa_configs`, Cloud NAT] |
+#### 1. Proposed Projects, VPCs & Regional IPAM Allocation (Pre-Filled Defaults)
+| Project Key (`projects/`) | VPC Key (`vpcs/`) | Region (`$locations:`) | Subnet / Range Name | Proposed CIDR | Purpose & Stage 2 Plumbing |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `net-core-0` | `main` (or `hub` / `routing`) | `<key-1>` | `<subnet-name>` | `10.64.0.0/24` | [Primary subnet / HA VPN / Cloud NAT / DNS] |
+| *(Additional rows for secondary regions, `proxy_only`, `psc`, `psa_configs`, GKE `pods`/`services`, and spoke VPCs as applicable)* | | | | | |
 
-- **Routing & Inspection Summary:** [1–2 bullets on how East-West, Hybrid/On-Prem, and Internet Egress traffic flows]
+#### 2. Routing, BGP, DNS & Firewall Summary
+- **East-West & Hybrid Routing:** [1–2 bullets including proposed Cloud Router / Peer BGP ASNs if VPN/Interconnect/NCC-RA is used]
+- **Cloud DNS & Firewall Posture:** [Proposed private/forwarding/peering DNS domains (`gcp.example.com.`, `onprem.example.com.`), RPZ, and Hierarchical/VPC Firewall rules]
 - **Downstream Stage Handoffs (Out of Scope for Stage 2):** [List any requested ALBs, Cloud NGFW Enterprise endpoints/profiles, GKE clusters, or Cloud SQL instances that will consume the Stage 2 plumbing in follow-up stages, or `None`]
 ```
 
-Wait for the user to confirm (or adjust) this specification before proceeding to Phase 3.
+Ask the user to confirm this unified blueprint (or tell you any CIDRs, ASNs, domain names, or output path they want changed) before executing **Phase 3 (Dataset Generation & Validation)**.

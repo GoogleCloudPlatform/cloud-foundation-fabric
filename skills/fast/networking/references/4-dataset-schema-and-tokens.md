@@ -1,6 +1,6 @@
-# Phase 3 & 4 Reference: Dataset Directory Layout, Schemas & `$token` Rules
+# Phase 2 & 3 Reference: Dataset Directory Layout, Schemas & `$token` Rules
 
-This reference governs **Phase 3 (VPCs, IPAM & Stage Plumbing)** and **Phase 4 (Dataset Generation & Validation)**. Consult the live JSON schemas in `fast/stages/2-networking/schemas/*.schema.json` alongside this guide when generating or modifying YAML files.
+This reference governs **Phase 2 (Topology, IPAM & Plumbing Proposal)** and **Phase 3 (Dataset Generation & Validation)**. Consult the live JSON schemas in `fast/stages/2-networking/schemas/*.schema.json` alongside this guide when generating or modifying YAML files.
 
 ---
 
@@ -121,7 +121,7 @@ factories_config = {
 
 ---
 
-## 4. Phase 4 Execution: Validation, `terraform plan` & Diagram Generation
+## 4. Phase 3 Execution: Validation, `terraform plan` & Diagram Generation
 
 After writing the YAML files into the user's custom dataset directory:
 

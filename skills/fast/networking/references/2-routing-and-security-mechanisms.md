@@ -1,6 +1,6 @@
 # Phase 2 Reference: Routing and Security Mechanisms Across Topologies
 
-This reference governs **Phase 2 (Step 4: Routing, DNS, Firewall & Downstream Plumbing Sign-off)**. Once the baseline topology is selected in `1-requirements-to-topology.md`, use this guide to explain and configure how North-South, East-West, Hybrid, Egress, DNS, and Inspection mechanisms work in YAML.
+This reference governs **Phase 2 (Topology, IPAM & Plumbing Proposal)**. Once the baseline topology is selected in `1-requirements-to-topology.md`, use this guide to explain and configure how North-South, East-West, Hybrid, Egress, DNS, and Inspection mechanisms work in YAML.
 
 ---
 
