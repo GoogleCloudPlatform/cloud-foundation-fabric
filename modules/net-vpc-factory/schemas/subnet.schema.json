@@ -157,11 +157,11 @@
       "type": "object",
       "additionalProperties": false,
       "patternProperties": {
-        "^roles/": {
+        "^(?:roles/|\\$custom_roles:|organizations/[0-9]+/roles/|([a-z0-9.]+:)?projects/[a-z0-9-]+/roles/)": {
           "type": "array",
           "items": {
             "type": "string",
-            "pattern": "^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|ro|rw)"
+            "pattern": "^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|ro|rw|\\$iam_principals:[a-z0-9_-]+)"
           }
         }
       }
@@ -178,12 +178,12 @@
               "type": "array",
               "items": {
                 "type": "string",
-                "pattern": "^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|ro|rw)"
+                "pattern": "^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|ro|rw|\\$iam_principals:[a-z0-9_-]+)"
               }
             },
             "role": {
               "type": "string",
-              "pattern": "^roles/"
+              "pattern": "^(?:roles/|\\$custom_roles:|organizations/[0-9]+/roles/|([a-z0-9.]+:)?projects/[a-z0-9-]+/roles/)"
             },
             "condition": {
               "type": "object",
@@ -218,11 +218,11 @@
           "properties": {
             "member": {
               "type": "string",
-              "pattern": "^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|ro|rw)"
+              "pattern": "^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|ro|rw|\\$iam_principals:[a-z0-9_-]+)"
             },
             "role": {
               "type": "string",
-              "pattern": "^roles/"
+              "pattern": "^(?:roles/|\\$custom_roles:|organizations/[0-9]+/roles/|([a-z0-9.]+:)?projects/[a-z0-9-]+/roles/)"
             },
             "condition": {
               "type": "object",
