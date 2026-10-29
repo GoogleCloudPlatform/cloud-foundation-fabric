@@ -1,6 +1,6 @@
 # Binding Policies and Tags to Resource Manager Objects
 
-**authors:** [ludomagno](https://github.com/ludomagno)
+**authors:** [Ludo](https://github.com/ludoo) \
 **date:** Oct 29, 2026
 
 ## Status
