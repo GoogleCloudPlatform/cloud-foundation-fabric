@@ -17,36 +17,6 @@
 # tfdoc:file:description IAM Unified Access Policies and bindings.
 
 locals {
-  # Flatten all principals referenced across rules so legacy IAM v1
-  # prefixes (user:, group:, serviceAccount:, domain:) can be resolved
-  # through context and normalized to IAM v3 principal URIs once.
-  _raw_principals = distinct(flatten([
-    for k, v in var.access_policies : [
-      for rk, rv in v.rules : concat(rv.principals, rv.excluded_principals)
-    ]
-  ]))
-
-  _resolved_principals = {
-    for p in local._raw_principals :
-    p => lookup(local.ctx.iam_principals, p, p)
-  }
-
-  _normalized_principals = {
-    for p, rp in local._resolved_principals : p => (
-      startswith(rp, "user:")
-      ? "principal://goog/subject/${trimprefix(rp, "user:")}"
-      : startswith(rp, "group:")
-      ? "principalSet://goog/group/${trimprefix(rp, "group:")}"
-      : startswith(rp, "serviceAccount:")
-      ? "principal://iam.googleapis.com/projects/-/serviceAccounts/${trimprefix(rp, "serviceAccount:")}"
-      : startswith(rp, "domain:")
-      ? "principalSet://goog/cloudIdentityCustomerId/${trimprefix(rp, "domain:")}"
-      : contains(["allUsers", "allAuthenticatedUsers"], rp)
-      ? "principalSet://goog/public:all"
-      : rp
-    )
-  }
-
   _registry_cel_default = (
     length(local.registry_locations) == 1
     ? "destination.is_registered == true && destination.agent_registry.location == '${local.registry_locations[0]}'"
@@ -61,8 +31,23 @@ locals {
           ? null
           : templatestring(rv.condition, var.context.condition_vars)
         )
+        # Resolve context and normalize IAM v1 prefixes per element so an
+        # unknown principal URI in one rule does not taint static principals.
         excluded_principals = [
-          for p in rv.excluded_principals : local._normalized_principals[p]
+          for rp in [
+            for p in rv.excluded_principals :
+            lookup(local.ctx.iam_principals, p, p)
+            ] : (
+            startswith(rp, "user:")
+            ? "principal://goog/subject/${trimprefix(rp, "user:")}"
+            : startswith(rp, "group:")
+            ? "principalSet://goog/group/${trimprefix(rp, "group:")}"
+            : startswith(rp, "serviceAccount:")
+            ? "principal://iam.googleapis.com/projects/-/serviceAccounts/${trimprefix(rp, "serviceAccount:")}"
+            : rp == "allUsers"
+            ? "principalSet://goog/public:all"
+            : rp
+          )
         ]
         location = (
           rv.location == null
@@ -70,7 +55,20 @@ locals {
           : lookup(local.ctx.locations, rv.location, rv.location)
         )
         principals = [
-          for p in rv.principals : local._normalized_principals[p]
+          for rp in [
+            for p in rv.principals :
+            lookup(local.ctx.iam_principals, p, p)
+            ] : (
+            startswith(rp, "user:")
+            ? "principal://goog/subject/${trimprefix(rp, "user:")}"
+            : startswith(rp, "group:")
+            ? "principalSet://goog/group/${trimprefix(rp, "group:")}"
+            : startswith(rp, "serviceAccount:")
+            ? "principal://iam.googleapis.com/projects/-/serviceAccounts/${trimprefix(rp, "serviceAccount:")}"
+            : rp == "allUsers"
+            ? "principalSet://goog/public:all"
+            : rp
+          )
         ]
         registry_location = (
           rv.location == null
