@@ -46,6 +46,9 @@ values:
             == 'europe-west1'
           service: iap.googleapis.com
         effect: ALLOW
+        excluded_principals:
+        - principal://iam.googleapis.com/projects/-/serviceAccounts/legacy@my-prj-id.iam.gserviceaccount.com
+        - principal://goog/subject/blocked@example.com
         operation:
         - permissions:
           - iap.googleapis.com/resources.egressViaIAP
