@@ -102,3 +102,34 @@ def test_negative_control_nva_advertise_without_covering_route(
   issues, _ = validate_dataset.validate_dataset_files(ds_copy, STAGE_DIR)
   messages = "\n".join(i.message for i in issues if i.level == "error")
   assert "without a covering kernel route in 'routes'" in messages
+
+
+def test_single_shared_vpc_dataset_passes(tmp_path: pathlib.Path) -> None:
+  ds_single = tmp_path / "single-vpc"
+  shutil.copytree(DATASETS_DIR / "hub-and-spokes-peerings", ds_single)
+
+  # Remove dev/prod spoke projects, VPCs, and DNS zones to form a Single Shared VPC dataset
+  for proj in ("net-dev-0.yaml", "net-prod-0.yaml"):
+    (ds_single / "projects" / proj).unlink()
+  for vpc in ("dev", "prod"):
+    shutil.rmtree(ds_single / "vpcs" / vpc)
+  for dns_dir in ("net-dev-0", "net-prod-0"):
+    shutil.rmtree(ds_single / "dns" / "zones" / dns_dir)
+  (ds_single / "dns" / "zones" / "net-core-0" / "peer-root.yaml").unlink()
+
+  # Strip peering_config from the single VPC (hub) and narrow RPZ networks to [hub]
+  hub_cfg_path = ds_single / "vpcs" / "hub" / ".config.yaml"
+  hub_cfg = yaml.safe_load(hub_cfg_path.read_text(encoding="utf-8"))
+  hub_cfg.pop("peering_config", None)
+  hub_cfg_path.write_text(yaml.safe_dump(hub_cfg), encoding="utf-8")
+
+  rpz_path = ds_single / "dns" / "response-policies" / "net-core-0.yaml"
+  rpz_cfg = yaml.safe_load(rpz_path.read_text(encoding="utf-8"))
+  rpz_cfg["networks"] = ["$networks:hub"]
+  rpz_path.write_text(yaml.safe_dump(rpz_cfg), encoding="utf-8")
+
+  issues, _ = validate_dataset.validate_dataset_files(ds_single, STAGE_DIR)
+  errors = [i for i in issues if i.level == "error"]
+  warnings = [i for i in issues if i.level == "warn"]
+  assert not errors, f"Unexpected errors in single-vpc: {errors}"
+  assert not warnings, f"Unexpected warnings in single-vpc: {warnings}"

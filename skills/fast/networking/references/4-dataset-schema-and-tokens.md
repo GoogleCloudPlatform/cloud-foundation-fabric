@@ -59,6 +59,19 @@ Pay close attention to whether a token key comes from the **directory/file stem*
 - **`$custom_roles:<key>` & `$iam_principals:<key>`:** Defined in `defaults.yaml` `context` or Stage 0 variables (`var.custom_roles`, `var.iam_principals`, `var.service_accounts`). Supported in projects, folders, DNS zones, firewall policies, and subnet IAM bindings.
 - **`$security_profile_groups:<key>`:** Passed via `var.security_profile_groups` (or `defaults.yaml` `context.security_profile_groups`). Used in `firewall-policies/*.yaml` rules with `action: apply_security_profile_group`.
 
+### 2.3 Common Schema Syntax Gotchas
+- **Subnet `secondary_ip_ranges` (`subnet.schema.json`):** Each secondary range entry under `secondary_ip_ranges:` must be an **object** with `ip_cidr_range` (or `reserved_internal_range`), never a bare CIDR string:
+  ```yaml
+  secondary_ip_ranges:
+    pods:
+      ip_cidr_range: 10.104.0.0/17
+    services:
+      ip_cidr_range: 10.108.0.0/21
+  ```
+- **Hierarchical Firewall Policies (`firewall-policies/*.yaml`) vs. VPC Firewall Rules (`vpcs/<vpc>/firewall-rules/*.yaml`):**
+  - `firewall-policies/*.yaml` (`firewall-policy.schema.json`) uses `ingress_rules` / `egress_rules`, `action: allow|deny|goto_next|apply_security_profile_group`, `match.source_ranges`, `match.destination_ranges`, and `match.layer4_configs: [{ protocol: tcp, ports: ["22"] }]`.
+  - `vpcs/<vpc>/firewall-rules/*.yaml` (`firewall-rules.schema.json`) uses `ingress` / `egress` maps where each rule defines top-level `source_ranges` / `destination_ranges`, `rules: [{ protocol: tcp, ports: ["22"] }]` (with `deny: false` for allow or `deny: true` for deny), and `enable_logging: { include_metadata: false }` (an object, not a boolean).
+
 ---
 
 ## 3. Generating `2-networking.auto.tfvars`

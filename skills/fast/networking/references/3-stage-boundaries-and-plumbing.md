@@ -67,8 +67,10 @@ region: $locations:ew1
 ip_cidr_range: 10.100.0.0/22
 description: Primary subnet for GKE nodes with secondary Pod and Service ranges
 secondary_ip_ranges:
-  pods: 10.104.0.0/17
-  services: 10.108.0.0/21
+  pods:
+    ip_cidr_range: 10.104.0.0/17
+  services:
+    ip_cidr_range: 10.108.0.0/21
 ```
 
 ### 2.3 PSA Ranges & PSC Interfaces (`network_attachments`) in `vpcs/<vpc>/.config.yaml`

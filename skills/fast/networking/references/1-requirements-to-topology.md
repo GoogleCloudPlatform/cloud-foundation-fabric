@@ -1,22 +1,24 @@
 # Phase 1 & 2 Reference: Requirements-First Discovery & Topology Mapping
 
-This reference governs **Phase 1 (Context & Functional Requirements)** and **Phase 2 (Topology & Mechanism Mapping)**. Rather than asking the user to pick a FAST dataset name upfront, guide them from **architectural requirements** (or an attached diagram) to the right `fast/stages/2-networking` topology.
+This reference governs **Phase 1 (Context & Functional Requirements)** and **Phase 2 (Topology & Mechanism Mapping)**. Rather than asking the user to pick a FAST dataset name upfront—or dumping unrelated questions in static blocks—guide them through a **Conditional Decision DAG** that adapts to their architecture footprint (or extracts it directly from an attached diagram).
 
 ---
 
-## 1. Step 1: Entry Mode Detection & Upfront Fact Extraction
+## 1. Entry Mode Detection & Upfront Fact Extraction
 
 Inspect the user's first message and any attached files before asking questions:
 
 ### Mode A — Guided Consultative Interview (Default)
 - **Trigger:** The user asks for help designing or defining a `2-networking` dataset without providing a complete topology or diagram.
-- **Action:** Proceed step-by-step through Section 2 below, asking **one question group per turn**. Always offer a recommended FAST default so the user can accept defaults quickly.
+- **Action:** Execute the **Conditional Interview DAG** in Section 2 below.
+  - **Strict Dependency Rule:** Never bundle a downstream question in the same `question` tool call as an upstream branching question it depends on. In particular, **never** ask about spoke-to-spoke reachability, hubs, or inter-VPC transit NVAs before knowing whether the user wants a **Single Shared VPC** or **Multi-VPC Hub & Spokes**.
+  - **Concrete Options Rule:** Every option in a multiple-choice question must be concrete (never offer a vague option like *"Single region (e.g. europe-west8 or europe-west1)"* that requires a second question to ask which region they meant).
 
 ### Mode B — Reference Diagram or IP Table Ingestion
 - **Trigger:** The user attaches or points to an architecture diagram (`.png`, `.jpg`, `.svg`, `.pdf`, `.drawio`) or an IP/subnet table (Markdown, CSV, YAML).
 - **Action:**
   1. Inspect the image or file and extract a structured **Diagram & Inventory Extraction Table**:
-     - **Extracted Facts:** Projects, VPCs, regions, subnet CIDRs, interconnect/VPN links, NVA appliances, NCC hubs, VPC peerings, and DNS zones shown in the diagram.
+     - **Extracted Facts:** Projects, VPCs (Single VPC vs. Hub & Spokes), regions, subnet CIDRs, interconnect/VPN links, NVA appliances, NCC hubs, VPC peerings, and DNS zones shown in the diagram.
      - **Inferred Stage 2 Plumbing:** Special-purpose subnets or configurations implied by workload icons in the diagram (e.g., an ALB icon implies a regional `proxy_only: true` subnet; a GKE icon implies `pods` and `services` secondary ranges; a Cloud SQL/AlloyDB icon implies either `psa_configs` or a PSC endpoint).
      - **Ambiguities & Missing Parameters:** Diagrams frequently omit how an NVA is wired (ILB sandwich vs. NCC Router Appliance BGP), whether an NCC hub is `MESH` or `STAR`, BGP ASNs, or whether spoke-to-spoke traffic is allowed.
   2. Present this extraction table to the user, mark satisfied steps in Phase 1 and Phase 2 complete, and ask only the clarifying questions needed to resolve the ambiguities.
@@ -27,89 +29,124 @@ Inspect the user's first message and any attached files before asking questions:
 
 ---
 
-## 2. Step 2: Functional Requirements Discovery (Step-by-Step Interview)
+## 2. Conditional Interview DAG (Step-by-Step Discovery)
 
-When running the consultative interview, gather requirements across the following **five functional groups**. Ask one group per turn (or combine two closely related groups if the user's initial prompt already partially answered one).
+Follow this conditional flow so you never ask moot questions (such as asking about hubs and spokes when the user selected a Single Shared VPC):
 
-### Group 1: Stage 0 Integration & Target Regions (`1..N`)
-*What to ask:*
+```text
+  ┌────────────────────────────────────────────────────────────────────────────┐
+  │ Turn 1 (Step 1): Baseline & Primary VPC Footprint Fork                     │
+  │ (Ask together ONLY if not already stated in the user's initial prompt)     │
+  │  1. Stage 0 Integration (`0-org-setup` outputs vs. Standalone `.tfvars`)   │
+  │  2. Concrete Target Region(s) (`1..N` specific regions + shortname keys)   │
+  │  3. VPC Footprint Fork:                                                    │
+  │     • Path A: Single Shared VPC (1 VPC, microsegmented via FW/Tags/NGFW)   │
+  │     • Path B: Multi-VPC Hub & Spokes (Separate VPCs for IAM / quota scale) │
+  └───────────────────┬────────────────────────────────────┬───────────────────┘
+                      │                                    │
+         [Path A: Single Shared VPC]          [Path B: Multi-VPC Hub & Spokes]
+         (SKIP all hub/spoke/NCC/peering       ▼
+          and transit-NVA questions!)     ┌────────────────────────────────────┐
+                      │                   │ Turn 2B (Step 2a): Multi-VPC Scope │
+                      │                   │  1. Which spoke environments?      │
+                      │                   │  2. Inter-VPC reachability &       │
+                      │                   │     transit inspection model?      │
+                      │                   └────────────────┬───────────────────┘
+                      │                                    │
+                      └─────────────────┬──────────────────┘
+                                        ▼
+  ┌────────────────────────────────────────────────────────────────────────────┐
+  │ Turn 2A (if Path A) / Turn 3B (if Path B) (Step 2b):                       │
+  │ Connectivity, Security & Workload Plumbing (tailored to Path A or Path B)  │
+  │  1. Hybrid Connectivity (None / HA VPN / Cloud Interconnect / Both)        │
+  │  2. Internet Egress (Cloud NAT / Air-gapped [or Centralized via NVA])      │
+  │  3. Firewall Posture (Cloud-Native L4 Policies vs. Cloud NGFW Enterprise)  │
+  │  4. Workload Plumbing (None / GKE / L7 ALB `proxy_only` / PSA / PSC / etc) │
+  └────────────────────────────────────────────────────────────────────────────┘
+```
+
+### Turn 1 (Step 1): Baseline & Primary VPC Footprint Fork
+Ask only the following mutually independent questions (skipping any already answered in the user's prompt):
+
 1. **FAST `0-org-setup` Integration vs. Standalone Stage Execution:** Are you running `2-networking` on top of an existing FAST `0-org-setup` deployment, or standalone?
    - *Why this matters:* `2-networking` can create new projects or reuse existing projects in either mode. Knowing if `0-org-setup` is used is strictly for **tfvars, provider, and context plumbing** (whether `0-globals.auto.tfvars.json` and `0-org-setup.auto.tfvars.json` provide `$folder_ids`, `$storage_buckets`, `billing_account`, and `prefix`, or whether those variables must be supplied directly in `2-networking.auto.tfvars`).
-2. **Target Regions (`1..N`) & Location Keys:** How many GCP regions (`1` to `N`) and which specific regions do you plan to use?
-   - *Note on `defaults.yaml` location keys:* `primary` and `secondary` in the reference datasets are just arbitrary key names in `context.locations`. A dataset can define `1` to `N` regions using either role names (`primary`, `secondary`) or concise region shortnames (such as `ew1`, `ew8`, `ew12`, `usc1`). Propose clean region shortnames (or `primary`/`secondary` if they prefer) matching the regions the user selects.
+2. **Target Regions (`1..N`) & Location Keys:** Which specific GCP region(s) (`1` to `N`) will host your resources?
+   - *Important:* Present **concrete** single-region and multi-region choices (e.g., `europe-west1 + europe-west8`, `europe-west8 + europe-west12`, `europe-west8 (single region)`, `europe-west1 (single region)`, `us-central1 + us-east4`, or custom free-text) so you never need a second question to ask *which* region they picked.
+   - *Note on `defaults.yaml` location keys:* `primary` and `secondary` in the reference datasets are just arbitrary key names in `context.locations`. A dataset can define `1` to `N` regions using either role names (`primary`, `secondary`) or concise region shortnames (`ew1`, `ew8`, `ew12`, `usc1`). Propose clean shortname keys matching their chosen regions.
+3. **Primary VPC Footprint Fork (`Single Shared VPC` vs. `Multi-VPC Hub & Spokes`):**
+   - *Framing to include in the question:* In GCP, network microsegmentation and L7 IPS (via Hierarchical/Network Firewall Policies, IAM-governed Secure Tags, and Cloud NGFW Enterprise) work **inside a single Shared VPC**—you do not need multiple VPCs for network security isolation. Multiple VPCs are used to **isolate IAM/administrative blast radii** across host projects (e.g., `dev` vs. `prod`) and to **scale horizontally** across Andromeda quota domains.
+   - **Option A — Single Shared VPC:** A single Shared VPC (`main-0` / `shared-0`) hosting all environments/subnets, segmented via subnet IAM, Firewall Policies, Secure Tags, and optional Cloud NGFW Enterprise. *(Ideal for PoCs, simple/compact estates, or low-latency enclaves—no hubs, spokes, NCC, or peering required).*
+   - **Option B — Multi-VPC Hub & Spokes:** Separate Shared VPCs per environment (`dev`, `prod`, etc.) interconnected through a central hub (via NCC, 3rd-party NVAs, or Peering).
 
-### Group 2: VPC Segmentation Drivers & Inter-VPC Reachability
-*Important architectural framing to share with the user before asking:*
-- **Network microsegmentation does NOT require multiple VPCs in GCP:** Hierarchical/Network Firewall Policies, IAM-governed Secure Tags, and Cloud NGFW Enterprise (L7 IPS) enforce granular microsegmentation within a single Shared VPC. Multiple VPCs are introduced primarily to **isolate IAM/administrative blast radii** (e.g., separate host projects for `dev` vs. `prod`) and to **scale horizontally** across quota domains.
-
-*What to ask:*
-1. **VPC & Environment Boundaries:** Which environments or administrative domains need separate Shared VPCs? *(Default: `dev` and `prod`; common additions: `nonprod`/`uat`, `dmz`, or a single consolidated workload VPC)*.
-2. **Inter-VPC Reachability Pattern:** How should your spoke VPCs communicate with each other and with shared services?
-   - **Option A — Strictly Isolated Spokes (Hub-and-Spoke only):** `dev` and `prod` only reach centralized shared services and on-premises networks in the `hub` VPC, never each other.
-     - *Advisory warning:* Remind the user that **"strict spoke isolation" almost never holds true over time**—as soon as they need to exchange anonymized data between `prod` and `dev`, or run shared agents (CI/CD, automation, or AI agents) that must operate across both environments, hard non-transitivity in VPC Peering becomes a painful blocker.
-   - **Option B — Direct Spoke-to-Spoke Reachability (Full Mesh):** Workloads across spokes can route directly at line rate (with segmentation enforced by Firewall Policies / Secure Tags / Cloud NGFW Enterprise).
-   - **Option C — Central Group vs. Isolated Edge Groups (Star Topology):** Multiple spokes exist where central/shared-service spokes are reachable by all edge spokes, while edge spokes remain isolated from one another at the routing table layer. *(While traditional VPC Peering also isolates spokes, **NCC (`STAR` or `MESH`) is strongly favored** for scale and transitive hybrid/PSA/PSC routing).*
-   - **Option D — Inspected East-West Traffic:** Spoke-to-spoke (and/or hybrid) traffic must be inspected at L7—either natively via **Cloud NGFW Enterprise** (transparently on top of NCC/Peering/single-VPC) or by hairpinning traffic through **3rd-party stateful NVA VMs**.
-
-### Group 3: Network Security & Packet Inspection Posture
-*Important architectural framing:*
-- **Inspection is largely orthogonal to VPC topology:** Cloud-native firewalls, Secure Tags, and Cloud NGFW Enterprise operate transparently inside any VPC or across NCC/Peering without changing routing, and Policy-Based Routing (PBR) can hairpin traffic through an appliance even within a single VPC. Inspection only drives the *inter-VPC topology* when **3rd-party multi-NIC NVA VMs** act as the central transit router between VPCs.
-
-*What to ask:*
-- **What level of network firewalling and packet inspection is required?**
-  - **Option A — Cloud-Native L4 Firewalls (Default):** Hierarchical Firewall Policies at the folder/org level (`goto_next` delegation) combined with VPC firewall rules. Zero appliance VM cost or latency.
-  - **Option B — Cloud NGFW Enterprise (Managed L7 IPS / TLS Inspection):** Cloud-native routing (`ncc` or `peerings`) paired with Google-managed firewall endpoints and `$security_profile_groups` rules in `2-networking` firewall policies (with endpoint/profile provisioning delegated to `0-org-setup` / `2-security`).
-  - **Option C — 3rd-Party Stateful NVA VMs (Palo Alto, Fortinet, Check Point, Linux/FRR):** Traffic between trust zones (e.g., Untrusted/DMZ, Hybrid, and Workload Spokes) must traverse multi-NIC NVA VMs.
-    - *Follow-up when Option C is chosen (`NCC-RA` vs. `ILB Sandwich`):*
-      - **Always recommend `hub-and-spokes-nva-ncc` (NCC Router Appliance with dynamic BGP) for multi-regional architectures.** It is the **only** pattern that provides automatic regional failover via BGP/MED policies *and* allows managed services (such as PSA-peered Cloud SQL, AlloyDB, or NetApp) to use the best available regional route, since managed services do not support network-tagged static routes.
-      - Use **`hub-and-spokes-nva` (ILB Sandwich with static routes)** only for single-region deployments or specific point-to-point/DMZ `ILB-as-next-hop` legs where BGP is not used.
-
-### Group 4: Hybrid Connectivity & Internet Egress
-*What to ask:*
-1. **On-Premises / Multicloud Links:** Do you need **HA VPN**, **Dedicated / Partner Cloud Interconnect (VLAN attachments)**, both, or neither?
-   - *If multiple hybrid links exist (e.g., On-Premises + Colocated Partner/Database Interconnect):* Do external sites need to route directly to each other through Google Cloud (`site_to_site_data_transfer: true` on NCC hybrid spokes), or only to GCP VPCs?
-2. **Internet Egress Model:** Should spoke VPCs egress directly via per-VPC **Cloud NAT** (`nat_config`), or must internet egress be centralized through an NVA / DMZ VPC (or omitted entirely for air-gapped spokes)?
-
-### Group 5: Workload & Managed Service Plumbing
-*What to ask:*
-- **Which higher-level GCP platforms will run in these VPCs so `2-networking` can pre-provision their network plumbing?**
-  - **GKE Clusters (Standard / Autopilot):** Requires `pods` and `services` secondary CIDR ranges on workload subnets.
-  - **Application Load Balancers (Internal L7 ALB / Regional External ALB / Service Extensions):** Requires a regional `proxy_only: true` (`REGIONAL_MANAGED_PROXY`, `/23` recommended) subnet per VPC and region.
-  - **Private Service Connect (PSC):**
-    - *Publishing services (Producer):* Requires `psc: true` (`PRIVATE_SERVICE_CONNECT`) NAT subnets.
-    - *Consuming services (Consumer):* Requires reserved internal IPs (`psc_addresses` in `addresses.yaml`), private DNS zones, and `export_psc: true` on the NCC hub.
-  - **Private Services Access (PSA — Cloud SQL, AlloyDB, Memorystore, NetApp Volumes):** Requires `psa_configs` CIDR allocations (`servicenetworking`) on the VPC and custom route export if accessed from on-premises.
-  - **Serverless / Vertex AI (Cloud Run Direct VPC Egress, Vertex AI Agent Engine PSC-I):** Requires dedicated `/24` (min `/26`) subnets, optional `network_attachments` in `.config.yaml`, and DNS Response Policy (`*.rep.googleapis.com.`) bypasses.
+> **STOP after Turn 1 and wait for the user's answer before asking Turn 2 questions.**
 
 ---
 
-## 3. Step 3: Mapping Requirements to the Canonical `2-networking` Topologies
+### Turn 2 — Path A (`Single Shared VPC` Selected): Single-VPC Plumbing Discovery
+When the user selects **Option A (Single Shared VPC)** in Turn 1:
+- **Do NOT ask about spoke environments, spoke-to-spoke routing, NCC hubs, VPC peering, or inter-VPC transit NVAs.**
+- Ask only the Single-VPC questions below:
+  1. **Environment Subnets within the Single VPC:** Do you want a single general-purpose subnet per region, or separate subnets per logical environment (e.g., `dev` and `prod` subnets within the same Shared VPC for subnet-level IAM delegation)?
+  2. **Hybrid Connectivity:** Do you need **HA VPN**, **Cloud Interconnect (VLAN attachments)**, both, or **None (Cloud-only)** terminating in this VPC?
+  3. **Internet Egress:** Should the VPC egress via **Cloud NAT** (`nat_config`), or have **no internet egress** (Air-gapped / Private Google Access only)?
+  4. **Firewall & Inspection Posture:** Are **Cloud-Native L4 Firewalls** (Hierarchical + VPC Firewall Policies) sufficient, or do you also want **Cloud NGFW Enterprise** (L7 IPS / TLS inspection rules via `$security_profile_groups`—or intra-VPC 3rd-party NVA hairpinning via Policy-Based Routing)?
+  5. **Workload & Managed Service Plumbing:** Which platforms will run in this VPC so Stage 2 can pre-provision their subnets/ranges? *(Include an explicit **"None (standard VM subnets only)"** option alongside **GKE Clusters** (`pods`/`services` secondary ranges), **Application Load Balancers** (`/23` `proxy_only: true` subnet), **Private Services Access / PSA** (`psa_configs` for Cloud SQL/AlloyDB/Memorystore/NetApp), **Private Service Connect / PSC** (`psc: true` NAT subnets or `psc_addresses`), and **Serverless / Vertex AI** (`/24` Direct VPC Egress / `network_attachments`))*.
 
-Use this decision tree and comparison matrix to recommend the exact baseline dataset from `fast/stages/2-networking/datasets/`:
+---
+
+### Turn 2 — Path B (`Multi-VPC Hub & Spokes` Selected): Inter-VPC & Inspection Discovery
+When the user selects **Option B (Multi-VPC Hub & Spokes)** in Turn 1, ask:
+
+1. **Spoke Environments:** Which workload environments need dedicated spoke Shared VPCs? *(Default: `dev` and `prod`; common additions: `nonprod`/`uat`, `dmz`)*.
+2. **Inter-VPC Reachability & Transit Inspection Pattern:** How should your spoke VPCs communicate with each other and with shared services/hybrid links?
+   - **Option A — Direct Spoke-to-Spoke over NCC (`hub-and-spokes-ncc` with `MESH`, Recommended Cloud-Native Default):** Full line-rate routing across spokes via NCC `MESH`, with microsegmentation enforced by Firewall Policies, Secure Tags, and/or **Cloud NGFW Enterprise**.
+   - **Option B — Central Hub Group + Isolated Edge Spokes over NCC (`hub-and-spokes-ncc` with `STAR`):** Shared-service/hub VPCs in the `center` group are reachable by all `edge` spokes (`dev`, `prod`), while `edge` spokes are isolated from each other at the routing table layer (strongly favored over traditional peering for scale and transitive hybrid/PSA/PSC routing).
+   - **Option C — Inspected via 3rd-Party Stateful NVA VMs (Palo Alto, Fortinet, Check Point, Linux/FRR):** Spoke-to-spoke and hybrid traffic is hairpinned through multi-NIC NVA VMs.
+     - **Always recommend `hub-and-spokes-nva-ncc` (NCC Router Appliance with dynamic BGP) for multi-regional architectures:** It is the **only** pattern that provides automatic cross-region failover via BGP/MED policies *and* allows managed services (such as PSA-peered Cloud SQL, AlloyDB, or NetApp) to use the best available regional route, since managed services do not support network-tagged static routes.
+     - Use **`hub-and-spokes-nva` (ILB Sandwich with static routes)** only for single-region deployments or specific point-to-point/DMZ `ILB-as-next-hop` legs where BGP is not used.
+   - **Option D — Strictly Isolated Spokes via VPC Peering (`hub-and-spokes-peerings`):** Small static estate (`<= 5` spokes, `$0` hub fee) where `dev` and `prod` peer only with `hub`.
+     - *Advisory warning:* Remind the user that **"strict spoke isolation" almost never holds true over time**—scenarios like exchanging anonymized data between `prod` and `dev`, or running shared CI/CD or AI agents that must operate across both environments, will bite them under non-transitive peering.
+
+### Turn 3 — Path B (`Multi-VPC Hub & Spokes`): Hybrid, Egress, Firewall & Workload Plumbing
+Once the Multi-VPC pattern is selected in Turn 2B, ask the remaining plumbing questions:
+1. **On-Premises / Multicloud Links:** Do you need **HA VPN**, **Cloud Interconnect (VLAN attachments)**, both, or **None (Cloud-only)**?
+   - *(If NCC + multiple hybrid links exist: ask whether external sites need to route directly to each other through GCP via `site_to_site_data_transfer: true`).*
+2. **Internet Egress Model:** Per-VPC **Cloud NAT** (`nat_config`), centralized egress through the NVA/DMZ VPC, or **no internet egress** (Air-gapped / PGA only)?
+3. **Cloud NGFW Enterprise (if Cloud-Native routing was selected in Turn 2B):** Standard L4 Firewall Policies (`goto_next`), or add **Cloud NGFW Enterprise** (`$security_profile_groups` L7 IPS rules)?
+4. **Workload & Managed Service Plumbing:** **None (standard subnets only)**, **GKE** (`pods`/`services` secondaries), **L7 ALB** (`/23` `proxy_only: true`), **PSA** (`psa_configs`), **PSC** (`psc: true` / `psc_addresses`), and/or **Serverless / Vertex AI**?
+
+---
+
+## 3. Step 3: Mapping Requirements to `2-networking` Topologies
 
 ```text
-  [Do inter-VPC or hybrid flows require 3rd-party multi-NIC NVA VMs as the transit router?]
-   ├── YES ──> [Is the deployment multi-regional or using PSA/managed services across spokes?]
-   │            ├── Multi-region (Recommended Default) ──> datasets/hub-and-spokes-nva-ncc (BGP Router Appliance)
-   │            ├── Single-region / Static ILB only ─────> datasets/hub-and-spokes-nva (ILB Sandwich)
-   │            └── Hybrid (NCC-RA core + ILB DMZ leg) ──> datasets/hub-and-spokes-nva-ncc (+ ilb_config on DMZ NIC)
+  [Primary VPC Footprint Fork: Single VPC or Multi-VPC Hub & Spokes?]
+   ├── Single Shared VPC (PoCs, simple estates, or single IAM boundary)
+   │    └──> Custom Single-VPC Dataset (1 project + 1 VPC, no NCC/Peering/DNS-peering; derived from peerings dataset)
    │
-   └── NO (Cloud-native routing, with L4 Firewall Policies and/or Cloud NGFW Enterprise)
-        ├── Recommended Default (Any scale, hybrid/PSA/PSC transitivity) ──> datasets/hub-and-spokes-ncc
-        │    ├── Full spoke-to-spoke routing (microsegmented via FW/NGFW) ─> preset_topology: MESH
-        │    └── Routing-level isolation between edge spokes via center ───> preset_topology: STAR
+   └── Multi-VPC Hub & Spokes (Separate host-project IAM boundaries or horizontal quota scale)
+        ├── [Do inter-VPC or hybrid flows require 3rd-party multi-NIC NVA VMs as the transit router?]
+        │    ├── Multi-region NVA (Recommended Default) ──> datasets/hub-and-spokes-nva-ncc (BGP Router Appliance)
+        │    ├── Single-region NVA / Static ILB only ─────> datasets/hub-and-spokes-nva (ILB Sandwich)
+        │    └── Hybrid (NCC-RA core + ILB DMZ leg) ──────> datasets/hub-and-spokes-nva-ncc (+ ilb_config on DMZ NIC)
         │
-        ├── Small static estate (<= 5 spokes, $0 hub fee) ─────────────────> datasets/hub-and-spokes-peerings
-        │    (Warn user: strict isolation almost always bites later—e.g. exchanging anonymized prod/dev data or running agents across both envs)
-        │
-        └── Legacy / Niche (Not recommended for new designs; NCC wins) ────> datasets/hub-and-spokes-vpns
+        └── [Cloud-native routing, with L4 Firewall Policies and/or Cloud NGFW Enterprise]
+             ├── Recommended Default (Any scale, hybrid/PSA/PSC transitivity) ──> datasets/hub-and-spokes-ncc
+             │    ├── Full spoke-to-spoke routing (microsegmented via FW/NGFW) ─> preset_topology: MESH
+             │    └── Routing-level isolation between edge spokes via center ───> preset_topology: STAR
+             │
+             ├── Small static estate (<= 5 spokes, $0 hub fee) ─────────────────> datasets/hub-and-spokes-peerings
+             │    (Warn user: strict isolation almost always bites later—e.g. exchanging anonymized prod/dev data or running agents across both envs)
+             │
+             └── Legacy / Niche (Not recommended for new designs; NCC wins) ────> datasets/hub-and-spokes-vpns
 ```
 
-### Canonical Topology Comparison Matrix
+### Topology Comparison Matrix
 
-| In-Tree Dataset (`fast/stages/2-networking/datasets/`) | Core Connectivity & VPC Layout | Spoke-to-Spoke Behavior | Scale & Quota Envelope | Best Fit & Recommendation Posture | Watch Out For... |
+| Topology Pattern & In-Tree Baseline | Core Connectivity & VPC Layout | East-West Behavior | Scale & Quota Envelope | Best Fit & Recommendation Posture | Watch Out For... |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **`hub-and-spokes-ncc`** *(Recommended Cloud-Native Default)* | Central NCC Hub (`hub.yaml`) connecting `hub-0` (with hybrid VPN/VLAN spokes), `dev-0`, and `prod-0` as VPC spokes. | **Configurable:** Full any-to-any with `preset_topology: MESH`, or isolated edge spokes with `preset_topology: STAR` (`center` vs. `edge` groups). | Scales up to **250 VPC spokes** per hub (`4,000` subnet routes; `1,000` dynamic prefixes/region; `1,000` propagated PSC endpoints). | **Primary recommendation** for cloud-native and Cloud NGFW Enterprise estates; native transitive hybrid routing, PSC propagation (`export_psc: true`), and Producer VPC Spoke support. | `preset_topology` (`MESH` vs. `STAR`) is immutable after hub creation; `auto_accept` project lists on hub groups must not contain duplicates. |
+| **Single Shared VPC** *(Derived by simplifying `hub-and-spokes-peerings` to 1 project + 1 VPC)* | Single Shared VPC (`vpcs/main/` or `vpcs/shared/`) in 1 host project (`projects/net-core-0.yaml`). Zero `ncc-hubs/`, `nvas/`, or `peering_config`. | **Native intra-VPC routing** at full Andromeda line rate; segmented via subnet IAM, Firewall Policies, Secure Tags, and/or Cloud NGFW Enterprise. | Up to **300 subnets** and **100–1,000 service projects** in a single quota domain. | **Ideal for PoCs, simple/compact estates, or low-latency enclaves** where a single network admin team manages the host project. | All environments share a single Shared VPC host project IAM boundary and VPC quota domain; intra-VPC 3rd-party appliance hairpinning requires Policy-Based Routing (`policy_based_routes`). |
+| **`hub-and-spokes-ncc`** *(Recommended Multi-VPC Cloud-Native Default)* | Central NCC Hub (`hub.yaml`) connecting `hub-0` (with hybrid VPN/VLAN spokes), `dev-0`, and `prod-0` as VPC spokes. | **Configurable:** Full any-to-any with `preset_topology: MESH`, or isolated edge spokes with `preset_topology: STAR` (`center` vs. `edge` groups). | Scales up to **250 VPC spokes** per hub (`4,000` subnet routes; `1,000` dynamic prefixes/region; `1,000` propagated PSC endpoints). | **Primary recommendation** for multi-VPC cloud-native and Cloud NGFW Enterprise estates; native transitive hybrid routing, PSC propagation (`export_psc: true`), and Producer VPC Spoke support. | `preset_topology` (`MESH` vs. `STAR`) is immutable after hub creation; `auto_accept` project lists on hub groups must not contain duplicates. |
 | **`hub-and-spokes-nva-ncc`** *(Recommended Multi-Region NVA Default)* | Dual NCC Hubs (`routing` `MESH` + `transit` `STAR`); multi-region NVAs (`nvas/primary.yaml`, `secondary.yaml`) attached as **NCC Router Appliance** spokes (`ncc_ra_config` + `bgp_config`). | **Inspected:** `dev-0` and `prod-0` attach to `transit` `edge` group; NVAs attach to `transit` `center` and `routing` `default`, inspecting all N-S and E-W flows over dynamic BGP. | Scales to NCC limits (**250 spokes**) with zero static routes and automatic intra-region / cross-region BGP failover. | **Always recommend for multi-region 3rd-party NVA architectures.** Only way to get automatic cross-region failover and let managed services (`PSA`) follow the best available route (since managed services do not support tagged static routes). | Never place workloads in the `transit` VPC (asymmetric return path); every prefix in `advertise` (control plane) must have a matching kernel route in `routes` (data plane). |
 | **`hub-and-spokes-nva`** | Multi-NIC NVA (`nvas/main.yaml`) with `ilb_config` attached to `dmz-0`, `hub-0`, `dev-0`, and `prod-0` (spokes peered to `hub-0`). | **Inspected:** Static routes in each VPC steer inter-zone and hybrid traffic to the NVA's per-VPC Internal Passthrough NLB VIP (`$addresses:<vpc>/main`). | Bounded by NVA VM shape bandwidth and VPC peering group limits if spokes peer to a common hub. | Single-region 3rd-party NVA deployments, or specific `ILB-as-next-hop` DMZ/cross-environment legs where dynamic BGP is not used. | Static routes lack regional proximity metrics for multi-region failover; requires symmetric 5-tuple hashing (`PER_CONNECTION`, `session_affinity: NONE`, `NEVER_PERSIST`) and a shared health check. |
 | **`hub-and-spokes-peerings`** *(also symlinked as `classic`)* | `hub-0` peered via `peering_config` with `dev-0` and `prod-0` (`export/import_custom_routes: true`). | **Isolated** (VPC Peering is strictly non-transitive). | Small estates (**$\le 5$–$10$ spokes**). Shares peering-group quotas (`subnet_ranges_per_peering_group` = 1,000; `static_routes_per_peering_group` = 300). | Small, cost-sensitive setups (`$0` hub fee). **Caution:** Warn the user that "strict spoke isolation" is almost never true long-term—scenarios like exchanging anonymized data between `prod` and `dev` or running agents that work across both environments will bite them under non-transitive peering. | On-premises routes in `hub-0` cannot transit to PSA (`servicenetworking`) peered to `dev-0`/`prod-0`; Cloud DNS forwarding (`35.199.192.0/19`) cannot hop across peering to a VPN in another VPC. |
@@ -124,19 +161,19 @@ Before moving to **Phase 3 (Detailed IPAM & Parameter Confirmation)**, present a
 ```markdown
 ### Proposed FAST `2-networking` Topology Specification
 
-- **Base Dataset Pattern:** `datasets/<chosen-dataset>`
+- **Topology Pattern:** [`Single Shared VPC` | `datasets/<chosen-dataset>`]
 - **Output Directory:** `<target-custom-dataset-dir>`
-- **Stage 0 Integration:** [FAST `0-org-setup` (`$folder_ids:networking`) | Standalone / Reused Projects]
+- **Stage 0 Integration:** [FAST `0-org-setup` (`$folder_ids:networking`) | Standalone `.tfvars`]
 - **Regions (`context.locations`):** `<key-1>` = `<region-1>` [, `<key-2>` = `<region-2>`, ...]
 
 | Project Key (`projects/`) | VPC Key (`vpcs/`) | Role & Topology Attachment | Special Plumbing in `2-networking` |
 | :--- | :--- | :--- | :--- |
-| `net-core-0` | `hub` (or `routing` + `transit`) | Central Hub / Hybrid Transit / DNS | [HA VPN / VLAN Attachments / NCC Hub / NVA NICs / Cloud DNS Forwarding & RPZ] |
-| `net-dev-0` | `dev` | Non-Production Shared VPC Spoke | [Primary subnets, GKE secondaries, `/23` `proxy_only`, `psc`, `psa_configs`, Cloud NAT] |
-| `net-prod-0` | `prod` | Production Shared VPC Spoke | [Primary subnets, GKE secondaries, `/23` `proxy_only`, `psc`, `psa_configs`, Cloud NAT] |
+| `net-core-0` | `main` (or `hub` / `routing` + `transit`) | [Single Shared VPC | Central Hub / Hybrid Transit / DNS] | [Subnets, HA VPN / VLANs, Cloud NAT, Cloud DNS, Firewall Policies, etc.] |
+| *(If Multi-VPC)* `net-dev-0` | `dev` | Non-Production Shared VPC Spoke | [Primary subnets, GKE secondaries, `/23` `proxy_only`, `psc`, `psa_configs`, Cloud NAT] |
+| *(If Multi-VPC)* `net-prod-0` | `prod` | Production Shared VPC Spoke | [Primary subnets, GKE secondaries, `/23` `proxy_only`, `psc`, `psa_configs`, Cloud NAT] |
 
-- **Routing & Inspection Summary:** [1–2 bullets on how Spoke-to-Spoke, Spoke-to-OnPrem, and Internet Egress traffic flows]
-- **Downstream Stage Handoffs (Out of Scope for Stage 2):** [List any requested ALBs, Cloud NGFW Enterprise endpoints/profiles, GKE clusters, or Cloud SQL instances that will consume the Stage 2 plumbing in follow-up stages]
+- **Routing & Inspection Summary:** [1–2 bullets on how East-West, Hybrid/On-Prem, and Internet Egress traffic flows]
+- **Downstream Stage Handoffs (Out of Scope for Stage 2):** [List any requested ALBs, Cloud NGFW Enterprise endpoints/profiles, GKE clusters, or Cloud SQL instances that will consume the Stage 2 plumbing in follow-up stages, or `None`]
 ```
 
 Wait for the user to confirm (or adjust) this specification before proceeding to Phase 3.

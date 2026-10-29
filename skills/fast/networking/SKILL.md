@@ -1,6 +1,6 @@
 ---
 name: fast-networking
-description: Designs, customizes, and validates Cloud Foundation Fabric FAST Stage 2 (2-networking) YAML datasets from user requirements, reference diagrams, or existing topologies. Use when a user asks to design a GCP landing zone network, choose or customize a 2-networking dataset (VPC Peering, NCC, NVA ILB sandwich, NVA NCC Router Appliance, HA VPN), convert a network diagram into FAST YAML, or validate a 2-networking dataset.
+description: Designs, customizes, and validates Cloud Foundation Fabric FAST Stage 2 (2-networking) YAML datasets from user requirements, reference diagrams, or existing topologies. Use when a user asks to design a GCP landing zone network, choose or customize a 2-networking dataset (Single Shared VPC, NCC, NVA NCC Router Appliance, NVA ILB sandwich, VPC Peering, HA VPN), convert a network diagram into FAST YAML, or validate a 2-networking dataset.
 ---
 
 # FAST `2-networking` Dataset Designer
@@ -15,7 +15,7 @@ This skill guides users from functional networking and security requirements—o
 > ```text
 > FAST 2-Networking Designer Progress:
 > - Phase 1: Context & Functional Requirements
->   (Step 1/2: Entry Mode & Core Requirements - IN PROGRESS)
+>   (Step 1/2: Baseline & Architecture Footprint - IN PROGRESS)
 > - Phase 2: Topology & Mechanism Mapping
 >   (Not started)
 > - Phase 3: VPCs, IPAM & Stage Plumbing
@@ -25,13 +25,14 @@ This skill guides users from functional networking and security requirements—o
 > ```
 
 > [!CRITICAL]
-> **Understanding Turn Boundaries:**
+> **Understanding Turn Boundaries & Conditional Questioning (`ask_user` / `question`):**
 > - Once you ask the user a question or present a specification for confirmation, **stop execution immediately (do not call more tools)**.
 > - Never simulate, guess, or assume the user's answer in the same turn. Wait for the user's next message.
-> - Use `ask_user` / `ask_question` whenever available for structured multiple-choice decisions.
+> - **NEVER bundle dependent questions in the same turn or `question` tool call:** Only mutually **independent** questions may be asked together. In particular, you **MUST** resolve whether the user wants a **Single Shared VPC** vs. **Multi-VPC Hub & Spokes** *before* asking any questions about spoke-to-spoke routing, NCC hubs, peering, or inter-VPC transit NVAs.
+> - **Concrete Options Only:** Every multiple-choice option must be self-contained and actionable. Never offer a vague option like *"Single region (e.g., europe-west8 or europe-west1)"* that forces an extra follow-up turn just to ask *which* single region they meant; instead, list the specific common region choices directly and allow custom free-text input.
 
 1. **Step-by-Step by Default, Adaptive on Rich Input:**
-   - **Default Mode (Interactive Interview):** When the user starts with a high-level goal (e.g., *"Help me define my FAST networking dataset"*), execute each phase sequentially, asking **one focused question group per turn** and recommending sensible FAST defaults when the user has no strong preference.
+   - **Default Mode (Conditional Interview DAG):** When the user starts with a high-level goal (e.g., *"Help me define my FAST networking dataset"*), follow the Conditional Interview DAG in `references/1-requirements-to-topology.md`, asking only the questions that apply to the user's chosen branch and recommending sensible FAST defaults.
    - **Adaptive Mode (Diagram, IP Table, or Detailed Spec Provided):** When the user provides an architecture diagram (PNG/SVG/PDF/Draw.io), an IP table, or a detailed prompt upfront, extract all stated facts immediately, mark satisfied steps in Phase 1 and Phase 2 as completed, present a **Normalized Topology & Plumbing Summary**, and ask only for missing parameters or ambiguities before generating files.
    - **Zero-Redundancy Rule:** Never ask the user to repeat a region, CIDR, environment name, connectivity choice, or workload type they already provided in their prompt or diagram.
 
@@ -54,22 +55,22 @@ This skill guides users from functional networking and security requirements—o
 Before executing a phase, read its corresponding reference document for the decision tables, YAML patterns, and guardrails.
 
 ### Phase 1: Context & Functional Requirements
-*Description:* Identify how the user is starting (Consultative Interview, Reference Diagram/Doc, or Clone & Mutate) and gather functional requirements across regions, environment isolation, traffic inspection, hybrid connectivity, and workloads.\
+*Description:* Identify how the user is starting (Consultative Interview, Reference Diagram/Doc, or Clone & Mutate) and walk the Conditional Interview DAG (forking cleanly between **Single Shared VPC** and **Multi-VPC Hub & Spokes**).\
 *Reference: [Requirements to Topology Mapping](references/1-requirements-to-topology.md)*
-- **Step 1:** Entry Mode Detection & Upfront Fact Extraction (Diagram / Prompt / Existing Dataset)
-- **Step 2:** Functional Requirements Discovery (Regions, Spoke Isolation, Inspection Mandate, Hybrid Links, Workloads)
+- **Step 1:** Entry Mode, Stage 0 Integration, Target Regions & Primary VPC Footprint Fork (`Single Shared VPC` vs. `Multi-VPC Hub & Spokes`)
+- **Step 2:** Branch-Specific Requirements Discovery (Multi-VPC Inter-Spoke/Inspection if Multi-VPC; Hybrid, Egress, Firewall & Workload Plumbing)
 
 ### Phase 2: Topology & Mechanism Mapping
-*Description:* Map the functional requirements to one of the five canonical `2-networking` reference topologies (or a hybrid variant), define how routing, DNS, and security work in that topology, and align on Stage 2 plumbing vs. downstream stage handoffs.\
+*Description:* Map the functional requirements to a Single Shared VPC layout or one of the five canonical `2-networking` hub-and-spoke topologies, define how routing, DNS, and security work in that topology, and align on Stage 2 plumbing vs. downstream stage handoffs.\
 *References:*
 - *[Requirements to Topology Mapping](references/1-requirements-to-topology.md)*
 - *[Routing and Security Mechanisms](references/2-routing-and-security-mechanisms.md)*
 - *[Stage Boundaries and Plumbing](references/3-stage-boundaries-and-plumbing.md)*
-- **Step 3:** Topology Selection & Trade-off Confirmation (`peerings`, `ncc`, `vpns`, `nva`, `nva-ncc`)
+- **Step 3:** Topology Selection & Trade-off Confirmation (`single-vpc`, `ncc`, `nva-ncc`, `nva`, `peerings`, `vpns`)
 - **Step 4:** Routing, DNS, Firewall & Downstream Plumbing Sign-off
 
 ### Phase 3: VPCs, IPAM & Stage Plumbing
-*Description:* Finalize concrete names, CIDR allocations, BGP ASNs, NVA sizing/modes, DNS domains, and special-purpose subnets (GKE secondaries, ALB `proxy_only`, PSC NAT, PSA ranges, Private NAT).\
+*Description:* Finalize concrete names, CIDR allocations, BGP ASNs, NVA sizing/modes, DNS domains, and special-purpose subnets (GKE secondaries, ALB `proxy_only`, PSC NAT, PSA ranges).\
 *References:*
 - *[Stage Boundaries and Plumbing](references/3-stage-boundaries-and-plumbing.md)*
 - *[Dataset Schema and Tokens](references/4-dataset-schema-and-tokens.md)*
@@ -77,7 +78,7 @@ Before executing a phase, read its corresponding reference document for the deci
 - **Step 6:** Hybrid BGP / NVA / DNS / Firewall Policy Parameter Confirmation
 
 ### Phase 4: Dataset Generation & Validation
-*Description:* Clone the closest in-tree reference dataset into the user's custom output directory, apply the customized YAML files and `$token` wiring, run `scripts/validate_dataset.py`, and optionally render topology diagrams with `tools/fast-diagrammer`.\
+*Description:* Generate or adapt the dataset in the user's custom output directory, apply the customized YAML files and `$token` wiring, run `scripts/validate_dataset.py`, and optionally render topology diagrams with `tools/fast-diagrammer`.\
 *Reference: [Dataset Schema and Tokens](references/4-dataset-schema-and-tokens.md)*
 - **Step 7:** YAML Dataset & `2-networking.auto.tfvars` Generation
 - **Step 8:** Mechanical Validation (`scripts/validate_dataset.py`, including `terraform validate` and `terraform plan`) & Visual Diagram Rendering (`tools/fast-diagrammer`)
