@@ -20,6 +20,11 @@ locals {
     ? try(google_compute_health_check.default[0].self_link, null)
     : try(var.auto_healing_policies.health_check, null)
   )
+
+  # The regex check if the location suffix corresond to a zone
+  # us-central1 => "" => This is a region
+  # europe-west2-ai2c => -ai2c
+  # u-france-east1-b => -b
   is_regional = length(regexall("-[a-zA-Z]$|-ai[0-9][a-zA-Z]$", var.location)) == 0
 }
 
