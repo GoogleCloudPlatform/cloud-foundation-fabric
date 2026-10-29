@@ -8,6 +8,18 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
+        "addresses": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "cidr_ranges": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
         "cidr_ranges_sets": {
           "type": "object",
           "additionalProperties": {
@@ -17,6 +29,21 @@
             }
           }
         },
+        "condition_vars": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        },
+        "custom_roles": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
         "iam_principals": {
           "type": "object",
           "additionalProperties": {
@@ -24,6 +51,12 @@
           }
         },
         "locations": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "networks": {
           "type": "object",
           "additionalProperties": {
             "type": "string"

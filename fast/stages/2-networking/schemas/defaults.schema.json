@@ -642,6 +642,18 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
+        "addresses": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "cidr_ranges": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
         "cidr_ranges_sets": {
           "type": "object",
           "additionalProperties": {

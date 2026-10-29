@@ -176,6 +176,27 @@ values:
       goog-terraform-provisioned: "true"
     timeouts: null
     usage: FOR_VPC
+  google_network_connectivity_policy_based_route.default["pbr-test"]:
+    description: Terraform-managed.
+    effective_labels:
+      goog-terraform-provisioned: "true"
+    filter:
+      - dest_range: 8.8.8.8/32
+        ip_protocol: TCP
+        protocol_version: IPV4
+        src_range: 10.0.0.0/8
+    interconnect_attachment:
+      - region: europe-west8
+    labels: null
+    name: test-pbr-test
+    next_hop_ilb_ip: 10.20.20.20
+    next_hop_other_routes: null
+    priority: 1000
+    project: foo-test-0
+    terraform_labels:
+      goog-terraform-provisioned: "true"
+    timeouts: null
+    virtual_machine: []
 
 counts:
   google_compute_network: 1
@@ -185,5 +206,6 @@ counts:
   google_compute_subnetwork_iam_member: 1
   google_dns_policy: 1
   google_network_connectivity_internal_range: 1
+  google_network_connectivity_policy_based_route: 1
   modules: 0
-  resources: 12
+  resources: 13

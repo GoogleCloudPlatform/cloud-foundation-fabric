@@ -121,8 +121,13 @@ module "vpc-factory" {
     paths    = var.factories_config.paths
   }
   context = {
-    project_ids = local.ctx_projects.project_ids
-    locations   = local.ctx.locations
+    addresses        = local.ctx.addresses
+    cidr_ranges      = local.ctx.cidr_ranges
+    cidr_ranges_sets = local.ctx.cidr_ranges_sets
+    custom_roles     = local.ctx.custom_roles
+    iam_principals   = local.ctx.iam_principals
+    locations        = local.ctx.locations
+    project_ids      = local.ctx_projects.project_ids
   }
 }
 
@@ -143,9 +148,14 @@ module "vpc-routes" {
   policy_based_routes = try(each.value.policy_based_routes, {})
   routes              = try(each.value.routes, {})
   context = {
-    project_ids = local.ctx_projects.project_ids
+    addresses = merge(
+      local.ctx.addresses,
+      local.ctx_addresses.internal,
+      local.ctx_nva.ilb_addresses
+    )
+    cidr_ranges = local.ctx.cidr_ranges
     locations   = local.ctx.locations
-    addresses   = local.ctx_nva.ilb_addresses
+    project_ids = local.ctx_projects.project_ids
   }
   depends_on = [
     module.projects,

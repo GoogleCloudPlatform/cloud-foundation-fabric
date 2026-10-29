@@ -16,6 +16,17 @@
 
 # tfdoc:file:description Arbitrary addresses factory.
 
+locals {
+  ctx_addresses = {
+    internal = merge([
+      for vpc_key, mod in module.vpc-addresses : {
+        for addr_key, addr in mod.internal_addresses :
+        "${vpc_key}/${addr_key}" => addr.address
+      }
+    ]...)
+  }
+}
+
 module "vpc-addresses" {
   source   = "../../../modules/net-address"
   for_each = { for k, v in local.vpcs : k => v if length(v.addresses) > 0 }

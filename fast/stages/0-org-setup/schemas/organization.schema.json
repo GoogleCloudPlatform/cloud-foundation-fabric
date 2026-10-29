@@ -546,8 +546,23 @@
                                   "description": "The client ID."
                                 },
                                 "client_secret": {
-                                  "type": "string",
-                                  "description": "The client secret (optional)."
+                                  "type": "object",
+                                  "description": "The client secret (optional).",
+                                  "additionalProperties": false,
+                                  "properties": {
+                                    "value": {
+                                      "type": "string",
+                                      "description": "The client secret value."
+                                    },
+                                    "path": {
+                                      "type": "string",
+                                      "description": "File path relative to the stage directory, read at every plan."
+                                    },
+                                    "wo_version": {
+                                      "type": "number",
+                                      "description": "Switches to the provider write-only attribute."
+                                    }
+                                  }
                                 },
                                 "jwks_json": {
                                   "type": "string",
@@ -1021,8 +1036,23 @@
           "description": "The client ID for the application."
         },
         "client_secret": {
-          "type": "string",
-          "description": "The client secret for the application."
+          "type": "object",
+          "description": "The client secret for the application.",
+          "additionalProperties": false,
+          "properties": {
+            "value": {
+              "type": "string",
+              "description": "The client secret value."
+            },
+            "path": {
+              "type": "string",
+              "description": "File path relative to the stage directory, read at every plan."
+            },
+            "wo_version": {
+              "type": "number",
+              "description": "Switches to the provider write-only attribute."
+            }
+          }
         },
         "attributes_type": {
           "type": "string",

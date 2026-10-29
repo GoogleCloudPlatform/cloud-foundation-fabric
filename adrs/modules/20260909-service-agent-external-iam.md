@@ -1,6 +1,6 @@
 # Service Agent IAM Bindings on External Resources
 
-**authors:** [ludomagno](https://github.com/ludomagno)
+**authors:** [Ludo](https://github.com/ludoo) \
 **date:** Sep 9, 2026
 
 ## Status

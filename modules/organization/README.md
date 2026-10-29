@@ -40,6 +40,7 @@ To manage organization policies, the `orgpolicy.googleapis.com` service should b
 - [Tags](#tags)
   - [Tags Factory](#tags-factory)
 - [Workforce Identity](#workforce-identity)
+- [Secret values](#secret-values)
 - [IAM Deny Policies](#iam-deny-policies)
 - [Context-Aware Access](#context-aware-access)
 - [Model Armor Floor Settings](#model-armor-floor-settings)
@@ -991,9 +992,11 @@ module "org" {
           }
           oauth2_client_config = {
             extra_attributes = {
-              issuer_uri      = "https://login.microsoftonline.com/abcdef/v2.0"
-              client_id       = "client-id"
-              client_secret   = "client-secret"
+              issuer_uri = "https://login.microsoftonline.com/abcdef/v2.0"
+              client_id  = "client-id"
+              client_secret = {
+                value = "client-secret"
+              }
               attributes_type = "AZURE_AD_GROUPS_ID"
               query_filter    = "mail:gcp"
             }
@@ -1006,9 +1009,12 @@ module "org" {
           }
           identity_provider = {
             oidc = {
-              issuer_uri    = "https://sts.windows.net/abcd01234/"
-              client_id     = "https://analysis.windows.net/powerbi/connector/GoogleBigQuery"
-              client_secret = "client-secret"
+              issuer_uri = "https://sts.windows.net/abcd01234/"
+              client_id  = "https://analysis.windows.net/powerbi/connector/GoogleBigQuery"
+              client_secret = {
+                value      = "client-secret"
+                wo_version = 1
+              }
               web_sso_config = {
                 response_type             = "CODE"
                 assertion_claims_behavior = "MERGE_USER_INFO_OVER_ID_TOKEN_CLAIMS"
@@ -1017,9 +1023,11 @@ module "org" {
           }
           oauth2_client_config = {
             extra_attributes = {
-              issuer_uri      = "https://login.microsoftonline.com/abcd01234/v2.0"
-              client_id       = "client-id"
-              client_secret   = "client-secret"
+              issuer_uri = "https://login.microsoftonline.com/abcd01234/v2.0"
+              client_id  = "client-id"
+              client_secret = {
+                value = "client-secret"
+              }
               attributes_type = "AZURE_AD_GROUPS_MAIL"
             }
           }
@@ -1038,6 +1046,16 @@ module "org" {
 }
 # tftest inventory=wfif.yaml
 ```
+
+## Secret values
+
+`client_secret` is an object that follows the [shape used for secrets across modules](../../adrs/modules/20261029-write-only-secrets.md):
+
+- `value` is the secret itself
+- `path` is the path to a file containing the secret, read via `file(pathexpand(path))` and relative to the root module; the file must exist at every plan
+- `wo_version` switches to the provider's write-only attribute, so that the secret is never stored in state; bump the number whenever the secret changes and needs to be sent again
+
+Only one of `value` and `path` can be set. Without `wo_version` the secret is stored in state, and that form should only be used when this is acceptable. With `wo_version` set, both `value` and `path` can be null once the secret has been applied, since the provider leaves the existing write-only value untouched until the version changes: this allows passing `value = try(file("secret.txt"), null)` and removing the file after the first apply.
 
 ## IAM Deny Policies
 
