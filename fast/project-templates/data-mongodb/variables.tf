@@ -33,15 +33,17 @@ variable "atlas_config" {
 variable "database_users" {
   description = "MongoDB Atlas database users configuration. The map key is used as the username."
   type = map(object({
-    auth_database_name  = optional(string, "admin")
-    aws_iam_type        = optional(string)
-    description         = optional(string)
-    labels              = optional(map(string), {})
-    ldap_auth_type      = optional(string)
-    oidc_auth_type      = optional(string)
-    password            = optional(string)
-    password_wo         = optional(string)
-    password_wo_version = optional(number)
+    auth_database_name = optional(string, "admin")
+    aws_iam_type       = optional(string)
+    description        = optional(string)
+    labels             = optional(map(string), {})
+    ldap_auth_type     = optional(string)
+    oidc_auth_type     = optional(string)
+    password = optional(object({
+      value      = optional(string)
+      path       = optional(string)
+      wo_version = optional(number)
+    }))
     roles = optional(
       map(object({
         collection_name = optional(string)
@@ -60,17 +62,9 @@ variable "database_users" {
   validation {
     condition = alltrue([
       for k, v in var.database_users :
-      !(v.password != null && v.password_wo != null)
+      try(v.password.value, null) == null || try(v.password.path, null) == null
     ])
-    error_message = "Only one of password or password_wo can be set."
-  }
-
-  validation {
-    condition = alltrue([
-      for k, v in var.database_users :
-      v.password_wo == null || v.password_wo_version != null
-    ])
-    error_message = "password_wo_version must be set when password_wo is set."
+    error_message = "Only one of password.value and password.path can be set."
   }
 }
 
