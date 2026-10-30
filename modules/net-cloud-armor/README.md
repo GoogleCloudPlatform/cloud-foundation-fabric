@@ -291,7 +291,7 @@ module "cloud-armor" {
 
 Setting `organization_id` or `folder_id` in `parent_id` instead of `project_id` creates a [hierarchical security policy](https://cloud.google.com/armor/docs/hierarchical-policies-overview), which applies to all projects below the organization, folders or projects it is attached to. Hierarchical policies are evaluated from the organization down through folders, before project-level and service-level policies. The `goto_next` action, only available in hierarchical policies, stops evaluating the current policy and hands the request to the next one, and is also the action of the default rule that the API creates at priority `2147483647`.
 
-Hierarchical policies are always global and of type `CLOUD_ARMOR`, and keep the default rule created by the API, so `default_rule_config` must be set to `null`, and setting `type` to a different value or `region` to anything other than `global` fails at plan time. Rules support the `allow`, `deny`, `goto_next` and `redirect` (`EXTERNAL_302` only) actions, `header_action` and `preconfigured_waf_config`, while rate limiting and reCAPTCHA are rejected at plan time. The `advanced_options_config` variable applies to hierarchical policies too.
+Hierarchical policies are always global and of type `CLOUD_ARMOR`, and keep the default rule created by the API, so `default_rule_config` must be set to `null`, and setting `type` to a different value or `region` to anything other than `global` fails at plan time. Rules support the `allow`, `deny`, `goto_next` and `redirect` (`EXTERNAL_302` only) actions, `header_action` and `preconfigured_waf_config`, while rate limiting and reCAPTCHA are rejected at plan time. The API also rejects very wide source ranges in hierarchical rules: a `/8` prefix fails with an unhelpful `Invalid value for field '': ''` error while `/12` and `/16` are accepted, an observed limit rather than a documented one. The `advanced_options_config` variable applies to hierarchical policies too.
 
 Attachments can be managed from either side, but each association from one side only:
 
@@ -311,7 +311,7 @@ module "cloud-armor" {
   context = {
     cidr_ranges_sets = {
       blocked = ["192.0.2.0/24", "198.51.100.0/24"]
-      trusted = ["10.0.0.0/8"]
+      trusted = ["10.0.0.0/12"]
     }
     folder_ids = {
       teams = var.folder_id

@@ -89,7 +89,7 @@ values:
     match:
     - config:
       - src_ip_ranges:
-        - 10.0.0.0/8
+        - 10.0.0.0/12
       description: null
       expr: []
       versioned_expr: SRC_IPS_V1
