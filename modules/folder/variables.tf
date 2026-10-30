@@ -151,7 +151,7 @@ variable "autokey_config" {
 }
 
 variable "cloud_armor_policy" {
-  description = "Hierarchical Cloud Armor policy to associate to this folder, excluded projects use the `projects/nnn` (project number) format or `$project_numbers:` context references. Folders can only be excluded from organization-level associations. The association name defaults to `folder-<id>`. Manage each association either here or via the `attachments` variable of the `net-cloud-armor` module, not both."
+  description = "Hierarchical Cloud Armor policy to associate to this folder, excluded projects use the `projects/nnn` (project number) format or `$project_numbers:` context references. Folders can only be excluded from organization-level associations. The association name defaults to `folder-<id>`. The policy id accepts `$security_policies:` context references. Manage each association either here or via the `attachments` variable of the `net-cloud-armor` module, not both."
   type = object({
     name              = optional(string)
     policy_id         = string
@@ -200,6 +200,7 @@ variable "context" {
     project_ids       = optional(map(string), {})
     project_numbers   = optional(map(string), {})
     pubsub_topics     = optional(map(string), {})
+    security_policies = optional(map(string), {})
     storage_buckets   = optional(map(string), {})
     tag_values        = optional(map(string), {})
     tag_vars = optional(object({

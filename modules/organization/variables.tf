@@ -165,7 +165,7 @@ variable "asset_search" {
 }
 
 variable "cloud_armor_policy" {
-  description = "Hierarchical Cloud Armor policy to associate to the organization, excluded folders and projects use the `folders/nnn` and `projects/nnn` (project number) formats, or `$folder_ids:` and `$project_numbers:` context references. The association name defaults to `organization-<id>`. Manage each association either here or via the `attachments` variable of the `net-cloud-armor` module, not both."
+  description = "Hierarchical Cloud Armor policy to associate to the organization, excluded folders and projects use the `folders/nnn` and `projects/nnn` (project number) formats, or `$folder_ids:` and `$project_numbers:` context references. The association name defaults to `organization-<id>`. The policy id accepts `$security_policies:` context references. Manage each association either here or via the `attachments` variable of the `net-cloud-armor` module, not both."
   type = object({
     name              = optional(string)
     policy_id         = string
@@ -209,6 +209,7 @@ variable "context" {
     project_ids       = optional(map(string), {})
     project_numbers   = optional(map(string), {})
     pubsub_topics     = optional(map(string), {})
+    security_policies = optional(map(string), {})
     storage_buckets   = optional(map(string), {})
     tag_keys          = optional(map(string), {})
     tag_values        = optional(map(string), {})

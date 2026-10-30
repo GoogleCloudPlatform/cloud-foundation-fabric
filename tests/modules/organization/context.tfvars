@@ -43,6 +43,9 @@ context = {
   pubsub_topics = {
     test = "projects/test-prod-audit-logs-0/topics/audit-logs"
   }
+  security_policies = {
+    test = "locations/global/securityPolicies/1234567890"
+  }
   storage_buckets = {
     test = "test-prod-logs-audit-0"
   }
@@ -64,7 +67,7 @@ asset_feeds = {
   }
 }
 cloud_armor_policy = {
-  policy_id         = "locations/global/securityPolicies/1234567890"
+  policy_id         = "$security_policies:test"
   excluded_folders  = ["$folder_ids:test", "folders/2222222222"]
   excluded_projects = ["$project_numbers:test", "projects/3333333333"]
 }

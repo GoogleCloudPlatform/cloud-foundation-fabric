@@ -95,8 +95,12 @@ resource "google_compute_organization_security_policy_association" "default" {
     var.cloud_armor_policy.name,
     "folder-${trimprefix(local.folder_id, "folders/")}"
   )
-  attachment_id    = local.folder_id
-  policy_id        = var.cloud_armor_policy.policy_id
+  attachment_id = local.folder_id
+  policy_id = lookup(
+    local.ctx.security_policies,
+    var.cloud_armor_policy.policy_id,
+    var.cloud_armor_policy.policy_id
+  )
   excluded_folders = var.cloud_armor_policy.excluded_folders
   excluded_projects = [
     for p in var.cloud_armor_policy.excluded_projects : try(

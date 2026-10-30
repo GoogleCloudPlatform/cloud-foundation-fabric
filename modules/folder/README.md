@@ -869,13 +869,13 @@ module "folder" {
 | [asset_search](variables.tf#L51) | Cloud Asset Inventory search configurations. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [assured_workload_config](variables.tf#L61) | Create AssuredWorkloads folder instead of regular folder when value is provided. Incompatible with folder_create=false. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [autokey_config](variables.tf#L144) | Enable autokey support for this folder's children. Project accepts either project id or number. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [cloud_armor_policy](variables.tf#L153) | Hierarchical Cloud Armor policy to associate to this folder, excluded projects use the `projects/nnn` (project number) format or `$project_numbers:` context references. Folders can only be excluded from organization-level associations. The association name defaults to `folder-<id>`. Manage each association either here or via the `attachments` variable of the `net-cloud-armor` module, not both. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [cloud_armor_policy](variables.tf#L153) | Hierarchical Cloud Armor policy to associate to this folder, excluded projects use the `projects/nnn` (project number) format or `$project_numbers:` context references. Folders can only be excluded from organization-level associations. The association name defaults to `folder-<id>`. The policy id accepts `$security_policies:` context references. Manage each association either here or via the `attachments` variable of the `net-cloud-armor` module, not both. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [contacts](variables.tf#L170) | List of essential contacts for this resource. Must be in the form EMAIL -> [NOTIFICATION_TYPES]. Valid notification types are ALL, SUSPENSION, SECURITY, TECHNICAL, BILLING, LEGAL, PRODUCT_UPDATES. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [context](variables.tf#L189) | Context-specific interpolations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [deletion_protection](variables.tf#L214) | Deletion protection setting for this folder. | <code>bool</code> |  | <code>false</code> |
-| [factories_config](variables.tf#L220) | Paths to data files and folders that enable factory functionality. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [firewall_policy](variables.tf#L232) | Hierarchical firewall policy to associate to this folder. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [folder_create](variables.tf#L243) | Create folder. When set to false, uses id to reference an existing folder. | <code>bool</code> |  | <code>true</code> |
+| [deletion_protection](variables.tf#L215) | Deletion protection setting for this folder. | <code>bool</code> |  | <code>false</code> |
+| [factories_config](variables.tf#L221) | Paths to data files and folders that enable factory functionality. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [firewall_policy](variables.tf#L233) | Hierarchical firewall policy to associate to this folder. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [folder_create](variables.tf#L244) | Create folder. When set to false, uses id to reference an existing folder. | <code>bool</code> |  | <code>true</code> |
 | [iam](variables-iam.tf#L17) | IAM bindings in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam_bindings](variables-iam.tf#L24) | Authoritative IAM bindings in {KEY => {role = ROLE, members = [], condition = {}}}. Keys are arbitrary. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam_bindings_additive](variables-iam.tf#L39) | Individual additive IAM bindings. Keys are arbitrary. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
@@ -883,19 +883,19 @@ module "folder" {
 | [iam_by_principals_additive](variables-iam.tf#L54) | Additive IAM binding in {PRINCIPAL => [ROLES]} format. Principals need to be statically defined to avoid errors. Merged internally with the `iam_bindings_additive` variable. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam_by_principals_conditional](variables-iam.tf#L68) | Authoritative IAM binding in {PRINCIPAL => {roles = [roles], condition = {cond}}} format. Principals need to be statically defined to avoid errors. Condition is required. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam_deny_policies](variables-iam.tf#L98) | IAM Deny policies to be applied to the folder. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [id](variables.tf#L253) | Folder ID in case you use folder_create=false. | <code>string</code> |  | <code>null</code> |
+| [id](variables.tf#L254) | Folder ID in case you use folder_create=false. | <code>string</code> |  | <code>null</code> |
 | [logging_data_access](variables-logging.tf#L17) | Control activation of data access logs. The special 'allServices' key denotes configuration for all services. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [logging_exclusions](variables-logging.tf#L28) | Logging exclusions for this folder in the form {NAME -> FILTER}. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 | [logging_settings](variables-logging.tf#L35) | Default settings for logging resources. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [logging_sinks](variables-logging.tf#L45) | Logging sinks to create for the folder. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [name](variables.tf#L259) | Folder name. | <code>string</code> |  | <code>null</code> |
-| [org_policies](variables.tf#L265) | Organization policies applied to this folder keyed by policy name. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [name](variables.tf#L260) | Folder name. | <code>string</code> |  | <code>null</code> |
+| [org_policies](variables.tf#L266) | Organization policies applied to this folder keyed by policy name. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [pam_entitlements](variables-pam.tf#L17) | Privileged Access Manager entitlements for this resource, keyed by entitlement ID. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [parent](variables.tf#L293) | Parent in folders/folder_id or organizations/org_id format. | <code>string</code> |  | <code>null</code> |
+| [parent](variables.tf#L294) | Parent in folders/folder_id or organizations/org_id format. | <code>string</code> |  | <code>null</code> |
 | [scc_mute_configs](variables-scc.tf#L17) | SCC mute configurations keyed by name. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [scc_sha_custom_modules](variables-scc.tf#L27) | SCC custom modules keyed by module name. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [service_agents_config](variables.tf#L307) | Service agents configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [tag_bindings](variables.tf#L317) | Tag bindings for this folder, in key => tag value id format. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
+| [service_agents_config](variables.tf#L308) | Service agents configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [tag_bindings](variables.tf#L318) | Tag bindings for this folder, in key => tag value id format. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
 
 ## Outputs
 
