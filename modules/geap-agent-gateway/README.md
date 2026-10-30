@@ -116,7 +116,7 @@ Agents and callers are identified in UAP rules by IAM v3 principal URIs:
 
 - Agent Runtime, Gemini Enterprise and Cloud Run agents use built-in identities, in the form `principal://TRUST_DOMAIN/AGENT_UNIQUE_IDENTIFIER` (or `principalSet://...` for all agents in a project/container).
 - Custom and external agents use Workload Identity Federation identities, in the form `principal://iam.googleapis.com/projects/PROJECT_NUMBER/locations/global/workloadIdentityPools/POOL_ID/subject/SUBJECT`.
-- Standard IAM v1 member prefixes (`user:`, `group:`, `serviceAccount:`, `domain:`, `allUsers`, `allAuthenticatedUsers`) are automatically converted by the module to their IAM v3 equivalents (`principal://goog/subject/...`, `principalSet://goog/group/...`, `principal://iam.googleapis.com/projects/-/serviceAccounts/...`, `principalSet://goog/cloudIdentityCustomerId/...`, `principalSet://goog/public:all`).
+- Standard IAM v1 member prefixes (`user:`, `group:`, `serviceAccount:`, `allUsers`) are automatically converted by the module to their IAM v3 equivalents (`principal://goog/subject/...`, `principalSet://goog/group/...`, `principal://iam.googleapis.com/projects/-/serviceAccounts/...`, `principalSet://goog/public:all`). `domain:` and `allAuthenticatedUsers` are not converted: the former maps to `principalSet://goog/cloudIdentityCustomerId/CUSTOMER_ID`, which needs the Cloud Identity customer ID (for example `C01Abc35`) rather than the domain name and so must be passed directly, while the latter has no IAM v3 equivalent. Note that `principalSet://goog/public:all` and `principalSet://goog/cloudIdentityCustomerId/...` are only accepted in rules with the `DENY` effect, and `principalSet://goog/public:all` cannot be used in `excluded_principals`.
 
 Agent identifiers in URN format (`urn:agent:...`) are used for catalog lookups only, and are not valid in IAM policies.
 
@@ -303,8 +303,9 @@ module "agent-gateway" {
     egress = {
       rules = {
         registry = {
-          principals = ["$iam_principals:agents"]
-          registry   = true
+          principals          = ["$iam_principals:agents"]
+          excluded_principals = ["$iam_principals:legacy_sa", "user:blocked@example.com"]
+          registry            = true
         }
       }
     }
@@ -317,7 +318,8 @@ module "agent-gateway" {
       guardrails = "organizations/123456789012/locations/global/accessPolicies/guardrails"
     }
     iam_principals = {
-      agents = "group:agents@example.com"
+      agents    = "group:agents@example.com"
+      legacy_sa = "serviceAccount:legacy@my-prj-id.iam.gserviceaccount.com"
     }
     locations = {
       primary = "europe-west1"

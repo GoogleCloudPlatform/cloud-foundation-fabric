@@ -1,6 +1,6 @@
 # Service Account External IAM Bindings with Condition Support
 
-**authors:** [ludomagno](https://github.com/ludomagno), Antigravity (AI Assistant)
+**authors:** [Ludo](https://github.com/ludoo), Antigravity (AI Assistant) \
 **date:** Jul 27, 2026
 
 ## Status
