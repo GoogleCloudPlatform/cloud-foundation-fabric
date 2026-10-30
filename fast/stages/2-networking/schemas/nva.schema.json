@@ -24,6 +24,22 @@
     },
     "ilb_config": {
       "$ref": "#/$defs/ilb_config"
+    },
+    "instance_groups": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Instance groups keyed by zone letter, used when `ilb_config.instance_groups` is not set.",
+      "patternProperties": {
+        "^[a-z]$": {
+          "$ref": "#/$defs/instance_group"
+        }
+      }
+    },
+    "ncc_ra_config": {
+      "$ref": "#/$defs/ncc_ra_config"
+    },
+    "bgp_config": {
+      "$ref": "#/$defs/bgp_config"
     }
   },
   "$defs": {
@@ -47,8 +63,24 @@
           "items": {
             "$ref": "#/$defs/nic"
           }
+        },
+        "metadata": {
+          "type": "object"
+        },
+        "confidential_compute": {
+          "type": "boolean"
+        },
+        "encryption": {
+          "type": "object"
+        },
+        "options": {
+          "type": "object"
+        },
+        "shielded_config": {
+          "type": "object"
         }
-      }
+      },
+      "additionalProperties": false
     },
     "nic": {
       "type": "object",
@@ -61,18 +93,41 @@
         },
         "routes": {
           "type": "array",
+          "description": "Prefixes installed as static kernel routes in the guest OS via this NIC's subnet gateway (data-plane forwarding).",
           "items": {
             "type": "string"
           }
         },
         "masquerade": {
           "type": "boolean"
+        },
+        "masquerade_exclude": {
+          "type": "array",
+          "description": "Destination ranges excluded from masquerading (e.g. RFC1918).",
+          "items": {
+            "type": "string"
+          }
+        },
+        "bgp_inbound_deny": {
+          "type": "array",
+          "description": "Prefixes rejected when received from the BGP neighbors on this NIC (exact match), only used by the BGP startup template.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "advertise": {
+          "type": "array",
+          "description": "Prefixes originated by the guest BGP daemon (`network` statement) toward all its neighbors (control-plane advertisement); each must be covered by a kernel route (such as `routes` on this NIC or the default route from `masquerade`), since FRR prefers locally originated prefixes over eBGP routes and installs no BGP route in the kernel. Only used by the BGP startup template.",
+          "items": {
+            "type": "string"
+          }
         }
       },
       "required": [
         "network",
         "subnet"
-      ]
+      ],
+      "additionalProperties": false
     },
     "ilb_config": {
       "type": "object",
@@ -151,6 +206,104 @@
         "network",
         "subnet"
       ]
+    },
+    "ncc_ra_config": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "spokes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "network",
+              "hub"
+            ],
+            "properties": {
+              "network": {
+                "type": "string"
+              },
+              "hub": {
+                "type": "string"
+              },
+              "group": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              },
+              "labels": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string"
+                }
+              },
+              "site_to_site_data_transfer": {
+                "type": "boolean"
+              },
+              "instances": {
+                "type": "array",
+                "description": "Additional instances not created by the factory; `vm` and `ip` accept `$nva_instances:` and `$nva_addresses:` tokens.",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "vm",
+                    "ip"
+                  ],
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "description": "Stable key used in peer names, defaults to the instance name."
+                    },
+                    "vm": {
+                      "type": "string"
+                    },
+                    "ip": {
+                      "type": "string"
+                    }
+                  }
+                }
+              },
+              "include_import_ranges": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "exclude_import_ranges": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "bgp_config": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Guest FRR BGP configuration for auto-created instances; neighbors are derived from router peers that reference this NVA.",
+      "required": [
+        "asn"
+      ],
+      "properties": {
+        "asn": {
+          "type": "number"
+        },
+        "keepalive": {
+          "type": "number"
+        },
+        "holdtime": {
+          "type": "number"
+        },
+        "frr_image": {
+          "type": "string"
+        }
+      }
     }
   }
 }

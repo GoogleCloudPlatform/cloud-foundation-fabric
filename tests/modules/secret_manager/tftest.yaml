@@ -16,4 +16,3 @@ module: modules/secret-manager
 
 tests:
   context:
-    skip_tofu: true

@@ -101,7 +101,14 @@
           "type": "string"
         },
         "bucket": {
-          "$ref": "#/$defs/bucket"
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/bucket"
+            }
+          ]
         },
         "service_accounts": {
           "type": "object",
@@ -842,7 +849,10 @@
       "type": "string"
     },
     "prefix": {
-      "type": "string"
+      "type": [
+        "string",
+        "null"
+      ]
     },
     "project_reuse": {
       "type": "object",
@@ -2216,7 +2226,7 @@
       "type": "object",
       "additionalProperties": false,
       "patternProperties": {
-        "^[a-z0-9-]+$": {
+        "^(?:(folders/)?[a-z0-9-]+|\\$folder_ids:[a-z0-9_/-]+)$": {
           "type": "array",
           "items": {
             "type": "string"
@@ -2240,7 +2250,7 @@
       "type": "object",
       "additionalProperties": false,
       "patternProperties": {
-        "^(?:[a-z0-9-]|\\$project_ids:[a-z0-9_-])+$": {
+        "^(?:([a-z0-9.]+:)?[a-z0-9-]+|\\$project_ids:[a-z0-9_/-]+)$": {
           "type": "array",
           "items": {
             "type": "string"
@@ -2264,7 +2274,7 @@
       "type": "object",
       "additionalProperties": false,
       "patternProperties": {
-        "^[a-z0-9-]+$": {
+        "^(?:[a-z0-9_.-]+|\\$storage_buckets:[a-z0-9_/-]+)$": {
           "type": "array",
           "items": {
             "type": "string"

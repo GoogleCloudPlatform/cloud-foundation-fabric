@@ -175,6 +175,9 @@ values:
       - bigquerydatatransfer.googleapis.com
       - bigtable.googleapis.com
       - binaryauthorization.googleapis.com
+      - businessaicode.googleapis.com
+      - ces.googleapis.com
+      - cloudaicompanion.googleapis.com
       - cloudasset.googleapis.com
       - cloudbuild.googleapis.com
       - cloudfunctions.googleapis.com
@@ -204,6 +207,7 @@ values:
       - eventarc.googleapis.com
       - file.googleapis.com
       - gameservices.googleapis.com
+      - geminidataanalytics.googleapis.com
       - gkeconnect.googleapis.com
       - gkehub.googleapis.com
       - healthcare.googleapis.com

@@ -6,6 +6,31 @@
   "required": [
     "region"
   ],
+  "not": {
+    "anyOf": [
+      {
+        "properties": {
+          "psc": {"const": true},
+          "proxy_only": {"const": true}
+        },
+        "required": ["psc", "proxy_only"]
+      },
+      {
+        "properties": {
+          "psc": {"const": true},
+          "private_nat": {"const": true}
+        },
+        "required": ["psc", "private_nat"]
+      },
+      {
+        "properties": {
+          "proxy_only": {"const": true},
+          "private_nat": {"const": true}
+        },
+        "required": ["proxy_only", "private_nat"]
+      }
+    ]
+  },
   "anyOf": [
     {"required": ["ip_cidr_range"]},
     {"required": ["reserved_internal_range"]},
@@ -93,6 +118,9 @@
     "proxy_only": {
       "type": "boolean"
     },
+    "private_nat": {
+      "type": "boolean"
+    },
     "secondary_ip_ranges": {
       "type": "object",
       "additionalProperties": {
@@ -129,11 +157,11 @@
       "type": "object",
       "additionalProperties": false,
       "patternProperties": {
-        "^roles/": {
+        "^(?:roles/|\\$custom_roles:|organizations/[0-9]+/roles/|([a-z0-9.]+:)?projects/[a-z0-9-]+/roles/)": {
           "type": "array",
           "items": {
             "type": "string",
-            "pattern": "^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|ro|rw)"
+            "pattern": "^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|ro|rw|\\$iam_principals:[a-z0-9_-]+)"
           }
         }
       }
@@ -150,12 +178,12 @@
               "type": "array",
               "items": {
                 "type": "string",
-                "pattern": "^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|ro|rw)"
+                "pattern": "^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|ro|rw|\\$iam_principals:[a-z0-9_-]+)"
               }
             },
             "role": {
               "type": "string",
-              "pattern": "^roles/"
+              "pattern": "^(?:roles/|\\$custom_roles:|organizations/[0-9]+/roles/|([a-z0-9.]+:)?projects/[a-z0-9-]+/roles/)"
             },
             "condition": {
               "type": "object",
@@ -190,11 +218,11 @@
           "properties": {
             "member": {
               "type": "string",
-              "pattern": "^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|ro|rw)"
+              "pattern": "^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|ro|rw|\\$iam_principals:[a-z0-9_-]+)"
             },
             "role": {
               "type": "string",
-              "pattern": "^roles/"
+              "pattern": "^(?:roles/|\\$custom_roles:|organizations/[0-9]+/roles/|([a-z0-9.]+:)?projects/[a-z0-9-]+/roles/)"
             },
             "condition": {
               "type": "object",

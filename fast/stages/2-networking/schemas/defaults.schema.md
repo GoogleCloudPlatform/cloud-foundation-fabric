@@ -191,6 +191,10 @@
       - **internal_range**: *string*
 - **context**: *object*
   <br>*additional properties: false*
+  - **addresses**: *object*
+    <br>*additional properties: string*
+  - **cidr_ranges**: *object*
+    <br>*additional properties: string*
   - **cidr_ranges_sets**: *object*
     <br>*additional properties: array*
   - **custom_roles**: *object*

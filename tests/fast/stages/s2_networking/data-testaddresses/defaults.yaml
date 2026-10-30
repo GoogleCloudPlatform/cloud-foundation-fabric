@@ -14,6 +14,8 @@
 
 # yaml-language-server: $schema=../../schemas/defaults.schema.json
 context:
+  cidr_ranges:
+    test-dest: 192.0.2.0/24
   locations:
     primary: europe-west1
     secondary: europe-west3

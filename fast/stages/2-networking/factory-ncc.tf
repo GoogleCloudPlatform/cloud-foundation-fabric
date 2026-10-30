@@ -132,13 +132,13 @@ resource "google_network_connectivity_group" "default" {
   dynamic "auto_accept" {
     for_each = try(each.value.auto_accept != null, false) ? [""] : []
     content {
-      auto_accept_projects = [
+      auto_accept_projects = distinct([
         for project_key in try(each.value.auto_accept, []) : lookup(
           local.ctx_projects.project_ids,
           replace(project_key, "$project_ids:", ""),
           project_key
         )
-      ]
+      ])
     }
   }
   depends_on = [google_network_connectivity_hub.default]

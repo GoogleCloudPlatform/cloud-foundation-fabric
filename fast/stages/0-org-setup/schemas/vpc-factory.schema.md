@@ -61,7 +61,56 @@
   - **internal_range**: *string*
 - **nat_config**<a name="refs-nat_config"></a>: *object*
   - **`^[a-z0-9-]+$`**: *object*
+    <br>*additional properties: false*
+    - **addresses**: *array*
+      - items: *string*
+    - **config_port_allocation**: *object*
+      <br>*additional properties: false*
+      - **enable_endpoint_independent_mapping**: *boolean*
+      - **enable_dynamic_port_allocation**: *boolean*
+      - **min_ports_per_vm**: *number*
+      - **max_ports_per_vm**: *number*
+    - **config_source_subnetworks**: *object*
+      <br>*additional properties: false*
+      - **all**: *boolean*
+      - **primary_ranges_only**: *boolean*
+      - **subnetworks**: *array*
+        - items: *object*
+          <br>*additional properties: false*
+          - ⁺**self_link**: *string*
+          - **all_ranges**: *boolean*
+          - **primary_range**: *boolean*
+          - **secondary_ranges**: *array*
+            - items: *string*
+    - **config_timeouts**: *object*
+      <br>*additional properties: false*
+      - **icmp**: *number*
+      - **tcp_established**: *number*
+      - **tcp_time_wait**: *number*
+      - **tcp_transitory**: *number*
+      - **udp**: *number*
+    - **endpoint_types**: *array*
+      - items: *string*
+        <br>*enum: ['ENDPOINT_TYPE_VM', 'ENDPOINT_TYPE_SWG', 'ENDPOINT_TYPE_MANAGED_PROXY_LB']*
+    - **logging_filter**: *string*
+      <br>*enum: ['ERRORS_ONLY', 'TRANSLATIONS_ONLY', 'ALL']*
+    - **num_nat_ips**: *number*
     - ⁺**region**: *string*
+    - **router_asn**: *number*
+    - **router_create**: *boolean*
+    - **router_name**: *string*
+    - **rules**: *array*
+      - items: *object*
+        <br>*additional properties: false*
+        - **description**: *string*
+        - ⁺**match**: *string*
+        - **rule_number**: *number*
+        - **source_ips**: *array*
+          - items: *string*
+        - **source_ranges**: *array*
+          - items: *string*
+    - **type**: *string*
+      <br>*enum: ['PUBLIC', 'PRIVATE']*
 - **ncc_config**<a name="refs-ncc_config"></a>: *object*
   - ⁺**hub**: *string*
   - **group**: *string*

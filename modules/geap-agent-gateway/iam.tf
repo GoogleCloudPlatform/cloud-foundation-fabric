@@ -17,61 +17,50 @@
 # tfdoc:file:description IAM Unified Access Policies and bindings.
 
 locals {
-  # Flatten all principals referenced across rules so legacy IAM v1
-  # prefixes (user:, group:, serviceAccount:, domain:) can be resolved
-  # through context and normalized to IAM v3 principal URIs once.
-  _raw_principals = distinct(flatten([
-    for k, v in var.access_policies : [
-      for rk, rv in v.rules : concat(rv.principals, rv.excluded_principals)
-    ]
-  ]))
-
-  _resolved_principals = {
-    for p in local._raw_principals :
-    p => lookup(local.ctx.iam_principals, p, p)
-  }
-
-  _normalized_principals = {
-    for p, rp in local._resolved_principals : p => (
-      startswith(rp, "user:")
-      ? "principal://goog/subject/${trimprefix(rp, "user:")}"
-      : startswith(rp, "group:")
-      ? "principalSet://goog/group/${trimprefix(rp, "group:")}"
-      : startswith(rp, "serviceAccount:")
-      ? "principal://iam.googleapis.com/projects/-/serviceAccounts/${trimprefix(rp, "serviceAccount:")}"
-      : startswith(rp, "domain:")
-      ? "principalSet://goog/cloudIdentityCustomerId/${trimprefix(rp, "domain:")}"
-      : contains(["allUsers", "allAuthenticatedUsers"], rp)
-      ? "principalSet://goog/public:all"
-      : rp
-    )
-  }
-
   _registry_cel_default = (
     length(local.registry_locations) == 1
     ? "destination.is_registered == true && destination.agent_registry.location == '${local.registry_locations[0]}'"
     : "destination.is_registered == true && destination.agent_registry.location in [${join(", ", [for l in local.registry_locations : "'${l}'"])}]"
   )
 
+  # Resolve context and normalize IAM v1 prefixes per element, so that an
+  # unknown principal URI in one rule does not taint static principals.
+  _rule_principals = {
+    for k, v in var.access_policies : k => {
+      for rk, rv in v.rules : rk => {
+        for f, ps in {
+          principals          = rv.principals
+          excluded_principals = rv.excluded_principals
+          } : f => [
+          for rp in [for p in ps : lookup(local.ctx.iam_principals, p, p)] : (
+            startswith(rp, "user:")
+            ? "principal://goog/subject/${trimprefix(rp, "user:")}"
+            : startswith(rp, "group:")
+            ? "principalSet://goog/group/${trimprefix(rp, "group:")}"
+            : startswith(rp, "serviceAccount:")
+            ? "principal://iam.googleapis.com/projects/-/serviceAccounts/${trimprefix(rp, "serviceAccount:")}"
+            : rp == "allUsers"
+            ? "principalSet://goog/public:all"
+            : rp
+          )
+        ]
+      }
+    }
+  }
+
   _access_policy_rules = {
     for k, v in var.access_policies : k => {
-      for rk, rv in v.rules : rk => merge(rv, {
+      for rk, rv in v.rules : rk => merge(rv, local._rule_principals[k][rk], {
         custom_cel = (
           rv.condition == null
           ? null
           : templatestring(rv.condition, var.context.condition_vars)
         )
-        excluded_principals = [
-          for p in rv.excluded_principals : local._normalized_principals[p]
-        ]
         location = (
           rv.location == null
           ? local.location
           : lookup(local.ctx.locations, rv.location, rv.location)
         )
-        principals = [
-          for p in rv.principals : local._normalized_principals[p]
-        ]
         registry_location = (
           rv.location == null
           ? null
@@ -133,7 +122,6 @@ locals {
 }
 
 resource "google_iam_project_access_policy" "default" {
-  provider         = google-beta
   for_each         = local.access_policies_create
   project          = local.project_id
   location         = "global"
@@ -168,7 +156,6 @@ resource "google_iam_project_access_policy" "default" {
 }
 
 resource "google_iam_projects_policy_binding" "default" {
-  provider          = google-beta
   for_each          = local.access_policy_bindings
   project           = local.project_id
   location          = "global"
