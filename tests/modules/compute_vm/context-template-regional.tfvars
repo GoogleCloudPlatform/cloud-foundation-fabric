@@ -35,7 +35,7 @@ create_template = {
   regional = true
 }
 encryption = {
-  encrypt_boot      = true
+  encrypt_boot      = false
   kms_key_self_link = "$kms_keys:test"
 }
 iam = {

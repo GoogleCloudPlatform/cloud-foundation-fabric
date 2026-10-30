@@ -17,3 +17,4 @@ tests:
   context-template:
   context-template-regional:
   context-vm:
+  vm-unencrypted-boot:
