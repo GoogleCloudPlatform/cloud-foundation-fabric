@@ -1,0 +1,48 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.org.google_model_armor_floorsetting.default[0]:
+    ai_platform_floor_setting:
+    - enable_cloud_logging: true
+      inspect_only: true
+    enable_floor_setting_enforcement: true
+    filter_config:
+    - malicious_uri_filter_settings:
+      - filter_enforcement: ENABLED
+      pi_and_jailbreak_filter_settings:
+      - confidence_level: MEDIUM_AND_ABOVE
+        filter_enforcement: ENABLED
+      rai_settings:
+      - rai_filters:
+        - confidence_level: MEDIUM_AND_ABOVE
+          filter_type: DANGEROUS
+        - confidence_level: MEDIUM_AND_ABOVE
+          filter_type: HARASSMENT
+        - confidence_level: MEDIUM_AND_ABOVE
+          filter_type: HATE_SPEECH
+        - confidence_level: MEDIUM_AND_ABOVE
+          filter_type: SEXUALLY_EXPLICIT
+      sdp_settings:
+      - basic_config:
+        - filter_enforcement: ENABLED
+    integrated_services:
+    - AI_PLATFORM
+    location: global
+    parent: organizations/1122334455
+
+counts:
+  google_model_armor_floorsetting: 1
+  modules: 1
+  resources: 1
