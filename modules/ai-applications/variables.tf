@@ -14,6 +14,30 @@
  * limitations under the License.
  */
 
+variable "acl_configs" {
+  description = "Location-level ACL configurations keyed by location."
+  type = map(object({
+    idp_config = optional(object({
+      external_idp_config = optional(object({
+        workforce_pool_name = optional(string)
+      }))
+      idp_type = optional(string)
+    }))
+  }))
+  default  = {}
+  nullable = false
+  validation {
+    condition = alltrue([
+      for k, v in var.acl_configs : try(v.idp_config.idp_type, null) == null
+      ? true : contains(
+        ["GSUITE", "THIRD_PARTY"],
+        v.idp_config.idp_type
+      )
+    ])
+    error_message = "acl_configs.*.idp_config.idp_type must be one of [GSUITE, THIRD_PARTY]."
+  }
+}
+
 variable "chat_agent_security_configs" {
   description = "The DLP security configurations for (Dialogflow CX) chat agents."
   type = object({
@@ -463,8 +487,93 @@ variable "engines_configs" {
     # This can override var.location and the datastores location
     location = optional(string)
     search_engine_config = optional(object({
-      search_add_ons = optional(list(string), [])
-      search_tier    = optional(string)
+      app_type = optional(string)
+      assistant_config = optional(object({
+        assistant_id = optional(string, "default_assistant")
+        customer_policy = optional(object({
+          banned_phrases = optional(map(object({
+            ignore_diacritics = optional(bool)
+            match_type        = optional(string)
+            phrase            = optional(string)
+          })), {})
+          model_armor_config = optional(object({
+            failure_mode         = optional(string)
+            response_template    = string
+            user_prompt_template = string
+          }))
+        }))
+        description  = optional(string)
+        display_name = optional(string)
+        generation_config = optional(object({
+          default_language = optional(string)
+          system_instruction = optional(object({
+            additional_system_instruction = optional(string)
+          }))
+        }))
+        web_grounding_type = optional(string)
+      }))
+      company_name               = optional(string)
+      disable_analytics          = optional(bool)
+      features                   = optional(map(string))
+      kms_key                    = optional(string)
+      required_subscription_tier = optional(string)
+      search_add_ons             = optional(list(string), [])
+      search_tier                = optional(string)
+      widget_config = optional(object({
+        access_settings = optional(object({
+          allow_public_access              = optional(bool)
+          allowlisted_domains              = optional(list(string))
+          enable_web_app                   = optional(bool)
+          language_code                    = optional(string)
+          workforce_identity_pool_provider = optional(string)
+        }))
+        homepage_setting = optional(object({
+          shortcuts = optional(map(object({
+            destination_uri = optional(string)
+            icon_url        = optional(string)
+            title           = optional(string)
+          })), {})
+        }))
+        ui_branding = optional(object({
+          logo = optional(object({
+            url = optional(string)
+          }))
+        }))
+        ui_settings = optional(object({
+          data_store_ui_configs = optional(map(object({
+            facet_fields = optional(map(string), {})
+            fields_ui_components = optional(map(object({
+              device_visibility = optional(list(string))
+              display_template  = optional(string)
+              field             = string
+            })), {})
+          })), {})
+          default_search_request_order_by = optional(string)
+          disable_user_events_collection  = optional(bool)
+          enable_autocomplete             = optional(bool)
+          enable_create_agent_button      = optional(bool)
+          enable_people_search            = optional(bool)
+          enable_quality_feedback         = optional(bool)
+          enable_safe_search              = optional(bool)
+          enable_search_as_you_type       = optional(bool)
+          enable_visual_content_summary   = optional(bool)
+          generative_answer_config = optional(object({
+            disable_related_questions       = optional(bool)
+            ignore_adversarial_query        = optional(bool)
+            ignore_low_relevant_content     = optional(bool)
+            ignore_non_answer_seeking_query = optional(bool)
+            image_source                    = optional(string)
+            language_code                   = optional(string)
+            max_rephrase_steps              = optional(number)
+            model_prompt_preamble           = optional(string)
+            model_version                   = optional(string)
+            result_count                    = optional(number)
+          }))
+          interaction_type        = optional(string)
+          result_description_type = optional(string)
+        }))
+        widget_config_id = optional(string)
+      }))
     }))
   })
   nullable = false
@@ -477,6 +586,42 @@ variable "engines_configs" {
       : length(var.engines_configs.data_store_ids) > 0 ? true : false
     )
     error_message = "You must specify at least one data store id for each engine."
+  }
+  validation {
+    condition = (
+      try(var.engines_configs.search_engine_config.app_type, null) == null
+      ? true
+      : contains(
+        ["APP_TYPE_INTRANET", "APP_TYPE_UNSPECIFIED"],
+        var.engines_configs.search_engine_config.app_type
+      )
+    )
+    error_message = "engines_configs.search_engine_config.app_type must be one of [APP_TYPE_INTRANET, APP_TYPE_UNSPECIFIED]."
+  }
+  validation {
+    condition = (
+      try(
+        var.engines_configs.search_engine_config.required_subscription_tier,
+        null
+      ) == null
+      ? true
+      : contains([
+        "SUBSCRIPTION_TIER_AGENTSPACE_BUSINESS",
+        "SUBSCRIPTION_TIER_AGENTSPACE_STARTER",
+        "SUBSCRIPTION_TIER_EDU",
+        "SUBSCRIPTION_TIER_EDU_EMERGING",
+        "SUBSCRIPTION_TIER_EDU_PRO",
+        "SUBSCRIPTION_TIER_EDU_PRO_EMERGING",
+        "SUBSCRIPTION_TIER_ENTERPRISE",
+        "SUBSCRIPTION_TIER_ENTERPRISE_EMERGING",
+        "SUBSCRIPTION_TIER_FRONTLINE_STARTER",
+        "SUBSCRIPTION_TIER_FRONTLINE_WORKER",
+        "SUBSCRIPTION_TIER_SEARCH",
+        "SUBSCRIPTION_TIER_SEARCH_AND_ASSISTANT",
+        "SUBSCRIPTION_TIER_UNSPECIFIED"
+      ], var.engines_configs.search_engine_config.required_subscription_tier)
+    )
+    error_message = "Invalid engines_configs.search_engine_config.required_subscription_tier value."
   }
   validation {
     condition = alltrue([
@@ -494,6 +639,122 @@ variable "engines_configs" {
       ), true
     ])
     error_message = "engines_configs.search_engine_config.search_tier must be one of [SEARCH_TIER_ENTERPRISE, SEARCH_TIER_STANDARD]."
+  }
+  validation {
+    condition = (
+      try(
+        var.engines_configs.search_engine_config.assistant_config.web_grounding_type,
+        null
+      ) == null
+      ? true
+      : contains([
+        "WEB_GROUNDING_TYPE_DISABLED",
+        "WEB_GROUNDING_TYPE_ENTERPRISE_WEB_SEARCH",
+        "WEB_GROUNDING_TYPE_GOOGLE_SEARCH"
+      ], var.engines_configs.search_engine_config.assistant_config.web_grounding_type)
+    )
+    error_message = "assistant_config.web_grounding_type must be one of [WEB_GROUNDING_TYPE_DISABLED, WEB_GROUNDING_TYPE_ENTERPRISE_WEB_SEARCH, WEB_GROUNDING_TYPE_GOOGLE_SEARCH]."
+  }
+  validation {
+    condition = alltrue([
+      for k, v in coalesce(try(
+        var.engines_configs.search_engine_config.assistant_config.customer_policy.banned_phrases,
+        null
+        ), {}) : v.match_type == null ? true : contains(
+        ["SIMPLE_STRING_MATCH", "WORD_BOUNDARY_STRING_MATCH"],
+        v.match_type
+      )
+    ])
+    error_message = "banned_phrases.*.match_type must be one of [SIMPLE_STRING_MATCH, WORD_BOUNDARY_STRING_MATCH]."
+  }
+  validation {
+    condition = (
+      try(
+        var.engines_configs.search_engine_config.assistant_config.customer_policy.model_armor_config.failure_mode,
+        null
+      ) == null
+      ? true
+      : contains(
+        ["FAIL_CLOSED", "FAIL_OPEN"],
+        var.engines_configs.search_engine_config.assistant_config.customer_policy.model_armor_config.failure_mode
+      )
+    )
+    error_message = "model_armor_config.failure_mode must be one of [FAIL_CLOSED, FAIL_OPEN]."
+  }
+  validation {
+    condition = (
+      try(
+        var.engines_configs.search_engine_config.widget_config.ui_settings.interaction_type,
+        null
+      ) == null
+      ? true
+      : contains(
+        ["SEARCH_ONLY", "SEARCH_WITH_ANSWER", "SEARCH_WITH_FOLLOW_UPS"],
+        var.engines_configs.search_engine_config.widget_config.ui_settings.interaction_type
+      )
+    )
+    error_message = "widget_config.ui_settings.interaction_type must be one of [SEARCH_ONLY, SEARCH_WITH_ANSWER, SEARCH_WITH_FOLLOW_UPS]."
+  }
+  validation {
+    condition = (
+      try(
+        var.engines_configs.search_engine_config.widget_config.ui_settings.result_description_type,
+        null
+      ) == null
+      ? true
+      : contains(
+        ["EXTRACTIVE_ANSWER", "SNIPPET"],
+        var.engines_configs.search_engine_config.widget_config.ui_settings.result_description_type
+      )
+    )
+    error_message = "widget_config.ui_settings.result_description_type must be one of [EXTRACTIVE_ANSWER, SNIPPET]."
+  }
+  validation {
+    condition = (
+      try(
+        var.engines_configs.search_engine_config.widget_config.ui_settings.generative_answer_config.image_source,
+        null
+      ) == null
+      ? true
+      : contains(
+        [
+          "ALL_AVAILABLE_SOURCES",
+          "CORPUS_IMAGE_ONLY",
+          "FIGURE_GENERATION_ONLY"
+        ],
+        var.engines_configs.search_engine_config.widget_config.ui_settings.generative_answer_config.image_source
+      )
+    )
+    error_message = "generative_answer_config.image_source must be one of [ALL_AVAILABLE_SOURCES, CORPUS_IMAGE_ONLY, FIGURE_GENERATION_ONLY]."
+  }
+  validation {
+    condition = alltrue(flatten([
+      for ds_k, ds_v in coalesce(try(
+        var.engines_configs.search_engine_config.widget_config.ui_settings.data_store_ui_configs,
+        null
+        ), {}) : [
+        for comp_k, comp_v in ds_v.fields_ui_components : contains(
+          ["custom1", "custom2", "custom3", "thumbnail", "title", "url"],
+          comp_k
+        )
+      ]
+    ]))
+    error_message = "keys in fields_ui_components must be one of [custom1, custom2, custom3, thumbnail, title, url]."
+  }
+  validation {
+    condition = alltrue(flatten([
+      for ds_k, ds_v in coalesce(try(
+        var.engines_configs.search_engine_config.widget_config.ui_settings.data_store_ui_configs,
+        null
+        ), {}) : [
+        for comp_k, comp_v in ds_v.fields_ui_components : [
+          for dev in coalesce(comp_v.device_visibility, []) : contains(
+            ["DESKTOP", "MOBILE"], dev
+          )
+        ]
+      ]
+    ]))
+    error_message = "device_visibility values in fields_ui_components must be one or more of [DESKTOP, MOBILE]."
   }
 }
 
@@ -513,4 +774,15 @@ variable "project_id" {
   description = "The ID of the project where the data stores and the agents will be created."
   type        = string
   nullable    = false
+}
+
+variable "user_stores_configs" {
+  description = "Location-level user store configurations keyed by location."
+  type = map(object({
+    default_license_config             = optional(string)
+    enable_expired_license_auto_update = optional(bool)
+    enable_license_auto_register       = optional(bool)
+  }))
+  default  = {}
+  nullable = false
 }
