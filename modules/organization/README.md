@@ -1062,7 +1062,7 @@ Only one of `value` and `path` can be set. Without `wo_version` the secret is st
 
 You can define Deny policies using the `iam_deny_policies` variable. Each policy requires you to specify the principals and permissions to deny, and optionally allows you to define exception principals, exception permissions, and conditions.
 
-Note that IAM Deny policies require a specific prefix for principal definitions (e.g., `principalSet://goog/public:all` or `principalSet://goog/group/group-email@example.com`).
+Note that IAM Deny policies require a specific prefix for principal definitions (e.g., `principalSet://goog/public:all` or `principalSet://goog/group/group-email@example.com`), and permissions must be prefixed with the service fully qualified domain name (e.g., `iam.googleapis.com/serviceAccountKeys.create`). The module automatically leverages context interpolation for principal formatting if they are defined in your `var.context.iam_principals` mapping.
 
 ```hcl
 module "organization" {

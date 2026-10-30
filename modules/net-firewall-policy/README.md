@@ -517,7 +517,7 @@ The following variable is defined at the top level of the rule (not within the `
 |---|---|:---:|:---:|:---:|
 | [name](variables.tf#L202) | Policy name. | <code>string</code> | ✓ |  |
 | [parent_id](variables.tf#L208) | Parent node where the policy will be created, `folders/nnn` or `organizations/nnn` for hierarchical policy, project id for a network policy. | <code>string</code> | ✓ |  |
-| [attachments](variables.tf#L17) | Ids of the resources to which this policy will be attached, in descriptive name => self link format. Specify folders or organization for hierarchical policy, VPCs for network policy. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [attachments](variables.tf#L17) | Ids of the resources to which this policy will be attached, in descriptive name => self link format. Specify folders or organization for hierarchical policy, VPCs for network policy. Manage each association from one side only, either here or via the target module (`firewall_policy` in `organization` and `folder`, `firewall_policy_associations` in `net-vpc`), never both. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 | [context](variables.tf#L24) | Context-specific interpolations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [description](variables.tf#L45) | Policy description. | <code>string</code> |  | <code>null</code> |
 | [egress_mirroring_rules](variables.tf#L51) | List of egress packet mirroring rule definitions, action can be 'mirror', 'do_not_mirror', or 'goto_next'. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
