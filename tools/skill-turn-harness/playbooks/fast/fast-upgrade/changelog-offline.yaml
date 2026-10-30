@@ -1,0 +1,49 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# yaml-language-server: $schema=../../playbook.schema.json
+# Offline: the workspace is a Fabric checkout whose CHANGELOG.md already
+# covers both releases, so the agent needs no network access.
+name: "FAST Upgrade - What Breaks Between Two Releases (Offline)"
+timeout: 300
+tmpdir:
+  link_paths:
+    - fast
+    - modules
+    - skills
+    - CHANGELOG.md
+    - default-versions.tf
+steps:
+  - user_input: >-
+      Please use the fast-upgrade skill to tell me what breaks when I move my
+      FAST stages from v57.0.0 to v59.0.0. This workspace is a Fabric
+      checkout whose CHANGELOG.md covers both releases: use it as the upstream
+      tree and do not fetch anything from the network.
+    expected_outcome: >-
+      The agent runs the fast_upgrade.py changelog command with the workspace
+      as --upstream-dir, --from v57.0.0 and --to v59.0.0. It reports the
+      breaking changes the command printed, including the custom_roles
+      variable type change in the organization and project modules, the
+      provider version changes and the module renames (agent-engine and
+      agent-gateway). It does not start a full upgrade, does not show the
+      FAST Upgrade progress block and does not modify any file.
+
+  - user_input: "Which of these would I have to act on if my stages only use the project module?"
+    expected_outcome: >-
+      The agent narrows the answer to the project module: the custom_roles
+      type change (values move from a list of permissions to an object with a
+      permissions attribute) and the provider version changes, which apply to
+      every stage. It either reasons from the report it already has or
+      explains that the changelog command's --repo option filters entries by
+      what a repository uses. It does not modify any file.
