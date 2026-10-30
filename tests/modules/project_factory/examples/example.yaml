@@ -102,6 +102,7 @@ values:
     timeouts: null
   module.project-factory.module.bigquery-datasets["dev-ta-app0-be/test_0"].google_bigquery_dataset.default:
     dataset_id: test_0
+    default_collation: null
     default_encryption_configuration: []
     default_partition_expiration_ms: null
     default_table_expiration_ms: null
@@ -255,6 +256,53 @@ values:
     - group:gcp-devops@example.org
     - group:team-a-admins@example.org
     role: roles/viewer
+  module.project-factory.module.folder-1-iam["team-d"].google_logging_folder_sink.sink["audit_gcs_logs"]:
+    deletion_policy: DELETE
+    description: audit_gcs_logs (Terraform-managed).
+    destination: storage.googleapis.com/gcs-logging-bucket
+    disabled: false
+    exclusions: []
+    filter: 'log_id("cloudaudit.googleapis.com/activity") OR
+
+      log_id("cloudaudit.googleapis.com/system_event") OR
+
+      log_id("cloudaudit.googleapis.com/policy") OR
+
+      log_id("cloudaudit.googleapis.com/access_transparency")
+
+      '
+    include_children: true
+    intercept_children: false
+    name: audit_gcs_logs
+  module.project-factory.module.folder-1-iam["team-d"].google_logging_folder_sink.sink["audit_log_bucket_logs"]:
+    deletion_policy: DELETE
+    description: audit_log_bucket_logs (Terraform-managed).
+    destination: logging.googleapis.com/projects/my-gcp-project-123456/locations/global/buckets/logging-bucket
+    disabled: false
+    exclusions: []
+    filter: 'log_id("cloudaudit.googleapis.com/activity") OR
+
+      log_id("cloudaudit.googleapis.com/system_event") OR
+
+      log_id("cloudaudit.googleapis.com/policy") OR
+
+      log_id("cloudaudit.googleapis.com/access_transparency")
+
+      '
+    include_children: true
+    intercept_children: false
+    name: audit_log_bucket_logs
+  ? module.project-factory.module.folder-1-iam["team-d"].google_project_iam_member.bucket_sinks_binding["audit_log_bucket_logs"]
+  : condition:
+    - expression: resource.name.endsWith('locations/global/buckets/logging-bucket')
+      title: audit_log_bucket_logs bucket writer
+    project: my-gcp-project-123456
+    role: roles/logging.bucketWriter
+  module.project-factory.module.folder-1-iam["team-d"].google_storage_bucket_iam_member.gcs_sinks_binding["audit_gcs_logs"]:
+    bucket: gcs-logging-bucket
+    condition: []
+    role: roles/storage.objectCreator
+    timeouts: null
   module.project-factory.module.folder-1["team-a"].google_folder.folder[0]:
     deletion_policy: DELETE
     deletion_protection: false
@@ -275,6 +323,16 @@ values:
     display_name: Team C
     parent: folders/5678901234
     tags: null
+    timeouts: null
+  module.project-factory.module.folder-1["team-d"].google_folder.folder[0]:
+    deletion_policy: DELETE
+    deletion_protection: false
+    display_name: Team D
+    parent: folders/5678901234
+    tags: null
+    timeouts: null
+  module.project-factory.module.folder-1["team-d"].google_logging_folder_settings.default[0]:
+    storage_location: europe-west1
     timeouts: null
   ? module.project-factory.module.folder-2-iam["team-a/app-0"].google_org_policy_policy.default["compute.disableSerialPortAccess"]
   : dry_run_spec: []
@@ -906,6 +964,7 @@ values:
     role: roles/pubsub.viewer
   ? module.project-factory.module.pubsub["dev-ta-app0-be/app-0-topic-b"].google_pubsub_subscription.default["app-0-topic-b-sub"]
   : bigquery_config: []
+    bigtable_config: []
     cloud_storage_config: []
     dead_letter_policy: []
     deletion_policy: DELETE
@@ -1079,7 +1138,7 @@ counts:
   google_compute_shared_vpc_service_project: 1
   google_data_catalog_taxonomy: 1
   google_essential_contacts_contact: 4
-  google_folder: 8
+  google_folder: 9
   google_folder_iam_audit_config: 1
   google_folder_iam_binding: 1
   google_iam_workload_identity_pool: 1
@@ -1087,6 +1146,8 @@ counts:
   google_kms_crypto_key: 1
   google_kms_crypto_key_iam_member: 2
   google_kms_key_ring: 1
+  google_logging_folder_settings: 1
+  google_logging_folder_sink: 2
   google_monitoring_notification_channel: 1
   google_network_security_dns_threat_detector: 1
   google_org_policy_policy: 3
@@ -1095,7 +1156,7 @@ counts:
   google_project_iam_audit_config: 1
   google_project_iam_binding: 7
   google_project_iam_custom_role: 1
-  google_project_iam_member: 24
+  google_project_iam_member: 25
   google_project_service: 14
   google_project_service_identity: 5
   google_pubsub_subscription: 1
@@ -1106,14 +1167,15 @@ counts:
   google_service_account_iam_member: 3
   google_storage_bucket: 3
   google_storage_bucket_iam_binding: 4
+  google_storage_bucket_iam_member: 1
   google_storage_project_service_account: 4
   google_tags_location_tag_binding: 2
   google_tags_tag_binding: 3
   google_tags_tag_key: 1
   google_tags_tag_value: 2
   google_tags_tag_value_iam_binding: 1
-  modules: 39
-  resources: 128
+  modules: 41
+  resources: 134
   terraform_data: 2
 
 outputs: {}
