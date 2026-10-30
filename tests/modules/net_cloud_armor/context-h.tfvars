@@ -4,7 +4,7 @@ context = {
   }
   cidr_ranges_sets = {
     rfc1918 = [
-      "10.0.0.0/8",
+      "10.0.0.0/12",
       "172.16.0.0/12",
       "192.168.0.0/16"
     ]
@@ -41,7 +41,7 @@ rules = {
     priority = 100
     action   = "deny(403)"
     match = {
-      src_ip_ranges = ["$cidr_ranges_sets:rfc1918", "$cidr_ranges:test", "10.0.0.0/8"]
+      src_ip_ranges = ["$cidr_ranges_sets:rfc1918", "$cidr_ranges:test", "10.0.0.0/12"]
     }
   }
 }
