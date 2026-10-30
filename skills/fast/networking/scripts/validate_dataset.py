@@ -23,7 +23,7 @@
 
 Performs three verification passes:
 1. JSON Schema validation against `fast/stages/2-networking/schemas/*.schema.json`.
-2. Semantic, CIDR, `$token` reference, and L400 routing/security guardrail checks.
+2. Semantic, CIDR, `$token` reference, and routing/security guardrail checks.
 3. Isolated `terraform init -backend=false`, `terraform validate`, and
    `terraform plan -refresh=false` against a temporary copy of `2-networking`
    with synthetic FAST variables.
@@ -50,40 +50,39 @@ import yaml
 STAGE_REL = pathlib.Path("fast/stages/2-networking")
 MODELINE_RE = re.compile(r"^\s*#\s*yaml-language-server:\s*\$schema=(\S+)",
                          re.MULTILINE)
-TOKEN_RE = re.compile(r"\$([a-z0-9_]+):([a-zA-Z0-9_./-]+)")
+TOKEN_RE = re.compile(r"\$([a-z][a-z0-9_]*):([a-zA-Z0-9_./-]+)")
 
 PATH_SCHEMAS: tuple[tuple[re.Pattern[str], str], ...] = (
     (re.compile(r"^defaults\.yaml$"), "defaults.schema.json"),
     (re.compile(r"^folders/.+/\.config\.yaml$"), "folder.schema.json"),
-    (re.compile(r"^projects/[^/]+\.yaml$"), "project.schema.json"),
-    (re.compile(r"^folders/.+/projects/[^/]+\.yaml$"), "project.schema.json"),
+    (re.compile(r"^projects/.+\.yaml$"), "project.schema.json"),
+    (re.compile(r"^folders/.+/(?!\.config\.yaml$)[^/]+\.yaml$"),
+     "project.schema.json"),
     (re.compile(r"^ncc-hubs/[^/]+\.yaml$"), "ncc-hub.schema.json"),
-    (re.compile(r"^nvas/[^/]+\.yaml$"), "nva.schema.json"),
-    (re.compile(r"^firewall-policies/[^/]+\.yaml$"),
+    (re.compile(r"^nvas/.+\.yaml$"), "nva.schema.json"),
+    (re.compile(r"^firewall-policies/.+\.yaml$"),
      "firewall-policy.schema.json"),
     (re.compile(r"^dns/zones/.+\.yaml$"), "dns.schema.json"),
     (re.compile(r"^dns/response-policies/.+\.yaml$"),
      "dns-response-policy-rules.schema.json"),
-    (re.compile(r"^vpcs/[^/]+/\.config\.yaml$"), "vpc.schema.json"),
-    (re.compile(r"^vpcs/[^/]+/addresses\.yaml$"), "addresses.schema.json"),
-    (re.compile(r"^vpcs/[^/]+/firewall-policy\.yaml$"),
-     "firewall-policy.schema.json"),
-    (re.compile(r"^vpcs/[^/]+/firewall-rules/.+\.yaml$"),
+    (re.compile(r"^vpcs/.+/\.config\.yaml$"), "vpc.schema.json"),
+    (re.compile(r"^vpcs/.+/addresses\.yaml$"), "addresses.schema.json"),
+    (re.compile(r"^vpcs/.+/firewall-rules/.+\.yaml$"),
      "firewall-rules.schema.json"),
-    (re.compile(r"^vpcs/[^/]+/subnets/.+\.yaml$"), "subnet.schema.json"),
-    (re.compile(r"^vpcs/[^/]+/vpns/.+\.yaml$"), "vpn.schema.json"),
-    (re.compile(r"^vpcs/[^/]+/vlan-attachments/.+\.yaml$"),
+    (re.compile(r"^vpcs/.+/subnets/.+\.yaml$"), "subnet.schema.json"),
+    (re.compile(r"^vpcs/.+/vpns/.+\.yaml$"), "vpn.schema.json"),
+    (re.compile(r"^vpcs/.+/vlan-attachments/.+\.yaml$"),
      "vlan-attachments.schema.json"),
-    (re.compile(r"^vpcs/[^/]+/attachment-groups/.+\.yaml$"),
+    (re.compile(r"^vpcs/.+/attachment-groups/.+\.yaml$"),
      "attachment-groups.schema.json"),
 )
 
 EXTERNAL_CONTEXT_NAMESPACES = frozenset({
     "custom_roles",
+    "email_addresses",
     "folder_ids",
     "iam_principals",
     "kms_keys",
-    "perimeters",
     "security_profile_groups",
     "service_accounts",
     "storage_buckets",
@@ -92,6 +91,8 @@ EXTERNAL_CONTEXT_NAMESPACES = frozenset({
     "tag_vars",
     "vpc_sc_perimeters",
 })
+
+NON_TOKEN_KEYS = frozenset({"description", "shared_secret", "content"})
 
 DUMMY_FAST_VARS: dict[str, Any] = {
     "billing_account": {
@@ -148,19 +149,22 @@ def schema_for_relpath(rel: str) -> str | None:
   return None
 
 
-def extract_tokens(obj: Any) -> list[tuple[str, str]]:
+def extract_tokens(obj: Any, parent_key: str = "") -> list[tuple[str, str]]:
   """Recursively extract all `$(namespace):(key)` tokens from parsed YAML."""
+  if parent_key in NON_TOKEN_KEYS:
+    return []
   found: list[tuple[str, str]] = []
   if isinstance(obj, str):
     for ns, key in TOKEN_RE.findall(obj):
       found.append((ns, key))
   elif isinstance(obj, list):
     for item in obj:
-      found.extend(extract_tokens(item))
+      found.extend(extract_tokens(item, parent_key))
   elif isinstance(obj, dict):
     for k, v in obj.items():
+      k_str = str(k) if isinstance(k, str) else ""
       found.extend(extract_tokens(k))
-      found.extend(extract_tokens(v))
+      found.extend(extract_tokens(v, k_str))
   return found
 
 
@@ -169,20 +173,38 @@ def parse_cidr(
     location: str,
     field: str,
     issues: list[Issue],
+    cidr_ranges: dict[str, str] | None = None,
+    strict: bool = True,
 ) -> ipaddress.IPv4Network | ipaddress.IPv6Network | None:
-  """Parse a literal CIDR string or append an error issue."""
-  if not isinstance(value, str) or value.startswith("$"):
+  """Parse a CIDR string (or `$cidr_ranges:<key>` token) or append an error."""
+  if not isinstance(value, str):
+    return None
+  raw = value
+  if raw.startswith("$cidr_ranges:") and cidr_ranges is not None:
+    ck = raw.split(":", 1)[1]
+    if ck in cidr_ranges:
+      raw = cidr_ranges[ck]
+    else:
+      return None
+  elif raw.startswith("$"):
     return None
   try:
-    return ipaddress.ip_network(value, strict=False)
+    return ipaddress.ip_network(raw, strict=strict)
   except ValueError as exc:
     issues.append(Issue("error", location, f"invalid CIDR in {field}: {exc}"))
     return None
 
 
+def _vpc_key_from_subpath(rel: str, suffix_pattern: str) -> str | None:
+  """Extract `<vpc-key>` from `vpcs/<vpc-key>/<suffix_pattern>`."""
+  m = re.match(rf"^vpcs/(.+)/{suffix_pattern}$", rel)
+  return m.group(1) if m else None
+
+
 def validate_dataset_files(
     dataset_dir: pathlib.Path,
     stage_dir: pathlib.Path,
+    allow_external_projects: bool = False,
 ) -> tuple[list[Issue], dict[str, Any]]:
   """Run JSON Schema + semantic/reference/guardrail checks on `dataset_dir`."""
   issues: list[Issue] = []
@@ -198,11 +220,36 @@ def validate_dataset_files(
           json.loads(spath.read_text(encoding="utf-8")))
     return schema_cache[schema_name]
 
+  for yml_path in sorted(dataset_dir.rglob("*.yml")):
+    rel_yml = yml_path.relative_to(dataset_dir).as_posix()
+    issues.append(
+        Issue(
+            "error", rel_yml,
+            "FAST 2-networking factories only load '.yaml' files, not '.yml'"))
+
   yaml_files = sorted(dataset_dir.rglob("*.yaml"))
   if not yaml_files:
     issues.append(
         Issue("error", str(dataset_dir), "no .yaml files found in dataset"))
     return issues, {}
+
+  # Pre-scan VPC `.config.yaml` files to detect disabled `vlan_attachments` factories
+  disabled_vlan_vpcs: set[str] = set()
+  for ypath in yaml_files:
+    rel = ypath.relative_to(dataset_dir).as_posix()
+    vpc_k = _vpc_key_from_subpath(rel, r"\.config\.yaml")
+    if vpc_k:
+      try:
+        vdoc = yaml.safe_load(ypath.read_text(encoding="utf-8")) or {}
+      except yaml.YAMLError:
+        vdoc = {}
+      if isinstance(vdoc, dict):
+        fcfg = vdoc.get("factories_config") or {}
+        if isinstance(fcfg, dict):
+          vlan_dir = fcfg.get("vlan_attachments")
+          if isinstance(vlan_dir,
+                        str) and not (ypath.parent / vlan_dir).is_dir():
+            disabled_vlan_vpcs.add(vpc_k)
 
   docs: dict[str, Any] = {}
   all_tokens: list[tuple[str, str, str]] = []
@@ -210,6 +257,10 @@ def validate_dataset_files(
   # Pass 1: YAML syntax + JSON Schema validation
   for ypath in yaml_files:
     rel = ypath.relative_to(dataset_dir).as_posix()
+    vpc_vlan = _vpc_key_from_subpath(rel, r"vlan-attachments/.+\.yaml")
+    if vpc_vlan and vpc_vlan in disabled_vlan_vpcs:
+      continue
+
     expected_schema = schema_for_relpath(rel)
     if expected_schema is None:
       issues.append(
@@ -278,8 +329,10 @@ def validate_dataset_files(
           set((ctx_doc.get("addresses") or {}).keys()),
       "custom_roles":
           set((ctx_doc.get("custom_roles") or {}).keys()),
+      "email_addresses":
+          set((ctx_doc.get("email_addresses") or {}).keys()),
       "folder_ids":
-          set((ctx_doc.get("folder_ids") or {}).keys()),
+          set(),
       "iam_principals":
           set((ctx_doc.get("iam_principals") or {}).keys()),
       "kms_keys":
@@ -308,6 +361,10 @@ def validate_dataset_files(
           set(),
       "vpn_gateways":
           set(),
+      "vlan_attachments":
+          set(),
+      "attachment_groups":
+          set(),
       "nva_instances":
           set(),
       "nva_addresses":
@@ -318,12 +375,15 @@ def validate_dataset_files(
     if isinstance(cidrs, list):
       for idx, c in enumerate(cidrs):
         parse_cidr(c, "defaults.yaml",
-                   f"context.cidr_ranges_sets.{name}[{idx}]", issues)
+                   f"context.cidr_ranges_sets.{name}[{idx}]", issues,
+                   cidr_ranges)
 
   for name, c in cidr_ranges.items():
-    parse_cidr(c, "defaults.yaml", f"context.cidr_ranges.{name}", issues)
+    parse_cidr(c, "defaults.yaml", f"context.cidr_ranges.{name}", issues,
+               cidr_ranges)
 
   # Folders & Projects
+  has_project_files = False
   for rel, doc in docs.items():
     if not isinstance(doc, dict):
       continue
@@ -331,26 +391,28 @@ def validate_dataset_files(
       folder_key = rel[len("folders/"):-len("/.config.yaml")]
       known["folder_ids"].add(folder_key)
     elif rel.startswith("projects/") and rel.endswith(".yaml"):
+      has_project_files = True
       proj_key = pathlib.PurePosixPath(rel).stem
       known["project_ids"].add(proj_key)
-    elif re.match(r"^folders/.+/projects/[^/]+\.yaml$", rel):
+    elif re.match(r"^folders/.+/(?!\.config\.yaml$)[^/]+\.yaml$", rel):
+      has_project_files = True
       proj_key = pathlib.PurePosixPath(rel).stem
       known["project_ids"].add(proj_key)
 
-  # NCC Hubs & Groups
+  # NCC Hubs & Groups (keyed strictly by `name` per factory-ncc.tf:34)
   for rel, doc in docs.items():
     if not isinstance(doc, dict) or not re.match(r"^ncc-hubs/[^/]+\.yaml$",
                                                  rel):
       continue
-    stem = pathlib.PurePosixPath(rel).stem
-    hub_name = str(doc.get("name") or stem)
-    known["ncc_hubs"].add(hub_name)
-    known["ncc_hubs"].add(stem)
+    hub_name = doc.get("name")
+    if not hub_name:
+      continue
+    hub_name_s = str(hub_name)
+    known["ncc_hubs"].add(hub_name_s)
     groups = doc.get("groups") or {}
     if isinstance(groups, dict):
       for gname, gcfg in groups.items():
-        known["ncc_groups"].add(f"{hub_name}/{gname}")
-        known["ncc_groups"].add(f"{stem}/{gname}")
+        known["ncc_groups"].add(f"{hub_name_s}/{gname}")
         if isinstance(gcfg, dict):
           aa = gcfg.get("auto_accept") or []
           if isinstance(aa, list):
@@ -358,16 +420,18 @@ def validate_dataset_files(
             if dups:
               issues.append(
                   Issue(
-                      "error", rel,
+                      "warn", rel,
                       f"group '{gname}' auto_accept contains duplicate entries: {dups}"
                   ))
 
-  # VPCs, Subnets, Routers, VPNs, Addresses
+  # VPCs, Subnets, Routers, VPNs, VLANs, Attachment Groups, Addresses
   vpc_configs: dict[str, dict[str, Any]] = {}
   vpc_subnets: dict[str,
                     list[tuple[str, str,
                                ipaddress.IPv4Network | ipaddress.IPv6Network,
                                str]]] = {}
+  vpc_subnet_stems: dict[str, dict[str, str]] = {}
+  vpc_subnet_keys: dict[str, set[str]] = {}
   vpc_routers: dict[str, dict[str, Any]] = {}
 
   def resolve_region(reg: Any) -> str:
@@ -379,9 +443,8 @@ def validate_dataset_files(
   for rel, doc in docs.items():
     if not isinstance(doc, dict):
       continue
-    m_vpc = re.match(r"^vpcs/([^/]+)/\.config\.yaml$", rel)
-    if m_vpc:
-      vpc_key = m_vpc.group(1)
+    vpc_key = _vpc_key_from_subpath(rel, r"\.config\.yaml")
+    if vpc_key:
       vpc_configs[vpc_key] = doc
       known["networks"].add(vpc_key)
       routers = doc.get("routers") or {}
@@ -403,25 +466,40 @@ def validate_dataset_files(
       for psa_idx, psa in enumerate(doc.get("psa_configs") or []):
         if isinstance(psa, dict):
           for rname, rcidr in (psa.get("ranges") or {}).items():
-            parse_cidr(rcidr, rel, f"psa_configs[{psa_idx}].ranges.{rname}",
-                       issues)
+            pnet = parse_cidr(rcidr, rel,
+                              f"psa_configs[{psa_idx}].ranges.{rname}", issues,
+                              cidr_ranges)
+            if pnet is not None:
+              vpc_subnets.setdefault(vpc_key, []).append(
+                  (f"psa:{rname}", "psa", pnet, rel))
       for rname, rcfg in (doc.get("routes") or {}).items():
         if isinstance(rcfg, dict) and "dest_range" in rcfg:
           parse_cidr(rcfg.get("dest_range"), rel, f"routes.{rname}.dest_range",
-                     issues)
+                     issues, cidr_ranges, strict=True)
 
-    m_sub = re.match(r"^vpcs/([^/]+)/subnets/(.+)\.yaml$", rel)
+    m_sub = re.match(r"^vpcs/(.+)/subnets/(.+)\.yaml$", rel)
     if m_sub:
       vpc_key = m_sub.group(1)
-      sub_name = str(doc.get("name") or pathlib.PurePosixPath(rel).stem)
+      stem = pathlib.PurePosixPath(rel).stem
+      prev_rel = vpc_subnet_stems.setdefault(vpc_key, {}).get(stem)
+      if prev_rel and prev_rel != rel:
+        issues.append(
+            Issue(
+                "error", rel,
+                f"duplicate subnet filename stem '{stem}.yaml' in VPC '{vpc_key}' (also at {prev_rel}); modules/net-vpc keys subnet files by basename"
+            ))
+      vpc_subnet_stems[vpc_key][stem] = rel
+
+      sub_name = str(doc.get("name") or stem)
       reg_resolved = resolve_region(doc.get("region"))
+      is_proxy_or_psc = bool(doc.get("proxy_only") or doc.get("psc"))
       if reg_resolved:
-        known["subnets"].add(f"{vpc_key}/{reg_resolved}/{sub_name}")
-      raw_reg = str(doc.get("region") or "")
-      if raw_reg.startswith("$locations:"):
-        loc_alias = raw_reg.split(":", 1)[1]
-        known["subnets"].add(f"{vpc_key}/{loc_alias}/{sub_name}")
-      net = parse_cidr(doc.get("ip_cidr_range"), rel, "ip_cidr_range", issues)
+        vpc_subnet_keys.setdefault(vpc_key,
+                                   set()).add(f"{reg_resolved}/{sub_name}")
+        if not is_proxy_or_psc:
+          known["subnets"].add(f"{vpc_key}/{reg_resolved}/{sub_name}")
+      net = parse_cidr(doc.get("ip_cidr_range"), rel, "ip_cidr_range", issues,
+                       cidr_ranges)
       if net is not None:
         vpc_subnets.setdefault(vpc_key, []).append(
             (sub_name, "primary", net, rel))
@@ -429,47 +507,97 @@ def validate_dataset_files(
       if isinstance(sec_ranges, dict):
         for sname, scfg in sec_ranges.items():
           scidr = scfg.get("ip_cidr_range") if isinstance(scfg, dict) else scfg
-          snet = parse_cidr(scidr, rel, f"secondary_ip_ranges.{sname}", issues)
+          snet = parse_cidr(scidr, rel, f"secondary_ip_ranges.{sname}", issues,
+                            cidr_ranges)
           if snet is not None:
             vpc_subnets.setdefault(vpc_key, []).append(
                 (f"{sub_name}:{sname}", "secondary", snet, rel))
 
-    m_addr = re.match(r"^vpcs/([^/]+)/addresses\.yaml$", rel)
-    if m_addr:
-      vpc_key = m_addr.group(1)
+    vpc_addr = _vpc_key_from_subpath(rel, r"addresses\.yaml")
+    if vpc_addr:
       for ak in (doc.get("internal") or {}):
-        known["addresses"].add(f"{vpc_key}/internal/{ak}")
-        known["addresses"].add(f"internal/{ak}")
-        known["addresses"].add(ak)
-      for ak in (doc.get("external") or {}):
-        known["addresses"].add(f"{vpc_key}/external/{ak}")
-      for ak in (doc.get("global") or {}):
-        known["addresses"].add(f"{vpc_key}/global/{ak}")
-      for ak in (doc.get("psc_addresses") or {}):
-        known["addresses"].add(f"{vpc_key}/psc/{ak}")
+        known["addresses"].add(f"{vpc_addr}/{ak}")
+      for ak, acfg in ((doc.get("psa") or {}).items() if isinstance(
+          doc.get("psa"), dict) else ()):
+        if isinstance(acfg,
+                      dict) and "address" in acfg and "prefix_length" in acfg:
+          pnet = parse_cidr(f"{acfg['address']}/{acfg['prefix_length']}", rel,
+                            f"psa.{ak}", issues, cidr_ranges)
+          if pnet is not None:
+            vpc_subnets.setdefault(vpc_addr, []).append(
+                (f"addresses.psa:{ak}", "psa", pnet, rel))
 
-    m_vpn = re.match(r"^vpcs/([^/]+)/vpns/([^/]+)\.yaml$", rel)
+    m_vpn = re.match(r"^vpcs/(.+)/vpns/(.+)\.yaml$", rel)
     if m_vpn:
-      vpc_key, vpn_stem = m_vpn.group(1), m_vpn.group(2)
-      known["vpn_gateways"].add(f"{vpc_key}/{vpn_stem}")
+      vpc_key = m_vpn.group(1)
+      vpn_name = doc.get("name")
+      if vpn_name:
+        known["vpn_gateways"].add(f"{vpc_key}/{vpn_name}")
       for tname, tcfg in (doc.get("tunnels") or {}).items():
         if isinstance(tcfg, dict) and "bgp_session_range" in tcfg:
           parse_cidr(tcfg.get("bgp_session_range"), rel,
-                     f"tunnels.{tname}.bgp_session_range", issues)
+                     f"tunnels.{tname}.bgp_session_range", issues, cidr_ranges,
+                     strict=False)
 
-  # Intra-VPC subnet overlap checks
+    m_vlan = re.match(r"^vpcs/(.+)/vlan-attachments/(.+)\.yaml$", rel)
+    if m_vlan:
+      vpc_key = m_vlan.group(1)
+      att_name = doc.get("name")
+      if att_name:
+        known["vlan_attachments"].add(f"{vpc_key}/{att_name}")
+
+    m_att_grp = re.match(r"^vpcs/(.+)/attachment-groups/(.+)\.yaml$", rel)
+    if m_att_grp:
+      vpc_key = m_att_grp.group(1)
+      grp_name = doc.get("name")
+      if grp_name:
+        known["attachment_groups"].add(f"{vpc_key}/{grp_name}")
+
+  # Check `network_attachments` in VPC `.config.yaml`
+  for vpc_key, vdoc in vpc_configs.items():
+    rel = f"vpcs/{vpc_key}/.config.yaml"
+    net_atts = vdoc.get("network_attachments") or {}
+    if isinstance(net_atts, dict):
+      for na_key, na_cfg in net_atts.items():
+        if not isinstance(na_cfg, dict):
+          continue
+        sub_ref = str(na_cfg.get("subnet") or "")
+        if sub_ref and sub_ref not in vpc_subnet_keys.get(vpc_key, set()):
+          issues.append(
+              Issue(
+                  "error", rel,
+                  f"network_attachments.{na_key}.subnet '{sub_ref}' must be '<resolved-region>/<subnet-name>' matching a subnet in VPC '{vpc_key}' (available: {sorted(vpc_subnet_keys.get(vpc_key, set()))})"
+              ))
+        for list_field in ("producer_accept_lists", "producer_reject_lists"):
+          for item in na_cfg.get(list_field) or []:
+            if isinstance(item, str) and item.startswith("$"):
+              issues.append(
+                  Issue(
+                      "error", rel,
+                      f"network_attachments.{na_key}.{list_field} does not interpolate '{item}'; use a literal project ID"
+                  ))
+
+  # Intra-VPC subnet & PSA overlap checks
   for vpc_key, entries in vpc_subnets.items():
-    for i, (n1, k1, net1, r1) in enumerate(entries):
-      for n2, k2, net2, r2 in entries[i + 1:]:
+    for i, (n1, _k1, net1, r1) in enumerate(entries):
+      for n2, _k2, net2, r2 in entries[i + 1:]:
         if net1.version == net2.version and net1.overlaps(net2):
           issues.append(
               Issue(
                   "error", r1,
-                  f"VPC '{vpc_key}' subnet '{n1}' ({net1}) overlaps with '{n2}' ({net2}) in {r2}"
+                  f"VPC '{vpc_key}' range '{n1}' ({net1}) overlaps with '{n2}' ({net2}) in {r2}"
               ))
 
-  # Reciprocal VPC peering checks
+  # Reciprocal VPC peering checks & connected VPC pairs for cross-VPC overlap
+  connected_vpc_pairs: set[tuple[str, str, str]] = set()
+  hub_spokes: dict[str, list[str]] = {}
+  peer_neighbors: dict[str, set[str]] = {}
+
   for vpc_key, vdoc in vpc_configs.items():
+    ncc_cfg = vdoc.get("ncc_config")
+    if isinstance(ncc_cfg, dict) and isinstance(ncc_cfg.get("hub"), str):
+      hub_spokes.setdefault(ncc_cfg["hub"], []).append(vpc_key)
+
     peerings = vdoc.get("peering_config") or {}
     if not isinstance(peerings, dict):
       continue
@@ -479,6 +607,10 @@ def validate_dataset_files(
       peer_ref = str(pcfg.get("peer_network") or "")
       if peer_ref.startswith("$networks:"):
         peer_vpc = peer_ref.split(":", 1)[1]
+        peer_neighbors.setdefault(vpc_key, set()).add(peer_vpc)
+        peer_neighbors.setdefault(peer_vpc, set()).add(vpc_key)
+        if vpc_key < peer_vpc:
+          connected_vpc_pairs.add((vpc_key, peer_vpc, f"peering:{pkey}"))
         peer_doc = vpc_configs.get(peer_vpc)
         if peer_doc is not None:
           peer_map = peer_doc.get("peering_config") or {}
@@ -493,24 +625,44 @@ def validate_dataset_files(
                     f"peering '{pkey}' targets '$networks:{peer_vpc}', but 'vpcs/{peer_vpc}/.config.yaml' has no reciprocal peering back to '$networks:{vpc_key}'"
                 ))
 
+  for common_hub, neighbors in peer_neighbors.items():
+    sorted_neighbors = sorted(neighbors)
+    for i, v1 in enumerate(sorted_neighbors):
+      for v2 in sorted_neighbors[i + 1:]:
+        connected_vpc_pairs.add((v1, v2, f"peering-via:{common_hub}"))
+
+  for hub_ref, spokes in hub_spokes.items():
+    for i, v1 in enumerate(sorted(spokes)):
+      for v2 in sorted(spokes)[i + 1:]:
+        connected_vpc_pairs.add((v1, v2, f"ncc:{hub_ref}"))
+
+  # Cross-VPC subnet overlap checks across peered or same-NCC-hub VPCs
+  for v1, v2, link_label in sorted(connected_vpc_pairs):
+    for n1, _k1, net1, r1 in vpc_subnets.get(v1, ()):
+      for n2, _k2, net2, r2 in vpc_subnets.get(v2, ()):
+        if net1.version == net2.version and net1.overlaps(net2):
+          issues.append(
+              Issue(
+                  "error", r1,
+                  f"cross-VPC CIDR overlap over {link_label}: VPC '{v1}' range '{n1}' ({net1}) overlaps with VPC '{v2}' range '{n2}' ({net2} in {r2})"
+              ))
+
   # NVAs: ILB addresses, instance tokens, RA spokes, routes vs advertise
   nva_docs: dict[str, tuple[str, dict[str, Any]]] = {}
   nva_ilb_vpcs: dict[str, set[str]] = {}
   nva_ra_vpcs: dict[str, set[str]] = {}
 
   for rel, doc in docs.items():
-    if not isinstance(doc, dict) or not re.match(r"^nvas/[^/]+\.yaml$", rel):
+    if not isinstance(doc, dict) or not re.match(r"^nvas/.+\.yaml$", rel):
       continue
     stem = pathlib.PurePosixPath(rel).stem
     nva_name = str(doc.get("name") or stem)
     nva_docs[nva_name] = (rel, doc)
-    if stem != nva_name:
-      nva_docs[stem] = (rel, doc)
 
-    ilb_cfg = doc.get("ilb_config") or {}
-    ig_map = (doc.get("instance_groups") or
-              (ilb_cfg.get("instance_groups")
-               if isinstance(ilb_cfg, dict) else None) or {})
+    ilb_cfg = doc.get("ilb_config") if isinstance(doc.get("ilb_config"),
+                                                  dict) else {}
+    ig_map = (ilb_cfg.get("instance_groups") or doc.get("instance_groups") or
+              {})
     nics = ((doc.get("auto_instance_config") or {}).get("nics") or
             []) if isinstance(doc.get("auto_instance_config"), dict) else []
 
@@ -523,26 +675,19 @@ def validate_dataset_files(
           ":", 1)[1] if net_ref.startswith("$networks:") else net_ref
       if vpc_k:
         nic_vpcs.append(vpc_k)
-        # Register ILB VIP token `$addresses:<vpc>/<nva>` when ilb_config is used
-        if isinstance(ilb_cfg, dict) and (ilb_cfg or
-                                          not doc.get("ncc_ra_config")):
-          known["addresses"].add(f"{vpc_k}/{nva_name}")
-          known["addresses"].add(f"{vpc_k}/{stem}")
-          if ilb_cfg.get(
-              "forwarding_rules") is not None or not doc.get("ncc_ra_config"):
-            nva_ilb_vpcs.setdefault(nva_name, set()).add(vpc_k)
 
       # Check `advertise` prefixes are covered by `routes` or `masquerade: true`
       adv_list = nic.get("advertise") or []
       route_list = nic.get("routes") or []
       has_masq = bool(nic.get("masquerade"))
       route_nets = [
-          parse_cidr(r, rel, f"nics[{nic_idx}].routes", issues)
+          parse_cidr(r, rel, f"nics[{nic_idx}].routes", issues, cidr_ranges)
           for r in route_list
       ]
       route_nets_clean = [rn for rn in route_nets if rn is not None]
       for adv in adv_list:
-        adv_net = parse_cidr(adv, rel, f"nics[{nic_idx}].advertise", issues)
+        adv_net = parse_cidr(adv, rel, f"nics[{nic_idx}].advertise", issues,
+                             cidr_ranges)
         if adv_net is not None and not has_masq:
           covered = any(rn.version == adv_net.version and adv_net.subnet_of(rn)
                         for rn in route_nets_clean)
@@ -553,50 +698,81 @@ def validate_dataset_files(
                     f"NIC {nic_idx} ({net_ref}) advertises '{adv}' in BGP without a covering kernel route in 'routes' (FRR weight 32768 suppresses eBGP route installation, causing a data-plane blackhole)"
                 ))
 
-    # Populate `$nva_instances:` and `$nva_addresses:`
+    # Populate `nva_ilb_vpcs` and `$addresses:<vpc>/<nva>` from `ilb_config.forwarding_rules`
+    # (or from NIC VPCs when `ilb_config` is used without explicit `forwarding_rules` and no `ncc_ra_config`)
+    fr_raw = ilb_cfg.get("forwarding_rules")
+    fr_list = list(fr_raw.values()) if isinstance(
+        fr_raw, dict) else (fr_raw if isinstance(fr_raw, list) else [])
+    if fr_list:
+      for fr_cfg in fr_list:
+        if isinstance(fr_cfg, dict):
+          fr_net = str(fr_cfg.get("network") or "")
+          fr_vpc = fr_net.split(
+              ":", 1)[1] if fr_net.startswith("$networks:") else fr_net
+          if fr_vpc:
+            known["addresses"].add(f"{fr_vpc}/{nva_name}")
+            nva_ilb_vpcs.setdefault(nva_name, set()).add(fr_vpc)
+    elif not doc.get("ncc_ra_config"):
+      for vpc_k in nic_vpcs:
+        known["addresses"].add(f"{vpc_k}/{nva_name}")
+        nva_ilb_vpcs.setdefault(nva_name, set()).add(vpc_k)
+
+    # Populate `$nva_instances:` and `$nva_addresses:` (default `auto_create_instances` is 0 per factory-nva.tf:75)
+    total_auto_instances = 0
     if isinstance(ig_map, dict):
       for zone_key, zcfg in ig_map.items():
-        count = 1
+        count = 0
         if isinstance(zcfg, dict) and isinstance(
             zcfg.get("auto_create_instances"), int):
           count = zcfg["auto_create_instances"]
+        total_auto_instances += count
         for idx in range(count):
-          for prefix in {nva_name, stem}:
-            inst_key = f"{prefix}-{zone_key}-{idx}"
-            known["nva_instances"].add(inst_key)
-            for vpc_k in nic_vpcs:
-              known["nva_addresses"].add(f"{inst_key}/{vpc_k}")
+          inst_key = f"{nva_name}-{zone_key}-{idx}"
+          known["nva_instances"].add(inst_key)
+          for vpc_k in nic_vpcs:
+            known["nva_addresses"].add(f"{inst_key}/{vpc_k}")
 
-    # Check ILB conntrack settings
-    if isinstance(ilb_cfg, dict):
-      ct = ilb_cfg.get("enable_connection_tracking")
-      if isinstance(ct, dict):
-        if ct.get("track_per_session") is True:
-          issues.append(
-              Issue(
-                  "error", rel,
-                  "ilb_config sets track_per_session: true (must be false / PER_CONNECTION to avoid asymmetric state drops)"
-              ))
-        if ct.get("persist_conn_on_unhealthy") not in (None, "NEVER_PERSIST"):
-          issues.append(
-              Issue(
-                  "error", rel,
-                  "ilb_config sets persist_conn_on_unhealthy != NEVER_PERSIST"))
+    # Check ILB conntrack settings (`ilb_config.connection_tracking` per nva.schema.json)
+    ct = ilb_cfg.get("connection_tracking")
+    if isinstance(ct, dict):
+      if ct.get("track_per_session") is True:
+        issues.append(
+            Issue(
+                "error", rel,
+                "ilb_config.connection_tracking sets track_per_session: true (must be false / PER_CONNECTION to avoid asymmetric state drops)"
+            ))
+      if ct.get("persist_conn_on_unhealthy") not in (None, "NEVER_PERSIST"):
+        issues.append(
+            Issue(
+                "error", rel,
+                "ilb_config.connection_tracking sets persist_conn_on_unhealthy != NEVER_PERSIST"
+            ))
 
     # Check NCC Router Appliance config
     ra_cfg = doc.get("ncc_ra_config")
     if isinstance(ra_cfg, dict):
       bgp_cfg = doc.get("bgp_config") or {}
-      if not isinstance(bgp_cfg, dict) or not bgp_cfg.get("asn"):
+      if total_auto_instances > 0 and (not isinstance(bgp_cfg, dict) or
+                                       not bgp_cfg.get("asn")):
         issues.append(
-            Issue("error", rel,
-                  "ncc_ra_config requires bgp_config.asn on the NVA"))
+            Issue(
+                "error", rel,
+                "ncc_ra_config with auto-created instances requires bgp_config.asn on the NVA"
+            ))
+      seen_spoke_vpcs: set[str] = set()
       for spoke in ra_cfg.get("spokes") or []:
         if not isinstance(spoke, dict):
           continue
         snet = str(spoke.get("network") or "")
         svpc = snet.split(":", 1)[1] if snet.startswith("$networks:") else snet
         if svpc:
+          if svpc in seen_spoke_vpcs:
+            issues.append(
+                Issue(
+                    "error", rel,
+                    f"ncc_ra_config declares multiple spokes for the same VPC '{svpc}'"
+                ))
+          seen_spoke_vpcs.add(svpc)
           nva_ra_vpcs.setdefault(nva_name, set()).add(svpc)
           if nic_vpcs and svpc not in nic_vpcs:
             issues.append(
@@ -604,8 +780,7 @@ def validate_dataset_files(
                     "error", rel,
                     f"ncc_ra_config spoke references '$networks:{svpc}', but no NIC in auto_instance_config is attached to '{svpc}'"
                 ))
-          if svpc in nva_ilb_vpcs.get(nva_name, set()) and isinstance(
-              ilb_cfg, dict) and ilb_cfg.get("forwarding_rules"):
+          if svpc in nva_ilb_vpcs.get(nva_name, set()):
             issues.append(
                 Issue(
                     "error", rel,
@@ -624,12 +799,20 @@ def validate_dataset_files(
         if not isinstance(icfg, dict):
           continue
         red = icfg.get("redundant_interface")
-        if red and red not in intfs:
-          issues.append(
-              Issue(
-                  "error", rel,
-                  f"router '{rname}' interface '{iname}' references redundant_interface '{red}' which is not defined on '{rname}'"
-              ))
+        if red:
+          if red not in intfs:
+            issues.append(
+                Issue(
+                    "error", rel,
+                    f"router '{rname}' interface '{iname}' references redundant_interface '{red}' which is not defined on '{rname}'"
+                ))
+          elif isinstance(intfs.get(red),
+                          dict) and intfs[red].get("redundant_interface"):
+            issues.append(
+                Issue(
+                    "error", rel,
+                    f"router '{rname}' interface '{iname}' sets redundant_interface '{red}', which is itself a secondary interface"
+                ))
       for pname, pcfg in ((rcfg.get("peers") or {}).items() if isinstance(
           rcfg.get("peers"), dict) else ()):
         if not isinstance(pcfg, dict):
@@ -669,42 +852,40 @@ def validate_dataset_files(
                   f"router '{rname}' and peer '{pname}' share ASN {pcfg.get('asn')} (Router Appliance BGP requires eBGP with distinct ASNs)"
               ))
 
-  # Project-scoped VPC firewall rule name uniqueness
-  fw_rule_owners: dict[tuple[str, str], str] = {}
+  # Project-scoped & VPC-scoped firewall rule name uniqueness
+  default_vpc_proj = str(
+      ((defaults_doc.get("vpcs") or {}).get("defaults") or
+       {}).get("project_id") or "") if isinstance(defaults_doc, dict) else ""
+  fw_rule_owners: dict[tuple[str, str], tuple[str, str]] = {}
   for rel, doc in docs.items():
-    m_fw = re.match(r"^vpcs/([^/]+)/firewall-rules/[^/]+\.yaml$", rel)
+    m_fw = re.match(r"^vpcs/(.+)/firewall-rules/.+\.yaml$", rel)
     if not m_fw or not isinstance(doc, dict):
       continue
     vpc_key = m_fw.group(1)
-    proj_id = str((vpc_configs.get(vpc_key) or {}).get("project_id") or "")
-    if not proj_id:
-      continue
+    proj_id = str((vpc_configs.get(vpc_key) or {}).get("project_id") or
+                  default_vpc_proj)
+    owner_scope = proj_id or f"vpc:{vpc_key}"
     for direction in ("ingress", "egress"):
       for rule_name in (doc.get(direction) or {}):
-        rk = (proj_id, str(rule_name))
-        if rk in fw_rule_owners and fw_rule_owners[rk] != vpc_key:
+        rk = (owner_scope, str(rule_name))
+        if rk in fw_rule_owners:
+          prev_vpc, prev_rel = fw_rule_owners[rk]
           issues.append(
               Issue(
                   "error", rel,
-                  f"firewall rule '{rule_name}' is defined in both VPC '{fw_rule_owners[rk]}' and VPC '{vpc_key}' within project '{proj_id}' (GCE firewall rule names must be unique per project)"
+                  f"duplicate firewall rule name '{rule_name}' in project '{owner_scope}' (also defined in VPC '{prev_vpc}' at {prev_rel})"
               ))
-        fw_rule_owners.setdefault(rk, vpc_key)
-    # Check for unsupported `$cidr_ranges_sets:` in VPC firewall rules
-    for ns, key in extract_tokens(doc):
-      if ns == "cidr_ranges_sets":
-        issues.append(
-            Issue(
-                "error", rel,
-                f"'$cidr_ranges_sets:{key}' is not resolved in VPC firewall-rules/*.yaml (only in firewall-policies/*.yaml); use literal CIDRs"
-            ))
+        fw_rule_owners.setdefault(rk, (vpc_key, rel))
 
   # Symbolic `$token` resolution check
   for rel, ns, key in all_tokens:
     if ns in known:
       if key in known[ns]:
         continue
-      # External Stage 0 / 1 / 2 tokens are allowed if passed via tfvars
       if ns in EXTERNAL_CONTEXT_NAMESPACES:
+        continue
+      if ns == "project_ids" and (allow_external_projects or
+                                  not has_project_files):
         continue
       issues.append(
           Issue(
@@ -721,6 +902,7 @@ def validate_dataset_files(
 def build_mock_tfvars(
     dataset_dir: pathlib.Path,
     all_tokens: list[tuple[str, str, str]],
+    known_projects: set[str] | None = None,
 ) -> dict[str, Any]:
   """Construct synthetic FAST root variables so `terraform validate` and `plan` run offline."""
   tfvars: dict[str, Any] = json.loads(json.dumps(DUMMY_FAST_VARS))
@@ -736,17 +918,22 @@ def build_mock_tfvars(
       "environment/development": "tagValues/12345",
       "environment/production": "tagValues/12346",
   }
+  tag_keys: dict[str, str] = {}
   sec_profiles: dict[str, str] = {}
   custom_roles: dict[str, str] = {}
   iam_principals: dict[str, str] = {}
   kms_keys: dict[str, str] = {}
+  perimeters: dict[str, str] = {}
   project_ids: dict[str, str] = {}
+  email_addresses: dict[str, str] = {}
 
   for idx, (_, ns, key) in enumerate(all_tokens):
     if ns == "folder_ids":
       folders.setdefault(key, f"folders/{40000000 + idx}")
     elif ns == "tag_values":
       tags.setdefault(key, f"tagValues/{20000 + idx}")
+    elif ns == "tag_keys":
+      tag_keys.setdefault(key, f"tagKeys/{30000 + idx}")
     elif ns == "security_profile_groups":
       sec_profiles.setdefault(
           key,
@@ -765,14 +952,21 @@ def build_mock_tfvars(
     elif ns == "kms_keys":
       kms_keys.setdefault(
           key, f"projects/test/locations/global/keyRings/kr/cryptoKeys/{key}")
+    elif ns == "vpc_sc_perimeters":
+      perimeters.setdefault(key,
+                            f"accessPolicies/123456/servicePerimeters/{key}")
+    elif ns == "email_addresses":
+      email_addresses.setdefault(key, f"{key}@fast.example.com")
     elif ns == "storage_buckets":
       tfvars["storage_buckets"].setdefault(key, f"test-bucket-{idx}")
     elif ns == "project_ids":
-      if not (dataset_dir / "projects" / f"{key}.yaml").exists():
+      if known_projects is None or key not in known_projects:
         project_ids.setdefault(key, f"fast-{key}")
 
   tfvars["folder_ids"] = folders
   tfvars["tag_values"] = tags
+  if tag_keys:
+    tfvars["tag_keys"] = tag_keys
   if sec_profiles:
     tfvars["security_profile_groups"] = sec_profiles
   if custom_roles:
@@ -781,8 +975,12 @@ def build_mock_tfvars(
     tfvars["iam_principals"] = iam_principals
   if kms_keys:
     tfvars["kms_keys"] = kms_keys
+  if perimeters:
+    tfvars["perimeters"] = perimeters
   if project_ids:
     tfvars["project_ids"] = project_ids
+  if email_addresses:
+    tfvars["context"] = {"email_addresses": email_addresses}
   return tfvars
 
 
@@ -804,9 +1002,10 @@ def run_terraform_checks(
 
   fabric_root = stage_dir.parents[2]
   tf_env = dict(os.environ)
-  cache_dir = pathlib.Path.home() / ".terraform.d" / "plugin-cache"
-  cache_dir.mkdir(parents=True, exist_ok=True)
-  tf_env.setdefault("TF_PLUGIN_CACHE_DIR", str(cache_dir))
+  if "TF_PLUGIN_CACHE_DIR" not in tf_env:
+    cache_dir = pathlib.Path.home() / ".terraform.d" / "plugin-cache"
+    cache_dir.mkdir(parents=True, exist_ok=True)
+    tf_env["TF_PLUGIN_CACHE_DIR"] = str(cache_dir)
   tf_env["TF_IN_AUTOMATION"] = "1"
 
   def ignore_stage_files(_src: str, names: list[str]) -> list[str]:
@@ -815,16 +1014,21 @@ def run_terraform_checks(
         if n in (".terraform", "datasets") or n.endswith(".tfstate")
     ]
 
-  with tempfile.TemporaryDirectory(dir=stage_dir.parent,
-                                   prefix=".fast-net-validate-") as tmp:
-    work = pathlib.Path(tmp)
+  with tempfile.TemporaryDirectory(prefix="fast-net-validate-") as tmp:
+    tmp_root = pathlib.Path(tmp)
+    (tmp_root / "modules").symlink_to(fabric_root / "modules")
+    work = tmp_root / "fast" / "stages" / "2-networking"
+    work.parent.mkdir(parents=True, exist_ok=True)
     shutil.copytree(stage_dir, work, dirs_exist_ok=True,
                     ignore=ignore_stage_files)
-    lockfile = fabric_root / "tools" / "lockfile" / ".terraform.lock.hcl"
-    if lockfile.is_file():
-      shutil.copy(lockfile, work / ".terraform.lock.hcl")
 
-    tfvars = build_mock_tfvars(dataset_dir, all_tokens)
+    known_projs = {
+        p.stem for p in list(dataset_dir.glob("projects/**/*.yaml")) + [
+            f for f in dataset_dir.glob("folders/**/*.yaml")
+            if f.name != ".config.yaml"
+        ]
+    }
+    tfvars = build_mock_tfvars(dataset_dir, all_tokens, known_projs)
     (work / "validate.auto.tfvars.json").write_text(
         json.dumps(tfvars, indent=2), encoding="utf-8")
 
@@ -878,6 +1082,10 @@ def main(argv: list[str] | None = None) -> int:
       "--stage-dir", default=None, help=
       "Optional path to fast/stages/2-networking (auto-discovered by default).")
   parser.add_argument(
+      "--allow-external-projects", action="store_true", help=
+      "Allow $project_ids:<key> tokens that are supplied via tfvars rather than projects/*.yaml."
+  )
+  parser.add_argument(
       "--no-terraform", action="store_true",
       help="Skip running `terraform init`, `validate`, and `plan`.")
   parser.add_argument(
@@ -893,7 +1101,11 @@ def main(argv: list[str] | None = None) -> int:
     return 2
 
   stage_dir = discover_stage_dir(args.stage_dir)
-  issues, meta = validate_dataset_files(dataset_dir, stage_dir)
+  issues, meta = validate_dataset_files(
+      dataset_dir,
+      stage_dir,
+      allow_external_projects=args.allow_external_projects,
+  )
 
   tf_summary: dict[str, Any] = {"ran": False}
   has_errors = any(i.level == "error" for i in issues)
