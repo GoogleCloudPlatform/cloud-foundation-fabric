@@ -289,3 +289,41 @@ def test_single_shared_vpc_dataset_passes(tmp_path: pathlib.Path) -> None:
   warnings = [i for i in issues if i.level == "warn"]
   assert not errors, f"Unexpected errors in single-vpc: {errors}"
   assert not warnings, f"Unexpected warnings in single-vpc: {warnings}"
+
+
+def test_discover_stage_dir_from_vendored_extension(
+    tmp_path: pathlib.Path, monkeypatch: pytest.MonkeyPatch) -> None:
+  fake_project = tmp_path / "consumer-project"
+  vendored_stage = (fake_project / "extensions" / "cloud-foundation-fabric" /
+                    "fast" / "stages" / "2-networking")
+  (vendored_stage / "schemas").mkdir(parents=True)
+  installed_script = (fake_project / ".agents" / "skills" / "fast-networking" /
+                      "scripts" / "validate_dataset.py")
+  installed_script.parent.mkdir(parents=True)
+  installed_script.write_text("# stub\n", encoding="utf-8")
+
+  monkeypatch.delenv("FAST_2_NETWORKING_DIR", raising=False)
+  monkeypatch.setattr(validate_dataset, "__file__", str(installed_script))
+  monkeypatch.chdir(fake_project)
+
+  resolved = validate_dataset.discover_stage_dir()
+  assert resolved == vendored_stage.resolve()
+
+
+def test_agents_cli_extension_manifest_is_valid() -> None:
+  manifest_path = REPO_ROOT / "agents-cli-extension.yaml"
+  doc = yaml.safe_load(manifest_path.read_text(encoding="utf-8"))
+  assert doc["schema"] == "agents-cli-extension/v1alpha1"
+  assert doc["name"] == "cloud-foundation-fabric"
+  skills = doc["skills"]
+  assert set(skills.keys()) == {
+      "fabric-builder",
+      "fast-networking",
+      "fast-prerequisites",
+  }
+  for skill_name, entry in skills.items():
+    skill_md = REPO_ROOT / entry["path"] / "SKILL.md"
+    assert skill_md.is_file(), f"Missing SKILL.md for {skill_name}"
+    raw = skill_md.read_text(encoding="utf-8")
+    frontmatter = yaml.safe_load(raw.split("---", 2)[1])
+    assert frontmatter["name"] == skill_name

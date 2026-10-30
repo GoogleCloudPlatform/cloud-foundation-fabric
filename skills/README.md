@@ -2,6 +2,14 @@
 
 This directory contains skills for AI agents to leverage Cloud Foundation Fabric (CFF). These skills provide context, guidelines, and tools for agents to perform specific tasks related to CFF.
 
+## Installing with `agents-cli`
+
+You can install the user-facing Fabric skills (`fabric-builder`, `fast-networking`, and `fast-prerequisites`) into your project's `.agents/skills/` directory (or globally into `~/.agents/skills/` with `--global`) using [`agents-cli`](https://google.github.io/agents-cli/guide/extensions/):
+
+```bash
+agents-cli extension add GoogleCloudPlatform/cloud-foundation-fabric
+```
+
 ## Available Skills
 
 - **[contributing](./contributing)**: End-to-end workflow for contributing to Cloud Foundation Fabric: triaging GitHub issues, proactive feature development, validating with tests and Policy Troubleshooter, and submitting sanitized Pull Requests. Use when addressing a Fabric GitHub issue, developing a module or FAST stage change, or preparing a branch for a pull request.

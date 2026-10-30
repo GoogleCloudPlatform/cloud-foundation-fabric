@@ -133,8 +133,20 @@ def discover_stage_dir(explicit: str | None = None) -> pathlib.Path:
   if env_dir:
     return pathlib.Path(env_dir).expanduser().resolve()
   script_dir = pathlib.Path(__file__).resolve().parent
-  for parent in (script_dir, *script_dir.parents):
-    candidate = parent / STAGE_REL
+  cwd = pathlib.Path.cwd().resolve()
+  home = pathlib.Path.home()
+  roots: list[pathlib.Path] = []
+  for base in (script_dir, *script_dir.parents, cwd, *cwd.parents):
+    roots.append(base)
+    roots.append(base / "extensions" / "cloud-foundation-fabric")
+  roots.append(home / ".config" / "agents-cli" / "extensions" /
+               "cloud-foundation-fabric")
+  cache_git = home / ".cache" / "agents-cli" / "git"
+  if cache_git.is_dir():
+    roots.extend(
+        sorted(cache_git.glob("GoogleCloudPlatform__cloud-foundation-fabric*")))
+  for root in roots:
+    candidate = root / STAGE_REL
     if (candidate / "schemas").is_dir():
       return candidate
   raise FileNotFoundError(
