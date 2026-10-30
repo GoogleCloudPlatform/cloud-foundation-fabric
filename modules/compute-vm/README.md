@@ -873,7 +873,6 @@ module "kms-vm-example" {
     auto_create = true
   }
   encryption = {
-    encrypt_boot      = true
     kms_key_self_link = module.kms.keys.key-regional.id
   }
 }
@@ -904,7 +903,6 @@ module "autokey-vm-example" {
     default = {}
   }
   encryption = {
-    encrypt_boot      = true
     kms_key_self_link = "$kms_keys:autokeys/default"
   }
 }
