@@ -14,7 +14,26 @@
  * limitations under the License.
  */
 
-# tfdoc:file:description Hierarchical security policy and rules.
+# tfdoc:file:description Hierarchical security policy, rules and associations.
+
+locals {
+  attachments = {
+    for k, v in var.attachments : k => {
+      id = lookup(local.ctx.folder_ids, v.id, v.id)
+      excluded_folders = [
+        for f in v.excluded_folders : lookup(local.ctx.folder_ids, f, f)
+      ]
+      # project numbers in context are bare numbers
+      excluded_projects = [
+        for p in v.excluded_projects : (
+          lookup(local.ctx.project_numbers, p, null) == null
+          ? p
+          : "projects/${local.ctx.project_numbers[p]}"
+        )
+      ]
+    }
+  }
+}
 
 resource "google_compute_organization_security_policy" "hierarchical" {
   count       = local.is_hierarchical ? 1 : 0
@@ -164,4 +183,16 @@ resource "google_compute_organization_security_policy_rule" "hierarchical" {
       error_message = "Rule '${each.key}': ${coalesce(local.rule_errors[each.key], "-")}"
     }
   }
+}
+
+resource "google_compute_organization_security_policy_association" "hierarchical" {
+  for_each          = local.is_hierarchical ? local.attachments : {}
+  name              = "${var.name}-${each.key}"
+  attachment_id     = each.value.id
+  policy_id         = google_compute_organization_security_policy.hierarchical[0].id
+  excluded_folders  = each.value.excluded_folders
+  excluded_projects = each.value.excluded_projects
+  # attach once rules are in place, so that inheriting projects never see
+  # a partially configured policy
+  depends_on = [google_compute_organization_security_policy_rule.hierarchical]
 }

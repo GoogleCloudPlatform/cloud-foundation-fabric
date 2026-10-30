@@ -10,11 +10,22 @@ context = {
     ]
   }
   folder_ids = {
-    test = "folders/1234567890"
+    excluded = "folders/2222222222"
+    test     = "folders/1234567890"
+  }
+  project_numbers = {
+    excluded = "3333333333"
   }
 }
 name      = "test-h"
 parent_id = "$folder_ids:test"
+attachments = {
+  test = {
+    id                = "$folder_ids:test"
+    excluded_folders  = ["$folder_ids:excluded", "folders/4444444444"]
+    excluded_projects = ["$project_numbers:excluded", "projects/5555555555"]
+  }
+}
 rules = {
   deny-internal = {
     priority = 100

@@ -99,6 +99,17 @@ variable "advanced_options_config" {
   }
 }
 
+variable "attachments" {
+  description = "Organization or folders a hierarchical policy is attached to, keyed by association name suffix. Excluded folders and projects use the `folders/nnn` and `projects/nnn` (project number) formats. Only supported by hierarchical policies."
+  type = map(object({
+    id                = string
+    excluded_folders  = optional(list(string), [])
+    excluded_projects = optional(list(string), [])
+  }))
+  default  = {}
+  nullable = false
+}
+
 variable "context" {
   description = "Context-specific interpolations."
   type = object({
@@ -107,6 +118,7 @@ variable "context" {
     folder_ids       = optional(map(string), {})
     locations        = optional(map(string), {})
     project_ids      = optional(map(string), {})
+    project_numbers  = optional(map(string), {})
   })
   default  = {}
   nullable = false
