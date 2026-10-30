@@ -222,6 +222,33 @@
         "type": "string"
       }
     },
+    "cloud_armor_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "policy_id"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "policy_id": {
+          "type": "string"
+        },
+        "excluded_folders": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "excluded_projects": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
     "contacts": {
       "type": "object",
       "additionalProperties": false,

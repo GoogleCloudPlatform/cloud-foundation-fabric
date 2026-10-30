@@ -71,6 +71,7 @@ module "folder-1" {
   }
   pam_entitlements        = lookup(each.value, "pam_entitlements", {})
   assured_workload_config = lookup(each.value, "assured_workload_config", null)
+  cloud_armor_policy      = lookup(each.value, "cloud_armor_policy", null)
   logging_settings = anytrue([
     try(each.value.logging.storage_location, null) != null,
     try(each.value.logging.disable_default_sink, null) != null,
@@ -148,6 +149,7 @@ module "folder-2" {
   }
   pam_entitlements        = lookup(each.value, "pam_entitlements", {})
   assured_workload_config = lookup(each.value, "assured_workload_config", null)
+  cloud_armor_policy      = lookup(each.value, "cloud_armor_policy", null)
   logging_settings = anytrue([
     try(each.value.logging.storage_location, null) != null,
     try(each.value.logging.disable_default_sink, null) != null,
@@ -233,6 +235,7 @@ module "folder-3" {
   }
   pam_entitlements        = lookup(each.value, "pam_entitlements", {})
   assured_workload_config = lookup(each.value, "assured_workload_config", null)
+  cloud_armor_policy      = lookup(each.value, "cloud_armor_policy", null)
   logging_settings = anytrue([
     try(each.value.logging.storage_location, null) != null,
     try(each.value.logging.disable_default_sink, null) != null,
@@ -318,6 +321,7 @@ module "folder-4" {
   }
   pam_entitlements        = lookup(each.value, "pam_entitlements", {})
   assured_workload_config = lookup(each.value, "assured_workload_config", null)
+  cloud_armor_policy      = lookup(each.value, "cloud_armor_policy", null)
   logging_settings = anytrue([
     try(each.value.logging.storage_location, null) != null,
     try(each.value.logging.disable_default_sink, null) != null,
