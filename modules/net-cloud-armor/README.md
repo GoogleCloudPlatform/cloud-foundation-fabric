@@ -289,11 +289,16 @@ module "cloud-armor" {
 
 ### Hierarchical policy
 
-Setting `parent_id` to an organization or folder instead of `project_id` creates a [hierarchical security policy](https://cloud.google.com/armor/docs/hierarchical-policies-overview), which applies to all projects below the organization or folders listed in `attachments`. Hierarchical policies are evaluated from the organization down through folders, before project-level and service-level policies. The `goto_next` action, only available in hierarchical policies, stops evaluating the current policy and hands the request to the next one, and is also the action of the default rule that the API creates at priority `2147483647`.
+Setting `parent_id` to an organization or folder instead of `project_id` creates a [hierarchical security policy](https://cloud.google.com/armor/docs/hierarchical-policies-overview), which applies to all projects below the organization, folders or projects it is attached to. Hierarchical policies are evaluated from the organization down through folders, before project-level and service-level policies. The `goto_next` action, only available in hierarchical policies, stops evaluating the current policy and hands the request to the next one, and is also the action of the default rule that the API creates at priority `2147483647`.
 
 Hierarchical policies are always global and of type `CLOUD_ARMOR`, and keep the default rule created by the API, so setting `type` to a different value, `region` to anything other than `global`, or `default_rule_config` fails at plan time. Rules support the `allow`, `deny`, `goto_next` and `redirect` (`EXTERNAL_302` only) actions, `header_action` and `preconfigured_waf_config`, while rate limiting and reCAPTCHA are rejected at plan time. The `advanced_options_config` variable applies to hierarchical policies too.
 
-Projects that inherit a hierarchical policy are automatically enrolled in [Cloud Armor Enterprise](https://cloud.google.com/armor/docs/armor-enterprise-overview), which is billed per project. Exclusions in `attachments` (`excluded_folders` and `excluded_projects`, the latter using project numbers) keep projects out of the policy, so define them before attaching it.
+Attachments can be managed from either side, but each association from one side only:
+
+- from this module via `attachments`, keyed by name, when the policy owner manages attachments across a part of the hierarchy, which is the pattern used by FAST;
+- from the [`organization`](../organization/), [`folder`](../folder/) or [`project`](../project/) module via their `cloud_armor_policy` variable, when the owner of the target manages it.
+
+Projects that inherit a hierarchical policy are automatically enrolled in [Cloud Armor Enterprise](https://cloud.google.com/armor/docs/armor-enterprise-overview), which is billed per project. Exclusions in `attachments` keep folders and projects out of the policy, so define them before attaching it. Folders can only be excluded from organization targets and projects from organization and folder targets, using the `folders/nnn` and `projects/nnn` (project number) formats; other combinations fail at plan time.
 
 This example also shows how to use the `context` variable to resolve folder ids, project numbers and IP ranges.
 
@@ -420,7 +425,7 @@ throttle:
 
 | Feature | Global `CLOUD_ARMOR` | Global `CLOUD_ARMOR_EDGE` | Global `CLOUD_ARMOR_INTERNAL_SERVICE` | Regional `CLOUD_ARMOR` | Regional `CLOUD_ARMOR_NETWORK` | Hierarchical |
 |---|:---:|:---:|:---:|:---:|:---:|:---:|
-| Attachment | global external ALB backend services (`net-lb-app-ext`), global external proxy NLB (no module) | global external ALB backend buckets (`net-lb-app-ext`) and CDN-enabled backend services (not exposed by the module) | Cloud Service Mesh endpoint policies | regional external ALB (`net-lb-app-ext-regional`), regional internal ALB (`net-lb-app-int`) | regional external passthrough NLB (`net-lb-ext`) | organization or folders (`attachments`) |
+| Attachment | global external ALB backend services (`net-lb-app-ext`), global external proxy NLB (no module) | global external ALB backend buckets (`net-lb-app-ext`) and CDN-enabled backend services (not exposed by the module) | Cloud Service Mesh endpoint policies | regional external ALB (`net-lb-app-ext-regional`), regional internal ALB (`net-lb-app-int`) | regional external passthrough NLB (`net-lb-ext`) | organization, folders or projects (`attachments`, or `cloud_armor_policy` in the `organization`, `folder` and `project` modules) |
 | `match` (IP ranges, CEL expressions) | ✓ | ✓ (subset of attributes) | ✓ | ✓ | | ✓ |
 | `network_match`, `user_defined_fields`, `ddos_protection` | | | | | ✓ | |
 | `allow`, `deny` actions | ✓ | ✓ | ✓ | ✓ | ✓ (no status code) | ✓ |
@@ -465,7 +470,7 @@ Internal service policies are in preview and their `fairshare` action is not ava
 | [name](variables.tf#L179) | Policy name. | <code>string</code> | ✓ |  |
 | [adaptive_protection_config](variables.tf#L17) | Adaptive Protection configuration. Only supported by global CLOUD_ARMOR policies. Cloud Armor Standard only receives basic alerts, attack signatures and suggested rules require Cloud Armor Enterprise. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [advanced_options_config](variables.tf#L61) | Advanced options configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [attachments](variables.tf#L102) | Organization or folders a hierarchical policy is attached to, keyed by association name suffix. Excluded folders and projects use the `folders/nnn` and `projects/nnn` (project number) formats. Only supported by hierarchical policies. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [attachments](variables.tf#L102) | Organization, folders or projects a hierarchical policy is attached to, keyed by association name suffix. Excluded folders are only supported for organization targets, excluded projects for organization and folder targets; they use the `folders/nnn` and `projects/nnn` (project number) formats. Manage each association either here or via the `cloud_armor_policy` variable of the organization, folder or project module, not both. Only supported by hierarchical policies. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [context](variables.tf#L113) | Context-specific interpolations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [ddos_protection](variables.tf#L127) | DDoS protection level. Only supported by regional policies of type CLOUD_ARMOR_NETWORK. | <code>string</code> |  | <code>null</code> |
 | [default_rule_config](variables.tf#L140) | Configuration for the default rule with lowest priority, which is always present in a policy. Not supported by hierarchical policies, which keep the 'goto_next' default rule created by the API. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |

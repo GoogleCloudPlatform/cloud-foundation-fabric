@@ -17,18 +17,25 @@ values:
     advanced_options_config: []
     description: Terraform managed.
     display_name: null
-    parent: folders/1234567890
+    parent: organizations/1122334455
     short_name: test-h
     timeouts: null
     type: CLOUD_ARMOR
-  google_compute_organization_security_policy_association.hierarchical["test"]:
-    attachment_id: folders/1234567890
+  google_compute_organization_security_policy_association.hierarchical["organization"]:
+    attachment_id: organizations/1122334455
     excluded_folders:
     - folders/2222222222
     - folders/4444444444
     excluded_projects:
     - projects/3333333333
     - projects/5555555555
+    name: test-h-organization
+    timeouts: null
+  google_compute_organization_security_policy_association.hierarchical["test"]:
+    attachment_id: folders/1234567890
+    excluded_folders: []
+    excluded_projects:
+    - projects/3333333333
     name: test-h-test
     timeouts: null
   google_compute_organization_security_policy_rule.hierarchical["deny-internal"]:
@@ -53,10 +60,10 @@ values:
 
 counts:
   google_compute_organization_security_policy: 1
-  google_compute_organization_security_policy_association: 1
+  google_compute_organization_security_policy_association: 2
   google_compute_organization_security_policy_rule: 1
   modules: 0
-  resources: 3
+  resources: 4
 
 outputs:
   id: __missing__

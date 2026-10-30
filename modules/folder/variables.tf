@@ -150,6 +150,23 @@ variable "autokey_config" {
   default  = null
 }
 
+variable "cloud_armor_policy" {
+  description = "Hierarchical Cloud Armor policy to associate to this folder, excluded projects use the `projects/nnn` (project number) format. Folders can only be excluded from organization-level associations. The association name defaults to `folder-<id>`. Manage each association either here or via the `attachments` variable of the `net-cloud-armor` module, not both."
+  type = object({
+    name              = optional(string)
+    policy_id         = string
+    excluded_folders  = optional(list(string), [])
+    excluded_projects = optional(list(string), [])
+  })
+  default = null
+  validation {
+    condition = (
+      length(try(var.cloud_armor_policy.excluded_folders, [])) == 0
+    )
+    error_message = "Folders can only be excluded from organization-level Cloud Armor policy associations."
+  }
+}
+
 variable "contacts" {
   description = "List of essential contacts for this resource. Must be in the form EMAIL -> [NOTIFICATION_TYPES]. Valid notification types are ALL, SUSPENSION, SECURITY, TECHNICAL, BILLING, LEGAL, PRODUCT_UPDATES."
   type        = map(list(string))

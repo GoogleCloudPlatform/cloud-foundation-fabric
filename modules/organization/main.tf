@@ -61,3 +61,15 @@ resource "google_compute_firewall_policy_association" "default" {
   name              = var.firewall_policy.name
   firewall_policy   = var.firewall_policy.policy
 }
+
+resource "google_compute_organization_security_policy_association" "default" {
+  count = var.cloud_armor_policy == null ? 0 : 1
+  name = coalesce(
+    var.cloud_armor_policy.name,
+    "organization-${trimprefix(var.organization_id, "organizations/")}"
+  )
+  attachment_id     = var.organization_id
+  policy_id         = var.cloud_armor_policy.policy_id
+  excluded_folders  = var.cloud_armor_policy.excluded_folders
+  excluded_projects = var.cloud_armor_policy.excluded_projects
+}

@@ -163,6 +163,18 @@ locals {
   rule_errors = {
     for k, v in local._rule_errors : k => try(v[0], null)
   }
+  # exclusions depend on the attachment target: folders can only be
+  # excluded from organizations, projects from organizations and folders
+  _attachment_errors = flatten([
+    for k, v in local.attachments : compact([
+      !startswith(v.id, "organizations/") && length(v.excluded_folders) > 0
+      ? "Attachment '${k}': 'excluded_folders' is only supported for organization targets."
+      : null,
+      startswith(v.id, "projects/") && length(v.excluded_projects) > 0
+      ? "Attachment '${k}': 'excluded_projects' is not supported for project targets."
+      : null,
+    ])
+  ])
   # policy-level consistency checks, surfaced via preconditions
   # in the policy resources
   _rule_priorities = [for k, v in local.rules : v.priority]
@@ -172,6 +184,9 @@ locals {
     : null,
     !local.is_hierarchical && length(var.attachments) > 0
     ? "'attachments' are only supported for hierarchical policies."
+    : null,
+    length(local._attachment_errors) > 0
+    ? join(" ", local._attachment_errors)
     : null,
     local.is_hierarchical && var.type != "CLOUD_ARMOR"
     ? "'type' must be CLOUD_ARMOR for hierarchical policies."

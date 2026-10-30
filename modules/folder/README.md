@@ -13,6 +13,7 @@ This module allows the creation and management of folders, including support for
 - [Organization policies](#organization-policies)
   - [Organization Policy Factory](#organization-policy-factory)
 - [Hierarchical Firewall Policy Attachments](#hierarchical-firewall-policy-attachments)
+- [Hierarchical Cloud Armor Policy Attachments](#hierarchical-cloud-armor-policy-attachments)
 - [Log Sinks](#log-sinks)
 - [Data Access Logs](#data-access-logs)
 - [KMS Autokey](#kms-autokey)
@@ -396,6 +397,45 @@ module "folder" {
   }
 }
 # tftest modules=2 resources=3 e2e serial
+```
+
+## Hierarchical Cloud Armor Policy Attachments
+
+Hierarchical Cloud Armor policies can be managed via the [`net-cloud-armor`](../net-cloud-armor/) module. Once a policy is available, attaching it to the folder can be done either in the Cloud Armor policy module itself, or here. Manage each association from one side only.
+
+Folder-level associations can exclude projects, but not folders. Projects that inherit a hierarchical Cloud Armor policy are automatically enrolled in Cloud Armor Enterprise, so define exclusions before attaching the policy.
+
+```hcl
+module "cloud-armor" {
+  source    = "./fabric/modules/net-cloud-armor"
+  name      = "folder-baseline"
+  parent_id = var.organization_id
+  rules = {
+    deny-blocked = {
+      priority = 100
+      action   = "deny(403)"
+      match = {
+        src_ip_ranges = ["192.0.2.0/24"]
+      }
+    }
+  }
+  # attachment via the Cloud Armor policy module
+  # attachments = {
+  #   folder = { id = var.folder_id }
+  # }
+}
+
+module "folder" {
+  source        = "./fabric/modules/folder"
+  id            = var.folder_id
+  folder_create = false
+  # attachment via the folder module
+  cloud_armor_policy = {
+    policy_id         = module.cloud-armor.id
+    excluded_projects = ["projects/${var.project_number}"]
+  }
+}
+# tftest modules=2 resources=3 inventory=cloud-armor-policy.yaml
 ```
 
 ## Log Sinks
@@ -805,7 +845,7 @@ module "folder" {
 | [deny-policies.tf](./deny-policies.tf) | IAM Deny policies. | <code>google_iam_deny_policy</code> |
 | [iam.tf](./iam.tf) | IAM bindings. | <code>google_folder_iam_binding</code> · <code>google_folder_iam_member</code> |
 | [logging.tf](./logging.tf) | Log sinks and supporting resources. | <code>google_bigquery_dataset_iam_member</code> · <code>google_folder_iam_audit_config</code> · <code>google_logging_folder_exclusion</code> · <code>google_logging_folder_settings</code> · <code>google_logging_folder_sink</code> · <code>google_project_iam_member</code> · <code>google_pubsub_topic_iam_member</code> · <code>google_storage_bucket_iam_member</code> |
-| [main.tf](./main.tf) | Module-level locals and resources. | <code>google_assured_workloads_workload</code> · <code>google_compute_firewall_policy_association</code> · <code>google_essential_contacts_contact</code> · <code>google_folder</code> · <code>google_kms_autokey_config</code> |
+| [main.tf](./main.tf) | Module-level locals and resources. | <code>google_assured_workloads_workload</code> · <code>google_compute_firewall_policy_association</code> · <code>google_compute_organization_security_policy_association</code> · <code>google_essential_contacts_contact</code> · <code>google_folder</code> · <code>google_kms_autokey_config</code> |
 | [organization-policies.tf](./organization-policies.tf) | Folder-level organization policies. | <code>google_org_policy_policy</code> |
 | [outputs.tf](./outputs.tf) | Module outputs. |  |
 | [pam.tf](./pam.tf) | None | <code>google_privileged_access_manager_entitlement</code> |
@@ -828,12 +868,13 @@ module "folder" {
 | [asset_search](variables.tf#L51) | Cloud Asset Inventory search configurations. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [assured_workload_config](variables.tf#L61) | Create AssuredWorkloads folder instead of regular folder when value is provided. Incompatible with folder_create=false. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [autokey_config](variables.tf#L144) | Enable autokey support for this folder's children. Project accepts either project id or number. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [contacts](variables.tf#L153) | List of essential contacts for this resource. Must be in the form EMAIL -> [NOTIFICATION_TYPES]. Valid notification types are ALL, SUSPENSION, SECURITY, TECHNICAL, BILLING, LEGAL, PRODUCT_UPDATES. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [context](variables.tf#L172) | Context-specific interpolations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [deletion_protection](variables.tf#L197) | Deletion protection setting for this folder. | <code>bool</code> |  | <code>false</code> |
-| [factories_config](variables.tf#L203) | Paths to data files and folders that enable factory functionality. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [firewall_policy](variables.tf#L215) | Hierarchical firewall policy to associate to this folder. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [folder_create](variables.tf#L226) | Create folder. When set to false, uses id to reference an existing folder. | <code>bool</code> |  | <code>true</code> |
+| [cloud_armor_policy](variables.tf#L153) | Hierarchical Cloud Armor policy to associate to this folder, excluded projects use the `projects/nnn` (project number) format. Folders can only be excluded from organization-level associations. The association name defaults to `folder-<id>`. Manage each association either here or via the `attachments` variable of the `net-cloud-armor` module, not both. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [contacts](variables.tf#L170) | List of essential contacts for this resource. Must be in the form EMAIL -> [NOTIFICATION_TYPES]. Valid notification types are ALL, SUSPENSION, SECURITY, TECHNICAL, BILLING, LEGAL, PRODUCT_UPDATES. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [context](variables.tf#L189) | Context-specific interpolations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [deletion_protection](variables.tf#L214) | Deletion protection setting for this folder. | <code>bool</code> |  | <code>false</code> |
+| [factories_config](variables.tf#L220) | Paths to data files and folders that enable factory functionality. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [firewall_policy](variables.tf#L232) | Hierarchical firewall policy to associate to this folder. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [folder_create](variables.tf#L243) | Create folder. When set to false, uses id to reference an existing folder. | <code>bool</code> |  | <code>true</code> |
 | [iam](variables-iam.tf#L17) | IAM bindings in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam_bindings](variables-iam.tf#L24) | Authoritative IAM bindings in {KEY => {role = ROLE, members = [], condition = {}}}. Keys are arbitrary. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam_bindings_additive](variables-iam.tf#L39) | Individual additive IAM bindings. Keys are arbitrary. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
@@ -841,19 +882,19 @@ module "folder" {
 | [iam_by_principals_additive](variables-iam.tf#L54) | Additive IAM binding in {PRINCIPAL => [ROLES]} format. Principals need to be statically defined to avoid errors. Merged internally with the `iam_bindings_additive` variable. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam_by_principals_conditional](variables-iam.tf#L68) | Authoritative IAM binding in {PRINCIPAL => {roles = [roles], condition = {cond}}} format. Principals need to be statically defined to avoid errors. Condition is required. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam_deny_policies](variables-iam.tf#L98) | IAM Deny policies to be applied to the folder. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [id](variables.tf#L236) | Folder ID in case you use folder_create=false. | <code>string</code> |  | <code>null</code> |
+| [id](variables.tf#L253) | Folder ID in case you use folder_create=false. | <code>string</code> |  | <code>null</code> |
 | [logging_data_access](variables-logging.tf#L17) | Control activation of data access logs. The special 'allServices' key denotes configuration for all services. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [logging_exclusions](variables-logging.tf#L28) | Logging exclusions for this folder in the form {NAME -> FILTER}. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 | [logging_settings](variables-logging.tf#L35) | Default settings for logging resources. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [logging_sinks](variables-logging.tf#L45) | Logging sinks to create for the folder. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [name](variables.tf#L242) | Folder name. | <code>string</code> |  | <code>null</code> |
-| [org_policies](variables.tf#L248) | Organization policies applied to this folder keyed by policy name. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [name](variables.tf#L259) | Folder name. | <code>string</code> |  | <code>null</code> |
+| [org_policies](variables.tf#L265) | Organization policies applied to this folder keyed by policy name. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [pam_entitlements](variables-pam.tf#L17) | Privileged Access Manager entitlements for this resource, keyed by entitlement ID. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [parent](variables.tf#L276) | Parent in folders/folder_id or organizations/org_id format. | <code>string</code> |  | <code>null</code> |
+| [parent](variables.tf#L293) | Parent in folders/folder_id or organizations/org_id format. | <code>string</code> |  | <code>null</code> |
 | [scc_mute_configs](variables-scc.tf#L17) | SCC mute configurations keyed by name. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [scc_sha_custom_modules](variables-scc.tf#L27) | SCC custom modules keyed by module name. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [service_agents_config](variables.tf#L290) | Service agents configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [tag_bindings](variables.tf#L300) | Tag bindings for this folder, in key => tag value id format. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
+| [service_agents_config](variables.tf#L307) | Service agents configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [tag_bindings](variables.tf#L317) | Tag bindings for this folder, in key => tag value id format. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
 
 ## Outputs
 
