@@ -16,3 +16,4 @@ module: modules/ai-applications
 
 tests:
   context:
+  gemini_enterprise:

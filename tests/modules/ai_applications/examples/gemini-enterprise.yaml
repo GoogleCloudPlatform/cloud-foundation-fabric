@@ -1,0 +1,54 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.ai-applications.google_discovery_engine_acl_config.default["global"]:
+    location: global
+    project: project-id
+  module.ai-applications.google_discovery_engine_assistant.default[0]:
+    assistant_id: default_assistant
+    display_name: Enterprise Assistant
+    location: global
+    project: project-id
+    web_grounding_type: WEB_GROUNDING_TYPE_GOOGLE_SEARCH
+  module.ai-applications.google_discovery_engine_data_store.default["data-store-1"]:
+    data_store_id: my-gemini-app-data-store-1
+    location: global
+    project: project-id
+  module.ai-applications.google_discovery_engine_search_engine.default[0]:
+    app_type: APP_TYPE_INTRANET
+    data_store_ids:
+    - my-gemini-app-data-store-1
+    engine_id: my-gemini-app
+    location: global
+    project: project-id
+  module.ai-applications.google_discovery_engine_user_store.default["global"]:
+    enable_license_auto_register: true
+    location: global
+    project: project-id
+    user_store_id: default_user_store
+  module.ai-applications.google_discovery_engine_widget_config.default[0]:
+    location: global
+    project: project-id
+    widget_config_id: default_search_widget_config
+
+counts:
+  google_discovery_engine_acl_config: 1
+  google_discovery_engine_assistant: 1
+  google_discovery_engine_data_store: 1
+  google_discovery_engine_search_engine: 1
+  google_discovery_engine_user_store: 1
+  google_discovery_engine_widget_config: 1
+  modules: 1
+  resources: 6
