@@ -9,6 +9,7 @@ This module handles the creation of [AI Applications](https://cloud.google.com/g
   * [Examples](#examples)
     * [Chat Engine](#chat-engine)
     * [Search Engine](#search-engine)
+    * [Gemini Enterprise Search and Assistant](#gemini-enterprise-search-and-assistant)
     * [Deploy your service into a region](#deploy-your-service-into-a-region)
     * [Reference Existing Data Sources](#reference-existing-data-sources)
     * [Using multiple data stores](#using-multiple-data-stores)
@@ -231,6 +232,59 @@ module "ai-applications" {
 # tftest modules=1 resources=2
 ```
 
+### Gemini Enterprise Search and Assistant
+
+This example demonstrates deploying Gemini Enterprise intranet search and assistant with workforce identity ACL configuration, user store license auto-registration, and custom search widget settings.
+
+```hcl
+module "ai-applications" {
+  source     = "./fabric/modules/ai-applications"
+  name       = "my-gemini-app"
+  project_id = var.project_id
+  acl_configs = {
+    global = {
+      idp_config = {
+        idp_type = "GSUITE"
+      }
+    }
+  }
+  user_stores_configs = {
+    global = {
+      enable_license_auto_register = true
+    }
+  }
+  data_stores_configs = {
+    data-store-1 = {
+      solution_types = ["SOLUTION_TYPE_SEARCH"]
+    }
+  }
+  engines_configs = {
+    data_store_ids = ["data-store-1"]
+    search_engine_config = {
+      app_type                   = "APP_TYPE_INTRANET"
+      company_name               = "Google"
+      disable_analytics          = false
+      required_subscription_tier = "SUBSCRIPTION_TIER_ENTERPRISE"
+      search_add_ons             = ["SEARCH_ADD_ON_LLM"]
+      search_tier                = "SEARCH_TIER_ENTERPRISE"
+      assistant_config = {
+        display_name       = "Enterprise Assistant"
+        web_grounding_type = "WEB_GROUNDING_TYPE_GOOGLE_SEARCH"
+      }
+      widget_config = {
+        access_settings = {
+          enable_web_app = true
+        }
+        ui_settings = {
+          interaction_type = "SEARCH_WITH_FOLLOW_UPS"
+        }
+      }
+    }
+  }
+}
+# tftest modules=1 resources=6 inventory=gemini-enterprise.yaml
+```
+
 ### Data stores
 
 You can create and connect from your engines multiple data stores.
@@ -372,25 +426,33 @@ module "ai-applications" {
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [name](variables.tf#L506) | The name of the resources. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L512) | The ID of the project where the data stores and the agents will be created. | <code>string</code> | ✓ |  |
-| [chat_agent_security_configs](variables.tf#L17) | The DLP security configurations for (Dialogflow CX) chat agents. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [context](variables.tf#L305) | Context-specific interpolations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [data_stores_configs](variables.tf#L316) | The ai-applications datastore configurations. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [encryption_configs](variables.tf#L422) | CMEK configurations registered for the project, keyed by location (e.g. us, eu). Data stores and engines are created after keys are registered. KMS key format: 'projects/[PROJECT]/locations/[LOCATION]/keyRings/[RING]/cryptoKeys/[KEY_NAME]'. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [engines_configs](variables.tf#L433) | The AI applications engines configurations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [location](variables.tf#L500) | Location where the data stores and agents will be created. | <code>string</code> |  | <code>&#34;global&#34;</code> |
+| [name](variables.tf#L620) | The name of the resources. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L626) | The ID of the project where the data stores and the agents will be created. | <code>string</code> | ✓ |  |
+| [acl_configs](variables.tf#L17) | Location-level ACL configurations keyed by location. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [chat_agent_security_configs](variables.tf#L41) | The DLP security configurations for (Dialogflow CX) chat agents. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [context](variables.tf#L329) | Context-specific interpolations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [data_stores_configs](variables.tf#L340) | The ai-applications datastore configurations. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [encryption_configs](variables.tf#L446) | CMEK configurations registered for the project, keyed by location (e.g. us, eu). Data stores and engines are created after keys are registered. KMS key format: 'projects/[PROJECT]/locations/[LOCATION]/keyRings/[RING]/cryptoKeys/[KEY_NAME]'. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [engines_configs](variables.tf#L457) | The AI applications engines configurations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [location](variables.tf#L614) | Location where the data stores and agents will be created. | <code>string</code> |  | <code>&#34;global&#34;</code> |
+| [user_stores_configs](variables.tf#L632) | Location-level user store configurations keyed by location. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
 
 | name | description | sensitive |
 |---|---|:---:|
-| [chat_agent](outputs.tf#L17) | The (Dialogflow CX) chat agent object. |  |
-| [chat_agent_id](outputs.tf#L22) | The id of the (Dialogflow CX) chat agent. |  |
-| [chat_engine](outputs.tf#L27) | The chat engine object. |  |
-| [chat_engine_id](outputs.tf#L32) | The id of the chat engine. |  |
-| [data_store_ids](outputs.tf#L37) | The ids of the data stores created. |  |
-| [data_stores](outputs.tf#L45) | The data stores resources created. |  |
-| [search_engine](outputs.tf#L50) | The search engines object. |  |
-| [search_engine_id](outputs.tf#L55) | The id of the search engine. |  |
+| [acl_configs](outputs.tf#L17) | The ACL config resources created. |  |
+| [assistant](outputs.tf#L22) | The assistant resource created. |  |
+| [assistant_id](outputs.tf#L27) | The id of the assistant. |  |
+| [chat_agent](outputs.tf#L32) | The (Dialogflow CX) chat agent object. |  |
+| [chat_agent_id](outputs.tf#L37) | The id of the (Dialogflow CX) chat agent. |  |
+| [chat_engine](outputs.tf#L42) | The chat engine object. |  |
+| [chat_engine_id](outputs.tf#L47) | The id of the chat engine. |  |
+| [data_store_ids](outputs.tf#L52) | The ids of the data stores created. |  |
+| [data_stores](outputs.tf#L60) | The data stores resources created. |  |
+| [search_engine](outputs.tf#L65) | The search engines object. |  |
+| [search_engine_id](outputs.tf#L70) | The id of the search engine. |  |
+| [user_stores](outputs.tf#L75) | The user store resources created. |  |
+| [widget_config](outputs.tf#L80) | The search widget config resource created. |  |
+| [widget_config_id](outputs.tf#L85) | The id of the search widget config. |  |
 <!-- END TFDOC -->
