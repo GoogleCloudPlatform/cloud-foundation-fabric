@@ -4,7 +4,7 @@ This module provisions and configures [Cloud Armor security policies](https://cl
 
 Attach the policy to load balancers using the `id` output, which can be passed to the `security_policy` attribute of backend services managed by the `net-lb-app-ext`, `net-lb-app-ext-regional`, `net-lb-app-int` and `net-lb-ext` modules, or to the `edge_security_policy` attribute of backend buckets managed by `net-lb-app-ext`. Those modules also accept a `security_policies` key in their `context` variable, so policies can be referenced symbolically as `$security_policies:name`. Regional external passthrough Network Load Balancers managed by `net-lb-ext` only accept network edge policies of type `CLOUD_ARMOR_NETWORK`. Cloud Armor also protects global external proxy Network Load Balancers via backend policies, for which no module exists. Cross-region internal Application Load Balancers, internal proxy Network Load Balancers, and internal passthrough Network Load Balancers do not support Cloud Armor.
 
-The baseline rule at priority `2147483647` cannot be defined in `rules`. In project policies it is always managed by the module via the `default_rule_config` variable, while hierarchical policies keep the `goto_next` default rule created by the API.
+The baseline rule at priority `2147483647` cannot be defined in `rules`. In project policies it is always managed by the module via the `default_rule_config` variable, while hierarchical policies keep the `goto_next` default rule created by the API and require `default_rule_config` to be set to `null`.
 
 Rules are keyed by name in Terraform state, while the API identifies them by priority. Renaming a rule without changing its priority plans a create and a destroy for the same API resource, so use a `moved` block for renames, or change the priority at the same time.
 
@@ -291,7 +291,7 @@ module "cloud-armor" {
 
 Setting `organization_id` or `folder_id` in `parent_id` instead of `project_id` creates a [hierarchical security policy](https://cloud.google.com/armor/docs/hierarchical-policies-overview), which applies to all projects below the organization, folders or projects it is attached to. Hierarchical policies are evaluated from the organization down through folders, before project-level and service-level policies. The `goto_next` action, only available in hierarchical policies, stops evaluating the current policy and hands the request to the next one, and is also the action of the default rule that the API creates at priority `2147483647`.
 
-Hierarchical policies are always global and of type `CLOUD_ARMOR`, and keep the default rule created by the API, so setting `type` to a different value, `region` to anything other than `global`, or `default_rule_config` fails at plan time. Rules support the `allow`, `deny`, `goto_next` and `redirect` (`EXTERNAL_302` only) actions, `header_action` and `preconfigured_waf_config`, while rate limiting and reCAPTCHA are rejected at plan time. The `advanced_options_config` variable applies to hierarchical policies too.
+Hierarchical policies are always global and of type `CLOUD_ARMOR`, and keep the default rule created by the API, so `default_rule_config` must be set to `null`, and setting `type` to a different value or `region` to anything other than `global` fails at plan time. Rules support the `allow`, `deny`, `goto_next` and `redirect` (`EXTERNAL_302` only) actions, `header_action` and `preconfigured_waf_config`, while rate limiting and reCAPTCHA are rejected at plan time. The `advanced_options_config` variable applies to hierarchical policies too.
 
 Attachments can be managed from either side, but each association from one side only:
 
@@ -304,9 +304,10 @@ This example also shows how to use the `context` variable to resolve folder ids,
 
 ```hcl
 module "cloud-armor" {
-  source    = "./fabric/modules/net-cloud-armor"
-  parent_id = { folder_id = "$folder_ids:teams" }
-  name      = "teams-baseline"
+  source              = "./fabric/modules/net-cloud-armor"
+  parent_id           = { folder_id = "$folder_ids:teams" }
+  default_rule_config = null
+  name                = "teams-baseline"
   context = {
     cidr_ranges_sets = {
       blocked = ["192.0.2.0/24", "198.51.100.0/24"]
@@ -467,22 +468,22 @@ Internal service policies are in preview and their `fairshare` action is not ava
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [name](variables.tf#L179) | Policy name. | <code>string</code> | ✓ |  |
-| [parent_id](variables.tf#L185) | Policy parent. Exactly one of organization_id, folder_id or project_id must be set; the first two create a hierarchical policy. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| [name](variables.tf#L178) | Policy name. | <code>string</code> | ✓ |  |
+| [parent_id](variables.tf#L184) | Policy parent. Exactly one of organization_id, folder_id or project_id must be set; the first two create a hierarchical policy. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
 | [adaptive_protection_config](variables.tf#L17) | Adaptive Protection configuration. Only supported by global CLOUD_ARMOR policies. Cloud Armor Standard only receives basic alerts, attack signatures and suggested rules require Cloud Armor Enterprise. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [advanced_options_config](variables.tf#L61) | Advanced options configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [attachments](variables.tf#L102) | Organization, folders or projects a hierarchical policy is attached to, keyed by association name suffix. Excluded folders are only supported for organization targets, excluded projects for organization and folder targets; they use the `folders/nnn` and `projects/nnn` (project number) formats. Manage each association either here or via the `cloud_armor_policy` variable of the organization, folder or project module, not both. Only supported by hierarchical policies. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [context](variables.tf#L113) | Context-specific interpolations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [ddos_protection](variables.tf#L127) | DDoS protection level. Only supported by regional policies of type CLOUD_ARMOR_NETWORK. | <code>string</code> |  | <code>null</code> |
-| [default_rule_config](variables.tf#L140) | Configuration for the default rule with lowest priority, which is always present in a policy. Not supported by hierarchical policies, which keep the 'goto_next' default rule created by the API. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [description](variables.tf#L157) | Policy description. | <code>string</code> |  | <code>&#34;Terraform managed.&#34;</code> |
-| [factories_config](variables.tf#L163) | Paths to data files and folders that enable factory functionality. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [labels](variables.tf#L172) | Policy labels. Only supported by global policies. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [recaptcha_options_config](variables.tf#L201) | reCAPTCHA configuration options. Only supported by global CLOUD_ARMOR policies. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [region](variables.tf#L209) | Policy region. Leave null or set to 'global' for a global or hierarchical policy. | <code>string</code> |  | <code>null</code> |
-| [rules](variables.tf#L215) | Policy rules, merged with factory rules. Use `match` for CLOUD_ARMOR, CLOUD_ARMOR_EDGE, CLOUD_ARMOR_INTERNAL_SERVICE and hierarchical policies, `network_match` for CLOUD_ARMOR_NETWORK policies. The 'goto_next' action is only supported by hierarchical policies. Consistency with the policy scope and type is checked at plan time. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [type](variables.tf#L371) | Policy type. Global policies support CLOUD_ARMOR, CLOUD_ARMOR_EDGE and CLOUD_ARMOR_INTERNAL_SERVICE, regional policies support CLOUD_ARMOR and CLOUD_ARMOR_NETWORK. Rules for types other than CLOUD_ARMOR only support the 'allow' and 'deny' actions. Hierarchical policies only support CLOUD_ARMOR. | <code>string</code> |  | <code>&#34;CLOUD_ARMOR&#34;</code> |
-| [user_defined_fields](variables.tf#L388) | User-defined fields for CLOUD_ARMOR_NETWORK policies, keyed by field name. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [default_rule_config](variables.tf#L140) | Configuration for the default rule with lowest priority, which is always present in a policy. Set to null for hierarchical policies, which keep the 'goto_next' default rule created by the API. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [description](variables.tf#L156) | Policy description. | <code>string</code> |  | <code>&#34;Terraform managed.&#34;</code> |
+| [factories_config](variables.tf#L162) | Paths to data files and folders that enable factory functionality. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [labels](variables.tf#L171) | Policy labels. Only supported by global policies. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [recaptcha_options_config](variables.tf#L200) | reCAPTCHA configuration options. Only supported by global CLOUD_ARMOR policies. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [region](variables.tf#L208) | Policy region. Leave null or set to 'global' for a global or hierarchical policy. | <code>string</code> |  | <code>null</code> |
+| [rules](variables.tf#L214) | Policy rules, merged with factory rules. Use `match` for CLOUD_ARMOR, CLOUD_ARMOR_EDGE, CLOUD_ARMOR_INTERNAL_SERVICE and hierarchical policies, `network_match` for CLOUD_ARMOR_NETWORK policies. The 'goto_next' action is only supported by hierarchical policies. Consistency with the policy scope and type is checked at plan time. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [type](variables.tf#L370) | Policy type. Global policies support CLOUD_ARMOR, CLOUD_ARMOR_EDGE and CLOUD_ARMOR_INTERNAL_SERVICE, regional policies support CLOUD_ARMOR and CLOUD_ARMOR_NETWORK. Rules for types other than CLOUD_ARMOR only support the 'allow' and 'deny' actions. Hierarchical policies only support CLOUD_ARMOR. | <code>string</code> |  | <code>&#34;CLOUD_ARMOR&#34;</code> |
+| [user_defined_fields](variables.tf#L387) | User-defined fields for CLOUD_ARMOR_NETWORK policies, keyed by field name. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
 

@@ -407,9 +407,10 @@ Folder-level associations can exclude projects, but not folders. Projects that i
 
 ```hcl
 module "cloud-armor" {
-  source    = "./fabric/modules/net-cloud-armor"
-  name      = "folder-baseline"
-  parent_id = { organization_id = var.organization_id }
+  source              = "./fabric/modules/net-cloud-armor"
+  name                = "folder-baseline"
+  parent_id           = { organization_id = var.organization_id }
+  default_rule_config = null
   rules = {
     deny-blocked = {
       priority = 100

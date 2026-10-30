@@ -105,9 +105,9 @@ resource "google_compute_security_policy_rule" "global_default" {
   project         = local.project_id
   security_policy = google_compute_security_policy.global[0].name
   priority        = 2147483647
-  action          = var.default_rule_config.action
-  description     = var.default_rule_config.description
-  preview         = var.default_rule_config.preview
+  action          = try(var.default_rule_config.action, null)
+  description     = try(var.default_rule_config.description, null)
+  preview         = try(var.default_rule_config.preview, null)
   match {
     versioned_expr = "SRC_IPS_V1"
     config {

@@ -201,12 +201,11 @@ locals {
     )
     ? "'region' must be null or 'global' for hierarchical policies."
     : null,
-    local.is_hierarchical && (
-      var.default_rule_config.action != "allow"
-      || var.default_rule_config.description != "Default rule."
-      || var.default_rule_config.preview
-    )
+    local.is_hierarchical && var.default_rule_config != null
     ? "'default_rule_config' is not supported for hierarchical policies, which keep the 'goto_next' default rule created by the API."
+    : null,
+    !local.is_hierarchical && var.default_rule_config == null
+    ? "'default_rule_config' is required for project policies."
     : null,
     local.is_global && local.is_network
     ? "CLOUD_ARMOR_NETWORK is only supported for regional policies."

@@ -18,8 +18,9 @@ context = {
     excluded = "3333333333"
   }
 }
-name      = "test-h"
-parent_id = { organization_id = "$folder_ids:organization" }
+name                = "test-h"
+parent_id           = { organization_id = "$folder_ids:organization" }
+default_rule_config = null
 attachments = {
   organization = {
     id                = "$folder_ids:organization"

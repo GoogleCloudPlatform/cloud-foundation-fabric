@@ -75,9 +75,9 @@ resource "google_compute_region_security_policy_rule" "regional_default" {
   region          = local.region
   security_policy = google_compute_region_security_policy.regional[0].name
   priority        = 2147483647
-  action          = var.default_rule_config.action
-  description     = var.default_rule_config.description
-  preview         = var.default_rule_config.preview
+  action          = try(var.default_rule_config.action, null)
+  description     = try(var.default_rule_config.description, null)
+  preview         = try(var.default_rule_config.preview, null)
 
   dynamic "match" {
     for_each = local.is_network ? [] : [""]

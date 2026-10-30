@@ -138,16 +138,15 @@ variable "ddos_protection" {
 }
 
 variable "default_rule_config" {
-  description = "Configuration for the default rule with lowest priority, which is always present in a policy. Not supported by hierarchical policies, which keep the 'goto_next' default rule created by the API."
+  description = "Configuration for the default rule with lowest priority, which is always present in a policy. Set to null for hierarchical policies, which keep the 'goto_next' default rule created by the API."
   type = object({
     action      = optional(string, "allow")
     description = optional(string, "Default rule.")
     preview     = optional(bool, false)
   })
-  default  = {}
-  nullable = false
+  default = {}
   validation {
-    condition = can(regex(
+    condition = var.default_rule_config == null || can(regex(
       "^(allow|deny|deny\\((403|404|502)\\))$", var.default_rule_config.action
     ))
     error_message = "Default rule action must be 'allow', 'deny', or 'deny(STATUS)' with STATUS one of 403, 404, 502."
