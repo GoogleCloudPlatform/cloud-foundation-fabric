@@ -183,15 +183,19 @@ variable "name" {
 }
 
 variable "parent_id" {
-  description = "Organization or folder where a hierarchical policy will be created, in `organizations/nnn` or `folders/nnn` format. Exactly one of `parent_id` and `project_id` must be set."
-  type        = string
-  default     = null
-}
-
-variable "project_id" {
-  description = "Project id where the policy will be created. Exactly one of `parent_id` and `project_id` must be set."
-  type        = string
-  default     = null
+  description = "Policy parent. Exactly one of organization_id, folder_id or project_id must be set; the first two create a hierarchical policy."
+  type = object({
+    organization_id = optional(string)
+    folder_id       = optional(string)
+    project_id      = optional(string)
+  })
+  nullable = false
+  validation {
+    condition = length(compact([
+      var.parent_id.organization_id, var.parent_id.folder_id, var.parent_id.project_id
+    ])) == 1
+    error_message = "Exactly one of organization_id, folder_id or project_id must be set."
+  }
 }
 
 variable "recaptcha_options_config" {

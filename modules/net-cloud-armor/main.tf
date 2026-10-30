@@ -29,19 +29,26 @@ locals {
     && (var.region == null || var.region == "global")
   )
   is_global_backend = local.is_global && local.is_backend
-  is_hierarchical   = var.parent_id != null
-  is_l7             = !local.is_network
-  is_network        = !local.is_hierarchical && var.type == "CLOUD_ARMOR_NETWORK"
-  is_regional       = !local.is_hierarchical && !local.is_global
+  # an omitted attribute is a known null even when the one set is unknown
+  is_hierarchical = var.parent_id.project_id == null
+  is_l7           = !local.is_network
+  is_network      = !local.is_hierarchical && var.type == "CLOUD_ARMOR_NETWORK"
+  is_regional     = !local.is_hierarchical && !local.is_global
+  # each parent attribute resolves through its own context map
+  _parent_id = try(
+    coalesce(var.parent_id.organization_id, var.parent_id.folder_id), null
+  )
   parent_id = (
-    var.parent_id == null
+    local._parent_id == null
     ? null
-    : lookup(local.ctx.folder_ids, var.parent_id, var.parent_id)
+    : lookup(local.ctx.folder_ids, local._parent_id, local._parent_id)
   )
   project_id = (
-    var.project_id == null
+    var.parent_id.project_id == null
     ? null
-    : lookup(local.ctx.project_ids, var.project_id, var.project_id)
+    : lookup(
+      local.ctx.project_ids, var.parent_id.project_id, var.parent_id.project_id
+    )
   )
   region = (
     local.is_regional
@@ -179,9 +186,6 @@ locals {
   # in the policy resources
   _rule_priorities = [for k, v in local.rules : v.priority]
   policy_errors = compact([
-    (var.parent_id == null) == (var.project_id == null)
-    ? "Exactly one of 'parent_id' and 'project_id' must be set."
-    : null,
     !local.is_hierarchical && length(var.attachments) > 0
     ? "'attachments' are only supported for hierarchical policies."
     : null,

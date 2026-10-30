@@ -1768,7 +1768,7 @@ Project-level associations use the project number as the target, and don't suppo
 module "cloud-armor" {
   source    = "./fabric/modules/net-cloud-armor"
   name      = "project-baseline"
-  parent_id = var.folder_id
+  parent_id = { folder_id = var.folder_id }
   rules = {
     deny-blocked = {
       priority = 100

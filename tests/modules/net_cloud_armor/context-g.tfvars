@@ -13,8 +13,8 @@ context = {
     test = "foo-test-0"
   }
 }
-name       = "test-g"
-project_id = "$project_ids:test"
+name      = "test-g"
+parent_id = { project_id = "$project_ids:test" }
 rules = {
   allow-internal = {
     priority = 100

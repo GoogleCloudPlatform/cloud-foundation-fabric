@@ -16,10 +16,10 @@ context = {
     test = "foo-test-0"
   }
 }
-name       = "test-r"
-project_id = "$project_ids:test"
-region     = "$locations:ew8"
-type       = "CLOUD_ARMOR_NETWORK"
+name      = "test-r"
+parent_id = { project_id = "$project_ids:test" }
+region    = "$locations:ew8"
+type      = "CLOUD_ARMOR_NETWORK"
 rules = {
   allow-internal = {
     priority = 100

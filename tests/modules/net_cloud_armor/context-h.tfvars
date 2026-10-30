@@ -19,7 +19,7 @@ context = {
   }
 }
 name      = "test-h"
-parent_id = "$folder_ids:organization"
+parent_id = { organization_id = "$folder_ids:organization" }
 attachments = {
   organization = {
     id                = "$folder_ids:organization"
