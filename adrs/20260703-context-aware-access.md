@@ -1,6 +1,6 @@
 # Support for Context-Aware Access (`context_aware_access_bindings`) in `modules/organization`
 
-**authors:** [ludomagno](https://github.com/ludomagno)  
+**authors:** [Ludo](https://github.com/ludoo) \
 **date:** Jul 3, 2026  
 
 ## Status

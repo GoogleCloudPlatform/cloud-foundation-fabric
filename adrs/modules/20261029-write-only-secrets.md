@@ -1,6 +1,6 @@
 # Secret Values in Module Interfaces
 
-**authors:** [ludomagno](https://github.com/ludomagno)
+**authors:** [Ludo](https://github.com/ludoo) \
 **date:** Oct 29, 2026
 
 ## Status
