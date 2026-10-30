@@ -100,7 +100,7 @@ variable "advanced_options_config" {
 }
 
 variable "attachments" {
-  description = "Organization, folders or projects a hierarchical policy is attached to, keyed by association name suffix. Excluded folders are only supported for organization targets, excluded projects for organization and folder targets; they use the `folders/nnn` and `projects/nnn` (project number) formats. Manage each association either here or via the `cloud_armor_policy` variable of the organization, folder or project module, not both. Only supported by hierarchical policies."
+  description = "Organization, folders or projects a hierarchical policy is attached to, keyed by association name suffix. Excluded folders are only supported for organization targets, excluded projects for organization and folder targets; targets and exclusions use the `organizations/nnn`, `folders/nnn` and `projects/nnn` (project number) formats, or `$folder_ids:` and `$project_numbers:` context references. Manage each association either here or via the `cloud_armor_policy` variable of the organization, folder or project module, not both. Only supported by hierarchical policies."
   type = map(object({
     id                = string
     excluded_folders  = optional(list(string), [])

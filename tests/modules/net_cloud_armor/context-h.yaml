@@ -31,6 +31,12 @@ values:
     - projects/5555555555
     name: test-h-organization
     timeouts: null
+  google_compute_organization_security_policy_association.hierarchical["project"]:
+    attachment_id: projects/6666666666
+    excluded_folders: []
+    excluded_projects: []
+    name: test-h-project
+    timeouts: null
   google_compute_organization_security_policy_association.hierarchical["test"]:
     attachment_id: folders/1234567890
     excluded_folders: []
@@ -60,10 +66,10 @@ values:
 
 counts:
   google_compute_organization_security_policy: 1
-  google_compute_organization_security_policy_association: 2
+  google_compute_organization_security_policy_association: 3
   google_compute_organization_security_policy_rule: 1
   modules: 0
-  resources: 4
+  resources: 5
 
 outputs:
   id: __missing__

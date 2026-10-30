@@ -20,6 +20,9 @@ context = {
   email_addresses = {
     default = "foo@example.com"
   }
+  folder_ids = {
+    test = "folders/1234567890"
+  }
   iam_principals = {
     mygroup = "group:test-group@example.com"
     mysa    = "serviceAccount:test@test-project.iam.gserviceaccount.com"
@@ -33,6 +36,9 @@ context = {
   }
   project_ids = {
     test = "test-prod-audit-logs-0"
+  }
+  project_numbers = {
+    test = "1234567890"
   }
   pubsub_topics = {
     test = "projects/test-prod-audit-logs-0/topics/audit-logs"
@@ -56,6 +62,11 @@ asset_feeds = {
       }
     }
   }
+}
+cloud_armor_policy = {
+  policy_id         = "locations/global/securityPolicies/1234567890"
+  excluded_folders  = ["$folder_ids:test", "folders/2222222222"]
+  excluded_projects = ["$project_numbers:test", "projects/3333333333"]
 }
 contacts = {
   "$email_addresses:default" = ["ALL"]

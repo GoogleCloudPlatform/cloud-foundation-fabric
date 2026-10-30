@@ -95,10 +95,14 @@ resource "google_compute_organization_security_policy_association" "default" {
     var.cloud_armor_policy.name,
     "folder-${trimprefix(local.folder_id, "folders/")}"
   )
-  attachment_id     = local.folder_id
-  policy_id         = var.cloud_armor_policy.policy_id
-  excluded_folders  = var.cloud_armor_policy.excluded_folders
-  excluded_projects = var.cloud_armor_policy.excluded_projects
+  attachment_id    = local.folder_id
+  policy_id        = var.cloud_armor_policy.policy_id
+  excluded_folders = var.cloud_armor_policy.excluded_folders
+  excluded_projects = [
+    for p in var.cloud_armor_policy.excluded_projects : try(
+      "projects/${local.ctx.project_numbers[p]}", p
+    )
+  ]
 }
 
 resource "google_assured_workloads_workload" "folder" {

@@ -16,6 +16,7 @@ context = {
   }
   project_numbers = {
     excluded = "3333333333"
+    target   = "6666666666"
   }
 }
 name                = "test-h"
@@ -26,6 +27,9 @@ attachments = {
     id                = "$folder_ids:organization"
     excluded_folders  = ["$folder_ids:excluded", "folders/4444444444"]
     excluded_projects = ["$project_numbers:excluded", "projects/5555555555"]
+  }
+  project = {
+    id = "$project_numbers:target"
   }
   test = {
     id                = "$folder_ids:test"

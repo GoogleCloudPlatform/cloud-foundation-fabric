@@ -17,18 +17,20 @@
 # tfdoc:file:description Hierarchical security policy, rules and associations.
 
 locals {
+  # project numbers in context are bare numbers, targets and exclusions
+  # resolve them the same way
   attachments = {
     for k, v in var.attachments : k => {
-      id = lookup(local.ctx.folder_ids, v.id, v.id)
+      id = try(
+        "projects/${local.ctx.project_numbers[v.id]}",
+        lookup(local.ctx.folder_ids, v.id, v.id)
+      )
       excluded_folders = [
         for f in v.excluded_folders : lookup(local.ctx.folder_ids, f, f)
       ]
-      # project numbers in context are bare numbers
       excluded_projects = [
-        for p in v.excluded_projects : (
-          lookup(local.ctx.project_numbers, p, null) == null
-          ? p
-          : "projects/${local.ctx.project_numbers[p]}"
+        for p in v.excluded_projects : try(
+          "projects/${local.ctx.project_numbers[p]}", p
         )
       ]
     }
