@@ -38,6 +38,7 @@ locals {
       k if try(index(v, r), null) != null
     ]
   }
+  # keep separate from local.ctx to avoid a dependency cycle
   ctx_iam_principals = merge(
     local.ctx.iam_principals,
     {
