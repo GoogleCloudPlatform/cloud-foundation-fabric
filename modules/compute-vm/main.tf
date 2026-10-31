@@ -20,7 +20,7 @@ locals {
   # AI region europe-west2-ai2c => europe-west2
   # GCD region u-france-east1-b => u-france-east1
   _region = replace(local.zone, "/-[^-]?$|-ai[0-9][a-zA-Z]$/", "")
-  
+
   advanced_mf = anytrue([
     for k, v in var.machine_features_config : v != null
   ])
