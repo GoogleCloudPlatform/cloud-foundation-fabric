@@ -559,7 +559,10 @@ data_access_logs:
 name: Team B
 # explicit parent definition via key
 parent: $folder_ids:teams
-# hierarchical Cloud Armor policy managed elsewhere, excluding one project
+# hierarchical firewall and Cloud Armor policies managed elsewhere
+firewall_policy:
+  name: teams-baseline
+  policy: folders/1234567890/firewallPolicies/teams-baseline
 cloud_armor_policy:
   policy_id: $security_policies:teams-baseline
   excluded_projects:
