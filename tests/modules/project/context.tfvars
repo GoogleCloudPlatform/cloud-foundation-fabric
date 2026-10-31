@@ -50,6 +50,9 @@ context = {
   pubsub_topics = {
     test = "projects/test-prod-audit-logs-0/topics/audit-logs"
   }
+  security_policies = {
+    test = "locations/global/securityPolicies/1234567890"
+  }
 }
 alerts = {
   test-alert = {
@@ -95,6 +98,9 @@ asset_feeds = {
       }
     }
   }
+}
+cloud_armor_policy = {
+  policy_id = "$security_policies:test"
 }
 contacts = {
   "$email_addresses:default" = ["ALL"]

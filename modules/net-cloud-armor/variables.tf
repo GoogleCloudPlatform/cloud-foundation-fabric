@@ -99,6 +99,31 @@ variable "advanced_options_config" {
   }
 }
 
+variable "attachments" {
+  description = "Organization, folders or projects a hierarchical policy is attached to, keyed by association name suffix. Excluded folders are only supported for organization targets, excluded projects for organization and folder targets; targets and exclusions use the `organizations/nnn`, `folders/nnn` and `projects/nnn` (project number) formats, or `$folder_ids:` and `$project_numbers:` context references. Manage each association either here or via the `cloud_armor_policy` variable of the organization, folder or project module, not both. Only supported by hierarchical policies."
+  type = map(object({
+    id                = string
+    excluded_folders  = optional(list(string), [])
+    excluded_projects = optional(list(string), [])
+  }))
+  default  = {}
+  nullable = false
+}
+
+variable "context" {
+  description = "Context-specific interpolations."
+  type = object({
+    cidr_ranges      = optional(map(string), {})
+    cidr_ranges_sets = optional(map(list(string)), {})
+    folder_ids       = optional(map(string), {})
+    locations        = optional(map(string), {})
+    project_ids      = optional(map(string), {})
+    project_numbers  = optional(map(string), {})
+  })
+  default  = {}
+  nullable = false
+}
+
 variable "ddos_protection" {
   description = "DDoS protection level. Only supported by regional policies of type CLOUD_ARMOR_NETWORK."
   type        = string
@@ -113,16 +138,15 @@ variable "ddos_protection" {
 }
 
 variable "default_rule_config" {
-  description = "Configuration for the default rule with lowest priority, which is always present in a policy."
+  description = "Configuration for the default rule with lowest priority, which is always present in a policy. Set to null for hierarchical policies, which keep the 'goto_next' default rule created by the API."
   type = object({
     action      = optional(string, "allow")
     description = optional(string, "Default rule.")
     preview     = optional(bool, false)
   })
-  default  = {}
-  nullable = false
+  default = {}
   validation {
-    condition = can(regex(
+    condition = var.default_rule_config == null || can(regex(
       "^(allow|deny|deny\\((403|404|502)\\))$", var.default_rule_config.action
     ))
     error_message = "Default rule action must be 'allow', 'deny', or 'deny(STATUS)' with STATUS one of 403, 404, 502."
@@ -157,10 +181,20 @@ variable "name" {
   nullable    = false
 }
 
-variable "project_id" {
-  description = "Project id where the policy will be created."
-  type        = string
-  nullable    = false
+variable "parent_id" {
+  description = "Policy parent. Exactly one of organization_id, folder_id or project_id must be set; the first two create a hierarchical policy."
+  type = object({
+    organization_id = optional(string)
+    folder_id       = optional(string)
+    project_id      = optional(string)
+  })
+  nullable = false
+  validation {
+    condition = length(compact([
+      var.parent_id.organization_id, var.parent_id.folder_id, var.parent_id.project_id
+    ])) == 1
+    error_message = "Exactly one of organization_id, folder_id or project_id must be set."
+  }
 }
 
 variable "recaptcha_options_config" {
@@ -172,13 +206,13 @@ variable "recaptcha_options_config" {
 }
 
 variable "region" {
-  description = "Policy region. Leave null or set to 'global' for a global policy."
+  description = "Policy region. Leave null or set to 'global' for a global or hierarchical policy."
   type        = string
   default     = null
 }
 
 variable "rules" {
-  description = "Policy rules, merged with factory rules. Use `match` for CLOUD_ARMOR, CLOUD_ARMOR_EDGE and CLOUD_ARMOR_INTERNAL_SERVICE policies, `network_match` for CLOUD_ARMOR_NETWORK policies. Consistency with the policy scope and type is checked at plan time."
+  description = "Policy rules, merged with factory rules. Use `match` for CLOUD_ARMOR, CLOUD_ARMOR_EDGE, CLOUD_ARMOR_INTERNAL_SERVICE and hierarchical policies, `network_match` for CLOUD_ARMOR_NETWORK policies. The 'goto_next' action is only supported by hierarchical policies. Consistency with the policy scope and type is checked at plan time."
   type = map(object({
     priority    = number
     action      = string
@@ -257,11 +291,11 @@ variable "rules" {
   validation {
     condition = alltrue([
       for k, v in var.rules : can(regex(
-        "^(allow|deny|deny\\((403|404|502)\\)|throttle|rate_based_ban|redirect)$",
+        "^(allow|deny|deny\\((403|404|502)\\)|goto_next|throttle|rate_based_ban|redirect)$",
         v.action
       ))
     ])
-    error_message = "Rule action must be one of 'allow', 'deny', 'deny(STATUS)', 'throttle', 'rate_based_ban', 'redirect'."
+    error_message = "Rule action must be one of 'allow', 'deny', 'deny(STATUS)', 'goto_next', 'throttle', 'rate_based_ban', 'redirect'."
   }
   validation {
     condition = alltrue([
@@ -334,7 +368,7 @@ variable "rules" {
 }
 
 variable "type" {
-  description = "Policy type. Global policies support CLOUD_ARMOR, CLOUD_ARMOR_EDGE and CLOUD_ARMOR_INTERNAL_SERVICE, regional policies support CLOUD_ARMOR and CLOUD_ARMOR_NETWORK. Rules for types other than CLOUD_ARMOR only support the 'allow' and 'deny' actions."
+  description = "Policy type. Global policies support CLOUD_ARMOR, CLOUD_ARMOR_EDGE and CLOUD_ARMOR_INTERNAL_SERVICE, regional policies support CLOUD_ARMOR and CLOUD_ARMOR_NETWORK. Rules for types other than CLOUD_ARMOR only support the 'allow' and 'deny' actions. Hierarchical policies only support CLOUD_ARMOR."
   type        = string
   default     = "CLOUD_ARMOR"
   nullable    = false

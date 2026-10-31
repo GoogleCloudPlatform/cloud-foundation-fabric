@@ -168,6 +168,21 @@ resource "google_resource_manager_lien" "lien" {
   reason       = var.lien_reason
 }
 
+resource "google_compute_organization_security_policy_association" "default" {
+  count = var.cloud_armor_policy == null ? 0 : 1
+  name = coalesce(
+    var.cloud_armor_policy.name, "project-${local.project.number}"
+  )
+  attachment_id = "projects/${local.project.number}"
+  policy_id = lookup(
+    local.ctx.security_policies,
+    var.cloud_armor_policy.policy_id,
+    var.cloud_armor_policy.policy_id
+  )
+  excluded_folders  = var.cloud_armor_policy.excluded_folders
+  excluded_projects = var.cloud_armor_policy.excluded_projects
+}
+
 resource "google_kms_key_handle" "default" {
   for_each = var.kms_autokeys
   project  = local.project.project_id

@@ -14,7 +14,7 @@
   <br>*additional properties: false*
   - ⁺**priority**: *integer*
   - ⁺**action**: *string*
-    <br>*pattern: ^(allow|deny|deny\((403|404|502)\)|throttle|rate_based_ban|redirect)$*
+    <br>*pattern: ^(allow|deny|deny\((403|404|502)\)|goto_next|throttle|rate_based_ban|redirect)$*
   - **description**: *string*
   - **preview**: *boolean*
   - **match**: *object*
