@@ -71,7 +71,6 @@ module "folder-1" {
   }
   pam_entitlements        = lookup(each.value, "pam_entitlements", {})
   assured_workload_config = lookup(each.value, "assured_workload_config", null)
-  cloud_armor_policy      = lookup(each.value, "cloud_armor_policy", null)
   logging_settings = anytrue([
     try(each.value.logging.storage_location, null) != null,
     try(each.value.logging.disable_default_sink, null) != null,
@@ -100,6 +99,7 @@ module "folder-1-iam" {
     if contains(["pam_entitlements", "org_policies"], k)
   }
   autokey_config                = lookup(each.value, "autokey_config", null)
+  cloud_armor_policy            = lookup(each.value, "cloud_armor_policy", null)
   contacts                      = lookup(each.value, "contacts", {})
   iam                           = lookup(each.value, "iam", {})
   iam_bindings                  = lookup(each.value, "iam_bindings", {})
@@ -149,7 +149,6 @@ module "folder-2" {
   }
   pam_entitlements        = lookup(each.value, "pam_entitlements", {})
   assured_workload_config = lookup(each.value, "assured_workload_config", null)
-  cloud_armor_policy      = lookup(each.value, "cloud_armor_policy", null)
   logging_settings = anytrue([
     try(each.value.logging.storage_location, null) != null,
     try(each.value.logging.disable_default_sink, null) != null,
@@ -183,6 +182,7 @@ module "folder-2-iam" {
     if contains(["pam_entitlements", "org_policies"], k)
   }
   autokey_config                = lookup(each.value, "autokey_config", null)
+  cloud_armor_policy            = lookup(each.value, "cloud_armor_policy", null)
   contacts                      = lookup(each.value, "contacts", {})
   iam                           = lookup(each.value, "iam", {})
   iam_bindings                  = lookup(each.value, "iam_bindings", {})
@@ -235,7 +235,6 @@ module "folder-3" {
   }
   pam_entitlements        = lookup(each.value, "pam_entitlements", {})
   assured_workload_config = lookup(each.value, "assured_workload_config", null)
-  cloud_armor_policy      = lookup(each.value, "cloud_armor_policy", null)
   logging_settings = anytrue([
     try(each.value.logging.storage_location, null) != null,
     try(each.value.logging.disable_default_sink, null) != null,
@@ -269,6 +268,7 @@ module "folder-3-iam" {
     if contains(["pam_entitlements", "org_policies"], k)
   }
   autokey_config                = lookup(each.value, "autokey_config", null)
+  cloud_armor_policy            = lookup(each.value, "cloud_armor_policy", null)
   contacts                      = lookup(each.value, "contacts", {})
   iam                           = lookup(each.value, "iam", {})
   iam_bindings                  = lookup(each.value, "iam_bindings", {})
@@ -321,7 +321,6 @@ module "folder-4" {
   }
   pam_entitlements        = lookup(each.value, "pam_entitlements", {})
   assured_workload_config = lookup(each.value, "assured_workload_config", null)
-  cloud_armor_policy      = lookup(each.value, "cloud_armor_policy", null)
   logging_settings = anytrue([
     try(each.value.logging.storage_location, null) != null,
     try(each.value.logging.disable_default_sink, null) != null,
@@ -355,6 +354,7 @@ module "folder-4-iam" {
     if contains(["pam_entitlements", "org_policies"], k)
   }
   autokey_config                = lookup(each.value, "autokey_config", null)
+  cloud_armor_policy            = lookup(each.value, "cloud_armor_policy", null)
   contacts                      = lookup(each.value, "contacts", {})
   iam                           = lookup(each.value, "iam", {})
   iam_bindings                  = lookup(each.value, "iam_bindings", {})

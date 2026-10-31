@@ -235,12 +235,6 @@
         "policy_id": {
           "type": "string"
         },
-        "excluded_folders": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
         "excluded_projects": {
           "type": "array",
           "items": {

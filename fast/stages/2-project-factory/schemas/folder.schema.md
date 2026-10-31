@@ -75,8 +75,6 @@
   <br>*additional properties: false*
   - **name**: *string*
   - ⁺**policy_id**: *string*
-  - **excluded_folders**: *array*
-    - items: *string*
   - **excluded_projects**: *array*
     - items: *string*
 - **contacts**: *object*
