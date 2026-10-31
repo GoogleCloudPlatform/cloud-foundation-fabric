@@ -68,7 +68,7 @@ resource "google_compute_instance_template" "default" {
     resource_manager_tags  = var.tag_bindings_immutable
 
     dynamic "disk_encryption_key" {
-      for_each = var.encryption != null ? [""] : []
+      for_each = try(var.encryption.encrypt_boot, false) ? [""] : []
       content {
         kms_key_self_link = lookup(
           local.ctx_kms_keys,
@@ -346,7 +346,7 @@ resource "google_compute_region_instance_template" "default" {
     resource_manager_tags  = var.tag_bindings_immutable
 
     dynamic "disk_encryption_key" {
-      for_each = var.encryption != null ? [""] : []
+      for_each = try(var.encryption.encrypt_boot, false) ? [""] : []
       content {
         kms_key_self_link = lookup(
           local.ctx_kms_keys,

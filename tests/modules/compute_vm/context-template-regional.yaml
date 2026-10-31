@@ -28,9 +28,7 @@ values:
     disk:
     - auto_delete: true
       boot: true
-      disk_encryption_key:
-      - kms_key_self_link: projects/foo-prod-sec-core/locations/global/keyRings/prod-global-default/cryptoKeys/compute
-        kms_key_service_account: null
+      disk_encryption_key: []
       disk_name: null
       disk_size_gb: 10
       disk_type: pd-balanced

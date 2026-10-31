@@ -91,7 +91,7 @@ resource "google_compute_instance" "default" {
       ), null)
     )
     disk_encryption_key_raw = (
-      var.encryption != null ?
+      try(var.encryption.encrypt_boot, false) ?
       try(
         local.ctx_kms_keys[var.encryption.disk_encryption_key_raw],
         var.encryption.disk_encryption_key_raw
@@ -99,7 +99,7 @@ resource "google_compute_instance" "default" {
       : null
     )
     kms_key_self_link = (
-      var.encryption != null
+      try(var.encryption.encrypt_boot, false)
       ? try(
         local.ctx_kms_keys[var.encryption.kms_key_self_link],
         var.encryption.kms_key_self_link
