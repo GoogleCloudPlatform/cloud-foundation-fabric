@@ -38,6 +38,33 @@ locals {
   project_id = lookup(local.ctx.project_ids, var.project_id, var.project_id)
 }
 
+resource "google_discovery_engine_acl_config" "default" {
+  for_each = var.acl_configs
+  project  = local.project_id
+  location = lookup(local.ctx.locations, each.key, each.key)
+
+  dynamic "idp_config" {
+    for_each = each.value.idp_config == null ? [] : [""]
+
+    content {
+      idp_type = each.value.idp_config.idp_type
+
+      dynamic "external_idp_config" {
+        for_each = (
+          try(each.value.idp_config.external_idp_config, null) == null
+          ? [] : [""]
+        )
+
+        content {
+          workforce_pool_name = (
+            each.value.idp_config.external_idp_config.workforce_pool_name
+          )
+        }
+      }
+    }
+  }
+}
+
 resource "google_discovery_engine_cmek_config" "default" {
   for_each       = var.encryption_configs
   project        = local.project_id
@@ -199,8 +226,21 @@ resource "google_discovery_engine_data_store" "default" {
     }
   }
 
-  # CMEK has to be registered before data stores are created
-  depends_on = [google_discovery_engine_cmek_config.default]
+  # CMEK and ACL config have to be registered before data stores are created
+  depends_on = [
+    google_discovery_engine_cmek_config.default,
+    google_discovery_engine_acl_config.default
+  ]
+}
+
+resource "google_discovery_engine_user_store" "default" {
+  for_each                           = var.user_stores_configs
+  project                            = local.project_id
+  location                           = lookup(local.ctx.locations, each.key, each.key)
+  user_store_id                      = "default_user_store"
+  default_license_config             = each.value.default_license_config
+  enable_expired_license_auto_update = each.value.enable_expired_license_auto_update
+  enable_license_auto_register       = each.value.enable_license_auto_register
 }
 
 resource "google_discovery_engine_schema" "default" {

@@ -14,6 +14,21 @@
  * limitations under the License.
  */
 
+output "acl_configs" {
+  description = "The ACL config resources created."
+  value       = google_discovery_engine_acl_config.default
+}
+
+output "assistant" {
+  description = "The assistant resource created."
+  value       = try(google_discovery_engine_assistant.default[0], null)
+}
+
+output "assistant_id" {
+  description = "The id of the assistant."
+  value       = try(google_discovery_engine_assistant.default[0].id, null)
+}
+
 output "chat_agent" {
   description = "The (Dialogflow CX) chat agent object."
   value       = try(google_dialogflow_cx_agent.default[0], null)
@@ -55,4 +70,19 @@ output "search_engine" {
 output "search_engine_id" {
   description = "The id of the search engine."
   value       = try(google_discovery_engine_search_engine.default[0].id, null)
+}
+
+output "user_stores" {
+  description = "The user store resources created."
+  value       = google_discovery_engine_user_store.default
+}
+
+output "widget_config" {
+  description = "The search widget config resource created."
+  value       = try(google_discovery_engine_widget_config.default[0], null)
+}
+
+output "widget_config_id" {
+  description = "The id of the search widget config."
+  value       = try(google_discovery_engine_widget_config.default[0].id, null)
 }

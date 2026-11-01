@@ -1,0 +1,139 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  google_discovery_engine_acl_config.default["$locations:primary"]:
+    idp_config:
+    - external_idp_config:
+      - workforce_pool_name: locations/global/workforcePools/my-pool
+      idp_type: THIRD_PARTY
+    location: eu
+    project: actual-project-id
+  google_discovery_engine_assistant.default[0]:
+    assistant_id: default_assistant
+    customer_policy:
+    - banned_phrases:
+      - ignore_diacritics: true
+        match_type: SIMPLE_STRING_MATCH
+        phrase: confidential
+      model_armor_config:
+      - failure_mode: FAIL_OPEN
+        response_template: projects/actual-project-id/locations/eu/templates/resp-tmpl
+        user_prompt_template: projects/actual-project-id/locations/eu/templates/prompt-tmpl
+    description: Enterprise Assistant
+    display_name: Enterprise Assistant
+    generation_config:
+    - default_language: en
+      system_instruction:
+      - additional_system_instruction: Answer concisely.
+    location: eu
+    project: actual-project-id
+    web_grounding_type: WEB_GROUNDING_TYPE_GOOGLE_SEARCH
+  google_discovery_engine_cmek_config.default["$locations:primary"]:
+    kms_key: projects/kms-project/locations/eu/keyRings/ring/cryptoKeys/key
+    location: eu
+    project: actual-project-id
+  google_discovery_engine_data_store.default["data-store-1"]:
+    kms_key_name: projects/kms-project/locations/eu/keyRings/ring/cryptoKeys/key
+    location: eu
+    project: actual-project-id
+  google_discovery_engine_search_engine.default[0]:
+    app_type: APP_TYPE_INTRANET
+    common_config:
+    - company_name: Example
+    disable_analytics: false
+    engine_id: my-gemini-app
+    features:
+      agent-sharing-without-admin-approval: FEATURE_STATE_ON
+    kms_key_name: projects/kms-project/locations/eu/keyRings/ring/cryptoKeys/key
+    location: eu
+    project: actual-project-id
+    search_engine_config:
+    - required_subscription_tier: SUBSCRIPTION_TIER_ENTERPRISE
+      search_add_ons:
+      - SEARCH_ADD_ON_LLM
+      search_tier: SEARCH_TIER_ENTERPRISE
+  google_discovery_engine_user_store.default["$locations:primary"]:
+    default_license_config: projects/actual-project-id/locations/eu/userStores/default_user_store/licenseConfigs/default
+    enable_expired_license_auto_update: true
+    enable_license_auto_register: true
+    location: eu
+    project: actual-project-id
+    user_store_id: default_user_store
+  google_discovery_engine_widget_config.default[0]:
+    access_settings:
+    - allow_public_access: false
+      allowlisted_domains:
+      - example.com
+      enable_web_app: true
+      language_code: en-US
+      workforce_identity_pool_provider: locations/global/workforcePools/my-pool/providers/my-provider
+    homepage_setting:
+    - shortcuts:
+      - destination_uri: https://intranet.example.com
+        icon:
+        - url: https://intranet.example.com/icon.png
+        title: Intranet
+    location: eu
+    project: actual-project-id
+    ui_branding:
+    - logo:
+      - url: https://intranet.example.com/logo.png
+    ui_settings:
+    - data_store_ui_configs:
+      - facet_field:
+        - display_name: Department
+          field: department
+        fields_ui_components_map:
+        - device_visibility:
+          - DESKTOP
+          - MOBILE
+          display_template: '{value}'
+          field: title
+          ui_component: TITLE
+        name: projects/actual-project-id/locations/eu/collections/default_collection/dataStores/my-gemini-app-data-store-1
+      default_search_request_order_by: relevance
+      disable_user_events_collection: false
+      enable_autocomplete: true
+      enable_create_agent_button: true
+      enable_people_search: true
+      enable_quality_feedback: true
+      enable_safe_search: true
+      enable_search_as_you_type: true
+      enable_visual_content_summary: true
+      generative_answer_config:
+      - disable_related_questions: false
+        ignore_adversarial_query: true
+        ignore_low_relevant_content: true
+        ignore_non_answer_seeking_query: true
+        image_source: ALL_AVAILABLE_SOURCES
+        language_code: en
+        max_rephrase_steps: 2
+        model_prompt_preamble: Use internal docs.
+        model_version: stable
+        result_count: 5
+      interaction_type: SEARCH_WITH_FOLLOW_UPS
+      result_description_type: SNIPPET
+    widget_config_id: default_search_widget_config
+
+counts:
+  google_discovery_engine_acl_config: 1
+  google_discovery_engine_assistant: 1
+  google_discovery_engine_cmek_config: 1
+  google_discovery_engine_data_store: 1
+  google_discovery_engine_search_engine: 1
+  google_discovery_engine_user_store: 1
+  google_discovery_engine_widget_config: 1
+  modules: 0
+  resources: 7
