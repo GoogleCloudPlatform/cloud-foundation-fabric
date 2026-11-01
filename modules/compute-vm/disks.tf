@@ -54,7 +54,7 @@ resource "google_compute_disk" "boot" {
     disk_type = var.boot_disk.initialize_params.type
   })
   dynamic "disk_encryption_key" {
-    for_each = var.encryption != null ? [""] : []
+    for_each = try(var.encryption.encrypt_boot, false) ? [""] : []
     content {
       raw_key = var.encryption.disk_encryption_key_raw
       kms_key_self_link = lookup(
