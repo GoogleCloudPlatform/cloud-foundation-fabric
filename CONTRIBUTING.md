@@ -84,6 +84,12 @@ Once everything looks good, add/commit any pending changes then push and open a 
 
 When naming your Pull Request, do not use Conventional Commits guidelines (e.g., do not use `feat(net-vpc): add NCC support`). Instead, use short, capitalized, imperative titles with no trailing dot, such as "Add NCC support to `modules/net-vpc`". Keep the title concise and explain the details of the change in the PR description.
 
+Before opening a Pull Request, verify that the change follows these repository scope and review expectations:
+
+- Touch a single module per PR alongside its `README.md` and `tests/modules/<module>/`, except when mirroring identical support across paired modules such as `gke-cluster-standard` and `gke-cluster-autopilot` or regional and global load balancer modules.
+- Open an issue or discussion before introducing a new module, changing existing behavior or variable schemas, or modifying `organization`, `folder`, `project`, `project-factory`, or factory modules listed in [FACTORIES.md](./FACTORIES.md), and complete the `upgrade-note` block in the PR description for any agreed breaking change.
+- Include a test exercising the change, preferably by extending an existing `README.md` `# tftest` example and inventory, preserve existing copyright years on modified files, and keep `100644` file modes on rendered template scripts.
+
 HINT: if you work on high-latency or low-bandwidth network use `TF_PLUGIN_CACHE_DIR` environment variable to dramatically speed up the tests, for example:
 
 ```bash
@@ -210,6 +216,8 @@ module "pubsub" {
 ```
 
 We have several such interfaces defined for IAM, log sinks, organizational policies, etc. and always reuse them across modules.
+
+Canonical cross-module interface decisions, such as the `{ value, path, wo_version }` object shape for [secret inputs](./adrs/modules/20261029-write-only-secrets.md) and target-side versus policy-side [policy bindings](./adrs/modules/20261029-hierarchy-bindings.md), are documented in [adrs/](./adrs/). Check existing ADRs before proposing or modifying a shared module interface.
 
 #### Design interfaces to support actual usage
 
@@ -387,6 +395,8 @@ module "simple-vm-example" {
 }
 ```
 
+Leave optional scalar and enum attributes defaulting to `null` unless module logic requires a concrete fallback so the provider applies its native defaults, omit `*_UNSPECIFIED` enum values, check `*_config != null` rather than adding separate `*_enabled` booleans, and avoid wrapping statically typed attributes in redundant `try()` calls. Validate provider enums in dedicated single-purpose `validation` blocks so error messages identify the exact failing constraint.
+
 #### Depend outputs on internal resources
 
 We mentioned this principle when discussing encapsulation above but it's worth repeating it explicitly: **set explicit dependencies in outputs so consumers will wait for full resource configuration**.
@@ -411,6 +421,8 @@ output "project_id" {
   ]
 }
 ```
+
+Prefer `*_ids` map outputs over exposing raw resource objects unless downstream composition requires full resource attributes, and omit `sensitive = true` unless the underlying provider resource exposes sensitive attributes.
 
 #### Why we don't use random strings in names
 
@@ -450,6 +462,8 @@ billing_account: 012345-67890A-BCDEF0
 labels:
   environment: dev
 ```
+
+Whenever modifying a `.schema.json` file, keep shared schema definitions synchronized with `tools/duplicate-diff.py` and regenerate the corresponding `.schema.md` reference documentation with `tools/schema_docs.py`.
 
 #### Context-based interpolation
 
