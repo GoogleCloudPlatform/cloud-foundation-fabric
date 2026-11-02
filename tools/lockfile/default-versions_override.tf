@@ -12,14 +12,27 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Non-HashiCorp providers pre-warmed into the CI cache must live in an
-# _override.tf file so Terraform merges required_providers with versions.tf.
+# Non-HashiCorp providers used across the repository, matching their module
+# constraints. Kept in an _override.tf file so Terraform merges
+# required_providers with versions.tf.
 
 terraform {
   required_providers {
+    github = {
+      source  = "integrations/github"
+      version = "~> 4.0"
+    }
+    gitlab = {
+      source  = "gitlabhq/gitlab"
+      version = "~> 16.0"
+    }
     mongodbatlas = {
       source  = "mongodb/mongodbatlas"
       version = "~> 2.17"
+    }
+    restful = {
+      source  = "magodo/restful"
+      version = "= 0.21.0"
     }
   }
 }
