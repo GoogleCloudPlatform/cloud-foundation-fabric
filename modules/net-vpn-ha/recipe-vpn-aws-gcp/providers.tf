@@ -14,6 +14,15 @@
  * limitations under the License.
  */
 
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 6.0"
+    }
+  }
+}
+
 provider "aws" {
   region = var.aws_region
   # The values below are needed to allow the tests to work for this

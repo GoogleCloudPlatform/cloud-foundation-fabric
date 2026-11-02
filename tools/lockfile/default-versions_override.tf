@@ -18,6 +18,12 @@
 
 terraform {
   required_providers {
+    # Commented out due to large provider binary size; uncomment if needed
+    # when mirroring providers locally for recipe-vpn-aws-gcp.
+    # aws = {
+    #   source  = "hashicorp/aws"
+    #   version = "~> 6.0"
+    # }
     github = {
       source  = "integrations/github"
       version = "~> 4.0"
