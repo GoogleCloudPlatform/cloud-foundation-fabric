@@ -23,7 +23,10 @@ output "access_policy_ids" {
 
 output "agent_gateway" {
   description = "The Agent Gateway object."
-  value       = google_network_services_agent_gateway.default
+  value = {
+    for k, v in google_network_services_agent_gateway.default : k => v
+    if k != "protocols"
+  }
 }
 
 output "authz_extension_ids" {

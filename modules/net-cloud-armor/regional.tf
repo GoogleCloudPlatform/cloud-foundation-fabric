@@ -17,8 +17,8 @@
 # tfdoc:file:description Regional security policy and rules.
 
 resource "google_compute_region_security_policy" "regional" {
-  count       = local.is_global ? 0 : 1
-  project     = var.project_id
+  count       = local.is_regional ? 1 : 0
+  project     = local.project_id
   region      = local.region
   name        = var.name
   description = var.description
@@ -70,14 +70,14 @@ resource "google_compute_region_security_policy" "regional" {
 }
 
 resource "google_compute_region_security_policy_rule" "regional_default" {
-  count           = local.is_global ? 0 : 1
-  project         = var.project_id
+  count           = local.is_regional ? 1 : 0
+  project         = local.project_id
   region          = local.region
   security_policy = google_compute_region_security_policy.regional[0].name
   priority        = 2147483647
-  action          = var.default_rule_config.action
-  description     = var.default_rule_config.description
-  preview         = var.default_rule_config.preview
+  action          = try(var.default_rule_config.action, null)
+  description     = try(var.default_rule_config.description, null)
+  preview         = try(var.default_rule_config.preview, null)
 
   dynamic "match" {
     for_each = local.is_network ? [] : [""]
@@ -99,8 +99,8 @@ resource "google_compute_region_security_policy_rule" "regional_default" {
 
 resource "google_compute_region_security_policy_rule" "regional" {
   # Terraform's type system barfs in the condition if we use the locals map
-  for_each        = toset(local.is_global ? [] : keys(local.rules))
-  project         = var.project_id
+  for_each        = toset(local.is_regional ? keys(local.rules) : [])
+  project         = local.project_id
   region          = local.region
   security_policy = google_compute_region_security_policy.regional[0].name
   priority        = local.rules[each.key].priority
@@ -119,7 +119,7 @@ resource "google_compute_region_security_policy_rule" "regional" {
       dynamic "config" {
         for_each = match.value.src_ip_ranges == null ? [] : [""]
         content {
-          src_ip_ranges = match.value.src_ip_ranges
+          src_ip_ranges = local.rule_ranges[each.key].match_src
         }
       }
       dynamic "expr" {
@@ -139,11 +139,11 @@ resource "google_compute_region_security_policy_rule" "regional" {
     )
     iterator = nm
     content {
-      dest_ip_ranges   = nm.value.dest_ip_ranges
+      dest_ip_ranges   = local.rule_ranges[each.key].network_dst
       dest_ports       = nm.value.dest_ports
       ip_protocols     = nm.value.ip_protocols
       src_asns         = nm.value.src_asns
-      src_ip_ranges    = nm.value.src_ip_ranges
+      src_ip_ranges    = local.rule_ranges[each.key].network_src
       src_ports        = nm.value.src_ports
       src_region_codes = nm.value.src_region_codes
       dynamic "user_defined_fields" {

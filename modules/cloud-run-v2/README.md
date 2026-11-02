@@ -501,7 +501,9 @@ module "secrets" {
       }
       versions = {
         v1 = {
-          data = file("${path.module}/config/otel-config.yaml")
+          data = {
+            value = file("${path.module}/config/otel-config.yaml")
+          }
         }
       }
     }

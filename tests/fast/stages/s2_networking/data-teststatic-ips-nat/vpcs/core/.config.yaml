@@ -15,3 +15,17 @@ nat_config:
       all: false
       subnetworks:
         - self_link: $subnets:core/europe-west1/core-default
+  nat-private:
+    region: $locations:primary
+    type: PRIVATE
+    router_name: custom-private-nat-router
+    config_source_subnetworks:
+      all: false
+      subnetworks:
+        - self_link: $subnets:core/europe-west1/core-default
+    rules:
+      - description: private nat hybrid rule
+        rule_number: 100
+        match: nexthop.is_hybrid
+        source_ranges:
+          - $subnets:core/europe-west1/core-private-nat

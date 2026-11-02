@@ -45,9 +45,9 @@ module "secret_manager" {
     authorizer-credential = {
       versions = {
         v1 = {
-          data = "ENTER HERE YOUR SECRET VALUE"
-          data_config = {
-            write_only_version = 1
+          data = {
+            value      = "ENTER HERE YOUR SECRET VALUE"
+            wo_version = 1
           }
         }
       }
@@ -127,9 +127,9 @@ module "secret_manager" {
     webhook-secret = {
       versions = {
         v1 = {
-          data = "ENTER HERE YOUR SECRET VALUE"
-          data_config = {
-            write_only_version = 1
+          data = {
+            value      = "ENTER HERE YOUR SECRET VALUE"
+            wo_version = 1
           }
         }
       }
@@ -140,9 +140,9 @@ module "secret_manager" {
     private-key-secret = {
       versions = {
         v1 = {
-          data = "ENTER HERE YOUR SECRET VALUE"
-          data_config = {
-            write_only_version = 1
+          data = {
+            value      = "ENTER HERE YOUR SECRET VALUE"
+            wo_version = 1
           }
         }
       }
@@ -226,9 +226,9 @@ module "secret_manager" {
     webhook-secret = {
       versions = {
         v1 = {
-          data = "ENTER HERE YOUR SECRET VALUE"
-          data_config = {
-            write_only_version = 1
+          data = {
+            value      = "ENTER HERE YOUR SECRET VALUE"
+            wo_version = 1
           }
         }
       }
@@ -239,9 +239,9 @@ module "secret_manager" {
     authorizer-credential = {
       versions = {
         v1 = {
-          data = "ENTER HERE YOUR SECRET VALUE"
-          data_config = {
-            write_only_version = 1
+          data = {
+            value      = "ENTER HERE YOUR SECRET VALUE"
+            wo_version = 1
           }
         }
       }
@@ -252,9 +252,9 @@ module "secret_manager" {
     read-authorizer-credential = {
       versions = {
         v1 = {
-          data = "ENTER HERE YOUR SECRET VALUE"
-          data_config = {
-            write_only_version = 1
+          data = {
+            value      = "ENTER HERE YOUR SECRET VALUE"
+            wo_version = 1
           }
         }
       }
@@ -337,9 +337,9 @@ module "secret_manager" {
     webhook-secret = {
       versions = {
         v1 = {
-          data = "ENTER HERE YOUR SECRET VALUE"
-          data_config = {
-            write_only_version = 1
+          data = {
+            value      = "ENTER HERE YOUR SECRET VALUE"
+            wo_version = 1
           }
         }
       }
@@ -350,9 +350,9 @@ module "secret_manager" {
     authorizer-credential = {
       versions = {
         v1 = {
-          data = "ENTER HERE YOUR SECRET VALUE"
-          data_config = {
-            write_only_version = 1
+          data = {
+            value      = "ENTER HERE YOUR SECRET VALUE"
+            wo_version = 1
           }
         }
       }
@@ -363,9 +363,9 @@ module "secret_manager" {
     read-authorizer-credential = {
       versions = {
         v1 = {
-          data = "ENTER HERE YOUR SECRET VALUE"
-          data_config = {
-            write_only_version = 1
+          data = {
+            value      = "ENTER HERE YOUR SECRET VALUE"
+            wo_version = 1
           }
         }
       }
@@ -448,9 +448,9 @@ module "secret_manager" {
     webhook-secret = {
       versions = {
         v1 = {
-          data = "ENTER HERE YOUR SECRET VALUE"
-          data_config = {
-            write_only_version = 1
+          data = {
+            value      = "ENTER HERE YOUR SECRET VALUE"
+            wo_version = 1
           }
         }
       }
@@ -461,9 +461,9 @@ module "secret_manager" {
     read-authorizer-credential = {
       versions = {
         v1 = {
-          data = "ENTER HERE YOUR SECRET VALUE"
-          data_config = {
-            write_only_version = 1
+          data = {
+            value      = "ENTER HERE YOUR SECRET VALUE"
+            wo_version = 1
           }
         }
       }
@@ -474,9 +474,9 @@ module "secret_manager" {
     authorizer-credential = {
       versions = {
         v1 = {
-          data = "ENTER HERE YOUR SECRET VALUE"
-          data_config = {
-            write_only_version = 1
+          data = {
+            value      = "ENTER HERE YOUR SECRET VALUE"
+            wo_version = 1
           }
         }
       }

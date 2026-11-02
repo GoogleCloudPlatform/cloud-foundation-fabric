@@ -24,6 +24,17 @@ locals {
   cluster_region_config = (
     mongodbatlas_advanced_cluster.default.replication_specs[0].region_configs[0]
   )
+  database_user_passwords = {
+    for k, v in var.database_users : k => (
+      v.password == null
+      ? null
+      : (
+        v.password.path == null
+        ? v.password.value
+        : file(pathexpand(v.password.path))
+      )
+    )
+  }
 }
 
 module "addresses" {
@@ -91,11 +102,19 @@ resource "mongodbatlas_privatelink_endpoint_service" "default" {
 }
 
 resource "mongodbatlas_database_user" "database_user" {
-  for_each            = var.database_users
-  username            = each.key
-  password            = each.value.password
-  password_wo         = each.value.password_wo
-  password_wo_version = each.value.password_wo_version
+  for_each = var.database_users
+  username = each.key
+  password = (
+    try(each.value.password.wo_version, null) != null
+    ? null
+    : local.database_user_passwords[each.key]
+  )
+  password_wo = (
+    try(each.value.password.wo_version, null) == null
+    ? null
+    : local.database_user_passwords[each.key]
+  )
+  password_wo_version = try(each.value.password.wo_version, null)
   project_id          = mongodbatlas_project.default.id
   auth_database_name  = each.value.auth_database_name
   aws_iam_type        = each.value.aws_iam_type

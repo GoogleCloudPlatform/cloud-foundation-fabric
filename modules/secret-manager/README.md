@@ -1,12 +1,13 @@
 # Google Secret Manager
 
-This module allows managing one or more secrets with versions and IAM bindings. For global secrets, this module optionally supports [write-only attributes](https://developer.hashicorp.com/terraform/language/manage-sensitive-data/write-only) for versions, which do not save data in state. Write-only attributes are not yet supported in OpenTofu, so this module is only compatible with Terraform until [OpenTofu support](https://github.com/opentofu/opentofu/issues/2834) has been released.
+This module allows managing one or more secrets with versions and IAM bindings. Version data can be passed via [write-only attributes](https://developer.hashicorp.com/terraform/language/manage-sensitive-data/write-only), which do not save data in state, for both global and regional secrets.
 
 <!-- BEGIN TOC -->
 - [Global Secrets](#global-secrets)
 - [Regional Secrets](#regional-secrets)
 - [IAM Bindings](#iam-bindings)
 - [Secret Versions](#secret-versions)
+- [Secret values](#secret-values)
 - [Secret Rotation](#secret-rotation)
 - [Context Interpolations](#context-interpolations)
 - [Variables](#variables)
@@ -45,12 +46,12 @@ module "secret-manager" {
     }
   }
 }
-# tftest modules=1 resources=4 inventory=secret.yaml skip-tofu
+# tftest modules=1 resources=4 inventory=secret.yaml
 ```
 
 ## Regional Secrets
 
-Regional secrets are identified by having the `location` attribute defined, and share the same interface with a few exceptions: the `global_replica_locations` is of course ignored, and versions only support a subset of attributes and can't use write-only attributes.
+Regional secrets are identified by having the `location` attribute defined, and share the same interface with a few exceptions: the `global_replica_locations` is of course ignored, and versions only support a subset of attributes.
 
 ```hcl
 module "secret-manager" {
@@ -66,7 +67,7 @@ module "secret-manager" {
     }
   }
 }
-# tftest modules=1 resources=2 inventory=secret-regional.yaml skip-tofu
+# tftest modules=1 resources=2 inventory=secret-regional.yaml
 ```
 
 ## IAM Bindings
@@ -105,18 +106,12 @@ module "secret-manager" {
     }
   }
 }
-# tftest modules=1 resources=4 inventory=iam.yaml skip-tofu
+# tftest modules=1 resources=4 inventory=iam.yaml
 ```
 
 ## Secret Versions
 
-Versions are defined per secret via the `versions` attribute, and by default they accept string data which is stored in state. The `data_config` attributes allow configuring each secret:
-
-- `data_config.is_file` instructs the module to read version data from a file (`data` is then used as the file path)
-- `data_config.is_base64` instructs the provider to treat data as Base64
-- `data_config.write_only_version` instructs the module to **use write-only attributes so that data is not set in state**, each time the write-only version is changed data is reuploaded to the secret version
-
-As mentioned before write-only attributes are only available for global secrets. Regional secrets still use the potentially insecure way of storing data.
+Versions are defined per secret via the `versions` attribute. Each version carries its secret in the `data` object, described in the [Secret values](#secret-values) section below, and an `is_base64` attribute which instructs the provider to treat data as Base64.
 
 ```hcl
 module "secret-manager" {
@@ -126,35 +121,46 @@ module "secret-manager" {
     test = {
       versions = {
         a = {
-          # potentially unsafe
-          data = "foo"
+          # potentially unsafe, stored in state
+          data = {
+            value = "foo"
+          }
         }
         b = {
-          # potentially unsafe, reads from file
-          data = "test-data/secret-b.txt"
-          data_config = {
-            is_file = true
+          # potentially unsafe, reads from file and stores in state
+          data = {
+            path = "test-data/secret-b.txt"
           }
         }
         c = {
           # uses safer write-only attribute
-          data = "bar"
-          data_config = {
+          data = {
+            value = "bar"
             # bump this version when data needs updating
-            write_only_version = 1
+            wo_version = 1
           }
         }
       }
     }
   }
 }
-# tftest files=0 modules=1 resources=4 inventory=versions.yaml skip-tofu
+# tftest files=0 modules=1 resources=4 inventory=versions.yaml
 ```
 
 ```txt
 foo-secret
 # tftest-file id=0 path=test-data/secret-b.txt
 ```
+
+## Secret values
+
+`versions.*.data` is an object that follows the [shape used for secrets across modules](../../adrs/modules/20261029-write-only-secrets.md):
+
+- `value` is the secret itself
+- `path` is the path to a file containing the secret, read via `file(pathexpand(path))` and relative to the root module; the file must exist at every plan
+- `wo_version` switches to the provider's write-only attribute, so that the secret is never stored in state; bump the number whenever the secret changes and needs to be sent again
+
+Only one of `value` and `path` can be set. Without `wo_version` the secret is stored in state, and that form should only be used when this is acceptable. With `wo_version` set, both `value` and `path` can be null once the secret has been applied, since the provider leaves the existing write-only value untouched until the version changes: this allows passing `value = try(file("secret.txt"), null)` and removing the file after the first apply.
 
 ## Secret Rotation
 
@@ -176,7 +182,7 @@ module "secret-manager" {
     }
   }
 }
-# tftest modules=1 resources=1 skip-tofu
+# tftest modules=1 resources=1
 ```
 
 ## Context Interpolations
@@ -231,7 +237,7 @@ module "secret-manager" {
     }
   }
 }
-# tftest modules=1 resources=2 inventory=context.yaml skip-tofu
+# tftest modules=1 resources=2 inventory=context.yaml
 ```
 <!-- BEGIN TFDOC -->
 ## Variables

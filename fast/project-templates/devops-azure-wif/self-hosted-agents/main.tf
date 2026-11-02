@@ -57,9 +57,9 @@ module "secret" {
       }
       versions = {
         "v-${var.agent_config.token.version}" = {
-          data = try(file(var.agent_config.token.file), null)
-          data_config = {
-            write_only_version = var.agent_config.token.version
+          data = {
+            value      = try(file(var.agent_config.token.file), null)
+            wo_version = var.agent_config.token.version
           }
         }
       }

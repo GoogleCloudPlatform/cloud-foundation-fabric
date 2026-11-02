@@ -51,6 +51,7 @@ locals {
         notification_config   = lookup(opts, "notification_config", null)
         prefix = try(coalesce(
           local.data_defaults.overrides.prefix,
+          lookup(opts, "prefix", null),
           try(v.prefix, null),
           local.data_defaults.defaults.prefix
         ), null)
@@ -65,8 +66,8 @@ locals {
         uniform_bucket_level_access = lookup(
           opts, "uniform_bucket_level_access", true
         )
-        versioning = lookup(
-          opts, "versioning", false
+        versioning = coalesce(
+          lookup(opts, "versioning", null), false
         )
         retention_policy        = lookup(opts, "retention_policy", null)
         soft_delete_retention   = lookup(opts, "soft_delete_retention", null)

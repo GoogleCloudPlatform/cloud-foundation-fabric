@@ -1,0 +1,41 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+project_id: $project_ids:net-core-0
+name: managed
+region: $locations:primary
+auto_instance_config:
+  instance_type: e2-standard-2
+  nics:
+    - network: $networks:untrusted
+      subnet: $subnets:untrusted/europe-west1/untrusted-default
+      masquerade: true
+      masquerade_exclude: [10.0.0.0/8]
+      advertise: ["10.128.0.0/9"]
+    - network: $networks:trusted
+      subnet: $subnets:trusted/europe-west1/trusted-default
+      bgp_inbound_deny: ["0.0.0.0/0"]
+instance_groups:
+  b:
+    auto_create_instances: 1
+ncc_ra_config:
+  spokes:
+    - network: $networks:untrusted
+      hub: $ncc_hubs:hub
+    - network: $networks:trusted
+      hub: $ncc_hubs:hub
+bgp_config:
+  asn: 64514
+  keepalive: 3
+  holdtime: 9

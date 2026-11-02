@@ -17,11 +17,15 @@
 output "id" {
   description = "Fully qualified security policy id."
   value = (
-    local.is_global
+    local.is_hierarchical
+    ? google_compute_organization_security_policy.hierarchical[0].id
+    : local.is_global
     ? google_compute_security_policy.global[0].id
     : google_compute_region_security_policy.regional[0].id
   )
   depends_on = [
+    google_compute_organization_security_policy_association.hierarchical,
+    google_compute_organization_security_policy_rule.hierarchical,
     google_compute_security_policy_rule.global,
     google_compute_security_policy_rule.global_default,
     google_compute_region_security_policy_rule.regional,
@@ -33,15 +37,18 @@ output "name" {
   description = "Security policy name."
   value       = var.name
   depends_on = [
+    google_compute_organization_security_policy.hierarchical,
     google_compute_security_policy.global,
     google_compute_region_security_policy.regional
   ]
 }
 
 output "self_link" {
-  description = "Security policy self link."
+  description = "Security policy self link. Null for hierarchical policies."
   value = (
-    local.is_global
+    local.is_hierarchical
+    ? null
+    : local.is_global
     ? google_compute_security_policy.global[0].self_link
     : google_compute_region_security_policy.regional[0].self_link
   )

@@ -76,9 +76,9 @@ module "bucket" {
 # L7 DDoS defense via Adaptive Protection
 
 module "waf" {
-  source     = "../../../modules/net-cloud-armor"
-  project_id = module.project.id
-  name       = "${var.name}-waf"
+  source    = "../../../modules/net-cloud-armor"
+  parent_id = { project_id = module.project.id }
+  name      = "${var.name}-waf"
   adaptive_protection_config = (
     var.adaptive_protection ? { layer_7_ddos_defense = {} } : null
   )
@@ -119,10 +119,10 @@ module "waf" {
 # edge security policy: enforced upstream of the CDN cache for static assets
 
 module "edge" {
-  source     = "../../../modules/net-cloud-armor"
-  project_id = module.project.id
-  name       = "${var.name}-edge"
-  type       = "CLOUD_ARMOR_EDGE"
+  source    = "../../../modules/net-cloud-armor"
+  parent_id = { project_id = module.project.id }
+  name      = "${var.name}-edge"
+  type      = "CLOUD_ARMOR_EDGE"
   rules = local.geo_expression == "" ? {} : {
     geo-allowlist = {
       priority = 500

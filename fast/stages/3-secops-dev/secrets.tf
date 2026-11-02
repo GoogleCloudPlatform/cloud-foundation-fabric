@@ -26,7 +26,9 @@ module "secops-tenant-secrets" {
         labels = { scope = "secops" }
         versions = {
           latest = {
-            data = google_apikeys_key.feed_api_key.key_string
+            data = {
+              value = google_apikeys_key.feed_api_key.key_string
+            }
           }
         }
       }
@@ -39,7 +41,9 @@ module "secops-tenant-secrets" {
         labels = { scope = "secops" }
         versions = {
           latest = {
-            data = google_service_account_key.workspace_integration_key[0].private_key
+            data = {
+              value = google_service_account_key.workspace_integration_key[0].private_key
+            }
           }
         }
       }

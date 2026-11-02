@@ -27,7 +27,7 @@ module "secret-manager" {
         ]
       }
       versions = {
-        v1 = { data = "manual foo bar spam" }
+        v1 = { data = { value = "manual foo bar spam" } }
       }
     }
   }

@@ -58,6 +58,7 @@ FILTERED_ATTRIBUTES = [
     'filename',
     'source_md5hash',
     'pem_certificate',
+    'store',
 ]
 
 HEADER = "".join(open(__file__).readlines()[2:15])

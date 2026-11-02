@@ -26,6 +26,7 @@ To manage organization policies, the `orgpolicy.googleapis.com` service should b
 - [Privileged Access Manager (PAM) Entitlements](#privileged-access-manager-pam-entitlements)
   - [Privileged Access Manager (PAM) Entitlements Factory](#privileged-access-manager-pam-entitlements-factory)
 - [Hierarchical Firewall Policy Attachments](#hierarchical-firewall-policy-attachments)
+- [Hierarchical Cloud Armor Policy Attachments](#hierarchical-cloud-armor-policy-attachments)
 - [Log Sinks](#log-sinks)
   - [Externally Managing IAM for Log Sinks](#externally-managing-iam-for-log-sinks)
 - [Data Access Logs](#data-access-logs)
@@ -40,6 +41,7 @@ To manage organization policies, the `orgpolicy.googleapis.com` service should b
 - [Tags](#tags)
   - [Tags Factory](#tags-factory)
 - [Workforce Identity](#workforce-identity)
+- [Secret values](#secret-values)
 - [IAM Deny Policies](#iam-deny-policies)
 - [Context-Aware Access](#context-aware-access)
 - [Model Armor Floor Settings](#model-armor-floor-settings)
@@ -396,6 +398,47 @@ module "org" {
   }
 }
 # tftest modules=2 resources=2 e2e serial
+```
+
+## Hierarchical Cloud Armor Policy Attachments
+
+Hierarchical Cloud Armor policies can be managed via the [`net-cloud-armor`](../net-cloud-armor/) module. Once a policy is available, attaching it to the organization can be done either in the Cloud Armor policy module itself, or here. Manage each association from one side only.
+
+Organization-level associations can exclude both folders and projects. Projects that inherit a hierarchical Cloud Armor policy are automatically enrolled in Cloud Armor Enterprise, so define exclusions before attaching the policy.
+
+```hcl
+module "cloud-armor" {
+  source              = "./fabric/modules/net-cloud-armor"
+  name                = "org-baseline"
+  parent_id           = { organization_id = var.organization_id }
+  default_rule_config = null
+  rules = {
+    deny-blocked = {
+      priority = 100
+      action   = "deny(403)"
+      match = {
+        src_ip_ranges = ["192.0.2.0/24"]
+      }
+    }
+  }
+  # attachment via the Cloud Armor policy module
+  # attachments = {
+  #   org = { id = var.organization_id }
+  # }
+}
+
+module "org" {
+  source          = "./fabric/modules/organization"
+  organization_id = var.organization_id
+  # attachment via the organization module
+  cloud_armor_policy = {
+    name              = "org-baseline"
+    policy_id         = module.cloud-armor.id
+    excluded_folders  = [var.folder_id]
+    excluded_projects = ["projects/${var.project_number}"]
+  }
+}
+# tftest modules=2 resources=3 inventory=cloud-armor-policy.yaml
 ```
 
 ## Log Sinks
@@ -991,9 +1034,11 @@ module "org" {
           }
           oauth2_client_config = {
             extra_attributes = {
-              issuer_uri      = "https://login.microsoftonline.com/abcdef/v2.0"
-              client_id       = "client-id"
-              client_secret   = "client-secret"
+              issuer_uri = "https://login.microsoftonline.com/abcdef/v2.0"
+              client_id  = "client-id"
+              client_secret = {
+                value = "client-secret"
+              }
               attributes_type = "AZURE_AD_GROUPS_ID"
               query_filter    = "mail:gcp"
             }
@@ -1006,9 +1051,12 @@ module "org" {
           }
           identity_provider = {
             oidc = {
-              issuer_uri    = "https://sts.windows.net/abcd01234/"
-              client_id     = "https://analysis.windows.net/powerbi/connector/GoogleBigQuery"
-              client_secret = "client-secret"
+              issuer_uri = "https://sts.windows.net/abcd01234/"
+              client_id  = "https://analysis.windows.net/powerbi/connector/GoogleBigQuery"
+              client_secret = {
+                value      = "client-secret"
+                wo_version = 1
+              }
               web_sso_config = {
                 response_type             = "CODE"
                 assertion_claims_behavior = "MERGE_USER_INFO_OVER_ID_TOKEN_CLAIMS"
@@ -1017,9 +1065,11 @@ module "org" {
           }
           oauth2_client_config = {
             extra_attributes = {
-              issuer_uri      = "https://login.microsoftonline.com/abcd01234/v2.0"
-              client_id       = "client-id"
-              client_secret   = "client-secret"
+              issuer_uri = "https://login.microsoftonline.com/abcd01234/v2.0"
+              client_id  = "client-id"
+              client_secret = {
+                value = "client-secret"
+              }
               attributes_type = "AZURE_AD_GROUPS_MAIL"
             }
           }
@@ -1039,13 +1089,23 @@ module "org" {
 # tftest inventory=wfif.yaml
 ```
 
+## Secret values
+
+`client_secret` is an object that follows the [shape used for secrets across modules](../../adrs/modules/20261029-write-only-secrets.md):
+
+- `value` is the secret itself
+- `path` is the path to a file containing the secret, read via `file(pathexpand(path))` and relative to the root module; the file must exist at every plan
+- `wo_version` switches to the provider's write-only attribute, so that the secret is never stored in state; bump the number whenever the secret changes and needs to be sent again
+
+Only one of `value` and `path` can be set. Without `wo_version` the secret is stored in state, and that form should only be used when this is acceptable. With `wo_version` set, both `value` and `path` can be null once the secret has been applied, since the provider leaves the existing write-only value untouched until the version changes: this allows passing `value = try(file("secret.txt"), null)` and removing the file after the first apply.
+
 ## IAM Deny Policies
 
 [IAM Deny policies](https://cloud.google.com/iam/docs/deny-overview) allow you to set centralized guardrails that prevent principals from using specific permissions, regardless of the roles they have been granted.
 
 You can define Deny policies using the `iam_deny_policies` variable. Each policy requires you to specify the principals and permissions to deny, and optionally allows you to define exception principals, exception permissions, and conditions.
 
-Note that IAM Deny policies require a specific prefix for principal definitions (e.g., `principalSet://goog/public:all` or `principalSet://goog/group/group-email@example.com`).
+Note that IAM Deny policies require a specific prefix for principal definitions (e.g., `principalSet://goog/public:all` or `principalSet://goog/group/group-email@example.com`), and permissions must be prefixed with the service fully qualified domain name (e.g., `iam.googleapis.com/serviceAccountKeys.create`). The module automatically leverages context interpolation for principal formatting if they are defined in your `var.context.iam_principals` mapping.
 
 ```hcl
 module "organization" {
@@ -1165,7 +1225,7 @@ module "org" {
 | [iam.tf](./iam.tf) | IAM bindings. | <code>google_organization_iam_binding</code> · <code>google_organization_iam_custom_role</code> · <code>google_organization_iam_member</code> |
 | [identity-providers.tf](./identity-providers.tf) | Workforce Identity Federation provider definitions. | <code>google_iam_workforce_pool</code> · <code>google_iam_workforce_pool_provider</code> · <code>google_iam_workforce_pool_provider_scim_tenant</code> |
 | [logging.tf](./logging.tf) | Log sinks and data access logs. | <code>google_bigquery_dataset_iam_member</code> · <code>google_logging_organization_exclusion</code> · <code>google_logging_organization_settings</code> · <code>google_logging_organization_sink</code> · <code>google_organization_iam_audit_config</code> · <code>google_project_iam_member</code> · <code>google_pubsub_topic_iam_member</code> · <code>google_storage_bucket_iam_member</code> |
-| [main.tf](./main.tf) | Module-level locals and resources. | <code>google_compute_firewall_policy_association</code> · <code>google_essential_contacts_contact</code> |
+| [main.tf](./main.tf) | Module-level locals and resources. | <code>google_compute_firewall_policy_association</code> · <code>google_compute_organization_security_policy_association</code> · <code>google_essential_contacts_contact</code> |
 | [model-armor.tf](./model-armor.tf) | Model Armor floor setting. | <code>google_model_armor_floorsetting</code> |
 | [org-policy-custom-constraints.tf](./org-policy-custom-constraints.tf) | None | <code>google_org_policy_custom_constraint</code> |
 | [organization-policies.tf](./organization-policies.tf) | Organization-level organization policies. | <code>google_org_policy_policy</code> |
@@ -1189,17 +1249,18 @@ module "org" {
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [organization_id](variables.tf#L317) | Organization id in organizations/nnnnnn format. | <code>string</code> | ✓ |  |
+| [organization_id](variables.tf#L331) | Organization id in organizations/nnnnnn format. | <code>string</code> | ✓ |  |
 | [access_levels](variables.tf#L18) | Access level definitions. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [access_policy](variables.tf#L118) | Access Policy name or ID, required if creating access levels. | <code>string</code> |  | <code>null</code> |
 | [asset_feeds](variables.tf#L124) | Cloud Asset Inventory feeds. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [asset_search](variables.tf#L157) | Cloud Asset Inventory search configurations. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [contacts](variables.tf#L167) | List of essential contacts for this resource. Must be in the form EMAIL -> [NOTIFICATION_TYPES]. Valid notification types are ALL, SUSPENSION, SECURITY, TECHNICAL, BILLING, LEGAL, PRODUCT_UPDATES. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [context](variables.tf#L185) | Context-specific interpolations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [context_aware_access_bindings](variables.tf#L211) | GCP User Access Bindings for securing Console and APIs. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [custom_roles](variables.tf#L229) | Map of role name => role attributes to create in this organization. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [factories_config](variables.tf#L250) | Paths to data files and folders that enable factory functionality. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [firewall_policy](variables.tf#L266) | Hierarchical firewall policies to associate to the organization. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [cloud_armor_policy](variables.tf#L167) | Hierarchical Cloud Armor policy to associate to the organization, excluded folders and projects use the `folders/nnn` and `projects/nnn` (project number) formats, or `$folder_ids:` and `$project_numbers:` context references. The association name defaults to `organization-<id>`. The policy id accepts `$security_policies:` context references. Manage each association either here or via the `attachments` variable of the `net-cloud-armor` module, not both. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [contacts](variables.tf#L178) | List of essential contacts for this resource. Must be in the form EMAIL -> [NOTIFICATION_TYPES]. Valid notification types are ALL, SUSPENSION, SECURITY, TECHNICAL, BILLING, LEGAL, PRODUCT_UPDATES. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [context](variables.tf#L196) | Context-specific interpolations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [context_aware_access_bindings](variables.tf#L225) | GCP User Access Bindings for securing Console and APIs. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [custom_roles](variables.tf#L243) | Map of role name => role attributes to create in this organization. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [factories_config](variables.tf#L264) | Paths to data files and folders that enable factory functionality. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [firewall_policy](variables.tf#L280) | Hierarchical firewall policies to associate to the organization. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [iam](variables-iam.tf#L17) | Authoritative IAM bindings in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam_bindings](variables-iam.tf#L24) | Authoritative IAM bindings in {KEY => {role = ROLE, members = [], condition = {}}}. Keys are arbitrary. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam_bindings_additive](variables-iam.tf#L39) | Individual additive IAM bindings. Keys are arbitrary. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
@@ -1213,12 +1274,12 @@ module "org" {
 | [logging_sinks](variables-logging.tf#L45) | Logging sinks to create for the organization. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [model_armor_floor_setting](variables-model-armor.tf#L17) | Model Armor floor setting for this resource. Removing it does not reset the floor setting in GCP. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [network_tags](variables-tags.tf#L17) | Network tags by key name. If `id` is provided, key creation is skipped. The `iam` attribute behaves like the similarly named one at module level. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [org_policies](variables.tf#L275) | Organization policies applied to this organization keyed by policy name. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [org_policy_custom_constraints](variables.tf#L303) | Organization policy custom constraints keyed by constraint name. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [org_policies](variables.tf#L289) | Organization policies applied to this organization keyed by policy name. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [org_policy_custom_constraints](variables.tf#L317) | Organization policy custom constraints keyed by constraint name. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [pam_entitlements](variables-pam.tf#L17) | Privileged Access Manager entitlements for this resource, keyed by entitlement ID. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [scc_mute_configs](variables-scc.tf#L17) | SCC mute configurations keyed by name. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [scc_sha_custom_modules](variables-scc.tf#L28) | SCC custom modules keyed by module name. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [service_agents_config](variables.tf#L326) | Service agents configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [service_agents_config](variables.tf#L340) | Service agents configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [tag_bindings](variables-tags.tf#L89) | Tag bindings for this organization, in key => tag value id format. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 | [tags](variables-tags.tf#L96) | Tags by key name. If `id` is provided, key or value creation is skipped. The `iam` attribute behaves like the similarly named one at module level. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [tags_config](variables-tags.tf#L171) | Fine-grained control on tag resource and IAM creation. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |

@@ -76,6 +76,18 @@ values:
     timeouts: null
     user_id: user2
     user_type: ALLOYDB_BUILT_IN
+  module.alloydb.google_alloydb_user.users["iam_user1"]:
+    database_roles:
+    - alloydbsuperuser
+    timeouts: null
+    user_id: iam_user1
+    user_type: ALLOYDB_IAM_USER
+  module.alloydb.google_alloydb_user.users["iam_group1"]:
+    database_roles:
+    - alloydbsuperuser
+    timeouts: null
+    user_id: iam_group1
+    user_type: ALLOYDB_IAM_GROUP
   module.alloydb.random_password.passwords["user1"]:
     keepers: null
     length: 16
@@ -93,9 +105,9 @@ values:
 counts:
   google_alloydb_cluster: 1
   google_alloydb_instance: 1
-  google_alloydb_user: 2
+  google_alloydb_user: 4
   modules: 1
   random_password: 1
-  resources: 5
+  resources: 7
 
 outputs: {}

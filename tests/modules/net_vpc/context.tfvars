@@ -48,6 +48,19 @@ internal_ranges = [
   }
 ]
 project_id = "$project_ids:test"
+policy_based_routes = {
+  pbr-test = {
+    next_hop_ilb_ip = "$addresses:test"
+    filter = {
+      ip_protocol = "TCP"
+      dest_range  = "$cidr_ranges:test"
+      src_range   = "$cidr_ranges:rfc1918-10"
+    }
+    target = {
+      interconnect_attachment = "$locations:ew8"
+    }
+  }
+}
 routes = {
   next-hop = {
     description   = "Route to internal range."

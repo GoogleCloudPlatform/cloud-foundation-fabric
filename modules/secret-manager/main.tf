@@ -42,6 +42,11 @@ locals {
         secret   = k
         version  = sk
         location = v.location
+        data_value = (
+          sv.data.path == null
+          ? sv.data.value
+          : file(pathexpand(sv.data.path))
+        )
       })
     ]
   ])

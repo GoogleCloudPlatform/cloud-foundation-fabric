@@ -16,6 +16,9 @@ context = {
   }
 }
 addresses = ["$addresses:test"]
+config_port_allocation = {
+  enable_endpoint_independent_mapping = false
+}
 config_source_subnetworks = {
   all = false
   subnetworks = [{
@@ -26,3 +29,12 @@ name           = "test"
 project_id     = "$project_ids:test"
 region         = "$locations:ew8"
 router_network = "$networks:test"
+rules = [
+  {
+    description   = "rule1"
+    match         = "destination.ip == '8.8.8.8'"
+    rule_number   = 100
+    source_ips    = ["$addresses:test"]
+    source_ranges = ["$subnets:test"]
+  }
+]

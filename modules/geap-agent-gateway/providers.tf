@@ -17,7 +17,3 @@
 provider "google" {
   network_services_custom_endpoint = "https://networkservices.googleapis.com/v1alpha1/"
 }
-
-provider "google-beta" {
-  network_services_custom_endpoint = "https://networkservices.googleapis.com/v1alpha1/"
-}

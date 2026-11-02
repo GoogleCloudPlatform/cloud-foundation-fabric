@@ -98,7 +98,8 @@ locals {
       local._of.local_path == null ? null : pathexpand(local._of.local_path)
     )
     template = pathexpand(try(
-      local._of_p.providers_template_path, "assets/providers.tf.tpl"
+      local.defaults.output_files.providers_template_path,
+      "assets/providers.tf.tpl"
     ))
   }
   # filter provider definitions based on bucket and service account existence

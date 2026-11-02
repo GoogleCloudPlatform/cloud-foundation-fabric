@@ -79,11 +79,13 @@ resource "google_compute_router_nat" "nat" {
   tcp_time_wait_timeout_sec          = var.config_timeouts.tcp_time_wait
   tcp_transitory_idle_timeout_sec    = var.config_timeouts.tcp_transitory
   udp_idle_timeout_sec               = var.config_timeouts.udp
-  enable_endpoint_independent_mapping = (
-    var.config_port_allocation.enable_endpoint_independent_mapping
+  enable_endpoint_independent_mapping = coalesce(
+    var.config_port_allocation.enable_endpoint_independent_mapping,
+    var.type != "PRIVATE"
   )
-  enable_dynamic_port_allocation = (
-    var.config_port_allocation.enable_dynamic_port_allocation
+  enable_dynamic_port_allocation = coalesce(
+    var.config_port_allocation.enable_dynamic_port_allocation,
+    var.type == "PRIVATE"
   )
   log_config {
     enable = var.logging_filter == null ? false : true
@@ -130,14 +132,22 @@ resource "google_compute_router_nat" "nat" {
     }
   }
   dynamic "rules" {
-    for_each = { for i, r in var.rules : i => r }
+    for_each = { for i, r in var.rules : coalesce(r.rule_number, i) => r }
     content {
       rule_number = rules.key
       description = rules.value.description
       match       = rules.value.match
       action {
-        source_nat_active_ips    = rules.value.source_ips
-        source_nat_active_ranges = rules.value.source_ranges
+        source_nat_active_ips = (
+          rules.value.source_ips == null ? null : [
+            for v in rules.value.source_ips : lookup(local.ctx.addresses, v, v)
+          ]
+        )
+        source_nat_active_ranges = (
+          rules.value.source_ranges == null ? null : [
+            for v in rules.value.source_ranges : lookup(local.ctx.subnets, v, v)
+          ]
+        )
       }
     }
   }

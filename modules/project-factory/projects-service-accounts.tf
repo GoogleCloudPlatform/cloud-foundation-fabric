@@ -97,6 +97,7 @@ module "service-accounts" {
       projects     = merge(try(local.ctx.tag_vars.projects, {}), local.tag_vars_projects)
       organization = try(local.ctx.tag_vars.organization, {})
     }
+    folder_ids  = local.ctx_folder_ids
     project_ids = local.ctx_project_ids
     tag_values  = local.ctx_tag_values
   })

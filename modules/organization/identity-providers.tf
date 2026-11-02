@@ -41,6 +41,34 @@ locals {
       for pk, pv in v.providers : "${k}/${pk}" => merge(pv, {
         provider_id = pk
         pool        = k
+        secrets = {
+          for sk, sv in {
+            oidc = (
+              pv.identity_provider.oidc == null
+              ? null
+              : pv.identity_provider.oidc.client_secret
+            )
+            extra = (
+              try(pv.oauth2_client_config.extra_attributes, null) == null
+              ? null
+              : pv.oauth2_client_config.extra_attributes.client_secret
+            )
+            extended = (
+              try(pv.oauth2_client_config.extended_attributes, null) == null
+              ? null
+              : pv.oauth2_client_config.extended_attributes.client_secret
+            )
+            } : sk => (
+            sv == null
+            ? null
+            : {
+              value = (
+                sv.path == null ? sv.value : file(pathexpand(sv.path))
+              )
+              wo_version = sv.wo_version
+            }
+          )
+        }
       })
     }
   ]...)
@@ -107,12 +135,20 @@ resource "google_iam_workforce_pool_provider" "default" {
       client_id  = each.value.identity_provider.oidc.client_id
       jwks_json  = each.value.identity_provider.oidc.jwks_json
       dynamic "client_secret" {
-        for_each = (
-          each.value.identity_provider.oidc.client_secret == null ? [] : [""]
-        )
+        for_each = each.value.secrets.oidc == null ? [] : [""]
         content {
           value {
-            plain_text = each.value.identity_provider.oidc.client_secret
+            plain_text = (
+              each.value.secrets.oidc.wo_version == null
+              ? each.value.secrets.oidc.value
+              : null
+            )
+            plain_text_wo = (
+              each.value.secrets.oidc.wo_version == null
+              ? null
+              : each.value.secrets.oidc.value
+            )
+            plain_text_wo_version = each.value.secrets.oidc.wo_version
           }
         }
       }
@@ -149,12 +185,20 @@ resource "google_iam_workforce_pool_provider" "default" {
         each.value.oauth2_client_config.extra_attributes.attributes_type
       )
       dynamic "client_secret" {
-        for_each = (
-          each.value.oauth2_client_config.extra_attributes.client_secret == null ? [] : [""]
-        )
+        for_each = each.value.secrets.extra == null ? [] : [""]
         content {
           value {
-            plain_text = each.value.oauth2_client_config.extra_attributes.client_secret
+            plain_text = (
+              each.value.secrets.extra.wo_version == null
+              ? each.value.secrets.extra.value
+              : null
+            )
+            plain_text_wo = (
+              each.value.secrets.extra.wo_version == null
+              ? null
+              : each.value.secrets.extra.value
+            )
+            plain_text_wo_version = each.value.secrets.extra.wo_version
           }
         }
       }
@@ -183,12 +227,20 @@ resource "google_iam_workforce_pool_provider" "default" {
         each.value.oauth2_client_config.extended_attributes.attributes_type
       )
       dynamic "client_secret" {
-        for_each = (
-          each.value.oauth2_client_config.extended_attributes.client_secret == null ? [] : [""]
-        )
+        for_each = each.value.secrets.extended == null ? [] : [""]
         content {
           value {
-            plain_text = each.value.oauth2_client_config.extended_attributes.client_secret
+            plain_text = (
+              each.value.secrets.extended.wo_version == null
+              ? each.value.secrets.extended.value
+              : null
+            )
+            plain_text_wo = (
+              each.value.secrets.extended.wo_version == null
+              ? null
+              : each.value.secrets.extended.value
+            )
+            plain_text_wo_version = each.value.secrets.extended.wo_version
           }
         }
       }

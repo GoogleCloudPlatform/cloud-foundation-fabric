@@ -17,6 +17,8 @@
 variable "context" {
   description = "Context-specific interpolations."
   type = object({
+    addresses               = optional(map(string), {})
+    cidr_ranges             = optional(map(string), {})
     cidr_ranges_sets        = optional(map(list(string)), {})
     custom_roles            = optional(map(string), {})
     email_addresses         = optional(map(string), {})

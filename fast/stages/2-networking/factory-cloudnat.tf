@@ -33,6 +33,7 @@ locals {
           region                    = try(nat_config.region, null)
           router_asn                = try(nat_config.router_asn, null)
           router_create             = try(nat_config.router_create, true)
+          router_name               = try(nat_config.router_name, null)
           router_network            = module.vpc-factory.vpcs[vpc_key].id
           rules                     = try(nat_config.rules, [])
           type                      = try(nat_config.type, "PUBLIC")
@@ -69,6 +70,7 @@ module "nat" {
   region                    = each.value.region
   router_asn                = each.value.router_asn
   router_create             = each.value.router_create
+  router_name               = each.value.router_name
   router_network            = each.value.router_network
   rules                     = each.value.rules
   type                      = each.value.type

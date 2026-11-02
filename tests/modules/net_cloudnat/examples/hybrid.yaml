@@ -39,7 +39,7 @@ values:
             source_nat_drain_ranges: []
         description: private nat
         match: nexthop.is_hybrid
-        rule_number: 0
+        rule_number: 100
     source_subnetwork_ip_ranges_to_nat: LIST_OF_SUBNETWORKS
     subnetwork:
       - secondary_ip_range_names: []

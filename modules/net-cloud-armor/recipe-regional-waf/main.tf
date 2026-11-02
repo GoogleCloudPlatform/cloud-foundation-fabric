@@ -94,11 +94,11 @@ module "cloud-run" {
 # and internal Application Load Balancers
 
 module "waf" {
-  source     = "../../../modules/net-cloud-armor"
-  project_id = module.project.id
-  region     = var.region
-  name       = "${var.name}-waf"
-  rules      = merge(local.trusted_rules, local.waf_rules)
+  source    = "../../../modules/net-cloud-armor"
+  parent_id = { project_id = module.project.id }
+  region    = var.region
+  name      = "${var.name}-waf"
+  rules     = merge(local.trusted_rules, local.waf_rules)
 }
 
 module "ralb" {

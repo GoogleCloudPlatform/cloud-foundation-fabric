@@ -16,6 +16,20 @@
 
 # tfdoc:file:description IAM Deny policies.
 
+locals {
+  _ctx_deny_principals = {
+    for k, v in local.ctx.iam_principals : k => (
+      startswith(v, "user:")
+      ? "principal://goog/subject/${trimprefix(v, "user:")}"
+      : startswith(v, "group:")
+      ? "principalSet://goog/group/${trimprefix(v, "group:")}"
+      : startswith(v, "serviceAccount:")
+      ? "principal://iam.googleapis.com/projects/-/serviceAccounts/${trimprefix(v, "serviceAccount:")}"
+      : v
+    )
+  }
+}
+
 resource "google_iam_deny_policy" "default" {
   for_each     = var.iam_deny_policies
   parent       = urlencode("cloudresourcemanager.googleapis.com/organizations/${local.organization_id_numeric}")
@@ -28,7 +42,7 @@ resource "google_iam_deny_policy" "default" {
       description = rule.value.description
       deny_rule {
         denied_principals = [
-          for p in rule.value.denied_principals : lookup(local.ctx.iam_principals, p, p)
+          for p in rule.value.denied_principals : lookup(local._ctx_deny_principals, p, p)
         ]
         dynamic "denial_condition" {
           for_each = rule.value.denial_condition == null ? [] : [""]
@@ -43,7 +57,7 @@ resource "google_iam_deny_policy" "default" {
         }
         denied_permissions = rule.value.denied_permissions
         exception_principals = [
-          for p in rule.value.exception_principals : lookup(local.ctx.iam_principals, p, p)
+          for p in rule.value.exception_principals : lookup(local._ctx_deny_principals, p, p)
         ]
         exception_permissions = rule.value.exception_permissions
       }

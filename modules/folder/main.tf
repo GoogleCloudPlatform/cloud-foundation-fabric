@@ -89,6 +89,26 @@ resource "google_compute_firewall_policy_association" "default" {
   firewall_policy   = var.firewall_policy.policy
 }
 
+resource "google_compute_organization_security_policy_association" "default" {
+  count = var.cloud_armor_policy == null ? 0 : 1
+  name = coalesce(
+    var.cloud_armor_policy.name,
+    "folder-${trimprefix(local.folder_id, "folders/")}"
+  )
+  attachment_id = local.folder_id
+  policy_id = lookup(
+    local.ctx.security_policies,
+    var.cloud_armor_policy.policy_id,
+    var.cloud_armor_policy.policy_id
+  )
+  excluded_folders = var.cloud_armor_policy.excluded_folders
+  excluded_projects = [
+    for p in var.cloud_armor_policy.excluded_projects : try(
+      "projects/${local.ctx.project_numbers[p]}", p
+    )
+  ]
+}
+
 resource "google_assured_workloads_workload" "folder" {
   count                        = (var.assured_workload_config != null && var.folder_create) ? 1 : 0
   compliance_regime            = var.assured_workload_config.compliance_regime

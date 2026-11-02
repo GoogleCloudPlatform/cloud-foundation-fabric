@@ -147,8 +147,14 @@ resource "google_network_connectivity_policy_based_route" "default" {
   filter {
     protocol_version = "IPV4"
     ip_protocol      = each.value.filter.ip_protocol
-    dest_range       = each.value.filter.dest_range
-    src_range        = each.value.filter.src_range
+    dest_range = try(
+      local.ctx.cidr_ranges[each.value.filter.dest_range],
+      each.value.filter.dest_range
+    )
+    src_range = try(
+      local.ctx.cidr_ranges[each.value.filter.src_range],
+      each.value.filter.src_range
+    )
   }
   dynamic "virtual_machine" {
     for_each = each.value.target.tags != null ? [""] : []
@@ -159,7 +165,11 @@ resource "google_network_connectivity_policy_based_route" "default" {
   dynamic "interconnect_attachment" {
     for_each = each.value.target.interconnect_attachment != null ? [""] : []
     content {
-      region = each.value.target.interconnect_attachment
+      region = lookup(
+        local.ctx.locations,
+        each.value.target.interconnect_attachment,
+        each.value.target.interconnect_attachment
+      )
     }
   }
 }

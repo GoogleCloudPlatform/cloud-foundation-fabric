@@ -279,7 +279,11 @@
   <br>*additional properties: false*
   - ⁺**issuer_uri**: *string*
   - ⁺**client_id**: *string*
-  - ⁺**client_secret**: *string*
+  - ⁺**client_secret**: *object*
+    <br>*additional properties: false*
+    - **value**: *string*
+    - **path**: *string*
+    - **wo_version**: *number*
   - **attributes_type**: *string*
     <br>*enum: ['AZURE_AD_GROUPS_MAIL', 'AZURE_AD_GROUPS_ID']*
   - **query_filter**: *string*

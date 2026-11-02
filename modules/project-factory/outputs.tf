@@ -16,10 +16,12 @@
 
 locals {
   _outputs_automation_buckets = {
-    for k, v in local.automation_buckets : v.parent_name => k
+    for k, v in local.automation_buckets :
+    v.parent_name => k if v.parent_type == "project"
   }
   _outputs_automation_sas = {
-    for k, v in local.automation_sas : v.prefix => k...
+    for k, v in local.automation_sas :
+    v.parent => k... if v.parent_type == "project"
   }
   outputs_projects = {
     for k, v in local.projects_input : k => {
