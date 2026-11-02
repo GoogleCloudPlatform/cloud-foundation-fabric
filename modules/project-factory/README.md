@@ -678,6 +678,8 @@ labels:
  app: app-0
  team: team-a
 parent: $folder_ids:team-a/app-0
+cloud_armor_policy:
+  policy_id: $security_policies:teams-baseline
 dns_threat_detector:
   enabled: true
 iam_by_principals:
