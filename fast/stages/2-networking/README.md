@@ -598,11 +598,12 @@ Internally created resources are mapped to context namespaces, and use specific 
 
 | name | description | sensitive |
 |---|---|:---:|
-| [host_project_ids](outputs.tf#L73) | Project IDs. |  |
-| [host_project_numbers](outputs.tf#L78) | Project numbers. |  |
-| [subnet_ips](outputs.tf#L83) | Subnet IP ranges. |  |
-| [subnet_proxy_only_self_links](outputs.tf#L88) | Subnet proxy-only self-links. |  |
-| [subnet_psc_self_links](outputs.tf#L93) | Subnet PSC self-links. |  |
-| [subnet_self_links](outputs.tf#L98) | Subnet self-links. |  |
-| [vpc_self_links](outputs.tf#L103) | VPC self-links. |  |
+| [host_project_ids](outputs.tf#L76) | Project IDs. |  |
+| [host_project_numbers](outputs.tf#L81) | Project numbers. |  |
+| [security_policies](outputs.tf#L86) | Hierarchical security policy ids. |  |
+| [subnet_ips](outputs.tf#L91) | Subnet IP ranges. |  |
+| [subnet_proxy_only_self_links](outputs.tf#L96) | Subnet proxy-only self-links. |  |
+| [subnet_psc_self_links](outputs.tf#L101) | Subnet PSC self-links. |  |
+| [subnet_self_links](outputs.tf#L106) | Subnet self-links. |  |
+| [vpc_self_links](outputs.tf#L111) | VPC self-links. |  |
 <!-- END TFDOC -->

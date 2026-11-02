@@ -46,6 +46,9 @@ locals {
     kms_keys = {
       for k in local._o_kms_keys : k.key => k.id
     }
+    security_security_policies = {
+      for k, v in module.security-policies : k => v.id
+    }
   }
 }
 
@@ -102,6 +105,11 @@ output "ca_pools" {
 output "kms_keys_ids" {
   description = "KMS keys IDs."
   value       = local.tfvars.kms_keys
+}
+
+output "security_policies" {
+  description = "Hierarchical security policy ids."
+  value       = local.tfvars.security_security_policies
 }
 
 output "tfvars" {

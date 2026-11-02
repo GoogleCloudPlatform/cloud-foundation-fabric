@@ -209,8 +209,9 @@ A reference Certificate Authority Services (CAS) is also part of this stage, all
 
 | name | description | sensitive | consumers |
 |---|---|:---:|---|
-| [ca_ids](outputs.tf#L92) | Certificate Authority Service CA IDs. |  |  |
-| [ca_pools](outputs.tf#L97) | Certificate Authority Service pool IDs. |  |  |
-| [kms_keys_ids](outputs.tf#L102) | KMS keys IDs. |  |  |
-| [tfvars](outputs.tf#L107) | Terraform variable files for the following stages. | ✓ |  |
+| [ca_ids](outputs.tf#L95) | Certificate Authority Service CA IDs. |  |  |
+| [ca_pools](outputs.tf#L100) | Certificate Authority Service pool IDs. |  |  |
+| [kms_keys_ids](outputs.tf#L105) | KMS keys IDs. |  |  |
+| [security_policies](outputs.tf#L110) | Hierarchical security policy ids. |  |  |
+| [tfvars](outputs.tf#L115) | Terraform variable files for the following stages. | ✓ |  |
 <!-- END TFDOC -->
