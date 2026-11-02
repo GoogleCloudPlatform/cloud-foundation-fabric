@@ -20,6 +20,7 @@ The following diagram illustrates the high-level design of resources implemented
 - [Design overview and choices](#design-overview-and-choices)
   - [Cloud KMS](#cloud-kms)
   - [Certificate Authority Service (CAS)](#certificate-authority-service-cas)
+  - [Hierarchical Security Policies](#hierarchical-security-policies)
 - [Files](#files)
 - [Variables](#variables)
 - [Outputs](#outputs)
@@ -168,6 +169,41 @@ IAM roles on keys can be configured at the logical level for all locations where
 ### Certificate Authority Service (CAS)
 
 A reference Certificate Authority Services (CAS) is also part of this stage, allowing creation of any number of CA pools and authorities. To create custom CAS, the relevant factory variable needs to be configured first as explained above.
+
+### Hierarchical Security Policies
+
+Hierarchical Cloud Armor policies are defined in the `security-policies` directory, one YAML file per policy, and managed via the [`net-cloud-armor`](../../../modules/net-cloud-armor/) module. The networking and security stages share the same factory, so each stage can manage its own policies.
+
+```yaml
+# yaml-language-server: $schema=../../../schemas/security-policy.schema.json
+
+parent_id:
+  organization_id: $folder_ids:organization
+attachments:
+  organization:
+    id: $folder_ids:organization
+    excluded_folders:
+      - $folder_ids:sandbox
+rules:
+  trusted:
+    priority: 10
+    action: goto_next
+    match:
+      src_ip_ranges:
+        - $cidr_ranges_sets:trusted
+  deny-blocked:
+    priority: 100
+    action: deny(403)
+    match:
+      src_ip_ranges:
+        - $cidr_ranges_sets:blocked
+```
+
+- Policies are owned by the organization or a folder, and attached to the organization, folders or projects via `attachments`.
+- Folder ids, project ids and numbers, and CIDR ranges in rules, attachments and exclusions can use context references (`$folder_ids:`, `$project_ids:`, `$project_numbers:`, `$cidr_ranges:`, `$cidr_ranges_sets:`).
+- Each node in the hierarchy can only have one Cloud Armor policy attached, so the networking and security stages cannot attach policies to the same node. Policy names must be unique in the organization.
+- Projects under an attached policy are automatically enrolled in Cloud Armor Enterprise, which is billed per project. The shipped datasets contain no policies, and exclusions should be defined before a policy is attached.
+- Policy ids are passed to the following stages, where the project factory can attach them to folders via `$security_policies:` references.
 
 <!-- TFDOC OPTS files:1 show_extra:1 exclude:2-security-providers.tf -->
 <!-- BEGIN TFDOC -->

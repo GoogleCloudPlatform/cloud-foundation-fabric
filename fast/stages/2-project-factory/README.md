@@ -39,6 +39,7 @@ The project factory optionally "consumes" resources created by preceding stages,
 - IAM principals from the bootstrap stage and via `var.context.iam_principals`
 - tag values from the bootstrap stage and via `var.context.tag_values`
 - KMS keys from the security stage and via `var.context.kms_keys`
+- hierarchical security policies from the networking and security stages and via `var.context.security_policies`
 - VPC SC perimeters from the VPC SC stage and via `var.context.vpc_sc_perimeters`
 
 Additionally, some of the values defined earlier in the FAST apply cycle are set here as project defaults or overrides:
