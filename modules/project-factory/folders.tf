@@ -99,7 +99,9 @@ module "folder-1-iam" {
     if contains(["pam_entitlements", "org_policies"], k)
   }
   autokey_config                = lookup(each.value, "autokey_config", null)
+  cloud_armor_policy            = lookup(each.value, "cloud_armor_policy", null)
   contacts                      = lookup(each.value, "contacts", {})
+  firewall_policy               = lookup(each.value, "firewall_policy", null)
   iam                           = lookup(each.value, "iam", {})
   iam_bindings                  = lookup(each.value, "iam_bindings", {})
   iam_bindings_additive         = lookup(each.value, "iam_bindings_additive", {})
@@ -181,7 +183,9 @@ module "folder-2-iam" {
     if contains(["pam_entitlements", "org_policies"], k)
   }
   autokey_config                = lookup(each.value, "autokey_config", null)
+  cloud_armor_policy            = lookup(each.value, "cloud_armor_policy", null)
   contacts                      = lookup(each.value, "contacts", {})
+  firewall_policy               = lookup(each.value, "firewall_policy", null)
   iam                           = lookup(each.value, "iam", {})
   iam_bindings                  = lookup(each.value, "iam_bindings", {})
   iam_bindings_additive         = lookup(each.value, "iam_bindings_additive", {})
@@ -266,7 +270,9 @@ module "folder-3-iam" {
     if contains(["pam_entitlements", "org_policies"], k)
   }
   autokey_config                = lookup(each.value, "autokey_config", null)
+  cloud_armor_policy            = lookup(each.value, "cloud_armor_policy", null)
   contacts                      = lookup(each.value, "contacts", {})
+  firewall_policy               = lookup(each.value, "firewall_policy", null)
   iam                           = lookup(each.value, "iam", {})
   iam_bindings                  = lookup(each.value, "iam_bindings", {})
   iam_bindings_additive         = lookup(each.value, "iam_bindings_additive", {})
@@ -351,7 +357,9 @@ module "folder-4-iam" {
     if contains(["pam_entitlements", "org_policies"], k)
   }
   autokey_config                = lookup(each.value, "autokey_config", null)
+  cloud_armor_policy            = lookup(each.value, "cloud_armor_policy", null)
   contacts                      = lookup(each.value, "contacts", {})
+  firewall_policy               = lookup(each.value, "firewall_policy", null)
   iam                           = lookup(each.value, "iam", {})
   iam_bindings                  = lookup(each.value, "iam_bindings", {})
   iam_bindings_additive         = lookup(each.value, "iam_bindings_additive", {})

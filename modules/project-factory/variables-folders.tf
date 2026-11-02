@@ -224,6 +224,12 @@ variable "folders" {
         tag_bindings      = optional(map(string), {})
       })), {})
     }))
+    cloud_armor_policy = optional(object({
+      name              = optional(string)
+      policy_id         = string
+      excluded_folders  = optional(list(string), [])
+      excluded_projects = optional(list(string), [])
+    }))
     contacts            = optional(map(list(string)), {})
     id                  = optional(string)
     name                = optional(string)

@@ -71,6 +71,12 @@
     <br>*pattern: ^(projects/|\$project_ids:|\$project_numbers:)*
 - **billing_budgets**: *array*
   - items: *string*
+- **cloud_armor_policy**: *object*
+  <br>*additional properties: false*
+  - **name**: *string*
+  - ⁺**policy_id**: *string*
+  - **excluded_projects**: *array*
+    - items: *string*
 - **contacts**: *object*
   <br>*additional properties: false*
   - **`^(\S+@\S+\.\S+|\$email_addresses:\S+)$`**: *array*

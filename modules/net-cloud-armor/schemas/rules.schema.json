@@ -24,7 +24,7 @@
         },
         "action": {
           "type": "string",
-          "pattern": "^(allow|deny|deny\\((403|404|502)\\)|throttle|rate_based_ban|redirect)$"
+          "pattern": "^(allow|deny|deny\\((403|404|502)\\)|goto_next|throttle|rate_based_ban|redirect)$"
         },
         "description": {
           "type": "string"

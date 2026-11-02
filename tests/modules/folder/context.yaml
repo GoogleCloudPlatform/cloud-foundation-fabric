@@ -24,6 +24,13 @@ values:
     - pubsub_destination:
       - topic: projects/test-prod-audit-logs-0/topics/audit-logs
     timeouts: null
+  google_compute_organization_security_policy_association.default[0]:
+    excluded_folders: []
+    excluded_projects:
+    - projects/1234567890
+    - projects/3333333333
+    policy_id: locations/global/securityPolicies/1234567890
+    timeouts: null
   google_essential_contacts_contact.contact["$email_addresses:default"]:
     email: foo@example.com
     language_tag: en
@@ -177,6 +184,7 @@ values:
 
 counts:
   google_cloud_asset_folder_feed: 1
+  google_compute_organization_security_policy_association: 1
   google_essential_contacts_contact: 1
   google_folder: 1
   google_folder_iam_audit_config: 1
@@ -189,7 +197,7 @@ counts:
   google_pubsub_topic_iam_member: 1
   google_tags_tag_binding: 3
   modules: 0
-  resources: 20
+  resources: 21
 
 outputs:
   asset_search_results: {}
