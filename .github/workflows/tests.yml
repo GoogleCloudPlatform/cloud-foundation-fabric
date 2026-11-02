@@ -35,7 +35,7 @@ on:
 env:
   GOOGLE_APPLICATION_CREDENTIALS: "/home/runner/credentials.json"
   PYTEST_ADDOPTS: "--color=yes"
-  PYTHON_VERSION: "3.10"
+  PYTHON_VERSION: "3.13"
   TF_PLUGIN_CACHE_DIR: "/home/runner/.terraform.d/plugin-cache"
   TFTEST_COPY: 1
   DEFAULT_TERRAFORM_FLAVOUR: terraform

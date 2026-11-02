@@ -39,7 +39,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
         with:
-          python-version: "3.10"
+          python-version: "3.13"
           cache: 'pip'
           cache-dependency-path: 'tools/requirements.txt'
 
@@ -51,7 +51,7 @@ jobs:
       - uses: terraform-linters/setup-tflint@6ffdbaa3be476b3431f7275c26966ef32ff60337 # v6.3.2
         name: Setup TFLint
         with:
-          tflint_version: v0.59.1
+          tflint_version: v0.65.0
 
       - name: Init TFLint
         run: |
