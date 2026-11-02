@@ -8330,6 +8330,13 @@ values:
     - serviceAccount:iac-networking-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
     org_id: '1234567890'
     role: roles/compute.orgFirewallPolicyUser
+  module.organization-iam[0].google_organization_iam_binding.authoritative["roles/compute.orgSecurityPolicyAdmin"]:
+    condition: []
+    members:
+    - serviceAccount:iac-networking-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    - serviceAccount:iac-security-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    org_id: '1234567890'
+    role: roles/compute.orgSecurityPolicyAdmin
   module.organization-iam[0].google_organization_iam_binding.authoritative["roles/compute.osAdminLogin"]:
     condition: []
     members:
@@ -8346,6 +8353,7 @@ values:
     condition: []
     members:
     - serviceAccount:iac-networking-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    - serviceAccount:iac-security-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
     org_id: '1234567890'
     role: roles/compute.viewer
   module.organization-iam[0].google_organization_iam_binding.authoritative["roles/compute.xpnAdmin"]:
@@ -10203,7 +10211,7 @@ counts:
   google_org_policy_custom_constraint: 136
   google_org_policy_policy: 206
   google_organization_iam_audit_config: 1
-  google_organization_iam_binding: 40
+  google_organization_iam_binding: 41
   google_organization_iam_custom_role: 14
   google_project: 3
   google_project_iam_binding: 64
@@ -10226,7 +10234,7 @@ counts:
   google_tags_tag_value_iam_binding: 4
   local_file: 9
   modules: 54
-  resources: 757
+  resources: 758
   terraform_data: 4
 
 outputs:
