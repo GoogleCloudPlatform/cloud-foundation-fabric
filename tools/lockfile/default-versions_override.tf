@@ -1,4 +1,4 @@
-# Copyright 2023 Google LLC
+# Copyright 2026 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,20 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# This file specifies the required version of the github provider used
-# during testing. This has to be in an override file, otherwise the
-# setup-tf-providers job fails because it copies default-versions.tf
-# before running `terraform init`
+# Non-HashiCorp providers pre-warmed into the CI cache must live in an
+# _override.tf file so Terraform merges required_providers with versions.tf.
 
 terraform {
   required_providers {
-    github = {
-      source  = "integrations/github"
-      version = "~> 5.0"
-    }
     mongodbatlas = {
       source  = "mongodb/mongodbatlas"
-      version = "~> 1.0"
+      version = "~> 2.17"
     }
   }
 }
