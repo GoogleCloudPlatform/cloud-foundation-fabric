@@ -15,10 +15,10 @@
  */
 
 variable "model_armor_floor_setting" {
-  description = "Model Armor floor setting for this resource. Removing it does not reset the floor setting in GCP."
+  description = "Model Armor floor setting for this resource. Integrated services are only supported on projects. Removing it does not reset the floor setting in GCP."
   type = object({
     enforce                  = optional(bool, true)
-    multi_language_detection = optional(bool)
+    multi_language_detection = optional(bool, false)
     filters = object({
       malicious_uris = optional(bool)
       pi_and_jailbreak = optional(object({

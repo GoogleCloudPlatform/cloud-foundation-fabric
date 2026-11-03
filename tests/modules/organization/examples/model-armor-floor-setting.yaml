@@ -14,9 +14,7 @@
 
 values:
   module.org.google_model_armor_floorsetting.default[0]:
-    ai_platform_floor_setting:
-    - enable_cloud_logging: true
-      inspect_only: true
+    ai_platform_floor_setting: []
     enable_floor_setting_enforcement: true
     filter_config:
     - malicious_uri_filter_settings:
@@ -37,8 +35,10 @@ values:
       sdp_settings:
       - basic_config:
         - filter_enforcement: ENABLED
-    integrated_services:
-    - AI_PLATFORM
+    floor_setting_metadata:
+    - multi_language_detection:
+      - enable_multi_language_detection: false
+    integrated_services: []
     location: global
     parent: organizations/1122334455
 

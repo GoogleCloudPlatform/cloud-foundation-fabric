@@ -130,17 +130,12 @@ resource "google_model_armor_floorsetting" "default" {
       )
     }
   }
-  dynamic "floor_setting_metadata" {
-    for_each = (
-      var.model_armor_floor_setting.multi_language_detection == null
-      ? [] : [""]
-    )
-    content {
-      multi_language_detection {
-        enable_multi_language_detection = (
-          var.model_armor_floor_setting.multi_language_detection
-        )
-      }
+  # always sent, the API rejects updates without it once it has been set
+  floor_setting_metadata {
+    multi_language_detection {
+      enable_multi_language_detection = coalesce(
+        var.model_armor_floor_setting.multi_language_detection, false
+      )
     }
   }
   dynamic "google_mcp_server_floor_setting" {
@@ -155,6 +150,13 @@ resource "google_model_armor_floorsetting" "default" {
       inspect_and_block = (
         config.value.mode == "inspect_and_block" ? true : null
       )
+    }
+  }
+  lifecycle {
+    precondition {
+      # the API rejects integrated services on organizations and folders
+      condition     = length(local.model_armor_services) == 0
+      error_message = "Integrated services are only supported on projects."
     }
   }
   depends_on = [

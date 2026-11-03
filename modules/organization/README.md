@@ -1177,9 +1177,9 @@ module "org" {
 
 ## Model Armor Floor Settings
 
-A [Model Armor floor setting](https://docs.cloud.google.com/model-armor/configure-floor-settings) defines the minimum filters that Model Armor templates in the organization must apply, and can screen Vertex AI and Google Cloud MCP server traffic inline. It is managed via the `model_armor_floor_setting` variable. The `modelarmor.googleapis.com` service needs to be enabled in the quota project.
+A [Model Armor floor setting](https://docs.cloud.google.com/model-armor/configure-floor-settings) defines the minimum filters that Model Armor templates in the organization must apply. It is managed via the `model_armor_floor_setting` variable. The `modelarmor.googleapis.com` service needs to be enabled in the quota project.
 
-Each `integrated_services` entry also adds the service to the floor setting's integrated services, and `mode` selects between `inspect_only` (default) and `inspect_and_block`. Enforcement is enabled by default when the variable is set.
+Inline screening of Vertex AI and Google Cloud MCP server traffic (`integrated_services`) is only supported by the API on projects, so setting it here fails at plan time; use the `project` module instead. Enforcement is enabled by default when the variable is set, and multi-language detection is disabled by default.
 
 The floor setting is a singleton that always exists: removing the variable only removes the resource from the Terraform state, and does not reset the floor setting in GCP.
 
@@ -1201,11 +1201,6 @@ module "org" {
       }
       sdp = {
         basic = true
-      }
-    }
-    integrated_services = {
-      ai_platform = {
-        cloud_logging = true
       }
     }
   }
@@ -1272,7 +1267,7 @@ module "org" {
 | [logging_exclusions](variables-logging.tf#L28) | Logging exclusions for this organization in the form {NAME -> FILTER}. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 | [logging_settings](variables-logging.tf#L35) | Default settings for logging resources. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [logging_sinks](variables-logging.tf#L45) | Logging sinks to create for the organization. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [model_armor_floor_setting](variables-model-armor.tf#L17) | Model Armor floor setting for this resource. Removing it does not reset the floor setting in GCP. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [model_armor_floor_setting](variables-model-armor.tf#L17) | Model Armor floor setting for this resource. Integrated services are only supported on projects. Removing it does not reset the floor setting in GCP. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [network_tags](variables-tags.tf#L17) | Network tags by key name. If `id` is provided, key creation is skipped. The `iam` attribute behaves like the similarly named one at module level. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [org_policies](variables.tf#L289) | Organization policies applied to this organization keyed by policy name. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [org_policy_custom_constraints](variables.tf#L317) | Organization policy custom constraints keyed by constraint name. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |

@@ -22,12 +22,10 @@ values:
         - deidentify_template: projects/my-project/locations/global/deidentifyTemplates/deidentify
           inspect_template: projects/my-project/locations/global/inspectTemplates/inspect
         basic_config: []
-    google_mcp_server_floor_setting:
-    - enable_cloud_logging: false
-      inspect_and_block: true
-      inspect_only: null
-    integrated_services:
-    - GOOGLE_MCP_SERVER
+    floor_setting_metadata:
+    - multi_language_detection:
+      - enable_multi_language_detection: true
+    integrated_services: []
 
 counts:
   google_model_armor_floorsetting: 1
