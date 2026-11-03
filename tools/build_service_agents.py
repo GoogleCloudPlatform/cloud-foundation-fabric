@@ -90,6 +90,7 @@ E2E_SERVICES = [
     "artifactregistry.googleapis.com",
     "assuredworkloads.googleapis.com",
     "bigquery.googleapis.com",
+    "certificatemanager.googleapis.com",
     "cloudbuild.googleapis.com",
     "cloudfunctions.googleapis.com",
     "cloudkms.googleapis.com",
@@ -107,13 +108,15 @@ E2E_SERVICES = [
     "looker.googleapis.com",
     "monitoring.googleapis.com",
     "networkconnectivity.googleapis.com",
+    "networksecurity.googleapis.com",
+    "networkservices.googleapis.com",
+    "privateca.googleapis.com",
     "pubsub.googleapis.com",
     "run.googleapis.com",
     "secretmanager.googleapis.com",
     "servicenetworking.googleapis.com",
     "serviceusage.googleapis.com",
     "sqladmin.googleapis.com",
-    "stackdriver.googleapis.com",
     "storage-component.googleapis.com",
     "storage.googleapis.com",
     "vpcaccess.googleapis.com",
@@ -161,6 +164,8 @@ class Agent:
 @click.option('--project', 'mode', flag_value='project', default=False,
               help='Extract project-level service agents')
 def main(mode, e2e=False):
+  if e2e and mode not in ('organization', 'folder', 'project'):
+    mode = 'project'
   page = requests.get(SERVICE_AGENTS_URL).content
   soup = BeautifulSoup(page, 'html.parser')
   agents = []
