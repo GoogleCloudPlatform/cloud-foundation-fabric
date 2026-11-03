@@ -62,6 +62,10 @@
 - **billing_budgets**: *array*
   - items: *string*
 - **buckets**: *reference([buckets](#refs-buckets))*
+- **cloud_armor_policy**: *object*
+  <br>*additional properties: false*
+  - **name**: *string*
+  - ⁺**policy_id**: *string*
 - **contacts**: *object*
   <br>*additional properties: false*
   - **`^(\S+@\S+\.\S+|\$email_addresses:\S+)$`**: *array*

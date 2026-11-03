@@ -394,6 +394,11 @@ values:
     location: europe-west1
     tag_value: $tag_values:context/project-factory
     timeouts: null
+  ? module.project-factory.module.projects-iam["dev-ta-app0-be"].google_compute_organization_security_policy_association.default[0]
+  : excluded_folders: []
+    excluded_projects: []
+    policy_id: locations/global/securityPolicies/1234567890
+    timeouts: null
   ? module.project-factory.module.projects-iam["dev-ta-app0-be"].google_compute_shared_vpc_service_project.shared_vpc_service[0]
   : deletion_policy: null
     host_project: $project_ids:dev-spoke-0
@@ -1086,7 +1091,7 @@ counts:
   google_billing_budget: 1
   google_cloud_asset_folder_feed: 1
   google_compute_firewall_policy_association: 1
-  google_compute_organization_security_policy_association: 1
+  google_compute_organization_security_policy_association: 2
   google_compute_shared_vpc_host_project: 1
   google_compute_shared_vpc_service_project: 1
   google_data_catalog_taxonomy: 1
@@ -1125,7 +1130,7 @@ counts:
   google_tags_tag_value: 2
   google_tags_tag_value_iam_binding: 1
   modules: 40
-  resources: 130
+  resources: 131
   terraform_data: 2
 
 outputs: {}

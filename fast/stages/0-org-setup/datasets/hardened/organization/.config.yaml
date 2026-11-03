@@ -86,6 +86,8 @@ iam_by_principals:
     # uncomment for cooperative VPC-SC configurations
     # - roles/accesscontextmanager.policyEditor
     - roles/compute.orgFirewallPolicyAdmin
+    - roles/compute.orgSecurityPolicyAdmin
+    - roles/compute.orgSecurityResourceAdmin
     - roles/compute.xpnAdmin
   $iam_principals:service_accounts/iac-0/iac-networking-ro:
     # uncomment for cooperative VPC-SC configurations
@@ -102,10 +104,13 @@ iam_by_principals:
     # uncomment for cooperative VPC-SC configurations
     # - roles/accesscontextmanager.policyEditor
     - roles/cloudasset.viewer
+    - roles/compute.orgSecurityPolicyAdmin
+    - roles/compute.orgSecurityResourceAdmin
   $iam_principals:service_accounts/iac-0/iac-security-ro:
     # uncomment for cooperative VPC-SC configurations
     # - roles/accesscontextmanager.policyReader
     - roles/cloudasset.viewer
+    - $custom_roles:org_security_policy_viewer
   $iam_principals:service_accounts/iac-0/iac-vpcsc-rw:
     - roles/accesscontextmanager.policyAdmin
     - roles/cloudasset.viewer

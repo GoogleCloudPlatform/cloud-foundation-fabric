@@ -705,6 +705,12 @@
             "type": "string"
           }
         },
+        "project_numbers": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
         "security_profile_groups": {
           "type": "object",
           "additionalProperties": {

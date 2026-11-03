@@ -30,11 +30,11 @@ In order to deploy a gateway, you need to specify a name, a region and the direc
 module "agent-gateway" {
   source      = "./fabric/modules/geap-agent-gateway"
   name        = "my-gateway"
-  project_id  = "my-project-id"
-  region      = "europe-west1"
+  project_id  = var.project_id
+  region      = var.region
   access_path = "CLIENT_TO_AGENT" # can be also: ingress, or egress (or AGENT_TO_ANYWHERE)
 }
-# tftest inventory=minimal.yaml
+# tftest inventory=minimal.yaml e2e
 ```
 
 ## VPC connectivity
@@ -44,24 +44,50 @@ A gateway reaches your VPC network through an [agent connectivity template](http
 Set `psc_i_network_attachment_id` to have the module create the template and attach the gateway to it. The other attributes configure that template, which inherits the gateway project, region and access path, and defaults its name to the gateway name.
 
 ```hcl
-module "agent-gateway" {
-  source         = "./fabric/modules/geap-agent-gateway"
-  name           = "my-gateway"
-  project_id     = "my-project-id"
-  project_number = "1234567890"
-  region         = "europe-west1"
-  access_path    = "AGENT_TO_ANYWHERE"
-  networking_config = {
-    psc_i_network_attachment_id = "projects/my-host-project/regions/europe-west1/networkAttachments/my-na"
-    access_types                = ["PRIVATE"]
-    vpc_egress                  = "ALL_TRAFFIC"
-    dns_peering_config = {
-      domains        = ["corp.internal."]
-      target_network = "projects/my-host-project/global/networks/my-vpc"
+module "addresses" {
+  source     = "./fabric/modules/net-address"
+  project_id = var.project_id
+  network_attachments = {
+    my-na = {
+      subnet_self_link     = var.subnets.primary.self_link
+      automatic_connection = true
     }
   }
 }
-# tftest inventory=connectivity-template.yaml
+
+module "dns" {
+  source     = "./fabric/modules/dns"
+  project_id = var.project_id
+  name       = "corp-internal"
+  zone_config = {
+    domain = "corp.internal."
+    private = {
+      client_networks = [var.vpc.self_link]
+    }
+  }
+}
+
+module "agent-gateway" {
+  source         = "./fabric/modules/geap-agent-gateway"
+  name           = "my-gateway"
+  project_id     = var.project_id
+  project_number = var.project_number
+  region         = var.region
+  access_path    = "AGENT_TO_ANYWHERE"
+  networking_config = {
+    psc_i_network_attachment_id = "$psc_network_attachments:my-na"
+    access_types                = ["PRIVATE"]
+    vpc_egress                  = "ALL_TRAFFIC"
+    dns_peering_config = {
+      domains        = [module.dns.domain]
+      target_network = var.vpc.id
+    }
+  }
+  context = {
+    psc_network_attachments = module.addresses.network_attachment_ids
+  }
+}
+# tftest inventory=connectivity-template.yaml e2e
 ```
 
 Set `connectivity_template_reuse` instead to attach the gateway to a template managed elsewhere. The two attributes are mutually exclusive, and the reference can be interpolated through the `agent_connectivity_templates` context key.
@@ -144,8 +170,8 @@ Inside `rules`, set at most one target shortcut (`agent_id`, `endpoint_id`, `mcp
 module "agent-gateway" {
   source      = "./fabric/modules/geap-agent-gateway"
   name        = "my-gateway"
-  project_id  = "my-project-id"
-  region      = "europe-west1"
+  project_id  = var.project_id
+  region      = var.region
   access_path = "AGENT_TO_ANYWHERE"
   access_policies = {
     egress-policy = {
@@ -154,15 +180,13 @@ module "agent-gateway" {
         # let a single agent call a registered REST endpoint
         billing-api = {
           description = "Allow support agent to call billing API"
-          principals = [
-            "principal://agents.global.proj-1234567890.system.id.goog/resources/aiplatform/projects/1234567890/locations/europe-west1/reasoningEngines/support-agent"
-          ]
+          principals  = [var.service_account.iam_email]
           endpoint_id = "billing-api"
         }
         # allow read-only tools on a registered MCP server (group: is auto-converted to principalSet://)
         weather-mcp-readonly = {
           description   = "Allow read-only tools on weather-mcp"
-          principals    = ["group:agent-developers@example.com"]
+          principals    = ["group:${var.group_email}"]
           mcp_server_id = "weather-mcp"
           condition     = "destination.agent_registry.mcp_server.tool.annotations.read_only_hint == true"
         }
@@ -170,29 +194,27 @@ module "agent-gateway" {
         weather-mcp-deny-delete = {
           description   = "Block delete_station tool on weather-mcp"
           effect        = "DENY"
-          principals    = ["group:agent-developers@example.com"]
+          principals    = ["group:${var.group_email}"]
           mcp_server_id = "weather-mcp"
           condition     = "destination.agent_registry.mcp_server.tool.name == 'delete_station'"
         }
         # allow invoking a registered A2A agent in global
         partner-agent = {
-          principals = ["group:agent-developers@example.com"]
+          principals = ["group:${var.group_email}"]
           agent_id   = "partner-agent"
           location   = "global"
         }
         # allow POST calls to an unregistered external API
         external-ocr = {
           description = "Allow POST to external OCR service"
-          principals = [
-            "principal://agents.global.proj-1234567890.system.id.goog/resources/aiplatform/projects/1234567890/locations/europe-west1/reasoningEngines/support-agent"
-          ]
-          condition = "destination.unregistered.host == 'ocr.example.com' && destination.unregistered.path.startsWith('/v2/process') && destination.unregistered.method == 'POST'"
+          principals  = [var.service_account.iam_email]
+          condition   = "destination.unregistered.host == 'ocr.example.com' && destination.unregistered.path.startsWith('/v2/process') && destination.unregistered.method == 'POST'"
         }
       }
     }
   }
 }
-# tftest inventory=registry-iam-services.yaml
+# tftest inventory=registry-iam-services.yaml e2e
 ```
 
 ### Authorizing access to the whole registry and reusing policies
@@ -240,14 +262,14 @@ By default IAP enforces the policies (`iam_enforcement_mode` set to `null`) but 
 module "agent-gateway" {
   source      = "./fabric/modules/geap-agent-gateway"
   name        = "my-gateway"
-  project_id  = "my-project-id"
-  region      = "europe-west1"
+  project_id  = var.project_id
+  region      = var.region
   access_path = "AGENT_TO_ANYWHERE"
   iap_config = {
     iam_enforcement_mode = "DRY_RUN"
   }
 }
-# tftest inventory=iap-dry-run.yaml
+# tftest inventory=iap-dry-run.yaml e2e
 ```
 
 ## Screening content with Model Armor

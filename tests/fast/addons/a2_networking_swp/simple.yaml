@@ -1,16 +1,182 @@
-# Copyright 2024 Google LLC
+# Copyright 2026 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#      http://www.apache.org/licenses/LICENSE-2.0
+#     https://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
+values:
+  google_network_security_tls_inspection_policy.default["pri"]:
+    custom_tls_features: null
+    deletion_policy: DELETE
+    description: null
+    exclude_public_ca_set: true
+    location: primary
+    min_tls_version: TLS_VERSION_UNSPECIFIED
+    name: swp-pri
+    project: f00-prod-net-landing-0
+    timeouts: null
+    tls_feature_profile: PROFILE_UNSPECIFIED
+    trust_config: null
+  google_storage_bucket_object.ca_chains["pri-swp"]:
+    bucket: test
+    cache_control: null
+    content_disposition: null
+    content_encoding: null
+    content_language: null
+    contexts: []
+    customer_encryption: []
+    deletion_policy: DELETE
+    detect_md5hash: null
+    event_based_hold: null
+    force_empty_content_type: null
+    metadata: null
+    name: ca-chains/2-networking-swp/pri-swp.pem
+    retention: []
+    source: null
+    temporary_hold: null
+    timeouts: null
+  google_storage_bucket_object.tfvars:
+    bucket: test
+    cache_control: null
+    content_disposition: null
+    content_encoding: null
+    content_language: null
+    contexts: []
+    customer_encryption: []
+    deletion_policy: DELETE
+    detect_md5hash: null
+    event_based_hold: null
+    force_empty_content_type: null
+    metadata: null
+    name: tfvars/2-networking-swp.auto.tfvars.json
+    retention: []
+    source: null
+    temporary_hold: null
+    timeouts: null
+  module.cas["pri"].google_privateca_ca_pool.default[0]:
+    deletion_policy: DELETE
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    encryption_spec: []
+    issuance_policy: []
+    labels: null
+    location: primary
+    name: swp-pri
+    project: f00-prod-net-landing-0
+    publishing_options: []
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    tier: DEVOPS
+    timeouts: null
+  module.cas["pri"].google_privateca_certificate_authority.default["swp"]:
+    certificate_authority_id: swp
+    config:
+    - subject_config:
+      - subject:
+        - common_name: fast-test-00.joonix.net
+          country_code: null
+          locality: null
+          organization: FAST Test 00
+          organizational_unit: null
+          postal_code: null
+          province: null
+          street_address: null
+        subject_alt_name: []
+      subject_key_id: []
+      x509_config:
+      - additional_extensions: []
+        aia_ocsp_servers: null
+        ca_options:
+        - is_ca: true
+          max_issuer_path_length: null
+          non_ca: null
+          zero_max_issuer_path_length: null
+        key_usage:
+        - base_key_usage:
+          - cert_sign: true
+            content_commitment: false
+            crl_sign: true
+            data_encipherment: false
+            decipher_only: false
+            digital_signature: false
+            encipher_only: false
+            key_agreement: false
+            key_encipherment: true
+          extended_key_usage:
+          - client_auth: false
+            code_signing: false
+            email_protection: false
+            ocsp_signing: false
+            server_auth: true
+            time_stamping: false
+          unknown_extended_key_usages: []
+        name_constraints: []
+        policy_ids: []
+    deletion_policy: DELETE
+    deletion_protection: false
+    desired_state: null
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    gcs_bucket: null
+    ignore_active_certificates_on_deletion: false
+    key_spec:
+    - algorithm: RSA_PKCS1_2048_SHA256
+      cloud_kms_key_version: null
+    labels: null
+    lifetime: 315360000s
+    location: primary
+    pem_ca_certificate: null
+    project: f00-prod-net-landing-0
+    skip_grace_period: true
+    subordinate_config: []
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+    type: SELF_SIGNED
+    user_defined_access_urls: []
+  module.swp["swp-shared-pri"].google_network_security_gateway_security_policy.default:
+    deletion_policy: DELETE
+    description: Managed by Terraform.
+    location: primary
+    name: swp-shared-pri
+    project: f00-prod-net-landing-0
+    timeouts: null
+    tls_inspection_policy: __missing__
+  module.swp["swp-shared-pri"].google_network_services_gateway.default:
+    addresses: []
+    all_ports: null
+    allow_global_access: null
+    certificate_urls: []
+    delete_swg_autogen_router_on_destroy: true
+    deletion_policy: DELETE
+    description: Managed by Terraform.
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    envoy_headers: null
+    ip_version: null
+    labels: null
+    location: primary
+    name: swp-shared-pri
+    network: https://www.googleapis.com/compute/v1/projects/123456789/networks/prod-landing-0
+    ports:
+    - 443
+    project: f00-prod-net-landing-0
+    routing_mode: null
+    scope: null
+    server_tls_policy: null
+    subnetwork: net
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+    type: SECURE_WEB_GATEWAY
 
 counts:
   google_network_security_gateway_security_policy: 1
@@ -21,3 +187,11 @@ counts:
   google_storage_bucket_object: 2
   modules: 2
   resources: 7
+
+outputs:
+  cas_pool_ids: __missing__
+  gateway_security_policies: __missing__
+  gateways: __missing__
+  ids: __missing__
+  service_attachments:
+    swp-shared-pri: null

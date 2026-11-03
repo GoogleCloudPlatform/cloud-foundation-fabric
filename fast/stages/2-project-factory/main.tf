@@ -112,6 +112,11 @@ module "factory" {
     project_ids = merge(
       var.project_ids, var.host_project_ids, local.context.project_ids
     )
+    security_policies = merge(
+      var.networking_security_policies,
+      var.security_security_policies,
+      local.context.security_policies
+    )
     tag_values = merge(var.tag_values, local.context.tag_values)
     tag_vars = {
       organization = merge(
