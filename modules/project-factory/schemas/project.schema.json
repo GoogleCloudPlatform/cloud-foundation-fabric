@@ -193,6 +193,21 @@
     "buckets": {
       "$ref": "#/$defs/buckets"
     },
+    "cloud_armor_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "policy_id"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "policy_id": {
+          "type": "string"
+        }
+      }
+    },
     "contacts": {
       "type": "object",
       "additionalProperties": false,

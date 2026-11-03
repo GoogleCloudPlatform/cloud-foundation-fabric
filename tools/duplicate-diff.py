@@ -121,6 +121,14 @@ duplicates = [
         "modules/net-vpc-factory/schemas/vpc-factory.schema.json",
     ],
     [
+        "fast/stages/2-networking/schemas/security-policy.schema.json",
+        "fast/stages/2-security/schemas/security-policy.schema.json",
+    ],
+    [
+        "fast/stages/2-networking/factory-security-policies.tf",
+        "fast/stages/2-security/factory-security-policies.tf",
+    ],
+    [
         "fast/stages/0-org-setup/schemas/tags.schema.json",
         "modules/project/schemas/tags.schema.json",
         "modules/organization/schemas/tags.schema.json",

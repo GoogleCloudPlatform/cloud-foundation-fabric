@@ -18,3 +18,8 @@ tests:
   simple:
   data-platform:
     workspace: data-platform
+  security_policies:
+    inventory:
+      - security_policies.yaml
+    extra_dirs:
+      - ../../../tests/fast/stages/s2_project_factory/data-secpol

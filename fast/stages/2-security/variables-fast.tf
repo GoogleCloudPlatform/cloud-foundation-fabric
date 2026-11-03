@@ -46,6 +46,15 @@ variable "iam_principals" {
   default     = {}
 }
 
+variable "organization" {
+  # tfdoc:variable:source 0-org-setup
+  description = "Organization details."
+  type = object({
+    id = number
+  })
+  nullable = false
+}
+
 variable "perimeters" {
   # tfdoc:variable:source 1-vpcsc
   description = "Optional VPC-SC perimeter ids."

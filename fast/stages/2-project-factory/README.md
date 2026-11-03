@@ -39,6 +39,7 @@ The project factory optionally "consumes" resources created by preceding stages,
 - IAM principals from the bootstrap stage and via `var.context.iam_principals`
 - tag values from the bootstrap stage and via `var.context.tag_values`
 - KMS keys from the security stage and via `var.context.kms_keys`
+- hierarchical security policies from the networking and security stages and via `var.context.security_policies`
 - VPC SC perimeters from the VPC SC stage and via `var.context.vpc_sc_perimeters`
 
 Additionally, some of the values defined earlier in the FAST apply cycle are set here as project defaults or overrides:
@@ -125,6 +126,17 @@ iam_bindings:
     condition:
       expression: resource.matchTag('${organization.id}/context', 'project-factory')
       title: Project factory org policy viewer
+```
+
+If folders or projects attach hierarchical Cloud Armor policies via `$security_policies:`, also grant the project factory service accounts permission to use and read them at the organization level:
+
+```yaml
+# datasets/classic/organization/.config.yaml
+iam_by_principals:
+  $iam_principals:service_accounts/iac-0/iac-pf-rw:
+    - roles/compute.orgSecurityPolicyUser
+  $iam_principals:service_accounts/iac-0/iac-pf-ro:
+    - $custom_roles:org_security_policy_viewer
 ```
 
 #### Parent folder
@@ -507,26 +519,28 @@ To migrate an existing `default` workspace deployment to workspace-based dataset
 |---|---|:---:|:---:|:---:|:---:|
 | [automation](variables-fast.tf#L17) | Automation resources created by the bootstrap stage. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>0-org-setup</code> |
 | [billing_account](variables-fast.tf#L26) | Billing account id. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>0-globals</code> |
-| [organization](variables-fast.tf#L74) | Organization details. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>0-globals</code> |
-| [prefix](variables-fast.tf#L92) | Prefix used for resources that need unique names. Use a maximum of 9 chars for organizations, and 11 chars for tenants. | <code>string</code> | ✓ |  | <code>0-globals</code> |
+| [organization](variables-fast.tf#L82) | Organization details. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>0-globals</code> |
+| [prefix](variables-fast.tf#L100) | Prefix used for resources that need unique names. Use a maximum of 9 chars for organizations, and 11 chars for tenants. | <code>string</code> | ✓ |  | <code>0-globals</code> |
 | [context](variables.tf#L17) | Context-specific interpolations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |  |
 | [custom_roles](variables-fast.tf#L34) | Custom roles defined at the org level, in key => id format. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-org-setup</code> |
 | [data_defaults](variables-projects.tf#L17) | Optional default values used when corresponding project or folder data from files are missing. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |  |
 | [data_merges](variables-projects.tf#L93) | Optional values that will be merged with corresponding data from files. Combines with `data_defaults`, file data, and `data_overrides`. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |  |
 | [data_overrides](variables-projects.tf#L112) | Optional values that override corresponding data from files. Takes precedence over file data and `data_defaults`. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |  |
-| [factories_config](variables.tf#L42) | Path to folder with YAML resource description data files. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |  |
+| [factories_config](variables.tf#L43) | Path to folder with YAML resource description data files. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |  |
 | [folder_ids](variables-fast.tf#L42) | Folders created in the bootstrap stage. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-org-setup</code> |
 | [host_project_ids](variables-fast.tf#L58) | Host project for the shared VPC. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>2-networking</code> |
 | [iam_principals](variables-fast.tf#L50) | IAM-format principals. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-org-setup</code> |
 | [kms_keys](variables-fast.tf#L66) | KMS key ids. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>2-security</code> |
-| [perimeters](variables-fast.tf#L84) | Optional VPC-SC perimeter ids. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>1-vpcsc</code> |
-| [project_ids](variables-fast.tf#L102) | Projects created in the bootstrap stage. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-org-setup</code> |
-| [service_accounts](variables-fast.tf#L110) | Service accounts created in the bootstrap stage. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-org-setup</code> |
-| [stage_name](variables.tf#L65) | FAST stage name. Used to separate output files across different factories. | <code>string</code> |  | <code>&#34;2-project-factory&#34;</code> |  |
-| [subnet_self_links](variables-fast.tf#L118) | Shared VPC subnet IDs. | <code>map&#40;map&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> | <code>2-networking</code> |
-| [tag_values](variables-fast.tf#L126) | FAST-managed resource manager tag values. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-org-setup</code> |
-| [tag_vars](variables-fast.tf#L134) | FAST-managed resource manager tag key namespaced names. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-org-setup</code> |
-| [universe](variables-fast.tf#L145) | GCP universe where to deploy projects. The prefix will be prepended to the project id. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> | <code>0-globals</code> |
+| [networking_security_policies](variables-fast.tf#L74) | Hierarchical security policy ids created in the networking stage. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>2-networking</code> |
+| [perimeters](variables-fast.tf#L92) | Optional VPC-SC perimeter ids. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>1-vpcsc</code> |
+| [project_ids](variables-fast.tf#L110) | Projects created in the bootstrap stage. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-org-setup</code> |
+| [security_security_policies](variables-fast.tf#L118) | Hierarchical security policy ids created in the security stage. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>2-security</code> |
+| [service_accounts](variables-fast.tf#L126) | Service accounts created in the bootstrap stage. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-org-setup</code> |
+| [stage_name](variables.tf#L66) | FAST stage name. Used to separate output files across different factories. | <code>string</code> |  | <code>&#34;2-project-factory&#34;</code> |  |
+| [subnet_self_links](variables-fast.tf#L134) | Shared VPC subnet IDs. | <code>map&#40;map&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> | <code>2-networking</code> |
+| [tag_values](variables-fast.tf#L142) | FAST-managed resource manager tag values. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-org-setup</code> |
+| [tag_vars](variables-fast.tf#L150) | FAST-managed resource manager tag key namespaced names. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-org-setup</code> |
+| [universe](variables-fast.tf#L161) | GCP universe where to deploy projects. The prefix will be prepended to the project id. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> | <code>0-globals</code> |
 
 ## Outputs
 

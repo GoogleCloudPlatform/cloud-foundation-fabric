@@ -20,6 +20,7 @@ The following diagram illustrates the high-level design of resources implemented
 - [Design overview and choices](#design-overview-and-choices)
   - [Cloud KMS](#cloud-kms)
   - [Certificate Authority Service (CAS)](#certificate-authority-service-cas)
+  - [Hierarchical Security Policies](#hierarchical-security-policies)
 - [Files](#files)
 - [Variables](#variables)
 - [Outputs](#outputs)
@@ -169,6 +170,51 @@ IAM roles on keys can be configured at the logical level for all locations where
 
 A reference Certificate Authority Services (CAS) is also part of this stage, allowing creation of any number of CA pools and authorities. To create custom CAS, the relevant factory variable needs to be configured first as explained above.
 
+### Hierarchical Security Policies
+
+Hierarchical Cloud Armor policies are defined in the `security-policies` directory, one YAML file per policy, and managed via the [`net-cloud-armor`](../../../modules/net-cloud-armor/) module. The networking and security stages share the same factory, so each stage can manage its own policies.
+
+```yaml
+# yaml-language-server: $schema=../../../schemas/security-policy.schema.json
+
+parent_id:
+  organization_id: $folder_ids:organization
+attachments:
+  organization:
+    id: $folder_ids:organization
+    excluded_folders:
+      - $folder_ids:sandbox
+rules:
+  trusted:
+    priority: 10
+    action: goto_next
+    match:
+      src_ip_ranges:
+        - $cidr_ranges_sets:trusted
+  deny-blocked:
+    priority: 100
+    action: deny(403)
+    match:
+      src_ip_ranges:
+        - $cidr_ranges_sets:blocked
+```
+
+- Policies are owned by the organization or a folder, and attached to the organization, folders or projects via `attachments`.
+- Folder ids, project numbers, and CIDR ranges in rules, attachments and exclusions can use context references (`$folder_ids:`, `$project_numbers:`, `$cidr_ranges:`, `$cidr_ranges_sets:`).
+- Each node in the hierarchy can only have one Cloud Armor policy attached, so the networking and security stages cannot attach policies to the same node. Policy names must be unique in the organization.
+- Projects under an attached policy are automatically enrolled in Cloud Armor Enterprise, which is billed per project. The shipped datasets contain no policies, and exclusions should be defined before a policy is attached.
+- Policy ids are passed to the following stages, where the project factory can attach them to folders via `$security_policies:` references.
+
+Attaching policies from the project factory stage requires granting its service accounts permission to use and read policies at the organization level in `0-org-setup` (`organization/.config.yaml`):
+
+```yaml
+iam_by_principals:
+  $iam_principals:service_accounts/iac-0/iac-pf-rw:
+    - roles/compute.orgSecurityPolicyUser
+  $iam_principals:service_accounts/iac-0/iac-pf-ro:
+    - $custom_roles:org_security_policy_viewer
+```
+
 <!-- TFDOC OPTS files:1 show_extra:1 exclude:2-security-providers.tf -->
 <!-- BEGIN TFDOC -->
 ## Files
@@ -178,6 +224,7 @@ A reference Certificate Authority Services (CAS) is also part of this stage, all
 | [factory-cas.tf](./factory-cas.tf) | None | <code>certificate-authority-service</code> |  |
 | [factory-keyrings.tf](./factory-keyrings.tf) | None | <code>kms</code> |  |
 | [factory-projects.tf](./factory-projects.tf) | None | <code>project-factory</code> |  |
+| [factory-security-policies.tf](./factory-security-policies.tf) | Security policies factory. | <code>net-cloud-armor</code> |  |
 | [main.tf](./main.tf) | Module-level locals and resources. |  |  |
 | [outputs.tf](./outputs.tf) | Module outputs. |  | <code>google_storage_bucket_object</code> · <code>local_file</code> |
 | [variables-fast.tf](./variables-fast.tf) | None |  |  |
@@ -188,27 +235,29 @@ A reference Certificate Authority Services (CAS) is also part of this stage, all
 | name | description | type | required | default | producer |
 |---|---|:---:|:---:|:---:|:---:|
 | [billing_account](variables-fast.tf#L17) | Billing account id. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>0-org-setup</code> |
-| [prefix](variables-fast.tf#L57) | Prefix used for resources that need unique names. Use a maximum of 9 chars for organizations, and 11 chars for tenants. | <code>string</code> | ✓ |  | <code>0-org-setup</code> |
+| [organization](variables-fast.tf#L49) | Organization details. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>0-org-setup</code> |
+| [prefix](variables-fast.tf#L66) | Prefix used for resources that need unique names. Use a maximum of 9 chars for organizations, and 11 chars for tenants. | <code>string</code> | ✓ |  | <code>0-org-setup</code> |
 | [context](variables.tf#L17) | Context-specific interpolations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |  |
 | [custom_roles](variables-fast.tf#L25) | Custom roles defined at the org level, in key => id format. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-org-setup</code> |
-| [factories_config](variables.tf#L42) | Configuration for the resource factories or external data. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |  |
+| [factories_config](variables.tf#L45) | Configuration for the resource factories or external data. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |  |
 | [folder_ids](variables-fast.tf#L33) | Folders created in the bootstrap stage. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-org-setup</code> |
 | [iam_principals](variables-fast.tf#L41) | IAM-format principals. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-org-setup</code> |
-| [perimeters](variables-fast.tf#L49) | Optional VPC-SC perimeter ids. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>1-vpcsc</code> |
-| [project_ids](variables-fast.tf#L67) | Projects created in the bootstrap stage. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-org-setup</code> |
-| [service_accounts](variables-fast.tf#L75) | Service accounts created in the bootstrap stage. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-org-setup</code> |
-| [storage_buckets](variables-fast.tf#L83) | Storage buckets created in the bootstrap stage. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-org-setup</code> |
-| [tag_keys](variables-fast.tf#L91) | FAST-managed resource manager tag keys. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-org-setup</code> |
-| [tag_values](variables-fast.tf#L99) | FAST-managed resource manager tag values. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-org-setup</code> |
-| [tag_vars](variables-fast.tf#L107) | FAST-managed resource manager tag key namespaced names. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-org-setup</code> |
-| [universe](variables-fast.tf#L118) | GCP universe where to deploy projects. The prefix will be prepended to the project id. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> | <code>0-org-setup</code> |
+| [perimeters](variables-fast.tf#L58) | Optional VPC-SC perimeter ids. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>1-vpcsc</code> |
+| [project_ids](variables-fast.tf#L76) | Projects created in the bootstrap stage. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-org-setup</code> |
+| [service_accounts](variables-fast.tf#L84) | Service accounts created in the bootstrap stage. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-org-setup</code> |
+| [storage_buckets](variables-fast.tf#L92) | Storage buckets created in the bootstrap stage. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-org-setup</code> |
+| [tag_keys](variables-fast.tf#L100) | FAST-managed resource manager tag keys. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-org-setup</code> |
+| [tag_values](variables-fast.tf#L108) | FAST-managed resource manager tag values. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-org-setup</code> |
+| [tag_vars](variables-fast.tf#L116) | FAST-managed resource manager tag key namespaced names. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-org-setup</code> |
+| [universe](variables-fast.tf#L127) | GCP universe where to deploy projects. The prefix will be prepended to the project id. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> | <code>0-org-setup</code> |
 
 ## Outputs
 
 | name | description | sensitive | consumers |
 |---|---|:---:|---|
-| [ca_ids](outputs.tf#L92) | Certificate Authority Service CA IDs. |  |  |
-| [ca_pools](outputs.tf#L97) | Certificate Authority Service pool IDs. |  |  |
-| [kms_keys_ids](outputs.tf#L102) | KMS keys IDs. |  |  |
-| [tfvars](outputs.tf#L107) | Terraform variable files for the following stages. | ✓ |  |
+| [ca_ids](outputs.tf#L95) | Certificate Authority Service CA IDs. |  |  |
+| [ca_pools](outputs.tf#L100) | Certificate Authority Service pool IDs. |  |  |
+| [kms_keys_ids](outputs.tf#L105) | KMS keys IDs. |  |  |
+| [security_policies](outputs.tf#L110) | Hierarchical security policy ids. |  |  |
+| [tfvars](outputs.tf#L115) | Terraform variable files for the following stages. | ✓ |  |
 <!-- END TFDOC -->

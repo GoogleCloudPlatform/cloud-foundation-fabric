@@ -327,6 +327,10 @@ variable "projects" {
         not_found_page   = optional(string)
       }))
     })), {})
+    cloud_armor_policy = optional(object({
+      name      = optional(string)
+      policy_id = string
+    }))
     contacts = optional(map(list(string)), {})
     custom_roles = optional(map(object({
       permissions = list(string)
