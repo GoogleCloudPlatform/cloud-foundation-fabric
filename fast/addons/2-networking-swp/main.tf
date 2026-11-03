@@ -54,12 +54,10 @@ module "project" {
   count         = var._fast_debug.skip_datasources == true ? 0 : 1
   name          = local.aliased_project_id
   project_reuse = {}
-  service_agents_config = {
-    services_enabled = [
-      "networksecurity.googleapis.com"
-    ]
-  }
   services = var.enable_services != true ? [] : [
+    "certificatemanager.googleapis.com",
+    "networksecurity.googleapis.com",
+    "networkservices.googleapis.com",
     "privateca.googleapis.com"
   ]
 }
@@ -102,7 +100,9 @@ module "swp" {
       each.value.tls_inspection_policy_id != null
       ? each.value.tls_inspection_policy_id
       : try(
-        google_network_security_tls_inspection_policy.default[each.value.region].id,
+        google_network_security_tls_inspection_policy.default[
+          each.value.region_shortname
+        ].id,
         null
       )
     )
