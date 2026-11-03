@@ -15,12 +15,12 @@
 values:
   module.agent-gateway.google_network_services_authz_extension.iap[0]:
     fail_open: false
-    location: europe-west1
+    location: europe-west8
     metadata:
       iamEnforcementMode: DRY_RUN
       iapPolicyVersion: V2
     name: my-gateway-iap
-    project: my-project-id
+    project: project-id
     service: iap.googleapis.com
     timeout: 2s
 

@@ -18,7 +18,7 @@ values:
     details:
     - rules:
       - conditions:
-        - expression: destination.agent_registry.endpoint.name == 'projects/my-project-id/locations/europe-west1/endpoints/billing-api'
+        - expression: destination.agent_registry.endpoint.name == 'projects/project-id/locations/europe-west8/endpoints/billing-api'
           service: iap.googleapis.com
         description: Allow support agent to call billing API
         effect: ALLOW
@@ -28,7 +28,7 @@ values:
           permissions:
           - iap.googleapis.com/resources.egressViaIAP
         principals:
-        - principal://agents.global.proj-1234567890.system.id.goog/resources/aiplatform/projects/1234567890/locations/europe-west1/reasoningEngines/support-agent
+        - principal://iam.googleapis.com/projects/-/serviceAccounts/sa1@sa.example
       - conditions:
         - expression: destination.unregistered.host == 'ocr.example.com' && destination.unregistered.path.startsWith('/v2/process')
             && destination.unregistered.method == 'POST'
@@ -41,9 +41,9 @@ values:
           permissions:
           - iap.googleapis.com/resources.egressViaIAP
         principals:
-        - principal://agents.global.proj-1234567890.system.id.goog/resources/aiplatform/projects/1234567890/locations/europe-west1/reasoningEngines/support-agent
+        - principal://iam.googleapis.com/projects/-/serviceAccounts/sa1@sa.example
       - conditions:
-        - expression: destination.agent_registry.agent.name == 'projects/my-project-id/locations/global/agents/partner-agent'
+        - expression: destination.agent_registry.agent.name == 'projects/project-id/locations/global/agents/partner-agent'
           service: iap.googleapis.com
         description: null
         effect: ALLOW
@@ -53,9 +53,9 @@ values:
           permissions:
           - iap.googleapis.com/resources.egressViaIAP
         principals:
-        - principalSet://goog/group/agent-developers@example.com
+        - principalSet://goog/group/organization-admins@example.org
       - conditions:
-        - expression: destination.agent_registry.mcp_server.name == 'projects/my-project-id/locations/europe-west1/mcpServers/weather-mcp'
+        - expression: destination.agent_registry.mcp_server.name == 'projects/project-id/locations/europe-west8/mcpServers/weather-mcp'
             && destination.agent_registry.mcp_server.tool.name == 'delete_station'
           service: iap.googleapis.com
         description: Block delete_station tool on weather-mcp
@@ -66,9 +66,9 @@ values:
           permissions:
           - iap.googleapis.com/resources.egressViaIAP
         principals:
-        - principalSet://goog/group/agent-developers@example.com
+        - principalSet://goog/group/organization-admins@example.org
       - conditions:
-        - expression: destination.agent_registry.mcp_server.name == 'projects/my-project-id/locations/europe-west1/mcpServers/weather-mcp'
+        - expression: destination.agent_registry.mcp_server.name == 'projects/project-id/locations/europe-west8/mcpServers/weather-mcp'
             && destination.agent_registry.mcp_server.tool.annotations.read_only_hint
             == true
           service: iap.googleapis.com
@@ -80,21 +80,21 @@ values:
           permissions:
           - iap.googleapis.com/resources.egressViaIAP
         principals:
-        - principalSet://goog/group/agent-developers@example.com
+        - principalSet://goog/group/organization-admins@example.org
     display_name: Agent Gateway Egress Policy
     location: global
-    project: my-project-id
+    project: project-id
   module.agent-gateway.google_iam_projects_policy_binding.default["egress-policy"]:
     condition: []
     display_name: Agent Gateway Egress Policy
     location: global
-    policy: projects/my-project-id/locations/global/accessPolicies/egress-policy
+    policy: projects/project-id/locations/global/accessPolicies/egress-policy
     policy_binding_id: egress-policy
     policy_kind: ACCESS
-    project: my-project-id
+    project: project-id
     target:
     - principal_set: null
-      resource: //cloudresourcemanager.googleapis.com/projects/my-project-id
+      resource: //cloudresourcemanager.googleapis.com/projects/project-id
 
 counts:
   google_iam_project_access_policy: 1

@@ -2,9 +2,11 @@
   "locals": {
     "jit_services": {
       "alloydb.googleapis.com": "roles/alloydb.serviceAgent",
+      "analyticshub.googleapis.com": "roles/analyticshub.serviceAgent",
       "apigee.googleapis.com": "roles/apigee.serviceAgent",
       "artifactregistry.googleapis.com": "roles/artifactregistry.serviceAgent",
       "assuredworkloads.googleapis.com": "roles/assuredworkloads.serviceAgent",
+      "certificatemanager.googleapis.com": "roles/certificatemanager.serviceAgent",
       "dns.googleapis.com": "roles/dns.serviceAgent",
       "dataplex.googleapis.com": "roles/dataplex.serviceAgent",
       "pubsub.googleapis.com": "roles/pubsub.serviceAgent",
@@ -15,11 +17,14 @@
       "dataproc.googleapis.com": "roles/dataproc.serviceAgent",
       "cloudfunctions.googleapis.com": "roles/cloudfunctions.serviceAgent",
       "run.googleapis.com": "roles/run.serviceAgent",
+      "networkservices.googleapis.com": null,
       "iap.googleapis.com": null,
       "container.googleapis.com": "roles/container.serviceAgent",
-      "looker.googleapis.com": "roles/looker.serviceAgent",
+      "looker.googleapis.com": "roles/looker.restrictedServiceAgent",
       "monitoring.googleapis.com": "roles/monitoring.notificationServiceAgent",
       "networkconnectivity.googleapis.com": "roles/networkconnectivity.serviceAgent",
+      "networksecurity.googleapis.com": null,
+      "privateca.googleapis.com": null,
       "secretmanager.googleapis.com": null,
       "vpcaccess.googleapis.com": "roles/vpcaccess.serviceAgent",
       "servicenetworking.googleapis.com": "roles/servicenetworking.serviceAgent"

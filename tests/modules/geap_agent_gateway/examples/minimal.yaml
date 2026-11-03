@@ -21,10 +21,10 @@ values:
     google_managed:
     - governed_access_path: CLIENT_TO_AGENT
     labels: null
-    location: europe-west1
+    location: europe-west8
     name: my-gateway
     network_config: []
-    project: my-project-id
+    project: project-id
     protocols: null
     registries: null
     self_managed: []
