@@ -44,6 +44,13 @@ variable "model_armor_floor_setting" {
   })
   default = null
   validation {
+    condition = (
+      var.model_armor_floor_setting == null ||
+      try(var.model_armor_floor_setting.filters, null) != null
+    )
+    error_message = "Filters must not be null, use {} for no filters."
+  }
+  validation {
     condition = alltrue([
       for v in [try(var.model_armor_floor_setting.filters, null)] : contains(
         ["LOW_AND_ABOVE", "MEDIUM_AND_ABOVE", "HIGH"],
@@ -54,7 +61,9 @@ variable "model_armor_floor_setting" {
   }
   validation {
     condition = alltrue([
-      for k, v in try(var.model_armor_floor_setting.filters.rai, {}) :
+      for k, v in coalesce(
+        try(var.model_armor_floor_setting.filters.rai, null), {}
+      ) :
       contains(
         ["DANGEROUS", "HARASSMENT", "HATE_SPEECH", "SEXUALLY_EXPLICIT"], k
       ) && contains(["LOW_AND_ABOVE", "MEDIUM_AND_ABOVE", "HIGH"], v)
@@ -64,21 +73,37 @@ variable "model_armor_floor_setting" {
   validation {
     condition = (
       try(var.model_armor_floor_setting.filters.sdp.basic, null) == null ||
-      try(
-        var.model_armor_floor_setting.filters.sdp.inspect_template, null
-      ) == null &&
-      try(
-        var.model_armor_floor_setting.filters.sdp.deidentify_template, null
-      ) == null
+      (
+        try(
+          var.model_armor_floor_setting.filters.sdp.inspect_template, null
+        ) == null &&
+        try(
+          var.model_armor_floor_setting.filters.sdp.deidentify_template, null
+        ) == null
+      )
     )
     error_message = "SDP basic and template-based settings are exclusive."
   }
   validation {
+    condition = (
+      try(
+        var.model_armor_floor_setting.filters.sdp.deidentify_template, null
+      ) == null ||
+      try(
+        var.model_armor_floor_setting.filters.sdp.inspect_template, null
+      ) != null
+    )
+    error_message = "SDP deidentify_template requires inspect_template."
+  }
+  validation {
     condition = alltrue([
-      for k, v in try(
-        var.model_armor_floor_setting.integrated_services, {}
-      ) : contains(["inspect_only", "inspect_and_block"], v.mode)
-      if v != null
+      for k in ["ai_platform", "google_mcp_server"] : contains(
+        ["inspect_only", "inspect_and_block"],
+        var.model_armor_floor_setting.integrated_services[k].mode
+      )
+      if try(
+        var.model_armor_floor_setting.integrated_services[k], null
+      ) != null
     ])
     error_message = "Mode must be one of inspect_only, inspect_and_block."
   }

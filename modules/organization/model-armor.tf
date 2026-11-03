@@ -17,15 +17,42 @@
 # tfdoc:file:description Model Armor floor setting.
 
 locals {
+  _model_armor_rai = coalesce(
+    try(var.model_armor_floor_setting.filters.rai, null), {}
+  )
+  # rai_filters is a list, follow the API enum order to keep it stable
+  _model_armor_rai_types = [
+    "SEXUALLY_EXPLICIT", "HATE_SPEECH", "HARASSMENT", "DANGEROUS"
+  ]
+  _model_armor_sdp    = try(var.model_armor_floor_setting.filters.sdp, null)
   model_armor_filters = try(var.model_armor_floor_setting.filters, null)
+  model_armor_rai_filters = [
+    for k in local._model_armor_rai_types : {
+      confidence_level = local._model_armor_rai[k]
+      filter_type      = k
+    } if lookup(local._model_armor_rai, k, null) != null
+  ]
+  # empty sdp settings are dropped by the API and cause a permanent diff
+  model_armor_sdp = (
+    local._model_armor_sdp == null
+    ? null
+    : (
+      alltrue([for v in values(local._model_armor_sdp) : v == null])
+      ? null
+      : local._model_armor_sdp
+    )
+  )
   model_armor_services = {
-    for k, v in try(var.model_armor_floor_setting.integrated_services, {}) :
-    k => v if v != null
+    for k in ["ai_platform", "google_mcp_server"] :
+    k => var.model_armor_floor_setting.integrated_services[k]
+    if try(
+      var.model_armor_floor_setting.integrated_services[k], null
+    ) != null
   }
 }
 
 resource "google_model_armor_floorsetting" "default" {
-  count                            = local.model_armor_filters == null ? 0 : 1
+  count                            = var.model_armor_floor_setting == null ? 0 : 1
   parent                           = var.organization_id
   location                         = "global"
   enable_floor_setting_enforcement = var.model_armor_floor_setting.enforce
@@ -55,41 +82,35 @@ resource "google_model_armor_floorsetting" "default" {
       }
     }
     dynamic "rai_settings" {
-      for_each = length(local.model_armor_filters.rai) == 0 ? [] : [""]
+      for_each = length(local.model_armor_rai_filters) == 0 ? [] : [""]
       content {
         dynamic "rai_filters" {
-          for_each = local.model_armor_filters.rai
+          for_each = local.model_armor_rai_filters
           content {
-            filter_type      = rai_filters.key
-            confidence_level = rai_filters.value
+            filter_type      = rai_filters.value.filter_type
+            confidence_level = rai_filters.value.confidence_level
           }
         }
       }
     }
     dynamic "sdp_settings" {
-      for_each = local.model_armor_filters.sdp == null ? [] : [""]
+      for_each = local.model_armor_sdp == null ? [] : [""]
       content {
         dynamic "basic_config" {
-          for_each = (
-            local.model_armor_filters.sdp.basic == null ? [] : [""]
-          )
+          for_each = local.model_armor_sdp.basic == null ? [] : [""]
           content {
             filter_enforcement = (
-              local.model_armor_filters.sdp.basic ? "ENABLED" : "DISABLED"
+              local.model_armor_sdp.basic ? "ENABLED" : "DISABLED"
             )
           }
         }
         dynamic "advanced_config" {
           for_each = (
-            local.model_armor_filters.sdp.inspect_template == null &&
-            local.model_armor_filters.sdp.deidentify_template == null
-            ? [] : [""]
+            local.model_armor_sdp.inspect_template == null ? [] : [""]
           )
           content {
-            inspect_template = local.model_armor_filters.sdp.inspect_template
-            deidentify_template = (
-              local.model_armor_filters.sdp.deidentify_template
-            )
+            inspect_template    = local.model_armor_sdp.inspect_template
+            deidentify_template = local.model_armor_sdp.deidentify_template
           }
         }
       }
@@ -136,4 +157,10 @@ resource "google_model_armor_floorsetting" "default" {
       )
     }
   }
+  depends_on = [
+    # in case floor setting or DLP roles are granted in the same module call
+    google_organization_iam_binding.authoritative,
+    google_organization_iam_binding.bindings,
+    google_organization_iam_member.bindings
+  ]
 }
