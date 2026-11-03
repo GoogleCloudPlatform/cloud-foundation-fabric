@@ -35,7 +35,9 @@ values:
       - advanced_config: []
         basic_config:
         - filter_enforcement: ENABLED
-    floor_setting_metadata: []
+    floor_setting_metadata:
+    - multi_language_detection:
+      - enable_multi_language_detection: false
     google_mcp_server_floor_setting: []
     integrated_services:
     - AI_PLATFORM

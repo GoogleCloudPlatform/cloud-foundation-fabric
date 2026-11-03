@@ -25,7 +25,9 @@ values:
         - deidentify_template: projects/my-project/locations/global/deidentifyTemplates/deidentify
           inspect_template: projects/my-project/locations/global/inspectTemplates/inspect
         basic_config: []
-    floor_setting_metadata: []
+    floor_setting_metadata:
+    - multi_language_detection:
+      - enable_multi_language_detection: false
     google_mcp_server_floor_setting:
     - enable_cloud_logging: false
       inspect_and_block: true

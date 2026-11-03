@@ -130,17 +130,12 @@ resource "google_model_armor_floorsetting" "default" {
       )
     }
   }
-  dynamic "floor_setting_metadata" {
-    for_each = (
-      var.model_armor_floor_setting.multi_language_detection == null
-      ? [] : [""]
-    )
-    content {
-      multi_language_detection {
-        enable_multi_language_detection = (
-          var.model_armor_floor_setting.multi_language_detection
-        )
-      }
+  # always sent, the API rejects updates without it once it has been set
+  floor_setting_metadata {
+    multi_language_detection {
+      enable_multi_language_detection = coalesce(
+        var.model_armor_floor_setting.multi_language_detection, false
+      )
     }
   }
   dynamic "google_mcp_server_floor_setting" {

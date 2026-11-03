@@ -2477,7 +2477,7 @@ module "project" {
 
 A [Model Armor floor setting](https://docs.cloud.google.com/model-armor/configure-floor-settings) defines the minimum filters that Model Armor templates in the project must apply, and can screen Vertex AI and Google Cloud MCP server traffic inline. It is managed via the `model_armor_floor_setting` variable. The `modelarmor.googleapis.com` service needs to be enabled in the project, by listing it in the `services` variable.
 
-Each `integrated_services` entry also adds the service to the floor setting's integrated services, and `mode` selects between `inspect_only` (default) and `inspect_and_block`. Inline screening of Vertex AI and MCP server traffic is applied per project, and a project floor setting takes precedence over the ones set on its folders or organization. Enforcement is enabled by default when the variable is set.
+Each `integrated_services` entry also adds the service to the floor setting's integrated services, and `mode` selects between `inspect_only` (default) and `inspect_and_block`. Inline screening of Vertex AI and MCP server traffic is applied per project, and a project floor setting takes precedence over the ones set on its folders or organization. Integrated services are only supported on project floor settings, not on folders or the organization. Enforcement is enabled by default when the variable is set, and multi-language detection is disabled by default.
 
 The floor setting is a singleton that always exists: removing the variable only removes the resource from the Terraform state, and does not reset the floor setting in GCP.
 
@@ -2594,7 +2594,7 @@ module "project" {
 | [logging_metrics](variables-observability.tf#L145) | Log-based metrics. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [logging_sinks](variables-observability.tf#L185) | Logging sinks to create for this project. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [metric_scopes](variables-observability.tf#L216) | List of projects that will act as metric scopes for this project. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
-| [model_armor_floor_setting](variables-model-armor.tf#L17) | Model Armor floor setting for this resource. Removing it does not reset the floor setting in GCP. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [model_armor_floor_setting](variables-model-armor.tf#L17) | Model Armor floor setting for this resource. Integrated services are only supported on projects. Removing it does not reset the floor setting in GCP. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [network_tags](variables-tags.tf#L17) | Network tags by key name. If `id` is provided, key creation is skipped. The `iam` attribute behaves like the similarly named one at module level. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [notification_channels](variables-observability.tf#L223) | Monitoring notification channels. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [org_policies](variables.tf#L290) | Organization policies applied to this project keyed by policy name. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |

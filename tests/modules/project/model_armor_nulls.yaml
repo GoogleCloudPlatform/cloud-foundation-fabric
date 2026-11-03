@@ -26,7 +26,9 @@ values:
         - confidence_level: HIGH
           filter_type: DANGEROUS
       sdp_settings: []
-    floor_setting_metadata: []
+    floor_setting_metadata:
+    - multi_language_detection:
+      - enable_multi_language_detection: false
     google_mcp_server_floor_setting: []
     integrated_services: []
     location: global
