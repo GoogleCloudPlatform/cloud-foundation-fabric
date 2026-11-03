@@ -201,6 +201,7 @@ module "projects-iam" {
       services_enabled = module.projects[each.key].services
     }
   }
+  cloud_armor_policy = lookup(each.value, "cloud_armor_policy", null)
   context = merge(local.ctx, {
     condition_vars = merge(
       local.ctx.condition_vars, {
