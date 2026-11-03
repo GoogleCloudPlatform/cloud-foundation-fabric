@@ -143,7 +143,7 @@ terraform apply
 |---|---|---|---|
 | [main.tf](./main.tf) | Module-level locals and resources. | <code>net-swp</code> · <code>project</code> |  |
 | [outputs.tf](./outputs.tf) | Module outputs. |  | <code>google_storage_bucket_object</code> · <code>local_file</code> |
-| [tls-inspection.tf](./tls-inspection.tf) | TLS inspection policies and supporting resources. | <code>certificate-authority-service</code> | <code>google_network_security_tls_inspection_policy</code> |
+| [tls-inspection.tf](./tls-inspection.tf) | TLS inspection policies and supporting resources. | <code>certificate-authority-service</code> | <code>google_network_security_tls_inspection_policy</code> · <code>google_project_service_identity</code> |
 | [variables-fast.tf](./variables-fast.tf) | FAST stage interface. |  |  |
 | [variables.tf](./variables.tf) | Module variables. |  |  |
 

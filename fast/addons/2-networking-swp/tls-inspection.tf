@@ -16,6 +16,17 @@
 
 # tfdoc:file:description TLS inspection policies and supporting resources.
 
+resource "google_project_service_identity" "nsec" {
+  provider = google-beta
+  count = (
+    var._fast_debug.skip_datasources == true ||
+    var.certificate_authority == null ||
+    var.enable_services == true
+  ) ? 0 : 1
+  project = local.project_id
+  service = "networksecurity.googleapis.com"
+}
+
 module "cas" {
   source     = "../../../modules/certificate-authority-service"
   for_each   = var.certificate_authority == null ? {} : local.regions
@@ -51,8 +62,12 @@ module "cas" {
     var.certificate_authority.iam_bindings_additive,
     var._fast_debug.skip_datasources == true ? {} : {
       nsec_certificate_manager = {
-        member = module.project[0].service_agents["networksecurity"].iam_email
-        role   = "roles/privateca.certificateManager"
+        member = (
+          var.enable_services == true
+          ? module.project[0].service_agents["networksecurity"].iam_email
+          : google_project_service_identity.nsec[0].member
+        )
+        role = "roles/privateca.certificateManager"
       }
     }
   )
@@ -76,4 +91,5 @@ resource "google_network_security_tls_inspection_policy" "default" {
   custom_tls_features = try(var.tls_inspection_policy.tls.custom_features, null)
   tls_feature_profile = try(var.tls_inspection_policy.tls.feature_profile, null)
   min_tls_version     = try(var.tls_inspection_policy.tls.min_version, null)
+  depends_on          = [module.cas]
 }
