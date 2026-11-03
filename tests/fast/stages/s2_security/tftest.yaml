@@ -25,3 +25,8 @@ tests:
       - service_agent.yaml
     extra_dirs:
       - ../../../tests/fast/stages/s2_security/service-agent-data
+  security_policies:
+    inventory:
+      - security_policies.yaml
+    extra_dirs:
+      - ../../../tests/fast/stages/s2_security/data-secpol

@@ -123,6 +123,10 @@
       - **is_dry_run**: *boolean*
 - **context**: *object*
   <br>*additional properties: false*
+  - **cidr_ranges**: *object*
+    <br>*additional properties: string*
+  - **cidr_ranges_sets**: *object*
+    <br>*additional properties: array*
   - **custom_roles**: *object*
     <br>*additional properties: string*
   - **email_addresses**: *object*
@@ -138,6 +142,8 @@
   - **notification_channels**: *object*
     <br>*additional properties: string*
   - **project_ids**: *object*
+    <br>*additional properties: string*
+  - **project_numbers**: *object*
     <br>*additional properties: string*
   - **service_account_ids**: *object*
     <br>*additional properties: string*

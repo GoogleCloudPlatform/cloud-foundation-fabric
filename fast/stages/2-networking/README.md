@@ -14,6 +14,7 @@
   - [DNS](#dns)
     - [Delegated Public Zones](#delegated-public-zones)
   - [Firewall Policies](#firewall-policies)
+  - [Hierarchical Security Policies](#hierarchical-security-policies)
   - [Cloud NAT and Routers](#cloud-nat-and-routers)
   - [Network Virtual Appliances (NVAs)](#network-virtual-appliances-nvas)
   - [VPC Connectivity](#vpc-connectivity)
@@ -169,6 +170,7 @@ The following diagram shows the canonical paths for the different factory config
 ├── ncc-hubs                 # NCC configurations.
 ├── nvas                     # NVA configurations.
 ├── projects                 # Project definitions.
+├── security-policies        # Hierarchical Cloud Armor policies.
 └── vpcs
     └── [vpc-name]           # Each subfolder represents a VPC.
         ├── .config.yaml     # Main VPC configuration, peerings, NAT.
@@ -274,6 +276,51 @@ This stage supports both VPC-level firewall rules and hierarchical firewall poli
 - **VPC Firewall Rules** are defined within each VPC's configuration directory (`vpcs/[vpc-name]/firewall-rules`). These are used for more specific rules tailored to a particular VPC. Rule names must be unique within a project, so VPCs sharing a host project need distinct rule names.
 
 The `$cidr_ranges_sets:` tokens defined in the defaults file `context` are resolved in hierarchical firewall policies only; VPC-level firewall rules need literal ranges.
+
+### Hierarchical Security Policies
+
+Hierarchical Cloud Armor policies are defined in the `security-policies` directory, one YAML file per policy, and managed via the [`net-cloud-armor`](../../../modules/net-cloud-armor/) module. The networking and security stages share the same factory, so each stage can manage its own policies.
+
+```yaml
+# yaml-language-server: $schema=../../../schemas/security-policy.schema.json
+
+parent_id:
+  organization_id: $folder_ids:organization
+attachments:
+  organization:
+    id: $folder_ids:organization
+    excluded_folders:
+      - $folder_ids:sandbox
+rules:
+  trusted:
+    priority: 10
+    action: goto_next
+    match:
+      src_ip_ranges:
+        - $cidr_ranges_sets:trusted
+  deny-blocked:
+    priority: 100
+    action: deny(403)
+    match:
+      src_ip_ranges:
+        - $cidr_ranges_sets:blocked
+```
+
+- Policies are owned by the organization or a folder, and attached to the organization, folders or projects via `attachments`.
+- Folder ids, project numbers, and CIDR ranges in rules, attachments and exclusions can use context references (`$folder_ids:`, `$project_numbers:`, `$cidr_ranges:`, `$cidr_ranges_sets:`).
+- Each node in the hierarchy can only have one Cloud Armor policy attached, so the networking and security stages cannot attach policies to the same node. Policy names must be unique in the organization.
+- Projects under an attached policy are automatically enrolled in Cloud Armor Enterprise, which is billed per project. The shipped datasets contain no policies, and exclusions should be defined before a policy is attached.
+- Policy ids are passed to the following stages, where the project factory can attach them to folders via `$security_policies:` references.
+
+Attaching policies from the project factory stage requires granting its service accounts permission to use and read policies at the organization level in `0-org-setup` (`organization/.config.yaml`):
+
+```yaml
+iam_by_principals:
+  $iam_principals:service_accounts/iac-0/iac-pf-rw:
+    - roles/compute.orgSecurityPolicyUser
+  $iam_principals:service_accounts/iac-0/iac-pf-ro:
+    - $custom_roles:org_security_policy_viewer
+```
 
 ### Cloud NAT and Routers
 
@@ -562,6 +609,7 @@ Internally created resources are mapped to context namespaces, and use specific 
 | [factory-peering.tf](./factory-peering.tf) | VPC Peering factory. |  | <code>google_compute_network_peering</code> |
 | [factory-projects.tf](./factory-projects.tf) | Projects factory. | <code>project-factory</code> |  |
 | [factory-routers.tf](./factory-routers.tf) | Routers factory. |  | <code>google_compute_router</code> · <code>google_compute_router_interface</code> · <code>google_compute_router_peer</code> · <code>google_compute_router_route_policy</code> · <code>terraform_data</code> |
+| [factory-security-policies.tf](./factory-security-policies.tf) | Security policies factory. | <code>net-cloud-armor</code> |  |
 | [factory-vlan-attachments.tf](./factory-vlan-attachments.tf) | VLAN attachments factory. | <code>net-vlan-attachment</code> | <code>google_compute_interconnect_attachment_group</code> |
 | [factory-vpcs.tf](./factory-vpcs.tf) | VPC and firewall rules factory. | <code>net-vpc</code> · <code>net-vpc-factory</code> |  |
 | [factory-vpns.tf](./factory-vpns.tf) | VPNs factory. | <code>net-vpn-ha</code> | <code>google_compute_ha_vpn_gateway</code> |
@@ -579,7 +627,7 @@ Internally created resources are mapped to context namespaces, and use specific 
 | [prefix](variables-fast.tf#L75) | Prefix used for resources that need unique names. Use a maximum of 9 chars for organizations, and 11 chars for tenants. | <code>string</code> | ✓ |  |
 | [context](variables.tf#L17) | Context-specific interpolations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [custom_roles](variables-fast.tf#L25) | Custom roles defined at the org level, in key => id format. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [factories_config](variables.tf#L44) | Configuration for the resource factories or external data. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [factories_config](variables.tf#L45) | Configuration for the resource factories or external data. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [folder_ids](variables-fast.tf#L33) | Folders created in the bootstrap stage. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam_principals](variables-fast.tf#L41) | IAM-format principals. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 | [kms_keys](variables-fast.tf#L50) | KMS key ids. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
@@ -597,11 +645,12 @@ Internally created resources are mapped to context namespaces, and use specific 
 
 | name | description | sensitive |
 |---|---|:---:|
-| [host_project_ids](outputs.tf#L73) | Project IDs. |  |
-| [host_project_numbers](outputs.tf#L78) | Project numbers. |  |
-| [subnet_ips](outputs.tf#L83) | Subnet IP ranges. |  |
-| [subnet_proxy_only_self_links](outputs.tf#L88) | Subnet proxy-only self-links. |  |
-| [subnet_psc_self_links](outputs.tf#L93) | Subnet PSC self-links. |  |
-| [subnet_self_links](outputs.tf#L98) | Subnet self-links. |  |
-| [vpc_self_links](outputs.tf#L103) | VPC self-links. |  |
+| [host_project_ids](outputs.tf#L76) | Project IDs. |  |
+| [host_project_numbers](outputs.tf#L81) | Project numbers. |  |
+| [security_policies](outputs.tf#L86) | Hierarchical security policy ids. |  |
+| [subnet_ips](outputs.tf#L91) | Subnet IP ranges. |  |
+| [subnet_proxy_only_self_links](outputs.tf#L96) | Subnet proxy-only self-links. |  |
+| [subnet_psc_self_links](outputs.tf#L101) | Subnet PSC self-links. |  |
+| [subnet_self_links](outputs.tf#L106) | Subnet self-links. |  |
+| [vpc_self_links](outputs.tf#L111) | VPC self-links. |  |
 <!-- END TFDOC -->

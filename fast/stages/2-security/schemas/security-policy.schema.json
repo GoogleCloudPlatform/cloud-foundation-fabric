@@ -1,0 +1,259 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Security Policy",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "parent_id"
+  ],
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "parent_id": {
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "maxProperties": 1,
+      "properties": {
+        "organization_id": {
+          "type": "string"
+        },
+        "folder_id": {
+          "type": "string"
+        }
+      }
+    },
+    "attachments": {
+      "type": "object",
+      "patternProperties": {
+        "^[a-z0-9_-]+$": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "id"
+          ],
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "excluded_folders": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "excluded_projects": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "advanced_options_config": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "json_parsing": {
+          "type": "string",
+          "enum": [
+            "DISABLED",
+            "STANDARD",
+            "STANDARD_WITH_GRAPHQL"
+          ]
+        },
+        "log_level": {
+          "type": "string",
+          "enum": [
+            "NORMAL",
+            "VERBOSE"
+          ]
+        },
+        "request_body_inspection_size": {
+          "type": "string",
+          "enum": [
+            "8KB",
+            "16KB",
+            "32KB",
+            "48KB",
+            "64KB"
+          ]
+        },
+        "user_ip_request_headers": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "json_custom_content_types": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "rules": {
+      "type": "object",
+      "patternProperties": {
+        "^[a-z0-9_-]+$": {
+          "$ref": "#/$defs/rule"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "$defs": {
+    "rule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "priority",
+        "action"
+      ],
+      "properties": {
+        "priority": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2147483646
+        },
+        "action": {
+          "type": "string",
+          "pattern": "^(allow|deny|deny\\((403|404|502)\\)|goto_next|redirect)$"
+        },
+        "description": {
+          "type": "string"
+        },
+        "preview": {
+          "type": "boolean"
+        },
+        "match": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "src_ip_ranges": {
+              "type": "array",
+              "maxItems": 10,
+              "items": {
+                "type": "string"
+              }
+            },
+            "expression": {
+              "type": "string"
+            }
+          }
+        },
+        "header_action": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "preconfigured_waf_config": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "exclusions"
+          ],
+          "properties": {
+            "exclusions": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/waf_exclusion"
+              }
+            }
+          }
+        },
+        "redirect_options": {
+          "$ref": "#/$defs/redirect_options"
+        }
+      }
+    },
+    "waf_exclusion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "target_rule_set"
+      ],
+      "properties": {
+        "target_rule_set": {
+          "type": "string"
+        },
+        "target_rule_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "request_cookies": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/waf_field_param"
+          }
+        },
+        "request_headers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/waf_field_param"
+          }
+        },
+        "request_query_params": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/waf_field_param"
+          }
+        },
+        "request_uris": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/waf_field_param"
+          }
+        }
+      }
+    },
+    "waf_field_param": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "operator"
+      ],
+      "properties": {
+        "operator": {
+          "type": "string",
+          "enum": [
+            "EQUALS",
+            "STARTS_WITH",
+            "ENDS_WITH",
+            "CONTAINS",
+            "EQUALS_ANY"
+          ]
+        },
+        "value": {
+          "type": "string"
+        }
+      }
+    },
+    "redirect_options": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "EXTERNAL_302"
+          ]
+        },
+        "target": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

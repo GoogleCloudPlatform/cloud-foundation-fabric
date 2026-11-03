@@ -2368,6 +2368,12 @@ values:
       log_type: ADMIN_READ
     org_id: '1234567890'
     service: sts.googleapis.com
+  module.organization-iam[0].google_organization_iam_binding.authoritative["$custom_roles:org_security_policy_viewer"]:
+    condition: []
+    members:
+    - serviceAccount:iac-security-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    org_id: '1234567890'
+    role: organizations/1234567890/roles/orgSecurityPolicyViewer
   module.organization-iam[0].google_organization_iam_binding.authoritative["$custom_roles:organization_admin_viewer"]:
     condition: []
     members:
@@ -2439,6 +2445,20 @@ values:
     - serviceAccount:iac-networking-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
     org_id: '1234567890'
     role: roles/compute.orgFirewallPolicyUser
+  module.organization-iam[0].google_organization_iam_binding.authoritative["roles/compute.orgSecurityPolicyAdmin"]:
+    condition: []
+    members:
+    - serviceAccount:iac-networking-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    - serviceAccount:iac-security-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    org_id: '1234567890'
+    role: roles/compute.orgSecurityPolicyAdmin
+  module.organization-iam[0].google_organization_iam_binding.authoritative["roles/compute.orgSecurityResourceAdmin"]:
+    condition: []
+    members:
+    - serviceAccount:iac-networking-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    - serviceAccount:iac-security-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    org_id: '1234567890'
+    role: roles/compute.orgSecurityResourceAdmin
   module.organization-iam[0].google_organization_iam_binding.authoritative["roles/compute.osAdminLogin"]:
     condition: []
     members:
@@ -2735,6 +2755,19 @@ values:
     role_id: ngfwEnterpriseViewer
     stage: GA
     title: Custom role ngfwEnterpriseViewer
+  module.organization[0].google_organization_iam_custom_role.roles["org_security_policy_viewer"]:
+    deletion_policy: DELETE
+    description: Terraform-managed.
+    org_id: '1234567890'
+    permissions:
+    - compute.organizations.listAssociations
+    - compute.securityPolicies.get
+    - compute.securityPolicies.list
+    - compute.securityPolicies.listEffectiveTags
+    - compute.securityPolicies.listTagBindings
+    role_id: orgSecurityPolicyViewer
+    stage: GA
+    title: Custom role orgSecurityPolicyViewer
   module.organization[0].google_organization_iam_custom_role.roles["organization_admin_viewer"]:
     deletion_policy: DELETE
     description: Terraform-managed.
@@ -2904,8 +2937,8 @@ counts:
   google_org_policy_custom_constraint: 1
   google_org_policy_policy: 37
   google_organization_iam_audit_config: 1
-  google_organization_iam_binding: 37
-  google_organization_iam_custom_role: 9
+  google_organization_iam_binding: 40
+  google_organization_iam_custom_role: 10
   google_project: 3
   google_project_iam_audit_config: 3
   google_project_iam_binding: 17
@@ -2927,7 +2960,7 @@ counts:
   google_tags_tag_value_iam_binding: 4
   local_file: 9
   modules: 47
-  resources: 304
+  resources: 308
   terraform_data: 4
 
 outputs:
