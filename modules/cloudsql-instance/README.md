@@ -331,7 +331,7 @@ module "db" {
 
 ### Query Insights
 
-Provide `insights_config` (can be just empty `{}`) to enable [Query Insights](https://cloud.google.com/sql/docs/postgres/using-query-insights)
+Provide `insights_config` (can be just empty `{}`) to enable [Query Insights](https://cloud.google.com/sql/docs/postgres/using-query-insights). The same configuration is applied to read replicas, which don't inherit Query Insights from the primary.
 
 ```hcl
 module "db" {
@@ -352,10 +352,13 @@ module "db" {
   insights_config = {
     query_string_length = 2048
   }
+  replicas = {
+    replica1 = { region = var.region }
+  }
   gcp_deletion_protection       = false
   terraform_deletion_protection = false
 }
-# tftest modules=1 resources=1 inventory=insights.yaml e2e
+# tftest modules=1 resources=2 inventory=insights.yaml e2e
 ```
 
 ### Dataplex integration
