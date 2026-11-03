@@ -200,10 +200,20 @@ rules:
 ```
 
 - Policies are owned by the organization or a folder, and attached to the organization, folders or projects via `attachments`.
-- Folder ids, project ids and numbers, and CIDR ranges in rules, attachments and exclusions can use context references (`$folder_ids:`, `$project_ids:`, `$project_numbers:`, `$cidr_ranges:`, `$cidr_ranges_sets:`).
+- Folder ids, project numbers, and CIDR ranges in rules, attachments and exclusions can use context references (`$folder_ids:`, `$project_numbers:`, `$cidr_ranges:`, `$cidr_ranges_sets:`).
 - Each node in the hierarchy can only have one Cloud Armor policy attached, so the networking and security stages cannot attach policies to the same node. Policy names must be unique in the organization.
 - Projects under an attached policy are automatically enrolled in Cloud Armor Enterprise, which is billed per project. The shipped datasets contain no policies, and exclusions should be defined before a policy is attached.
 - Policy ids are passed to the following stages, where the project factory can attach them to folders via `$security_policies:` references.
+
+Attaching policies from the project factory stage requires granting its service accounts permission to use and read policies at the organization level in `0-org-setup` (`organization/.config.yaml`):
+
+```yaml
+iam_by_principals:
+  $iam_principals:service_accounts/iac-0/iac-pf-rw:
+    - roles/compute.orgSecurityPolicyUser
+  $iam_principals:service_accounts/iac-0/iac-pf-ro:
+    - $custom_roles:org_security_policy_viewer
+```
 
 <!-- TFDOC OPTS files:1 show_extra:1 exclude:2-security-providers.tf -->
 <!-- BEGIN TFDOC -->

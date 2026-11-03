@@ -27,6 +27,7 @@
   - **log_level**: *string*
     <br>*enum: ['NORMAL', 'VERBOSE']*
   - **request_body_inspection_size**: *string*
+    <br>*enum: ['8KB', '16KB', '32KB', '48KB', '64KB']*
   - **user_ip_request_headers**: *array*
     - items: *string*
   - **json_custom_content_types**: *array*

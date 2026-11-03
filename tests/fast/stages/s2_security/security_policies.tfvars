@@ -27,12 +27,3 @@ service_accounts = {
 storage_buckets = {
   "iac-0/iac-outputs" = "test"
 }
-context = {
-  cidr_ranges_sets = {
-    blocked = ["192.0.2.0/24", "198.51.100.0/24"]
-    trusted = ["10.0.0.0/12"]
-  }
-  project_numbers = {
-    sandbox = "1234567890"
-  }
-}

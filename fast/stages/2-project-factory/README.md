@@ -128,6 +128,17 @@ iam_bindings:
       title: Project factory org policy viewer
 ```
 
+If folders or projects attach hierarchical Cloud Armor policies via `$security_policies:`, also grant the project factory service accounts permission to use and read them at the organization level:
+
+```yaml
+# datasets/classic/organization/.config.yaml
+iam_by_principals:
+  $iam_principals:service_accounts/iac-0/iac-pf-rw:
+    - roles/compute.orgSecurityPolicyUser
+  $iam_principals:service_accounts/iac-0/iac-pf-ro:
+    - $custom_roles:org_security_policy_viewer
+```
+
 #### Parent folder
 
 A single "Teams" folder is created here. Multiple folders (or sub-folders) can of course be created by replicating the IAM configuration below for each.

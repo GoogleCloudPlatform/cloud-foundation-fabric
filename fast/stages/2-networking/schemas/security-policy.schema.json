@@ -74,7 +74,14 @@
           ]
         },
         "request_body_inspection_size": {
-          "type": "string"
+          "type": "string",
+          "enum": [
+            "8KB",
+            "16KB",
+            "32KB",
+            "48KB",
+            "64KB"
+          ]
         },
         "user_ip_request_headers": {
           "type": "array",

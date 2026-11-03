@@ -747,6 +747,12 @@
             "type": "string"
           }
         },
+        "security_policies": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
         "service_account_ids": {
           "type": "object",
           "additionalProperties": {
