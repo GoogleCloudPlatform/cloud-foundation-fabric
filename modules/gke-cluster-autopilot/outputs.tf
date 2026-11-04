@@ -41,10 +41,53 @@ output "ca_certificate" {
   sensitive = true
 }
 
+# Deprecated attributes are left out of the cluster resource, as Terraform
+# warns when a deprecated value reaches a root module output.
+
 output "cluster" {
   description = "Cluster resource."
   sensitive   = true
-  value       = google_container_cluster.cluster
+  value = merge(
+    {
+      for attr, value in google_container_cluster.cluster : attr => value
+      if !contains(["enterprise_config", "remove_default_node_pool"], attr)
+    },
+    {
+      addons_config = [
+        for v in google_container_cluster.cluster.addons_config : {
+          for attr, value in v : attr => value
+          if attr != "parallelstore_csi_driver_config"
+        }
+      ]
+      binary_authorization = [
+        for v in google_container_cluster.cluster.binary_authorization : {
+          for attr, value in v : attr => value if attr != "enabled"
+        }
+      ]
+      node_config = [
+        for v in google_container_cluster.cluster.node_config : merge(v, {
+          sandbox_config = [
+            for s in v.sandbox_config : {
+              for attr, value in s : attr => value if attr != "sandbox_type"
+            }
+          ]
+        })
+      ]
+      node_pool = [
+        for p in google_container_cluster.cluster.node_pool : merge(p, {
+          node_config = [
+            for v in p.node_config : merge(v, {
+              sandbox_config = [
+                for s in v.sandbox_config : {
+                  for attr, value in s : attr => value if attr != "sandbox_type"
+                }
+              ]
+            })
+          ]
+        })
+      ]
+    }
+  )
 }
 
 output "dns_endpoint" {

@@ -1064,8 +1064,8 @@ secondary_ip_ranges:
 | [subnet_regions](outputs.tf#L154) | Map of subnet regions keyed by name. |  |
 | [subnet_secondary_ranges](outputs.tf#L161) | Map of subnet secondary ranges keyed by name. |  |
 | [subnet_self_links](outputs.tf#L172) | Map of subnet self links keyed by name. |  |
-| [subnets](outputs.tf#L181) | Subnet resources. |  |
-| [subnets_private_nat](outputs.tf#L190) | Private NAT subnet resources. |  |
-| [subnets_proxy_only](outputs.tf#L195) | L7 ILB or L7 Regional LB subnet resources. |  |
-| [subnets_psc](outputs.tf#L200) | Private Service Connect subnet resources. |  |
+| [subnets](outputs.tf#L184) | Subnet resources. |  |
+| [subnets_private_nat](outputs.tf#L197) | Private NAT subnet resources. |  |
+| [subnets_proxy_only](outputs.tf#L206) | L7 ILB or L7 Regional LB subnet resources. |  |
+| [subnets_psc](outputs.tf#L215) | Private Service Connect subnet resources. |  |
 <!-- END TFDOC -->

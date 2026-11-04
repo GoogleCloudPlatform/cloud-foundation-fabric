@@ -178,9 +178,16 @@ output "subnet_self_links" {
   ]
 }
 
+# The deprecated fingerprint attribute is left out of the subnet resources, as
+# Terraform warns when a deprecated value reaches a root module output.
+
 output "subnets" {
   description = "Subnet resources."
-  value       = { for k, v in google_compute_subnetwork.subnetwork : k => v }
+  value = {
+    for k, v in google_compute_subnetwork.subnetwork : k => {
+      for attr, value in v : attr => value if attr != "fingerprint"
+    }
+  }
   depends_on = [
     # allows correct destruction of internal application load balancers
     google_compute_subnetwork.proxy_only
@@ -189,15 +196,27 @@ output "subnets" {
 
 output "subnets_private_nat" {
   description = "Private NAT subnet resources."
-  value       = { for k, v in google_compute_subnetwork.private_nat : k => v }
+  value = {
+    for k, v in google_compute_subnetwork.private_nat : k => {
+      for attr, value in v : attr => value if attr != "fingerprint"
+    }
+  }
 }
 
 output "subnets_proxy_only" {
   description = "L7 ILB or L7 Regional LB subnet resources."
-  value       = { for k, v in google_compute_subnetwork.proxy_only : k => v }
+  value = {
+    for k, v in google_compute_subnetwork.proxy_only : k => {
+      for attr, value in v : attr => value if attr != "fingerprint"
+    }
+  }
 }
 
 output "subnets_psc" {
   description = "Private Service Connect subnet resources."
-  value       = { for k, v in google_compute_subnetwork.psc : k => v }
+  value = {
+    for k, v in google_compute_subnetwork.psc : k => {
+      for attr, value in v : attr => value if attr != "fingerprint"
+    }
+  }
 }

@@ -628,16 +628,16 @@ module "cluster-1" {
 | [backup_channel_ids](outputs.tf#L17) | GKE backup channel ids. |  |
 | [backup_plan_ids](outputs.tf#L24) | GKE backup plan ids. |  |
 | [ca_certificate](outputs.tf#L36) | Public certificate of the cluster (base64-encoded). | ✓ |
-| [cluster](outputs.tf#L44) | Cluster resource. | ✓ |
-| [dns_endpoint](outputs.tf#L50) | Control plane DNS endpoint. |  |
-| [endpoint](outputs.tf#L58) | Cluster endpoint. |  |
-| [id](outputs.tf#L63) | Fully qualified cluster ID. |  |
-| [location](outputs.tf#L68) | Cluster location. |  |
-| [master_version](outputs.tf#L73) | Master version. |  |
-| [name](outputs.tf#L78) | Cluster name. |  |
-| [notifications](outputs.tf#L83) | GKE Pub/Sub notifications topic. |  |
-| [restore_channel_ids](outputs.tf#L88) | GKE restore channel ids. |  |
-| [restore_plan_ids](outputs.tf#L95) | GKE restore plan ids. |  |
-| [self_link](outputs.tf#L102) | Cluster self link. | ✓ |
-| [workload_identity_pool](outputs.tf#L108) | Workload identity pool. |  |
+| [cluster](outputs.tf#L47) | Cluster resource. | ✓ |
+| [dns_endpoint](outputs.tf#L93) | Control plane DNS endpoint. |  |
+| [endpoint](outputs.tf#L101) | Cluster endpoint. |  |
+| [id](outputs.tf#L106) | Fully qualified cluster ID. |  |
+| [location](outputs.tf#L111) | Cluster location. |  |
+| [master_version](outputs.tf#L116) | Master version. |  |
+| [name](outputs.tf#L121) | Cluster name. |  |
+| [notifications](outputs.tf#L126) | GKE Pub/Sub notifications topic. |  |
+| [restore_channel_ids](outputs.tf#L131) | GKE restore channel ids. |  |
+| [restore_plan_ids](outputs.tf#L138) | GKE restore plan ids. |  |
+| [self_link](outputs.tf#L145) | Cluster self link. | ✓ |
+| [workload_identity_pool](outputs.tf#L151) | Workload identity pool. |  |
 <!-- END TFDOC -->

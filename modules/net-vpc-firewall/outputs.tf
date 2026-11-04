@@ -14,17 +14,34 @@
  * limitations under the License.
  */
 
+# The deprecated enable_logging attribute is left out of the rule resources, as
+# Terraform warns when a deprecated value reaches a root module output.
+
+locals {
+  _default_rules = {
+    admin = google_compute_firewall.allow_admins
+    http  = google_compute_firewall.allow_tag_http
+    https = google_compute_firewall.allow_tag_https
+    ssh   = google_compute_firewall.allow_tag_ssh
+  }
+}
+
 output "default_rules" {
   description = "Default rule resources."
   value = {
-    admin = try(google_compute_firewall.allow_admins, null)
-    http  = try(google_compute_firewall.allow_tag_http, null)
-    https = try(google_compute_firewall.allow_tag_https, null)
-    ssh   = try(google_compute_firewall.allow_tag_ssh, null)
+    for k, rules in local._default_rules : k => [
+      for rule in rules : {
+        for attr, value in rule : attr => value if attr != "enable_logging"
+      }
+    ]
   }
 }
 
 output "rules" {
   description = "Custom rule resources."
-  value       = google_compute_firewall.custom_rules
+  value = {
+    for k, rule in google_compute_firewall.custom_rules : k => {
+      for attr, value in rule : attr => value if attr != "enable_logging"
+    }
+  }
 }

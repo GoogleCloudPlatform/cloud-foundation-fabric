@@ -292,6 +292,6 @@ module "firewall" {
 
 | name | description | sensitive |
 |---|---|:---:|
-| [default_rules](outputs.tf#L17) | Default rule resources. |  |
-| [rules](outputs.tf#L27) | Custom rule resources. |  |
+| [default_rules](outputs.tf#L29) | Default rule resources. |  |
+| [rules](outputs.tf#L40) | Custom rule resources. |  |
 <!-- END TFDOC -->
