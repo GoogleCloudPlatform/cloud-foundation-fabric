@@ -25,20 +25,45 @@ locals {
   _factory_tags_data = {
     for f, v_raw in local._factory_tags_data_raw :
     coalesce(lookup(v_raw, "name", null), trimsuffix(f, ".yaml")) => {
-      id                    = lookup(v_raw, "id", null)
-      allowed_values_regex  = lookup(v_raw, "allowed_values_regex", null)
-      description           = lookup(v_raw, "description", null)
-      iam                   = lookup(v_raw, "iam", {})
-      iam_bindings          = lookup(v_raw, "iam_bindings", {})
-      iam_bindings_additive = lookup(v_raw, "iam_bindings_additive", {})
-      network               = lookup(v_raw, "network", null)
+      id                   = lookup(v_raw, "id", null)
+      allowed_values_regex = lookup(v_raw, "allowed_values_regex", null)
+      description          = lookup(v_raw, "description", null)
+      iam                  = lookup(v_raw, "iam", {})
+      # normalize bindings to the same shape as var.tags
+      iam_bindings = {
+        for bk, bv in lookup(v_raw, "iam_bindings", {}) : bk => merge(bv, {
+          condition = lookup(bv, "condition", null) == null ? null : merge(
+            { description = null }, bv.condition
+          )
+        })
+      }
+      iam_bindings_additive = {
+        for bk, bv in lookup(v_raw, "iam_bindings_additive", {}) : bk => merge(bv, {
+          condition = lookup(bv, "condition", null) == null ? null : merge(
+            { description = null }, bv.condition
+          )
+        })
+      }
+      network = lookup(v_raw, "network", null)
       values = {
         for vk, vv_raw in lookup(v_raw, "values", {}) : vk => {
-          id                    = lookup(vv_raw, "id", null)
-          description           = lookup(vv_raw, "description", null)
-          iam                   = lookup(vv_raw, "iam", {})
-          iam_bindings          = lookup(vv_raw, "iam_bindings", {})
-          iam_bindings_additive = lookup(vv_raw, "iam_bindings_additive", {})
+          id          = lookup(vv_raw, "id", null)
+          description = lookup(vv_raw, "description", null)
+          iam         = lookup(vv_raw, "iam", {})
+          iam_bindings = {
+            for bk, bv in lookup(vv_raw, "iam_bindings", {}) : bk => merge(bv, {
+              condition = lookup(bv, "condition", null) == null ? null : merge(
+                { description = null }, bv.condition
+              )
+            })
+          }
+          iam_bindings_additive = {
+            for bk, bv in lookup(vv_raw, "iam_bindings_additive", {}) : bk => merge(bv, {
+              condition = lookup(bv, "condition", null) == null ? null : merge(
+                { description = null }, bv.condition
+              )
+            })
+          }
         }
       }
     }
