@@ -152,9 +152,6 @@ module "spoke-ra" {
 
 ### Simple hub and spoke with BGP Route Policies
 
-> [!NOTE]
-> Cloud Router serializes configuration changes. Updating or deleting several route policies on the same router in a single apply may fail with `Error 400: [...] is not ready, resourceNotReady`. Re-running the apply converges, and `-parallelism=1` avoids the error entirely.
-
 ```hcl
 module "spoke-ra" {
   source     = "./fabric/modules/ncc-spoke-ra"
