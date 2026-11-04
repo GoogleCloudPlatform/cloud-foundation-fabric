@@ -33,7 +33,7 @@ locals {
   }
   ctx = merge(local._ctx, {
     custom_roles = merge(var.custom_roles, local._ctx.custom_roles)
-    folder_ids   = merge(var.folder_ids, var.context.folder_ids)
+    folder_ids   = merge(var.folder_ids, local._ctx.folder_ids)
     iam_principals = merge(
       var.iam_principals,
       {
