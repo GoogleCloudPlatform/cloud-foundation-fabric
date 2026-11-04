@@ -401,9 +401,6 @@ Each policy is created on its router using the map key as name, which is also th
 
 Policies can equally be declared under a VPN's or VLAN attachment's own `router_config` when the router is created by the module rather than by the stage, in which case peers reference them by key in exactly the same way.
 
-> [!NOTE]
-> Cloud Router serializes configuration changes. Updating or deleting several route policies on the same router in a single apply may fail with `Error 400: [...] is not ready, resourceNotReady`. Re-running the apply converges, and `-parallelism=1` avoids the error entirely.
-
 Routers can also declare `interfaces` and BGP `peers` to peer with NVAs attached as NCC Router Appliance spokes (see [NVAs](#network-virtual-appliances-nvas) below). Interfaces belong to a subnet of the router's VPC, and the second interface sets `redundant_interface` to the key of the first. Each interface requires a literal `ip_address` so the NVA factory can render the guest BGP configuration before the router is created. Each peer references an interface by key and sets either `nva` (creating one BGP session per instance of that NVA's Router Appliance spoke in the VPC) or an explicit `address` (with an optional `router_appliance_instance`).
 
 ```yaml
