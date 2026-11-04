@@ -21,6 +21,8 @@ context:
       - 198.51.100.0/24
     trusted:
       - 10.0.0.0/12
+  folder_ids:
+    sandbox: folders/87654321
   project_numbers:
     sandbox: "1234567890"
 projects:

@@ -9,7 +9,6 @@ factories_config = {
 }
 folder_ids = {
   networking = "folders/12345678"
-  sandbox    = "folders/87654321"
   teams      = "folders/11111111"
 }
 organization = {
