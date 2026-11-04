@@ -53,7 +53,7 @@ values:
     build_config:
     - entry_point: main
       on_deploy_update_policy: []
-      runtime: python310
+      runtime: python313
       source:
       - repo_source: []
         storage_source:
