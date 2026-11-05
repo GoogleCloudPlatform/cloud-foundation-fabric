@@ -233,20 +233,21 @@ resource "google_bigquery_dataset_access" "authorized_routines" {
 
 
 resource "google_bigquery_table" "default" {
-  provider                 = google-beta
-  for_each                 = var.tables
-  project                  = local.project_id
-  dataset_id               = google_bigquery_dataset.default.dataset_id
-  table_id                 = each.key
-  friendly_name            = each.value.friendly_name
-  description              = each.value.description
-  clustering               = each.value.options.clustering
-  expiration_time          = each.value.options.expiration_time
-  labels                   = each.value.labels
-  max_staleness            = each.value.options.max_staleness
-  schema                   = each.value.schema
-  deletion_protection      = each.value.deletion_protection
-  require_partition_filter = each.value.require_partition_filter
+  provider                     = google-beta
+  for_each                     = var.tables
+  project                      = local.project_id
+  dataset_id                   = google_bigquery_dataset.default.dataset_id
+  table_id                     = each.key
+  friendly_name                = each.value.friendly_name
+  description                  = each.value.description
+  clustering                   = each.value.options.clustering
+  expiration_time              = each.value.options.expiration_time
+  labels                       = each.value.labels
+  max_staleness                = each.value.options.max_staleness
+  schema                       = each.value.schema
+  ignore_auto_generated_schema = each.value.ignore_auto_generated_schema
+  deletion_protection          = each.value.deletion_protection
+  require_partition_filter     = each.value.require_partition_filter
 
   dynamic "encryption_configuration" {
     for_each = each.value.options.encryption_key != null ? [""] : []
