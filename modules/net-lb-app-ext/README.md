@@ -491,6 +491,8 @@ module "glb-0" {
 # tftest modules=1 resources=6 inventory=cloud-cdn-route.yaml
 ```
 
+The provider sends `false` for unset `negative_caching` and `request_coalescing`, which turns off these Cloud CDN defaults, so set them explicitly if you need them. For the same reason `cache_key_policy` can't be used on routes that only point to backend buckets, as the API rejects the `include_host`, `include_protocol` and `include_query_string` values the provider always sends.
+
 #### Network Endpoint Groups (NEGs)
 
 Supported Network Endpoint Groups (NEGs) can also be used as backends. Similarly to groups, you can pass a self link for existing NEGs or have the module manage them for you. A simple example using an existing zonal NEG:
