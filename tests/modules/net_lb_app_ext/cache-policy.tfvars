@@ -97,10 +97,10 @@ urlmap_config = {
               included_cookie_names     = ["lang"]
               included_header_names     = ["X-Client"]
             }
-            negative_caching_policy = {
-              "404" = 300
-              "410" = 60
-            }
+            negative_caching_policy = [
+              { code = 404, ttl = 300 },
+              { code = 410, ttl = 60 }
+            ]
           }
         }
       }]

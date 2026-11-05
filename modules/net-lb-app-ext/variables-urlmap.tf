@@ -37,7 +37,6 @@ variable "urlmap_config" {
         default_ttl                       = optional(number)
         max_ttl                           = optional(number)
         negative_caching                  = optional(bool)
-        negative_caching_policy           = optional(map(number))
         request_coalescing                = optional(bool)
         serve_while_stale                 = optional(number)
         cache_key_policy = optional(object({
@@ -49,6 +48,10 @@ variable "urlmap_config" {
           included_header_names     = optional(list(string))
           included_query_parameters = optional(list(string))
         }))
+        negative_caching_policy = optional(list(object({
+          code = number
+          ttl  = optional(number)
+        })))
       }))
       cors_policy = optional(object({
         allow_credentials    = optional(bool)
@@ -151,7 +154,6 @@ variable "urlmap_config" {
           default_ttl                       = optional(number)
           max_ttl                           = optional(number)
           negative_caching                  = optional(bool)
-          negative_caching_policy           = optional(map(number))
           request_coalescing                = optional(bool)
           serve_while_stale                 = optional(number)
           cache_key_policy = optional(object({
@@ -163,6 +165,10 @@ variable "urlmap_config" {
             included_header_names     = optional(list(string))
             included_query_parameters = optional(list(string))
           }))
+          negative_caching_policy = optional(list(object({
+            code = number
+            ttl  = optional(number)
+          })))
         }))
         cors_policy = optional(object({
           allow_credentials    = optional(bool)
@@ -260,7 +266,6 @@ variable "urlmap_config" {
             default_ttl                       = optional(number)
             max_ttl                           = optional(number)
             negative_caching                  = optional(bool)
-            negative_caching_policy           = optional(map(number))
             request_coalescing                = optional(bool)
             serve_while_stale                 = optional(number)
             cache_key_policy = optional(object({
@@ -272,6 +277,10 @@ variable "urlmap_config" {
               included_header_names     = optional(list(string))
               included_query_parameters = optional(list(string))
             }))
+            negative_caching_policy = optional(list(object({
+              code = number
+              ttl  = optional(number)
+            })))
           }))
           cors_policy = optional(object({
             allow_credentials    = optional(bool)
@@ -395,7 +404,6 @@ variable "urlmap_config" {
             default_ttl                       = optional(number)
             max_ttl                           = optional(number)
             negative_caching                  = optional(bool)
-            negative_caching_policy           = optional(map(number))
             request_coalescing                = optional(bool)
             serve_while_stale                 = optional(number)
             cache_key_policy = optional(object({
@@ -407,6 +415,10 @@ variable "urlmap_config" {
               included_header_names     = optional(list(string))
               included_query_parameters = optional(list(string))
             }))
+            negative_caching_policy = optional(list(object({
+              code = number
+              ttl  = optional(number)
+            })))
           }))
           cors_policy = optional(object({
             allow_credentials    = optional(bool)

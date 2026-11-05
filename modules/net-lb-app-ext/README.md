@@ -477,9 +477,10 @@ module "glb-0" {
               cache_mode       = "FORCE_CACHE_ALL"
               default_ttl      = 3600
               negative_caching = true
-              negative_caching_policy = {
-                "404" = 60
-              }
+              negative_caching_policy = [{
+                code = 404
+                ttl  = 60
+              }]
             }
           }
         }]

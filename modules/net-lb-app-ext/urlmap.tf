@@ -111,12 +111,12 @@ resource "google_compute_url_map" "default" {
             }
           }
           dynamic "negative_caching_policy" {
-            for_each = coalesce(cp.value.negative_caching_policy, {})
+            for_each = coalesce(cp.value.negative_caching_policy, [])
             iterator = nc
             content {
-              code = tonumber(nc.key)
+              code = nc.value.code
               dynamic "ttl" {
-                for_each = nc.value[*]
+                for_each = nc.value.ttl[*]
                 content {
                   seconds = tostring(ttl.value)
                 }
@@ -422,12 +422,12 @@ resource "google_compute_url_map" "default" {
                 }
               }
               dynamic "negative_caching_policy" {
-                for_each = coalesce(cp.value.negative_caching_policy, {})
+                for_each = coalesce(cp.value.negative_caching_policy, [])
                 iterator = nc
                 content {
-                  code = tonumber(nc.key)
+                  code = nc.value.code
                   dynamic "ttl" {
-                    for_each = nc.value[*]
+                    for_each = nc.value.ttl[*]
                     content {
                       seconds = tostring(ttl.value)
                     }
@@ -718,12 +718,12 @@ resource "google_compute_url_map" "default" {
                     }
                   }
                   dynamic "negative_caching_policy" {
-                    for_each = coalesce(cp.value.negative_caching_policy, {})
+                    for_each = coalesce(cp.value.negative_caching_policy, [])
                     iterator = nc
                     content {
-                      code = tonumber(nc.key)
+                      code = nc.value.code
                       dynamic "ttl" {
-                        for_each = nc.value[*]
+                        for_each = nc.value.ttl[*]
                         content {
                           seconds = tostring(ttl.value)
                         }
@@ -1098,12 +1098,12 @@ resource "google_compute_url_map" "default" {
                     }
                   }
                   dynamic "negative_caching_policy" {
-                    for_each = coalesce(cp.value.negative_caching_policy, {})
+                    for_each = coalesce(cp.value.negative_caching_policy, [])
                     iterator = nc
                     content {
-                      code = tonumber(nc.key)
+                      code = nc.value.code
                       dynamic "ttl" {
-                        for_each = nc.value[*]
+                        for_each = nc.value.ttl[*]
                         content {
                           seconds = tostring(ttl.value)
                         }
