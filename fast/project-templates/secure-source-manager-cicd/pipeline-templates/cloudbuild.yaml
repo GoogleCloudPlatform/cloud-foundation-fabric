@@ -1,0 +1,126 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# Copy to .cloudbuild/cloudbuild.yaml in the repository.
+# Secure Source Manager passes an empty sourceProvenance, so the build clones
+# the repository over Private Service Connect itself. Note that workers run
+# with no_external_ip, so the Terraform image (or a provider mirror) must be
+# reachable privately, e.g. from Artifact Registry or GCS inside the perimeter.
+
+steps:
+  - name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
+    id: clone
+    entrypoint: bash
+    env:
+      - COMMIT_SHA=${COMMIT_SHA}
+    args:
+      - -e
+      - -o
+      - pipefail
+      - -c
+      - |
+        # TODO: edit to the git_http hostname from ssm_instance.hosts output
+        GIT_HOST="https://test-0-ssm-0-1234567890-git.europe-west4.p.sourcemanager.dev"
+
+        # Default Google-managed certificates verify against the stock trust
+        # store and authenticate with git-credential-gcloud.sh:
+        git config --global "credential.$$GIT_HOST.helper" gcloud.sh
+
+        # Optional: when ca_pool_id and custom_host_config are used instead,
+        # fetch the CA bundle and use an explicit oauth2 token helper
+        # (git-credential-gcloud.sh ignores non-sourcemanager.dev domains):
+        # gcloud privateca pools get-ca-certs dev-ca-0 \
+        #   --location europe-west4 --project my-dev-sec-core \
+        #   --output-file /workspace/cacert.pem
+        # git config --global http.sslCAInfo /workspace/cacert.pem
+        # git config --global "credential.$$GIT_HOST.helper" \
+        #   '!f() { [ "$$1" = get ] || exit 0; echo username=oauth2; echo "password=$$(gcloud auth print-access-token)"; }; f'
+
+        # TODO: edit to the instance project id and repository name
+        git clone "$$GIT_HOST/my-dev-build-ssm-0/vpcsc" /workspace/repo
+        cd /workspace/repo
+        git checkout "$$COMMIT_SHA"
+
+  # TODO: point at a Terraform image in Artifact Registry inside your perimeter
+  - name: europe-west4-docker.pkg.dev/my-ar-project/docker/terraform:1.12.2
+    id: terraform
+    dir: /workspace/repo
+    entrypoint: sh
+    env:
+      - TF_ACTION=${_ACTION}
+      - TF_SA=${_TF_SA}
+    args:
+      - -e
+      - -c
+      - |
+        terraform init -no-color -input=false \
+          -backend-config="impersonate_service_account=$$TF_SA"
+        terraform validate -no-color
+        if [ "$$TF_ACTION" = "plan" ]; then
+          terraform plan -no-color -input=false -lock=false \
+            -var="impersonate_service_account=$$TF_SA" | tee /workspace/plan.txt
+        else
+          terraform apply -no-color -input=false -auto-approve \
+            -var="impersonate_service_account=$$TF_SA"
+        fi
+
+  - name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
+    id: comment
+    entrypoint: bash
+    env:
+      - BRANCH_NAME=${BRANCH_NAME}
+      - COMMIT_SHA=${COMMIT_SHA}
+      - TF_ACTION=${_ACTION}
+    args:
+      - -e
+      - -o
+      - pipefail
+      - -c
+      - |
+        [ "$$TF_ACTION" = "plan" ] || exit 0
+        PY_BIN=$$(command -v python3 || echo /usr/lib/google-cloud-sdk/platform/bundledpythonunix/bin/python3)
+        "$$PY_BIN" - <<'PY'
+        import json, os, subprocess, urllib.request
+
+        # TODO: edit to the instance project id, location, and repository name
+        repo_path = "projects/my-dev-build-ssm-0/locations/europe-west4/repositories/vpcsc"
+        token = subprocess.check_output(["gcloud", "auth", "print-access-token"], text=True).strip()
+        branch = os.environ["BRANCH_NAME"]
+        sha = os.environ["COMMIT_SHA"][:8]
+        with open("/workspace/plan.txt") as f:
+            plan_txt = f.read()[-4000:]
+
+        prs_url = f"https://securesourcemanager.googleapis.com/v1/{repo_path}/pullRequests"
+        req = urllib.request.Request(prs_url, headers={"Authorization": f"Bearer {token}"})
+        prs = json.loads(urllib.request.urlopen(req).read().decode()).get("pullRequests", [])
+        matching = [p for p in prs if p.get("state") == "OPEN" and p.get("head", {}).get("ref") == branch]
+        if not matching:
+            raise SystemExit(f"No open pull request found for branch {branch}")
+
+        body = json.dumps({"comment": {"body": f"### Terraform Plan (`{sha}`)\n\n```\n{plan_txt}\n```"}}).encode()
+        creq = urllib.request.Request(
+            f"https://securesourcemanager.googleapis.com/v1/{matching[0]['name']}/pullRequestComments",
+            data=body,
+            headers={"Authorization": f"Bearer {token}", "Content-Type": "application/json"},
+            method="POST",
+        )
+        urllib.request.urlopen(creq).read()
+        PY
+
+options:
+  # User-managed service accounts have no default logs bucket
+  logging: CLOUD_LOGGING_ONLY
+  pool:
+    # TODO: edit to the build_pool_id output (must be in the instance region)
+    name: projects/my-dev-build-pool-0/locations/europe-west4/workerPools/test-0-ssm-0

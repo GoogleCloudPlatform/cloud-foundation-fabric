@@ -587,6 +587,7 @@ Assuming keys of the form `my_folder`, `my_project`, `my_vpc`, etc. this is an e
 - `$nva_instances:my_nva-b-0` (NVA instance self link)
 - `$project_ids:my_project`
 - `$routers:my_vpc/my_vpn`
+- `$service_attachments:my_service` (PSC producer service attachment, for `addresses.psc` endpoints; values are static entries in the defaults file `context`)
 - `$vpn_gateways:my_vpc/my_gateway`
 
 Internally created resources are mapped to context namespaces, and use specific prefixes to express the relationship with their container.
@@ -624,7 +625,7 @@ Internally created resources are mapped to context namespaces, and use specific 
 | [prefix](variables-fast.tf#L75) | Prefix used for resources that need unique names. Use a maximum of 9 chars for organizations, and 11 chars for tenants. | <code>string</code> | ✓ |  |
 | [context](variables.tf#L17) | Context-specific interpolations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [custom_roles](variables-fast.tf#L25) | Custom roles defined at the org level, in key => id format. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [factories_config](variables.tf#L45) | Configuration for the resource factories or external data. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [factories_config](variables.tf#L46) | Configuration for the resource factories or external data. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [folder_ids](variables-fast.tf#L33) | Folders created in the bootstrap stage. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam_principals](variables-fast.tf#L41) | IAM-format principals. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 | [kms_keys](variables-fast.tf#L50) | KMS key ids. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
@@ -642,12 +643,13 @@ Internally created resources are mapped to context namespaces, and use specific 
 
 | name | description | sensitive |
 |---|---|:---:|
-| [host_project_ids](outputs.tf#L76) | Project IDs. |  |
-| [host_project_numbers](outputs.tf#L81) | Project numbers. |  |
-| [security_policies](outputs.tf#L86) | Hierarchical security policy ids. |  |
-| [subnet_ips](outputs.tf#L91) | Subnet IP ranges. |  |
-| [subnet_proxy_only_self_links](outputs.tf#L96) | Subnet proxy-only self-links. |  |
-| [subnet_psc_self_links](outputs.tf#L101) | Subnet PSC self-links. |  |
-| [subnet_self_links](outputs.tf#L106) | Subnet self-links. |  |
-| [vpc_self_links](outputs.tf#L111) | VPC self-links. |  |
+| [host_project_ids](outputs.tf#L80) | Project IDs. |  |
+| [host_project_numbers](outputs.tf#L85) | Project numbers. |  |
+| [network_attachment_ids](outputs.tf#L90) | PSC network attachment ids. |  |
+| [security_policies](outputs.tf#L95) | Hierarchical security policy ids. |  |
+| [subnet_ips](outputs.tf#L100) | Subnet IP ranges. |  |
+| [subnet_proxy_only_self_links](outputs.tf#L105) | Subnet proxy-only self-links. |  |
+| [subnet_psc_self_links](outputs.tf#L110) | Subnet PSC self-links. |  |
+| [subnet_self_links](outputs.tf#L115) | Subnet self-links. |  |
+| [vpc_self_links](outputs.tf#L120) | VPC self-links. |  |
 <!-- END TFDOC -->

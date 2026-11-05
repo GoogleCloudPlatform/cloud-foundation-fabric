@@ -1,0 +1,61 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# yaml-language-server: $schema=../../stages/2-project-factory/schemas/project.schema.json
+
+# Build project: holds the Cloud Build private worker pool and the build
+# identities the triggers files name. Optional: the instance project can play
+# this role too, by leaving projects_config.build unset. The automation seat
+# is the instance project's, so no automation block here.
+
+# TODO: edit and uncomment the following line to create the project in a folder
+# parent: $folder_ids:shared
+
+# project id can be customized here if file name cannot be changed
+# name: dev-build-pool-0
+
+services:
+  - cloudbuild.googleapis.com
+  - compute.googleapis.com
+  - iam.googleapis.com
+  # needed here even though the private service access connection lives in
+  # the host project
+  - servicenetworking.googleapis.com
+
+iam:
+  roles/viewer:
+    - $iam_principals:service_accounts/dev-build-ssm-0/automation/rw
+  # the worker pool
+  roles/cloudbuild.workerPoolOwner:
+    - $iam_principals:service_accounts/dev-build-ssm-0/automation/rw
+  # the build identities and their IAM
+  roles/iam.serviceAccountAdmin:
+    - $iam_principals:service_accounts/dev-build-ssm-0/automation/rw
+  roles/resourcemanager.projectIamAdmin:
+    - $iam_principals:service_accounts/dev-build-ssm-0/automation/rw
+
+# TODO: edit or comment shared VPC service host; the pool peers with the
+# host's VPC over private service access, which the networking stage
+# configures (see README, worker pool section)
+shared_vpc_service_config:
+  host_project: $project_ids:net-dev-0
+  network_users:
+    - $iam_principals:service_accounts/dev-build-ssm-0/automation/rw
+
+# TODO: edit or comment VPC-SC perimeter membership (omit when the parent
+# folder is already in the perimeter); build traffic is attributed to the
+# perimeter of the peered VPC's project
+vpc_sc:
+  perimeter_name: $vpc_sc_perimeters:default
+  is_dry_run: false

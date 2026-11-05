@@ -1,0 +1,109 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# yaml-language-server: $schema=../../stages/2-project-factory/schemas/project.schema.json
+
+# Instance project: holds the Secure Source Manager instance, the repositories
+# and their repository-level service accounts, and the automation seat for
+# this template, which spans this project and the build project.
+
+# TODO: edit and uncomment the following line to create the project in a folder
+# parent: $folder_ids:shared
+
+# project id can be customized here if file name cannot be changed
+# name: dev-build-ssm-0
+
+services:
+  # for the load balancer pair
+  - compute.googleapis.com
+  - iam.googleapis.com
+  # uncomment only if this project itself hosts a Private CA pool
+  # - privateca.googleapis.com
+  # enabling this through the factory also creates the service agent and
+  # grants it roles/securesourcemanager.serviceAgent, which must happen
+  # before the first instance is created
+  - securesourcemanager.googleapis.com
+
+automation:
+  # TODO: edit the automation project and optionally edit resource names
+  project: $project_ids:iac-0
+  service_accounts:
+    rw:
+      description: Read/write automation service account for the SSM template.
+  bucket:
+    # this reuses the existing stage state bucket and creates a folder in it
+    name: iac-stage-state
+    create: false
+    managed_folders:
+      dev-build-ssm-0:
+        iam:
+          roles/storage.objectAdmin:
+            # the project id in the service account ref matches this file name
+            - $iam_principals:service_accounts/dev-build-ssm-0/automation/rw
+
+iam:
+  roles/viewer:
+    - automation/rw
+  # the instance, the repositories and their IAM
+  roles/securesourcemanager.admin:
+    - automation/rw
+  # the repository-level service accounts and their IAM
+  roles/iam.serviceAccountAdmin:
+    - automation/rw
+  roles/resourcemanager.projectIamAdmin:
+    - automation/rw
+  # the load balancer pair
+  roles/compute.loadBalancerAdmin:
+    - automation/rw
+
+org_policies:
+  # the repository-level service accounts live here and the builds they
+  # create run in the build project; only the project hosting the service
+  # account needs this
+  iam.disableCrossProjectServiceAccountUsage:
+    rules:
+      - enforce: false
+
+# TODO: uncomment only when ssm_config.ca_pool_id is set (leave commented for
+# default Google-managed certificates). Signs the instance certificate through
+# a CA pool in the instance region; the factory places this grant because the
+# member string embeds the project number, and needs a delegated
+# projectIamAdmin on the CA project (see README, custom hostnames and CA pool
+# section)
+# service_agents_project_bindings:
+#   ssm-certificate-requester:
+#     service: sourcemanager
+#     project: $project_ids:dev-sec-core
+#     role: roles/privateca.certificateRequester
+
+# the load balancer pair lives in the VPC the build pool peers with, so this
+# project is a service project of its host; networkUser at host project level
+# for the automation account and the compute service agent is where that role
+# belongs, and a subnet-scoped grant would add to it rather than narrow it
+# TODO: edit to the host project of the VPC
+shared_vpc_service_config:
+  host_project: $project_ids:net-dev-0
+  network_users:
+    # the project id in the service account ref matches this file name; the
+    # short form is not available here as this is set in the first pass
+    - $iam_principals:service_accounts/dev-build-ssm-0/automation/rw
+  service_agent_iam:
+    roles/compute.networkUser:
+      - $service_agents:compute
+
+# TODO: edit or comment VPC-SC perimeter membership (omit when the parent
+# folder is already in the perimeter)
+vpc_sc:
+  perimeter_name: $vpc_sc_perimeters:default
+  is_dry_run: false
