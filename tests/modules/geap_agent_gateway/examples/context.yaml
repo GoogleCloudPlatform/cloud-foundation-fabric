@@ -22,6 +22,9 @@ values:
         - corp.internal.
         target_network: projects/my-host-prj-id/global/networks/my-vpc
       network_attachment: projects/my-host-prj-id/regions/europe-west1/networkAttachments/my-na
+      tls_config:
+      - additional_roots: PUBLICLY_TRUSTED_ROOTS
+        trust_config: projects/1234567890/locations/europe-west1/trustConfigs/corp
       vpc_egress: PRIVATE_RANGES_ONLY
     location: europe-west1
     project: my-prj-id

@@ -6,6 +6,7 @@ The module facilitates the deployments of Gemini Enterprise Agent Platform (GEAP
 - [API](#api)
 - [Minimal Gateway deployment](#minimal-gateway-deployment)
 - [VPC connectivity](#vpc-connectivity)
+- [Trusting private CA and self-signed certificates](#trusting-private-ca-and-self-signed-certificates)
 - [Connect to self-managed proxies](#connect-to-self-managed-proxies)
 - [Authorizing Connectivity with IAP](#authorizing-connectivity-with-iap)
   - [Policy model](#policy-model)
@@ -20,7 +21,7 @@ The module facilitates the deployments of Gemini Enterprise Agent Platform (GEAP
 
 ## API
 
-In order to use this module you first need to enable the `networkservices.googleapis.com` API. Delegating authorization also needs `networksecurity.googleapis.com`, and the API of the service the decision is delegated to (`iap.googleapis.com` or `modelarmor.googleapis.com`).
+In order to use this module you first need to enable the `networkservices.googleapis.com` API. Delegating authorization also needs `networksecurity.googleapis.com`, and the API of the service the decision is delegated to (`iap.googleapis.com` or `modelarmor.googleapis.com`). Trusting private CA or self-signed destination certificates also requires `certificatemanager.googleapis.com`.
 
 ## Minimal Gateway deployment
 
@@ -113,6 +114,103 @@ module "agent-gateway" {
 
 > [!IMPORTANT]
 > A gateway only accepts a template reference expressed with the **project number**, not the project id. The module builds that reference for you: pass `project_number` to save it a project data source read, and use the project number form when you reference a template you manage elsewhere.
+
+## Trusting private CA and self-signed certificates
+
+Egress (`AGENT_TO_ANYWHERE`) gateways validate destination HTTPS server certificates through `networking_config.tls_config` on the agent connectivity template, backed by a regional Certificate Manager [`TrustConfig`](https://docs.cloud.google.com/gemini-enterprise-agent-platform/govern/gateways/set-up-vpc-connectivity) in the same project and region as the gateway. `tls_config` can be combined with `psc_i_network_attachment_id` for private VPC destinations or set on its own when reaching public endpoints that present private CA or self-signed certificates.
+
+Pass PEM-encoded certificate strings (for example via `file(...)` or `tls_self_signed_cert`) in `trust_anchors`, `intermediate_cas`, or `allowlisted_certificates` to have the module create the regional `TrustConfig` and bind it to the connectivity template:
+
+- `trust_anchors` holds root CA certificates, and `intermediate_cas` holds intermediate CA certificates (setting `intermediate_cas` requires at least one root CA in `trust_anchors`).
+- `allowlisted_certificates` trusts specific leaf or self-signed certificates directly, provided the server proves key possession and the request hostname matches the certificate SAN. Note that Agent Gateway currently expects at least one CA certificate in `trust_anchors` on the `TrustConfig`.
+- `additional_roots` defaults to `PUBLICLY_TRUSTED_ROOTS`, which trusts both your `TrustConfig` and public CAs. Keep `PUBLICLY_TRUSTED_ROOTS` if agents also call Google APIs (`*.googleapis.com`) or public HTTPS endpoints; set `NO_ADDITIONAL_ROOTS` to trust exclusively certificates validated by your `TrustConfig`.
+- Certificate Manager `TrustConfig` stores static PEM bundles (dynamic references to Certificate Authority Service pools or Secret Manager are not supported), so renew certificates by updating the PEM inputs in Terraform.
+
+```hcl
+resource "tls_private_key" "ca" {
+  algorithm = "RSA"
+  rsa_bits  = 2048
+}
+
+resource "tls_self_signed_cert" "ca" {
+  private_key_pem       = tls_private_key.ca.private_key_pem
+  is_ca_certificate     = true
+  validity_period_hours = 720
+  allowed_uses          = ["cert_signing", "crl_signing"]
+  subject {
+    common_name = "Corp Root CA"
+  }
+}
+
+resource "tls_private_key" "leaf" {
+  algorithm = "RSA"
+  rsa_bits  = 2048
+}
+
+resource "tls_self_signed_cert" "leaf" {
+  private_key_pem       = tls_private_key.leaf.private_key_pem
+  validity_period_hours = 720
+  dns_names             = ["mcp.corp.internal"]
+  allowed_uses          = ["key_encipherment", "digital_signature", "server_auth"]
+  subject {
+    common_name = "mcp.corp.internal"
+  }
+}
+
+module "addresses" {
+  source     = "./fabric/modules/net-address"
+  project_id = var.project_id
+  network_attachments = {
+    my-na = {
+      subnet_self_link     = var.subnets.primary.self_link
+      automatic_connection = true
+    }
+  }
+}
+
+module "agent-gateway" {
+  source         = "./fabric/modules/geap-agent-gateway"
+  name           = "my-gateway"
+  project_id     = var.project_id
+  project_number = var.project_number
+  region         = var.region
+  access_path    = "AGENT_TO_ANYWHERE"
+  networking_config = {
+    psc_i_network_attachment_id = "$psc_network_attachments:my-na"
+    tls_config = {
+      trust_anchors            = [tls_self_signed_cert.ca.cert_pem]
+      allowlisted_certificates = [tls_self_signed_cert.leaf.cert_pem]
+    }
+  }
+  context = {
+    psc_network_attachments = module.addresses.network_attachment_ids
+  }
+}
+# tftest inventory=tls-config.yaml
+```
+
+Set `trust_config_reuse` instead to reference a regional `TrustConfig` managed elsewhere in the same project and region. Pass a short name, a full `TrustConfig` resource ID (using either project ID or project number — the module normalizes it to the required project number form), or a `$trust_configs:...` context reference. Ensure the caller creating the connectivity template holds `certificatemanager.trustconfigs.use` on the `TrustConfig`.
+
+```hcl
+module "agent-gateway" {
+  source         = "./fabric/modules/geap-agent-gateway"
+  name           = "my-gateway"
+  project_id     = "my-project-id"
+  project_number = "1234567890"
+  region         = "europe-west1"
+  access_path    = "AGENT_TO_ANYWHERE"
+  networking_config = {
+    tls_config = {
+      additional_roots   = "NO_ADDITIONAL_ROOTS"
+      trust_config_reuse = "corp-ca"
+    }
+  }
+}
+# tftest inventory=tls-config-reuse.yaml
+```
+
+> [!NOTE]
+> `tls_config` is immutable on an `AgentConnectivityTemplate`, and an attached gateway does not pick up in-place template changes. The module sets `create_before_destroy = true` on the template: when changing `tls_config` on an existing gateway, also update `networking_config.name` so Terraform creates the new template first, rebinds the gateway in place, and then deletes the previous template.
 
 ## Connect to self-managed proxies
 
@@ -316,6 +414,9 @@ module "agent-gateway" {
       domains        = ["corp.internal."]
       target_network = "$networks:host"
     }
+    tls_config = {
+      trust_config_reuse = "$trust_configs:corp"
+    }
   }
   model_armor_config = {
     request_template_id  = "$model_armor_templates:request"
@@ -359,6 +460,9 @@ module "agent-gateway" {
     psc_network_attachments = {
       my-na = "projects/my-host-prj-id/regions/europe-west1/networkAttachments/my-na"
     }
+    trust_configs = {
+      corp = "projects/my-prj-id/locations/europe-west1/trustConfigs/corp"
+    }
   }
 }
 # tftest inventory=context.yaml
@@ -368,21 +472,21 @@ module "agent-gateway" {
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [name](variables.tf#L127) | The name of the Agent Gateway. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L207) | The ID of the project where the data stores and the agents will be created. | <code>string</code> | ✓ |  |
-| [region](variables.tf#L234) | The region where the agent gateway is created. | <code>string</code> | ✓ |  |
+| [name](variables.tf#L128) | The name of the Agent Gateway. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L265) | The ID of the project where the data stores and the agents will be created. | <code>string</code> | ✓ |  |
+| [region](variables.tf#L292) | The region where the agent gateway is created. | <code>string</code> | ✓ |  |
 | [access_path](variables.tf#L17) | The direction the gateway applies to: ingress (CLIENT_TO_AGENT) or egress (AGENT_TO_ANYWHERE) (if var.is_google_managed = false). | <code>string</code> |  | <code>null</code> |
 | [access_policies](variables-iam.tf#L19) | IAM v3 Unified Access Policies (UAPs) and their bindings, keyed by policy ID. Set 'rules' to create a project access policy and bind it, or 'policy_reuse' to bind an existing access policy. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [context](variables.tf#L47) | Context-specific interpolations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [description](variables.tf#L65) | The description of the Agent Gateway. | <code>string</code> |  | <code>&#34;Terraform managed.&#34;</code> |
-| [iap_config](variables.tf#L71) | Delegate request authorization to Identity-Aware Proxy, which enforces IAM Unified Access Policies (UAPs). Creates an authorization extension and the 'REQUEST_AUTHZ' policy binding it to the gateway. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [is_google_managed](variables.tf#L100) | Whether the Agent Gateway is Google or self-managed. | <code>bool</code> |  | <code>true</code> |
-| [labels](variables.tf#L107) | Labels to associate to the Agent Gateway. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
-| [model_armor_config](variables.tf#L113) | Delegate content authorization to Model Armor. Creates an authorization extension and the 'CONTENT_AUTHZ' policy binding it to the gateway. Templates are not managed here: pass their ids, either fully qualified or as short ids resolved against the gateway project and region. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [networking_config](variables.tf#L136) | The Agent Gateway networking configuration. Set 'psc_i_network_attachment_id' to manage an agent connectivity template here, or 'connectivity_template_reuse' to attach the gateway to an existing one. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [project_number](variables.tf#L213) | Project number of var.project_id. Gateways reference connectivity templates by project number: set this to avoid the additional project data source read. | <code>string</code> |  | <code>null</code> |
-| [proxy_uri](variables.tf#L219) | The uri of a compatible self-managed proxy (if var.is_google_managed = false). | <code>string</code> |  | <code>null</code> |
-| [registries](variables.tf#L240) | A list of Agent Registries containing the agents, MCP servers and tools governed by the Agent Gateway. Note: Currently limited to project-scoped registries Must be of format //agentregistry.googleapis.com/{version}/projects/{{project}}/locations/{{location}}. | <code>list&#40;string&#41;</code> |  | <code>null</code> |
+| [description](variables.tf#L66) | The description of the Agent Gateway. | <code>string</code> |  | <code>&#34;Terraform managed.&#34;</code> |
+| [iap_config](variables.tf#L72) | Delegate request authorization to Identity-Aware Proxy, which enforces IAM Unified Access Policies (UAPs). Creates an authorization extension and the 'REQUEST_AUTHZ' policy binding it to the gateway. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [is_google_managed](variables.tf#L101) | Whether the Agent Gateway is Google or self-managed. | <code>bool</code> |  | <code>true</code> |
+| [labels](variables.tf#L108) | Labels to associate to the Agent Gateway. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
+| [model_armor_config](variables.tf#L114) | Delegate content authorization to Model Armor. Creates an authorization extension and the 'CONTENT_AUTHZ' policy binding it to the gateway. Templates are not managed here: pass their ids, either fully qualified or as short ids resolved against the gateway project and region. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [networking_config](variables.tf#L137) | The Agent Gateway networking configuration. Set 'psc_i_network_attachment_id' or 'tls_config' to manage an agent connectivity template here, or 'connectivity_template_reuse' to attach the gateway to an existing one. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [project_number](variables.tf#L271) | Project number of var.project_id. Gateways and connectivity templates reference template and trust config resources by project number: set this to avoid the additional project data source read. | <code>string</code> |  | <code>null</code> |
+| [proxy_uri](variables.tf#L277) | The uri of a compatible self-managed proxy (if var.is_google_managed = false). | <code>string</code> |  | <code>null</code> |
+| [registries](variables.tf#L298) | A list of Agent Registries containing the agents, MCP servers and tools governed by the Agent Gateway. Note: Currently limited to project-scoped registries Must be of format //agentregistry.googleapis.com/{version}/projects/{{project}}/locations/{{location}}. | <code>list&#40;string&#41;</code> |  | <code>null</code> |
 
 ## Outputs
 
@@ -395,4 +499,5 @@ module "agent-gateway" {
 | [connectivity_template_id](outputs.tf#L56) | The id of the agent connectivity template attached to the gateway. |  |
 | [id](outputs.tf#L61) | The Agent Gateway id. |  |
 | [policy_binding_ids](outputs.tf#L66) | The IAM v3 policy binding ids, keyed by policy key. |  |
+| [trust_config_id](outputs.tf#L73) | The id of the Certificate Manager trust config used by the connectivity template. |  |
 <!-- END TFDOC -->
