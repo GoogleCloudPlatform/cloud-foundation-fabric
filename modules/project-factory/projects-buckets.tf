@@ -80,6 +80,9 @@ locals {
       }
     ]
   ])
+  storage_buckets = {
+    for k, v in module.buckets : k => v.name
+  }
 }
 
 module "buckets" {
