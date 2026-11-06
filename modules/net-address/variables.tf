@@ -17,10 +17,11 @@
 variable "context" {
   description = "Context-specific interpolations."
   type = object({
-    locations   = optional(map(string), {})
-    networks    = optional(map(string), {})
-    project_ids = optional(map(string), {})
-    subnets     = optional(map(string), {})
+    locations           = optional(map(string), {})
+    networks            = optional(map(string), {})
+    project_ids         = optional(map(string), {})
+    service_attachments = optional(map(string), {})
+    subnets             = optional(map(string), {})
   })
   default  = {}
   nullable = false

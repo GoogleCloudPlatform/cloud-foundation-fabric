@@ -23,7 +23,14 @@ values:
     location: europe-west8
     private_config:
     - ca_pool: projects/another-project/locations/europe-west8/caPools/my-ca-pool
+      custom_host_config:
+      - api: api.ssm.example.com
+        git_http: git.ssm.example.com
+        git_ssh: ssh.ssm.example.com
+        html: ssm.example.com
       is_private: true
+      psc_allowed_projects:
+      - another-project
     project: project-id
     terraform_labels:
       goog-terraform-provisioned: 'true'
@@ -36,6 +43,8 @@ values:
     location: europe-west8
     project: project-id
     repository_id: my-repository
+    scan_config: []
+    service_account: my-repository-sa@project-id.iam.gserviceaccount.com
     timeouts: null
 
 counts:

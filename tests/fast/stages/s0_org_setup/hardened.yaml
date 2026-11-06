@@ -8825,6 +8825,17 @@ values:
     role_id: projectIamViewer
     stage: GA
     title: Custom role projectIamViewer
+  module.organization[0].google_organization_iam_custom_role.roles["service_account_iam_admin"]:
+    deletion_policy: DELETE
+    description: Terraform-managed.
+    org_id: '1234567890'
+    permissions:
+    - iam.serviceAccounts.get
+    - iam.serviceAccounts.getIamPolicy
+    - iam.serviceAccounts.setIamPolicy
+    role_id: serviceAccountIamAdmin
+    stage: GA
+    title: Custom role serviceAccountIamAdmin
   module.organization[0].google_organization_iam_custom_role.roles["service_account_viewer"]:
     deletion_policy: DELETE
     description: Terraform-managed.
@@ -10237,7 +10248,7 @@ counts:
   google_org_policy_policy: 206
   google_organization_iam_audit_config: 1
   google_organization_iam_binding: 43
-  google_organization_iam_custom_role: 15
+  google_organization_iam_custom_role: 16
   google_project: 3
   google_project_iam_binding: 64
   google_project_iam_member: 17
@@ -10259,7 +10270,7 @@ counts:
   google_tags_tag_value_iam_binding: 4
   local_file: 9
   modules: 54
-  resources: 761
+  resources: 762
   terraform_data: 4
 
 outputs:
