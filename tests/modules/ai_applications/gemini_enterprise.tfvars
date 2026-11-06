@@ -5,6 +5,10 @@ context = {
   locations = {
     primary = "eu"
   }
+  model_armor_templates = {
+    prompt   = "projects/actual-project-id/locations/eu/templates/prompt-tmpl"
+    response = "projects/actual-project-id/locations/eu/templates/resp-tmpl"
+  }
   project_ids = {
     app = "actual-project-id"
   }
@@ -65,8 +69,8 @@ engines_configs = {
         }
         model_armor_config = {
           failure_mode         = "FAIL_OPEN"
-          response_template    = "projects/actual-project-id/locations/eu/templates/resp-tmpl"
-          user_prompt_template = "projects/actual-project-id/locations/eu/templates/prompt-tmpl"
+          response_template    = "$model_armor_templates:response"
+          user_prompt_template = "$model_armor_templates:prompt"
         }
       }
       description  = "Enterprise Assistant"

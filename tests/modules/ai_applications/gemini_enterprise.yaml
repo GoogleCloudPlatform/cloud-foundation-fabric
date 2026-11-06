@@ -102,7 +102,6 @@ values:
           display_template: '{value}'
           field: title
           ui_component: title
-        name: projects/actual-project-id/locations/eu/collections/default_collection/dataStores/my-gemini-app-data-store-1
       default_search_request_order_by: relevance
       disable_user_events_collection: false
       enable_autocomplete: true

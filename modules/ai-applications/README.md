@@ -431,9 +431,9 @@ module "ai-applications" {
 | [acl_configs](variables.tf#L17) | Location-level ACL configurations keyed by location. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [chat_agent_security_configs](variables.tf#L41) | The DLP security configurations for (Dialogflow CX) chat agents. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [context](variables.tf#L329) | Context-specific interpolations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [data_stores_configs](variables.tf#L340) | The ai-applications datastore configurations. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [encryption_configs](variables.tf#L446) | CMEK configurations registered for the project, keyed by location (e.g. us, eu). Data stores and engines are created after keys are registered. KMS key format: 'projects/[PROJECT]/locations/[LOCATION]/keyRings/[RING]/cryptoKeys/[KEY_NAME]'. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [engines_configs](variables.tf#L457) | The AI applications engines configurations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [data_stores_configs](variables.tf#L341) | The ai-applications datastore configurations. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [encryption_configs](variables.tf#L447) | CMEK configurations registered for the project, keyed by location (e.g. us, eu). Data stores and engines are created after keys are registered. KMS key format: 'projects/[PROJECT]/locations/[LOCATION]/keyRings/[RING]/cryptoKeys/[KEY_NAME]'. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [engines_configs](variables.tf#L458) | The AI applications engines configurations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [location](variables.tf#L761) | Location where the data stores and agents will be created. | <code>string</code> |  | <code>&#34;global&#34;</code> |
 | [user_stores_configs](variables.tf#L779) | Location-level user store configurations keyed by location. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 
@@ -452,9 +452,9 @@ module "ai-applications" {
 | [data_store_ids](outputs.tf#L59) | The ids of the data stores created. |  |
 | [data_stores](outputs.tf#L67) | The data stores resources created. |  |
 | [search_engine](outputs.tf#L72) | The search engines object. |  |
-| [search_engine_id](outputs.tf#L77) | The id of the search engine. |  |
-| [user_store_ids](outputs.tf#L86) | The ids of the user stores created. |  |
-| [user_stores](outputs.tf#L93) | The user store resources created. |  |
-| [widget_config](outputs.tf#L98) | The search widget config resource created. |  |
-| [widget_config_id](outputs.tf#L103) | The id of the search widget config. |  |
+| [search_engine_id](outputs.tf#L81) | The id of the search engine. |  |
+| [user_store_ids](outputs.tf#L90) | The ids of the user stores created. |  |
+| [user_stores](outputs.tf#L97) | The user store resources created. |  |
+| [widget_config](outputs.tf#L102) | The search widget config resource created. |  |
+| [widget_config_id](outputs.tf#L107) | The id of the search widget config. |  |
 <!-- END TFDOC -->

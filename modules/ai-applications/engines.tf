@@ -35,13 +35,7 @@ locals {
     k => merge(v, {
       name = (
         contains(keys(google_discovery_engine_data_store.default), k)
-        ? format(
-          "projects/%s/locations/%s/collections/%s/dataStores/%s",
-          local.project_id,
-          google_discovery_engine_data_store.default[k].location,
-          var.engines_configs.collection_id,
-          google_discovery_engine_data_store.default[k].data_store_id
-        )
+        ? google_discovery_engine_data_store.default[k].name
         : k
       )
     })
@@ -196,9 +190,17 @@ resource "google_discovery_engine_assistant" "default" {
         for_each = local.assistant_armor == null ? [] : [""]
 
         content {
-          failure_mode         = local.assistant_armor.failure_mode
-          response_template    = local.assistant_armor.response_template
-          user_prompt_template = local.assistant_armor.user_prompt_template
+          failure_mode = local.assistant_armor.failure_mode
+          response_template = lookup(
+            local.ctx.model_armor_templates,
+            local.assistant_armor.response_template,
+            local.assistant_armor.response_template
+          )
+          user_prompt_template = lookup(
+            local.ctx.model_armor_templates,
+            local.assistant_armor.user_prompt_template,
+            local.assistant_armor.user_prompt_template
+          )
         }
       }
     }
@@ -226,7 +228,6 @@ resource "google_discovery_engine_assistant" "default" {
 }
 
 resource "google_discovery_engine_widget_config" "default" {
-  provider         = google-beta
   count            = local.widget == null ? 0 : 1
   engine_id        = google_discovery_engine_search_engine.default[0].engine_id
   collection_id    = var.engines_configs.collection_id

@@ -329,9 +329,10 @@ variable "chat_agent_security_configs" {
 variable "context" {
   description = "Context-specific interpolations."
   type = object({
-    kms_keys    = optional(map(string), {})
-    locations   = optional(map(string), {})
-    project_ids = optional(map(string), {})
+    kms_keys              = optional(map(string), {})
+    locations             = optional(map(string), {})
+    model_armor_templates = optional(map(string), {})
+    project_ids           = optional(map(string), {})
   })
   default  = {}
   nullable = false
@@ -592,11 +593,11 @@ variable "engines_configs" {
       try(var.engines_configs.search_engine_config.app_type, null) == null
       ? true
       : contains(
-        ["APP_TYPE_INTRANET", "APP_TYPE_UNSPECIFIED"],
+        ["APP_TYPE_INTRANET"],
         var.engines_configs.search_engine_config.app_type
       )
     )
-    error_message = "engines_configs.search_engine_config.app_type must be one of [APP_TYPE_INTRANET, APP_TYPE_UNSPECIFIED]."
+    error_message = "engines_configs.search_engine_config.app_type must be APP_TYPE_INTRANET."
   }
   validation {
     condition = (
@@ -617,8 +618,7 @@ variable "engines_configs" {
         "SUBSCRIPTION_TIER_FRONTLINE_STARTER",
         "SUBSCRIPTION_TIER_FRONTLINE_WORKER",
         "SUBSCRIPTION_TIER_SEARCH",
-        "SUBSCRIPTION_TIER_SEARCH_AND_ASSISTANT",
-        "SUBSCRIPTION_TIER_UNSPECIFIED"
+        "SUBSCRIPTION_TIER_SEARCH_AND_ASSISTANT"
       ], var.engines_configs.search_engine_config.required_subscription_tier)
     )
     error_message = "Invalid engines_configs.search_engine_config.required_subscription_tier value."

@@ -72,6 +72,10 @@ output "data_stores" {
 output "search_engine" {
   description = "The search engines object."
   value       = try(google_discovery_engine_search_engine.default[0], null)
+  depends_on = [
+    google_discovery_engine_assistant.default,
+    google_discovery_engine_widget_config.default
+  ]
 }
 
 output "search_engine_id" {
