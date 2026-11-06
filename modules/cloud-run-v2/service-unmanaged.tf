@@ -45,6 +45,16 @@ resource "google_cloud_run_v2_service" "service_unmanaged" {
     }
   }
 
+  dynamic "scaling" {
+    for_each = var.service_config.service_scaling == null ? [] : [""]
+    content {
+      manual_instance_count = var.service_config.service_scaling.manual_instance_count
+      max_instance_count    = var.service_config.service_scaling.max_instance_count
+      min_instance_count    = var.service_config.service_scaling.min_instance_count
+      scaling_mode          = var.service_config.service_scaling.mode
+    }
+  }
+
   dynamic "traffic" {
     for_each = var.service_config.traffic == null ? [] : var.service_config.traffic
     content {
