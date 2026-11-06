@@ -14,9 +14,10 @@
 
 # Copy to .cloudbuild/cloudbuild.yaml in the repository.
 # Secure Source Manager passes an empty sourceProvenance, so the build clones
-# the repository over Private Service Connect itself. Note that workers run
-# with no_external_ip, so the Terraform image (or a provider mirror) must be
-# reachable privately, e.g. from Artifact Registry or GCS inside the perimeter.
+# the repository over Private Service Connect itself. Workers run with
+# no_external_ip, so the Terraform image (or a provider mirror) must be
+# reachable privately, such as from Artifact Registry or GCS inside the
+# perimeter.
 
 steps:
   - name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim

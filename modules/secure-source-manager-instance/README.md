@@ -67,13 +67,13 @@ module "ssm_instance" {
 # tftest modules=1 resources=2 inventory=private-instance.yaml
 ```
 
-You can optionally specify a Certificate Authority (CAS) pool and use your own certificate, and list additional projects allowed to set up Private Service Connect connections to the instance.
+You can also pass a Certificate Authority Service (CAS) pool to sign the instance certificate, and list extra projects that can attach Private Service Connect consumers to the instance.
 
-Custom hostnames replace the Google-assigned ones under `REGION.p.sourcemanager.dev`, and require a CA pool since their certificate is signed by it. All four are mandatory, and like everything else on an instance they cannot be changed after creation.
+Custom hostnames replace the default `REGION.p.sourcemanager.dev` names, and they require a CA pool because Certificate Authority Service signs their certificate. You must set all 4 hostnames when using `custom_host_config`, and every instance setting is immutable after creation.
 
-Repositories can be assigned their own service account, which Secure Source Manager uses as the triggering identity when it starts a build for that repository. Without it a repository falls back to the shared Secure Source Manager service agent, so set it whenever repositories need to be isolated from one another.
+You can assign each repository its own service account, which Secure Source Manager uses as the triggering identity when it starts Cloud Build runs for that repository. Without a dedicated account, the repository uses the shared Secure Source Manager service agent, so set `service_account` whenever you want to isolate repositories from one another.
 
-This example also shows the `context` variable, which resolves symbolic references at plan time so callers can pass logical names instead of concrete ids. Besides the standard `locations` and `project_ids`, this module interpolates `ca_pools` for the CAS pool, `service_accounts` for repository service accounts, `kms_keys` for the instance key, and `custom_roles` and `iam_principals` in IAM bindings. Private Service Connect allowed projects accept either form, so they are looked up in `project_ids` first and then in `project_numbers`.
+This example also uses `context` to resolve `$namespace:key` references at plan time so callers can pass logical names. Along with `locations` and `project_ids`, this module resolves `ca_pools` for the CAS pool, `service_accounts` for repository service accounts, `kms_keys` for the instance key, and `custom_roles` and `iam_principals` in IAM bindings. Entries in `psc_allowed_projects` accept either project IDs or project numbers, and the module checks `project_ids` first and `project_numbers` second.
 
 ```hcl
 module "ssm_instance" {

@@ -79,18 +79,17 @@ org_policies:
 # default Google-managed certificates). Signs the instance certificate through
 # a CA pool in the instance region; the factory places this grant because the
 # member string embeds the project number, and needs a delegated
-# projectIamAdmin on the CA project (see README, custom hostnames and CA pool
-# section)
+# projectIamAdmin on the CA project (see README, Custom hostnames and Private
+# CA pools)
 # service_agents_project_bindings:
 #   ssm-certificate-requester:
 #     service: sourcemanager
 #     project: $project_ids:dev-sec-core
 #     role: roles/privateca.certificateRequester
 
-# the load balancer pair lives in the VPC the build pool peers with, so this
-# project is a service project of its host; networkUser at host project level
-# for the automation account and the compute service agent is where that role
-# belongs, and a subnet-scoped grant would add to it rather than narrow it
+# the load balancer pair runs in the VPC peered with the worker pool, so this
+# project is a Shared VPC service project and needs networkUser at the host
+# project level for the automation account and the compute service agent
 # TODO: edit to the host project of the VPC
 shared_vpc_service_config:
   host_project: $project_ids:net-dev-0

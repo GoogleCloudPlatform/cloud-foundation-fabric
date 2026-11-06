@@ -15,7 +15,7 @@
  */
 
 variable "build_pool_config" {
-  description = "Cloud Build private worker pool, peered with the VPC over private service access."
+  description = "Cloud Build private worker pool configuration."
   type = object({
     disk_size_gb   = optional(number, 100)
     machine_type   = optional(string, "e2-standard-2")
@@ -42,7 +42,7 @@ variable "context" {
 }
 
 variable "load_balancer_config" {
-  description = "Internal proxy load balancer pair in front of the instance service attachments, for the build workers behind their peering."
+  description = "Regional internal TCP proxy load balancer configuration for the instance service attachments."
   type = object({
     address    = optional(string)
     network    = string
@@ -52,13 +52,13 @@ variable "load_balancer_config" {
 }
 
 variable "location" {
-  description = "Region for the instance, the load balancers, the build pool, and any CA pool."
+  description = "Region for the instance, load balancers, worker pool, and optional CA pool."
   type        = string
   nullable    = false
 }
 
 variable "name" {
-  description = "Base name for the instance and the build pool, prefixed with the prefix."
+  description = "Base name for the instance and the worker pool."
   type        = string
   nullable    = false
   default     = "ssm-0"
@@ -90,7 +90,7 @@ variable "projects_config" {
 }
 
 variable "repositories_config" {
-  description = "Repositories, each with its own service account and the build identities its pipelines run as."
+  description = "Repositories to create, with per-repository service accounts and build identities."
   type = map(object({
     description = optional(string)
     branch_rules = optional(map(object({
@@ -105,10 +105,10 @@ variable "repositories_config" {
     })), {})
     build_identities = optional(map(object({
       description = optional(string)
-      # full service account ids the identity may impersonate, granted as
-      # roles/iam.serviceAccountTokenCreator on each; the owner of the target
-      # account decides whether it accepts this, via a delegation naming this
-      # configuration's automation account (README, delegation section)
+      # full service account IDs this identity can impersonate, granted as
+      # roles/iam.serviceAccountTokenCreator on each; target stage accounts
+      # accept this through a conditioned delegation (see README, Delegating
+      # stage account impersonation)
       impersonate_service_accounts = optional(list(string), [])
       # role granted on the identity's own repository (defaulting to repoWriter
       # so pull request builds can post plan comments); null skips the grant
@@ -127,7 +127,7 @@ variable "repositories_config" {
 }
 
 variable "ssm_config" {
-  description = "Instance configuration; ca_pool_id, custom_host_config and psc_allowed_projects are immutable."
+  description = "Secure Source Manager instance settings. All fields are immutable after creation."
   type = object({
     ca_pool_id = optional(string)
     custom_host_config = optional(object({

@@ -587,7 +587,7 @@ Assuming keys of the form `my_folder`, `my_project`, `my_vpc`, etc. this is an e
 - `$nva_instances:my_nva-b-0` (NVA instance self link)
 - `$project_ids:my_project`
 - `$routers:my_vpc/my_vpn`
-- `$service_attachments:my_service` (PSC producer service attachment, for `addresses.psc` endpoints; values are static entries in the defaults file `context`)
+- `$service_attachments:my_service` (PSC service attachment for `addresses.psc`, defined under `context` in `defaults.yaml`)
 - `$vpn_gateways:my_vpc/my_gateway`
 
 Internally created resources are mapped to context namespaces, and use specific prefixes to express the relationship with their container.

@@ -1,27 +1,32 @@
 # Secure Source Manager and Cloud Build CI/CD
 
-This project template brings up a private [Secure Source Manager](https://cloud.google.com/secure-source-manager/docs/overview) instance and the [Cloud Build](https://cloud.google.com/build/docs/overview) machinery that runs Terraform pipelines from its repositories inside a VPC Service Controls perimeter: a Cloud Build private worker pool with no external IPs, one repository-level service account (BYOSA) per repository, the per-repository build identities that pipelines run as, and the pair of regional internal TCP proxy load balancers through which workers reach the instance.
+This project template deploys a private [Secure Source Manager](https://cloud.google.com/secure-source-manager/docs/overview) instance and a [Cloud Build](https://cloud.google.com/build/docs/overview) environment that runs Terraform pipelines inside a VPC Service Controls perimeter. It creates 4 groups of resources:
 
-By default the instance uses Google-managed certificates (`ssm_config.ca_pool_id` and `custom_host_config` omitted) on its generated `*.<location>.p.sourcemanager.dev` hostnames; a Certificate Authority Service pool (`ca_pool_id` set) is also supported when custom hostnames or private PKI are required.
+- a Cloud Build private worker pool with no external IP addresses
+- one user-managed service account (BYOSA) per repository
+- per-repository build identities that pipelines run as
+- 2 regional internal TCP proxy load balancers that connect build workers to the instance
+
+By default, the instance uses Google-managed certificates on its generated `*.<location>.p.sourcemanager.dev` hostnames when you omit `ssm_config.ca_pool_id` and `custom_host_config`. You can also pass a Certificate Authority Service pool in `ca_pool_id` when you need custom hostnames or private PKI.
 
 <!-- BEGIN TOC -->
 - [Architecture and design choices](#architecture-and-design-choices)
-  - [Two planes and the network path](#two-planes-and-the-network-path)
-  - [Why not Developer Connect](#why-not-developer-connect)
-  - [The identity chain and why this is not a FAST stage](#the-identity-chain-and-why-this-is-not-a-fast-stage)
+  - [API plane and instance hostnames](#api-plane-and-instance-hostnames)
+  - [Why this template skips Developer Connect](#why-this-template-skips-developer-connect)
+  - [Identity chain and template boundary](#identity-chain-and-template-boundary)
 - [Projects](#projects)
 - [Landing zone configuration](#landing-zone-configuration)
-  - [The private DNS zone for the instance hostnames](#the-private-dns-zone-for-the-instance-hostnames)
-  - [The private service access peering for the Cloud Build private pool](#the-private-service-access-peering-for-the-cloud-build-private-pool)
-  - [The delegation that lets build identities impersonate stage accounts](#the-delegation-that-lets-build-identities-impersonate-stage-accounts)
-  - [Optional: custom hostnames and a Private CA pool](#optional-custom-hostnames-and-a-private-ca-pool)
-- [The access path to the instance](#the-access-path-to-the-instance)
-  - [The load balancer pair, for clients behind a peering](#the-load-balancer-pair-for-clients-behind-a-peering)
-  - [Endpoints, the target design](#endpoints-the-target-design)
+  - [Private DNS for instance hostnames](#private-dns-for-instance-hostnames)
+  - [Private service access for the Cloud Build pool](#private-service-access-for-the-cloud-build-pool)
+  - [Delegating stage account impersonation](#delegating-stage-account-impersonation)
+  - [Custom hostnames and Private CA pools](#custom-hostnames-and-private-ca-pools)
+- [Reaching the instance](#reaching-the-instance)
+  - [Internal load balancers for peered clients](#internal-load-balancers-for-peered-clients)
+  - [Private Service Connect endpoints](#private-service-connect-endpoints)
 - [Repository pipeline configuration](#repository-pipeline-configuration)
-- [Security note and repository governance](#security-note-and-repository-governance)
-  - [Two branch rule settings are outside Terraform](#two-branch-rule-settings-are-outside-terraform)
-- [Settled points and provider gaps](#settled-points-and-provider-gaps)
+- [Security model and repository governance](#security-model-and-repository-governance)
+  - [Branch rule settings outside Terraform](#branch-rule-settings-outside-terraform)
+- [Operational notes and provider gaps](#operational-notes-and-provider-gaps)
 - [Example](#example)
 - [Variables](#variables)
 - [Outputs](#outputs)
@@ -29,54 +34,108 @@ By default the instance uses Google-managed certificates (`ssm_config.ca_pool_id
 
 ## Architecture and design choices
 
-The design targets regulated environments with two hard constraints: Cloud Build workers must have no public IP address, and build API calls must be attributed to the customer's VPC Service Controls perimeter with the build's own service account as principal.
+This template fits regulated environments with 2 requirements: Cloud Build workers have no public IP addresses, and build API calls enter your VPC Service Controls perimeter with the build's own service account as principal.
 
 ```mermaid
-flowchart LR
-  subgraph Producer["Google Producer VPC (PSA)"]
-    WP["Cloud Build Worker Pool (no_external_ip)"]
+flowchart TB
+  subgraph TRIG["Trigger and Per-Repo Isolation (project-ssm and project-build, in perimeter)"]
+    SA_AGENT["SSM Service Agent
+(.cloudbuild/triggers.yaml)"] -- "tokenCreator" --> BYOSA["Per-Repo BYOSA
+(project-ssm)"]
+    BYOSA -- "serviceAccountUser +
+builds.editor" --> BUILD_SA["Build Identity
+repo-ro / repo-rw"]
   end
 
-  subgraph VPC["Customer VPC (inside VPC-SC perimeter)"]
-    DNS["Private DNS (p.sourcemanager.dev.)"]
-    LB["Regional TCP Proxy LBs (443 & 22, shared VIP)"]
+  subgraph PSA["Google Producer VPC (Private Service Access)"]
+    WP["Cloud Build Worker Pool
+no_external_ip · perimeter-attributed"]
   end
 
-  subgraph SSM["SSM Tenant & API Planes"]
-    PSC["PSC Attachments (HTTP & SSH)"]
-    INST["Private SSM Instance & Repos"]
-    API["securesourcemanager.googleapis.com (199.36.153.4/30)"]
+  subgraph PERIM["VPC Service Controls Perimeter"]
+    subgraph STAGE["Target Stage or App"]
+      TF_SA["Stage / App Terraform SA
+(conditioned delegation)"] -- "plan / apply" --> TARGET["Target GCP APIs and
+Terraform State (GCS)"]
+    end
+
+    subgraph API["Restricted Google APIs (199.36.153.4/30)"]
+      SSM_API["securesourcemanager.googleapis.com
+PR comments and branch rules"]
+      AR_LOG["Artifact Registry and
+Cloud Logging"]
+    end
+
+    subgraph VPC["Customer Shared VPC (2-networking)"]
+      DNS["Private Cloud DNS
+p.sourcemanager.dev."] -. "resolves to VIP" .-> LB["Internal TCP Proxy LBs (:443, :22)
+Shared VIP + PSC NEGs"]
+    end
   end
 
-  subgraph IAM["Two-Hop Identity Chain"]
-    SA_AGENT["SSM Service Agent"] -->|tokenCreator| BYOSA["Per-Repo BYOSA"]
-    BYOSA -->|serviceAccountUser| BUILD_SA["Build Identity (ro / rw)"]
-    BUILD_SA -->|tokenCreator| TF_SA["Stage / App Terraform SA"]
+  subgraph TENANT["SSM Tenant Project (PSC Data Plane)"]
+    PSC["PSC Service Attachments
+HTTP (:443) and SSH (:22)"] --> INST["Private SSM Instance
+*.p.sourcemanager.dev
+Git HTTPS, SSH and Web UI"]
   end
 
-  WP -->|"PSA peering (exported routes + peered DNS)"| LB
-  DNS -.->|resolves to VIP| LB
-  LB -->|layer-4 TLS passthrough| PSC --> INST
-  WP -->|"restricted.googleapis.com (PR comments, GCP APIs)"| API
-  INST -.->|"reads .cloudbuild/triggers.yaml"| SA_AGENT
+  BUILD_SA -- "runs build steps" --> WP
+  WP -- "tokenCreator" --> TF_SA
+  WP -- "PR plan comment" --> SSM_API
+  WP -- "images, providers, logs" --> AR_LOG
+  WP -- "git over PSA peering
+(routes + peered_domains)" --> LB
+  LB -- "L4 TLS passthrough" --> PSC
+
+  classDef google fill:#e8f0fe,stroke:#1a73e8,color:#174ea6
+  classDef vpc fill:#e6f4ea,stroke:#1e8e3e,color:#0d652d
+  classDef iam fill:#fef7e0,stroke:#e37400,color:#8c4600
+  classDef api fill:#f3e8fd,stroke:#9334e6,color:#681da8
+
+  class WP,PSC,INST google
+  class DNS,LB vpc
+  class SA_AGENT,BYOSA,BUILD_SA,TF_SA iam
+  class SSM_API,AR_LOG,TARGET api
+
+  style PERIM fill:transparent,stroke:#d93025,stroke-width:2px,stroke-dasharray: 6 4
+  style TRIG fill:transparent,stroke:#e37400,stroke-dasharray: 4 3
+  style PSA fill:transparent,stroke:#1a73e8,stroke-dasharray: 4 3
+  style TENANT fill:transparent,stroke:#1a73e8,stroke-dasharray: 4 3
+  style VPC fill:transparent,stroke:#1e8e3e
+  style API fill:transparent,stroke:#9334e6
+  style STAGE fill:transparent,stroke:#80868b
 ```
 
-### Two planes and the network path
+### API plane and instance hostnames
 
-Secure Source Manager splits across two planes with different network properties. `securesourcemanager.googleapis.com` is an ordinary Google API served over `restricted.googleapis.com` (`199.36.153.4/30`), and it handles far more than instance lifecycle: instances, repositories, branch rules, pull requests, merges, and pull request comments all run over it without VPC connectivity, gated by VPC Service Controls and IAM alone. What lives exclusively on the instance's own `*.p.sourcemanager.dev` (or custom) hostnames — absent from both `private.googleapis.com` and `restricted.googleapis.com` — is the git HTTPS transport, SSH, and the web interface. Reaching git or the web UI therefore requires Private Service Connect, a private DNS zone, and a route from the client to whatever consumer fronts the instance's HTTP and SSH service attachments.
+Secure Source Manager serves its control plane and its repository endpoints over 2 separate network paths.
 
-Because Cloud Build's Private Service Connect worker-pool integration is gated behind an allowlist and incomplete in the Terraform provider (see below), the worker pool uses private service access, placing workers in a Google-managed producer network peered to your VPC. Private Service Connect endpoint addresses are not transitive across VPC peering, whereas internal load balancer forwarding rules are, so this template fronts the two service attachments with a pair of regional internal TCP proxy load balancers sharing one VIP (`SHARED_LOADBALANCER_VIP`), and forwards `p.sourcemanager.dev.` across the peering via `peered_domains`. Both the worker pool and any CA pool must sit in the **same region as the instance**: Secure Source Manager creates triggered builds against Cloud Build's regional endpoint in the instance's region, and Cloud Build rejects a worker pool anywhere else (`400 workerpool location invalid`).
+The control plane runs on `securesourcemanager.googleapis.com`, which is a standard Google API reachable over `restricted.googleapis.com` (`199.36.153.4/30`). It handles instances, repositories, branch rules, pull requests, merges, and pull request comments without VPC connectivity, controlled by VPC Service Controls and IAM.
 
-### Why not Developer Connect
+The git HTTPS transport, SSH transport, and web interface run on the instance's own `*.p.sourcemanager.dev` or custom hostnames, and neither `private.googleapis.com` nor `restricted.googleapis.com` serves them. To reach git or the web UI, a client needs Private Service Connect, a private DNS zone, and a route to the consumer resource in front of the instance's HTTP and SSH service attachments.
 
-Google's documentation offers Developer Connect (`REGION-git.developerconnect.dev`) as an alternative to Private Service Connect so Cloud Build does not need a VPC path to git. Three properties rule it out here: `google_developer_connect_connection` still has no Secure Source Manager block in the Terraform provider; the proxy is read-only (`git push` is blocked); and `*.developerconnect.dev` is served only on `private.googleapis.com` (`199.36.153.8/30`), not on `restricted.googleapis.com` (`199.36.153.4/30`). Routing `private.googleapis.com` into a `--no-public-egress` build network exposes un-perimetered Google APIs from build steps, defeating the perimeter's primary exfiltration control.
+This template connects the Cloud Build worker pool over private service access, placing workers in a Google-managed producer network peered to your VPC, because Cloud Build's Private Service Connect worker pool integration is still behind an allowlist and incomplete in the Terraform provider. VPC peering exports routes to internal load balancer forwarding rules and ignores Private Service Connect endpoint addresses, so this template places 2 regional internal TCP proxy load balancers in front of the service attachments on one shared VIP (`SHARED_LOADBALANCER_VIP`) and forwards `p.sourcemanager.dev.` across the peering through `peered_domains`.
 
-### The identity chain and why this is not a FAST stage
+Keep the instance, the worker pool, and any CA pool in the same region, because Secure Source Manager submits triggered builds to Cloud Build's regional endpoint in the instance region and Cloud Build rejects a worker pool in another region with `400 workerpool location invalid`.
 
-Secure Source Manager reads `.cloudbuild/triggers.yaml` from each repository's default branch and starts Cloud Build directly without `google_cloudbuild_trigger` resources. Two identities take part before Terraform impersonates anything:
+### Why this template skips Developer Connect
 
-1. **The triggering identity (per-repository BYOSA)** — calls Cloud Build when a push or pull request fires. By default Secure Source Manager uses its project-wide service agent for every repository; replacing it with one user-managed `service_account` per repository bounds which build identities a repository can ever reach to the exact accounts on which that BYOSA holds `roles/iam.serviceAccountUser`.
-2. **The build identity (`<repo>-ro`, `<repo>-rw`)** — named in `serviceAccount:` inside `.cloudbuild/triggers.yaml`, executes the build steps, posts plan comments on pull requests, and holds `roles/iam.serviceAccountTokenCreator` on the downstream Terraform service accounts it may impersonate.
+Google's documentation describes Developer Connect (`REGION-git.developerconnect.dev`) as a way for Cloud Build to reach git without a VPC path. That approach fails 3 requirements of this setup:
+
+- `google_developer_connect_connection` has no Secure Source Manager block in the Terraform provider
+- the Developer Connect proxy is read-only and blocks `git push`
+- `*.developerconnect.dev` resolves only on `private.googleapis.com` (`199.36.153.8/30`) and is absent from `restricted.googleapis.com` (`199.36.153.4/30`)
+
+Routing `private.googleapis.com` into a `--no-public-egress` build network exposes un-perimetered Google APIs to build steps, which defeats the perimeter's main exfiltration control.
+
+### Identity chain and template boundary
+
+Secure Source Manager reads `.cloudbuild/triggers.yaml` from each repository's default branch and starts Cloud Build directly without `google_cloudbuild_trigger` resources. Before Terraform impersonates a target account, 2 service accounts handle each build.
+
+The triggering identity is a per-repository user-managed service account (BYOSA) that calls Cloud Build when a push or pull request fires. Secure Source Manager defaults to its shared project service agent across every repository, so assigning one `service_account` per repository restricts that repository to the build identities on which its BYOSA holds `roles/iam.serviceAccountUser`.
+
+The build identity (`<repo>-ro` or `<repo>-rw`), named in `serviceAccount:` inside `.cloudbuild/triggers.yaml`, runs the build steps, posts plan comments on pull requests, and holds `roles/iam.serviceAccountTokenCreator` on the downstream Terraform service accounts it impersonates.
 
 | grant on | principal | role |
 | --- | --- | --- |
@@ -85,40 +144,52 @@ Secure Source Manager reads `.cloudbuild/triggers.yaml` from each repository's d
 | each build identity of that repository | that repository's BYOSA | `roles/iam.serviceAccountUser` |
 | the build project | each repository's BYOSA | `roles/cloudbuild.builds.editor`, `roles/cloudbuild.workerPoolUser`, `roles/serviceusage.serviceUsageConsumer` |
 | the Secure Source Manager instance | each build identity | `roles/securesourcemanager.instanceAccessor` |
-| the repository (never the project) | that repository's build identities | `roles/securesourcemanager.repoWriter` (default) |
+| each repository | that repository's build identities | `roles/securesourcemanager.repoWriter` (default) |
 | the build project | each build identity | `roles/logging.logWriter`, `roles/cloudbuild.workerPoolUser` |
 | each target Terraform service account | the permitted build identity | `roles/iam.serviceAccountTokenCreator` |
-| the CA pool's project (only when `ca_pool_id` is set) | Secure Source Manager service agent / build identities | `roles/privateca.certificateRequester` / `roles/privateca.auditor` |
+| the CA pool's project (when `ca_pool_id` is set) | Secure Source Manager service agent / build identities | `roles/privateca.certificateRequester` / `roles/privateca.auditor` |
 
-In GitHub or GitLab Workload Identity Federation, the OIDC token carries the branch claim, so IAM binds apply privileges to `refs/heads/main` in a way a pipeline file cannot forge. Secure Source Manager has no equivalent claim: someone who can commit to the default branch edits `.cloudbuild/triggers.yaml` and chooses which build identity runs on `pull_request` versus `push`, while Cloud Build reads `.cloudbuild/cloudbuild.yaml` from the commit that fired the event (for a pull request, the unmerged pull request head). Shipping this as a native FAST stage would therefore appear to promise an IAM-enforced plan/apply boundary that actually rests on repository governance (branch protection, CODEOWNERS, and `requiredStatusChecks`). Kept as a project template, the boundary is explicit and documented under [Security note and repository governance](#security-note-and-repository-governance).
+In GitHub or GitLab Workload Identity Federation, the OIDC token carries the branch claim, so IAM binds apply privileges to `refs/heads/main` and a pipeline file cannot forge that claim. Secure Source Manager issues no branch claim, so anyone who can commit to the default branch can edit `.cloudbuild/triggers.yaml` and pick which build identity runs on `pull_request` or `push`. Cloud Build then reads `.cloudbuild/cloudbuild.yaml` from the commit that fired the event, which on a pull request is the unmerged pull request head.
+
+FAST stages enforce the boundary between plan and apply in IAM, but here that boundary depends on repository governance: branch protection, CODEOWNERS, and `requiredStatusChecks`. We ship this design as a project template so that boundary stays explicit; see [Security model and repository governance](#security-model-and-repository-governance).
 
 ## Projects
 
-Two project factory files describe the projects this configuration runs in: [`project-ssm.yaml`](./project-ssm.yaml) for the instance project, which also holds the automation seat spanning both, and [`project-build.yaml`](./project-build.yaml) for the build project, which is optional since the instance project can host the pool and the build identities too by leaving `projects_config.build` unset (`cloudbuild.googleapis.com` only needs to be enabled in whichever project runs the builds). They carry the APIs, the IAM the automation account needs, the `iam.disableCrossProjectServiceAccountUsage` exception the instance project needs because its repository service accounts create builds in the other project, the Shared VPC and perimeter memberships, and (commented out unless `ca_pool_id` is set) the certificate requester grant for the service agent. Enabling `securesourcemanager.googleapis.com` through the project factory also creates the Secure Source Manager service agent and grants `roles/securesourcemanager.serviceAgent` to it before the first instance is created. Edit the `TODO` lines, or use them as the list of what to create where a project factory is not available.
+This directory includes 2 project factory files. [`project-ssm.yaml`](./project-ssm.yaml) configures the instance project and the automation service account that manages the whole deployment. [`project-build.yaml`](./project-build.yaml) configures a separate build project and is optional: if you leave `projects_config.build` unset, the instance project hosts the worker pool and build identities too, and `cloudbuild.googleapis.com` only needs to be enabled in whichever project runs the builds.
+
+Together, the 2 files configure:
+
+- required APIs and IAM roles for the automation service account
+- an `iam.disableCrossProjectServiceAccountUsage` exception on the instance project so its repository service accounts can start builds in the build project
+- Shared VPC service project attachment and VPC Service Controls perimeter membership
+- a commented-out `roles/privateca.certificateRequester` grant for the service agent, needed only when `ca_pool_id` is set
+
+Enabling `securesourcemanager.googleapis.com` through the project factory also creates the Secure Source Manager service agent and grants it `roles/securesourcemanager.serviceAgent` before Terraform creates the first instance. Edit the `TODO` lines for your FAST landing zone, or use the files as a checklist when you create the projects elsewhere.
 
 ## Landing zone configuration
 
-In the default Google-managed certificate mode, three pieces of the design sit outside this configuration because they belong to the network and to the bootstrap stage's service accounts rather than to the project; a fourth is added only when using custom hostnames or a Private CA pool. Where a FAST landing zone is in use they live in the networking, bootstrap and security stages; where one is not, they have to be created by whoever owns the VPC, the accounts a pipeline impersonates, and any CA pool.
+With default Google-managed certificates, 3 settings live outside this template because they belong to the shared VPC and the bootstrap stage's service accounts. A fourth setting applies when you use custom hostnames or a Private CA pool. In a FAST landing zone, configure them in the networking, bootstrap, and security stages; otherwise, have the owners of the VPC, target Terraform service accounts, and CA pool apply them.
 
-### The private DNS zone for the instance hostnames
+### Private DNS for instance hostnames
 
-A private Secure Source Manager instance publishes its hostnames under `REGION.p.sourcemanager.dev`, and those names resolve nowhere useful by default. They appear in neither Private Google Access VIP domain list, so no private access configuration reaches a repository. A private zone attached to the VPC is the only way clients resolve them.
+Attach a private Cloud DNS zone to the VPC so that clients can resolve the instance hostnames. A private Secure Source Manager instance publishes its default hostnames under `REGION.p.sourcemanager.dev`, which has no public records and is absent from both Private Google Access VIP domain lists, so clients have no other way to resolve them.
 
-With the default generated names (`custom_host_config` omitted), root the private zone at `p.sourcemanager.dev.` rather than `REGION.p.sourcemanager.dev.`: four deterministic A records (`INSTANCE_ID-PROJECT_NUMBER.REGION`, `-api.REGION`, `-git.REGION` for HTTP and `-ssh.REGION` for SSH) can be written before the instance exists, and a single `p.sourcemanager.dev.` zone covers instances across any number of regions without shadowing public `sourcemanager.dev`. Since instance IDs are reusable after deletion, recreating the same `instance_id` in the same project preserves the four generated names; moving to a new project changes `PROJECT_NUMBER` and therefore every clone URL and DNS record name.
+When you use the default generated hostnames (`custom_host_config` omitted), create the private zone at `p.sourcemanager.dev.`. One `p.sourcemanager.dev.` zone covers instances in every region without shadowing public `sourcemanager.dev`, and you can create all 4 deterministic A records before the instance exists: `INSTANCE_ID-PROJECT_NUMBER.REGION`, `-api.REGION`, and `-git.REGION` for HTTP, plus `-ssh.REGION` for SSH. Secure Source Manager lets you reuse an `instance_id` after deletion, so recreating the same `instance_id` in the same project keeps all 4 generated names, but moving to a new project changes `PROJECT_NUMBER` and updates every clone URL and DNS record.
 
-When `custom_host_config` is set (which requires `ca_pool_id`, below), the instance replaces the generated names outright with four of your own. The zone then covers your own domain (`api`, `git` and the apex resolving to the HTTP attachment and `ssh` to the SSH one), decoupling clone URLs and CI configs from the project number and region as well as from instance rebuilds. Note one client consequence: `git-credential-gcloud.sh` wraps `gcloud auth git-helper --ignore-unknown`, which only recognises Google's built-in git domains (`*.sourcemanager.dev`) and silently returns nothing for custom hostnames, so pipelines cloning from a custom git hostname need an explicit `oauth2` + `gcloud auth print-access-token` credential helper instead of `gcloud.sh`.
+When you set `custom_host_config` (which requires `ca_pool_id`), the instance replaces the generated hostnames with 4 names of your own. Your private zone then covers your custom domain, with `api`, `git`, and the apex pointing to the HTTP address and `ssh` pointing to the SSH address, which decouples clone URLs and CI files from the project number, region, and instance rebuilds. Custom hostnames change how clients authenticate to git: `git-credential-gcloud.sh` calls `gcloud auth git-helper --ignore-unknown`, which only recognizes `*.sourcemanager.dev` and returns nothing for custom domains, so pipelines must configure an `oauth2` credential helper backed by `gcloud auth print-access-token`.
 
-The records point at whatever fronts the attachments in the client's VPC, so the shape of DNS follows the access path section below. With the load balancer pair this configuration builds, that is one address network-wide, and one private zone in the hub serves every VPC that peers with it. With endpoints instead, each consumer VPC has its own pair of addresses and the answer differs per VPC: a response policy rule per VPC, or a private zone per VPC, both owned by the networking stage next to the endpoints themselves. The names are the same everywhere; only the addresses differ, which is what makes one hostname set serve every VPC.
+Point the DNS records at whichever consumer fronts the service attachments in the client's VPC:
 
-The build workers need one more thing, because they sit on the producer side of a private service access peering and peering carries routes but not DNS. A worker resolves against the producer network's resolver and never sees the VPC's zones, so the route to the instance works while `git clone` fails at name resolution. The fix is a peered DNS domain on the peering — `peered_domains` inside `psa_configs` in `net-vpc` — naming the hostname suffix (`p.sourcemanager.dev.` by default, or your custom domain when `custom_host_config` is set).
+- with the load balancer pair in this template, all 4 records share one VIP across the network, and one private zone in the hub serves every peered VPC
+- with Private Service Connect endpoints, each consumer VPC allocates its own HTTP and SSH addresses, needs its own response policy rules or private zone in the networking stage, and resolves the same hostnames to those local addresses
 
-Creating the zone in this configuration's own project instead is possible but costs more than it looks. Attaching a private zone to a VPC in another project is a cross-project bind, so the identity running Terraform needs `dns.networks.bindPrivateDNSZone` on the host project on top of `compute.networks.get`, and neither comes with any role you would otherwise grant it. No predefined role carries only the bind permission, so this means a custom role on the host project. Prefer the landing zone's DNS design where one exists.
+Forward the DNS suffix across the worker pool peering as well. Build workers run on the producer side of the private service access peering. VPC peering exports routes to the producer network, but the producer resolver cannot see your VPC's private DNS zones, so `git clone` fails name resolution until you add `p.sourcemanager.dev.` (or your custom domain) to `peered_domains` under `psa_configs` in `net-vpc`.
 
-### The private service access peering for the Cloud Build private pool
+Keep the private DNS zone in your networking stage, because creating it inside this template's project requires cross-project VPC binding. That binding needs `dns.networks.bindPrivateDNSZone` and `compute.networks.get` on the host project, which means creating a custom role on the host project because no predefined role grants the bind permission on its own.
 
-A Cloud Build private pool never runs in your VPC; the question is only how its workers reach it. With private service access, which is what Google's guide uses and what this configuration does, the workers run in a Google-managed producer VPC joined to yours by a service networking peering over a range you allocate. With Private Service Connect each worker would instead get an interface in a subnet of your own VPC through a network attachment. The second is the better design — no range, no exported routes, and the workers resolve against your VPC's resolver so nothing has to be forwarded — and it is not available end to end today, for two independent reasons: the API refuses `v1` pool creation carrying `privateServiceConnect` with `400 INVALID_ARGUMENT: Private Service Connect feature is unavailable` unless allowlisted, an error that Terraform and gcloud both hide by silently creating a networkless pool; and `google_cloudbuild_worker_pool` still lacks `public_ip_address_disabled`, which the API requires alongside the attachment, through provider 8.10.0. When both open, this configuration switches: one block on the pool resource, a network attachment and subnet in the landing zone in place of the peering, no peered domain, and no load balancers, since workers in the VPC use the same endpoints as every other client.
+### Private service access for the Cloud Build pool
 
-The peering needs a range, the exported subnet routes so the workers reach addresses in the VPC, and the peered DNS domain from the previous section:
+Configure a private service access peering on your VPC with an allocated IP range, exported custom routes so workers can reach the internal load balancer VIP, and the peered DNS domain:
 
 ```yaml
 psa_configs:
@@ -129,22 +200,27 @@ psa_configs:
       - p.sourcemanager.dev.
 ```
 
-Google's guide also asks for `--no-export-subnet-routes-with-public-ip`, which `net-vpc` does not express; check the peering after the first apply (`exportSubnetRoutesWithPublicIp` defaults to `false`). Although the peering itself is VPC-wide, the worker pool must sit in the instance's region: Secure Source Manager creates triggered builds against Cloud Build's regional endpoint in the instance region, and Cloud Build rejects a `workerPool` in any other region (`400 workerpool location invalid`). Two consequences follow from private service access:
+Google's documentation also passes `--no-export-subnet-routes-with-public-ip`, and the `net-vpc` module leaves `exportSubnetRoutesWithPublicIp` at its API default of `false`, so you only need to verify that setting on the peering after the first apply. The peering spans the whole VPC, but the worker pool itself must sit in the same region as the Secure Source Manager instance, or Cloud Build returns `400 workerpool location invalid`.
 
-- `no_external_ip` on the pool maps to the peering's egress option and is what keeps the workers off the internet. There is no backstop: the workers run in a Google-managed tenant project in Google's own organisation, where `compute.vmExternalIpAccess` and every other policy of ours has no reach, and a pool with public egress can be created without complaint. A private-egress worker reaches Google APIs through Private Google Access and nothing else; container images and Terraform providers must therefore live in Artifact Registry or GCS inside the perimeter.
-- The workers arrive from the peered range for firewall purposes, so ingress rules that admit them name `10.8.200.0/24` rather than a subnet.
+Private service access places workers in a Google-managed tenant project inside Google's own organization, which has 3 operational consequences:
 
-Worker API traffic is attributed to the perimeter of the peered VPC's project: a build step calling an API the perimeter denies lands in that perimeter's audit logs (written on the VPC host project) with the worker's build service account as `principalEmail`.
+- `no_external_ip` on the worker pool sets the peering egress mode and is the sole control keeping workers off the internet, because your organization policies such as `compute.vmExternalIpAccess` do not apply to Google's tenant project
+- private-egress workers reach Google APIs exclusively through Private Google Access, so container images and Terraform providers must live in Artifact Registry or Cloud Storage inside the perimeter
+- firewall ingress rules that match build workers must use the peered IP range (`10.8.200.0/24` above) as the source range
 
-The pool needs no service account of its own. An identity is named per build, in the triggers file, and the pool only has to admit it. A build identity does need `roles/logging.logWriter`, and that is less optional than it looks: a build running as a user-managed service account has no default log destination, so it must either write to Cloud Logging and say so with `CLOUD_LOGGING_ONLY`, or name a bucket. With neither, the build fails before it runs a step.
+VPC Service Controls attributes worker API calls to the perimeter of the peered VPC's host project. When the perimeter denies an API call from a build step, the violation appears in the VPC host project's audit logs with the build identity as `principalEmail`.
 
-### The delegation that lets build identities impersonate stage accounts
+The worker pool itself takes no service account; `.cloudbuild/triggers.yaml` names the build identity on each trigger. Every user-managed build identity requires `roles/logging.logWriter` and either `logging: CLOUD_LOGGING_ONLY` or a custom logs bucket in `cloudbuild.yaml`, because user-managed accounts cannot write to Cloud Build's default logs bucket and builds fail before step 0 without an explicit log destination.
 
-One grant crosses an ownership line in every pipeline that manages landing zone infrastructure: `roles/iam.serviceAccountTokenCreator` on the Terraform service accounts a build identity impersonates. For application pipelines those accounts sit next to the application and nothing special is needed. For FAST stages they belong to the bootstrap stage, in the `iac-0` project, and this configuration's automation account has no right to set IAM on them.
+Private Service Connect network attachments will eventually replace private service access here, giving each worker a NIC in your own subnet with direct access to your VPC resolver and Private Service Connect endpoints, and removing the IP range, route export, peered DNS domain, and load balancers. This template stays on private service access today because of 2 upstream blockers: the Cloud Build `v1` API rejects `privateServiceConnect` with `400 INVALID_ARGUMENT: Private Service Connect feature is unavailable` unless the project is allowlisted (which Terraform and `gcloud` mask by creating a pool with no network config), and `google_cloudbuild_worker_pool` lacks the required `public_ip_address_disabled` field through provider `8.10.0`.
 
-Both ends of that edge are known here and nowhere else — the build identities are created here, the stage accounts are named in `repositories_config` — so this is where the grant is placed, and the bootstrap stage decides which of its accounts accept it. That decision is a delegation on each account rather than on the project: a conditioned binding on the service account resource, allowing this configuration's automation account to modify only `roles/iam.serviceAccountTokenCreator` on that one account. The set of stage accounts a build can ever impersonate is then the list of accounts carrying the binding, declared by their owner next to their definition, and an `impersonate_service_accounts` entry naming any other account fails the apply with a permission error, which is the right failure.
+### Delegating stage account impersonation
 
-The role in that binding has to be a custom one. The only predefined role carrying `iam.serviceAccounts.setIamPolicy` is `roles/iam.serviceAccountAdmin`, which also carries delete, disable and key management, and the `modifiedGrantsByRole` condition does not restrain those: the attribute is only present on `setIamPolicy` requests, so on anything else `getAttribute(..., [])` yields an empty list and `hasOnly` passes. This is why Google's delegation examples pair the condition with `projectIamAdmin`, a role holding nothing but policy permissions. The equivalent for service accounts is an organization custom role with `iam.serviceAccounts.get`, `iam.serviceAccounts.getIamPolicy` and `iam.serviceAccounts.setIamPolicy`. In the bootstrap stage data that is one custom role file plus, per impersonable account, one binding:
+Pipelines that deploy FAST stages need `roles/iam.serviceAccountTokenCreator` on stage Terraform service accounts owned by `0-bootstrap` in the `iac-0` project, which sits outside the projects that this template manages. For application pipelines whose Terraform service accounts live in the application's own project, no cross-stage delegation is needed.
+
+This template creates the build identities and reads the target stage accounts from `repositories_config`, so it places the `roles/iam.serviceAccountTokenCreator` bindings itself, and the bootstrap stage controls which stage accounts accept them. On each stage service account that builds may impersonate, add a conditioned IAM binding that allows this template's automation service account to grant `roles/iam.serviceAccountTokenCreator` on that single service account. Any `impersonate_service_accounts` entry pointing to an account without that delegation fails `terraform apply` with a permission error.
+
+Use a custom organization role for that delegation. The predefined `roles/iam.serviceAccountAdmin` role includes delete, disable, and key-creation permissions that `modifiedGrantsByRole` cannot block, because IAM populates `iam.googleapis.com/modifiedGrantsByRole` only on `setIamPolicy` calls; on other methods `getAttribute(..., [])` returns an empty list and `hasOnly` evaluates to true. For the same reason that Google's project-level delegation examples pair `modifiedGrantsByRole` with `roles/resourcemanager.projectIamAdmin`, service-account delegation pairs it with a custom role holding only `iam.serviceAccounts.get`, `iam.serviceAccounts.getIamPolicy`, and `iam.serviceAccounts.setIamPolicy`:
 
 ```yaml
 # organization/custom-roles/service_account_iam_admin.yaml
@@ -171,18 +247,19 @@ service_accounts:
             .hasOnly(['roles/iam.serviceAccountTokenCreator'])
 ```
 
-`ssm-rw` is a static `context.iam_principals` entry in the bootstrap stage's `defaults.yaml`, holding the automation account's email, since that account is created by the project factory and the bootstrap stage does not otherwise know it. The ordering is the natural one: the factory creates the account, the bootstrap stage is reapplied with the bindings, and this configuration can then place the grant.
+Define `ssm-rw` as a static `context.iam_principals` entry in `0-bootstrap`'s `defaults.yaml` with the email of the automation account created by the project factory. Apply the project factory first to create the automation account, reapply `0-bootstrap` to add the delegations, and then apply this template.
 
-### Optional: custom hostnames and a Private CA pool
+### Custom hostnames and Private CA pools
 
-The template supports two certificate modes through `ssm_config.ca_pool_id` (both immutable on the instance):
+`ssm_config.ca_pool_id` selects between 2 certificate modes on the instance, and changing either `ca_pool_id` or `custom_host_config` replaces the instance.
 
-- **Default Google-managed certificates (`ca_pool_id` and `custom_host_config` omitted)** — the instance presents a publicly trusted Google Trust Services (`WR3`) certificate for its generated `<instance>-<project_number>{,-api,-git}.<location>.p.sourcemanager.dev` HTTPS hostnames. Because the internal TCP proxy passes TLS through untouched at layer 4, clients and Cloud Build workers verify TLS against their default trust store (`tls=0`) and authenticate with `git-credential-gcloud.sh` out of the box: no Certificate Authority Service pool, no `certificateRequester` or `privateca.auditor` grants or cross-project delegations, and no `get-ca-certs` chain fetch before `git clone`. Verified end to end inside an enforced VPC Service Controls perimeter restricting `securesourcemanager.googleapis.com` (although the VPC Service Controls supported products page still lists a Certificate Authority Service authority as a prerequisite, neither `CreateInstance` nor worker access requires one).
-- **Private CA pool (`ca_pool_id` set, `custom_host_config` optional)** — Certificate Authority Service signs the instance certificate, which is required whenever `custom_host_config` sets custom hostnames (validated at plan time) or when an environment mandates private PKI. This configuration omits `roles/privateca.auditor` on build identities automatically when `ca_pool_id` is `null`, and grants it on the pool's project when `ca_pool_id` is set.
+When you omit `ca_pool_id` and `custom_host_config`, Secure Source Manager provisions publicly trusted Google Trust Services (`WR3`) certificates for `<instance>-<project_number>{,-api,-git}.<location>.p.sourcemanager.dev`. Because the internal TCP proxy forwards TLS unchanged at layer 4, clients and Cloud Build workers verify the certificate against their default system trust store (`tls=0`) and authenticate with `git-credential-gcloud.sh` directly, with no CA pool, no `privateca` IAM grants or delegations, and no certificate chain download before `git clone`. This default mode works inside an enforced VPC Service Controls perimeter protecting `securesourcemanager.googleapis.com`. The VPC Service Controls supported products page still lists a Certificate Authority Service pool as a requirement, but neither `CreateInstance` nor worker access needs one.
 
-When `ca_pool_id` is set, the pool must allow CSR-based certificate requests, which is the default when no issuance policy is set, and the CA key must be 2048 bits (set an explicit `subject` on the CA rather than relying on module defaults). Either tier works: Secure Source Manager accepts a DevOps pool ($20 per CA per month vs $200 for Enterprise, where Enterprise adds listing, describing and revoking issued certificates). The pool's project is independent of the instance's; its location is not. A pool in another region fails `CreateInstance` with a misleading `P4SA_MISSING_PERMISSION` error and no audit log entry, so put the pool in the instance's region.
+When you set `ca_pool_id` (required whenever `custom_host_config` is set, or when your organization requires private PKI), Certificate Authority Service signs the instance certificate, and this template automatically grants `roles/privateca.auditor` on the CA pool's project to every build identity.
 
-Uncomment `service_agents_project_bindings` in [`project-ssm.yaml`](./project-ssm.yaml) so the project factory grants `roles/privateca.certificateRequester` to the instance project's Secure Source Manager service agent on the CA pool's project, and delegate a conditioned `roles/resourcemanager.projectIamAdmin` on the CA pool's project (or its parent folder) to both the factory's automation account and this configuration's automation account:
+Configure the CA pool in the same region as the Secure Source Manager instance, because a pool in another region fails `CreateInstance` with a `P4SA_MISSING_PERMISSION` error and writes no audit log entry. The CA pool can live in any project, must allow CSR-based certificate requests (the default when no issuance policy is set), and must use a 2048-bit RSA CA key with an explicit `subject`. Both CA pool tiers work: DevOps ($20 per CA per month) and Enterprise ($200 per CA per month, which adds listing, describing, and revoking issued certificates).
+
+When using `ca_pool_id`, uncomment `service_agents_project_bindings` in [`project-ssm.yaml`](./project-ssm.yaml) so the project factory grants `roles/privateca.certificateRequester` to the Secure Source Manager service agent on the CA pool's project, and delegate a conditioned `roles/resourcemanager.projectIamAdmin` binding on the CA pool's project (or parent folder) to both the project factory automation account and this template's automation account:
 
 ```yaml
 iam_bindings:
@@ -200,27 +277,33 @@ iam_bindings:
         ])
 ```
 
-Because the server sends only the leaf certificate with no intermediate, builds against a CAS-backed instance run `gcloud privateca pools get-ca-certs` (using `roles/privateca.auditor`) and pass the resulting PEM bundle to `git` before cloning; publishing the CA bundle to a GCS bucket or managed folder is an alternative that avoids granting `privateca.auditor` per build identity.
+Because a CAS-backed instance sends only its leaf certificate during the TLS handshake, pipelines run `gcloud privateca pools get-ca-certs` (using `roles/privateca.auditor`) and pass the PEM bundle to `git` before cloning. You can also publish the CA bundle to a Cloud Storage bucket or managed folder if you want to skip per-build `roles/privateca.auditor` grants.
 
-## The access path to the instance
+## Reaching the instance
 
-A private instance publishes two Private Service Connect service attachments, one for HTTP and one for SSH, and both are computed rather than configured: the instance has no notion of a consumer and no way to create one. This configuration exposes them in the `service_attachments` output and builds one pair of internal proxy load balancers in front of them, in the VPC the build pool peers with. That pair exists for one client, the build workers, who reach the VPC over a peering that no Private Service Connect endpoint serves. Everything else that resolves the hostnames to the same address is a convenience that comes with it, and the target design, described second, has no load balancers at all.
+A private Secure Source Manager instance exposes 2 read-only Private Service Connect service attachments, one for HTTP and one for SSH, which this template re-exports in `service_attachments`. The template also deploys 2 internal TCP proxy load balancers in front of those attachments inside the VPC peered with the Cloud Build worker pool, so workers across the peering can reach the instance. Once Cloud Build worker pools support Private Service Connect network attachments directly, Private Service Connect endpoints in each consumer VPC can replace the load balancers altogether.
 
-### The load balancer pair, for clients behind a peering
+### Internal load balancers for peered clients
 
-A Private Service Connect endpoint does not serve clients that reach the VPC over VPC peering, and the build workers are exactly that: a private pool on private service access runs in a Google-managed producer network joined to yours by a peering. For the workers to reach the instance through their peering, the VPC needs something whose address the peering carries, and that is an internal load balancer's forwarding rule rather than an endpoint.
+Build workers on private service access reach your VPC across VPC peering, which routes to internal load balancer forwarding rules and ignores Private Service Connect endpoints.
 
-[ssm-load-balancers.tf](ssm-load-balancers.tf) builds two regional internal proxy load balancers with `net-lb-proxy-int`, each a PSC network endpoint group on one attachment, a backend service, a target TCP proxy and a forwarding rule, on 443 and 22, sharing one address reserved as `SHARED_LOADBALANCER_VIP` since the rules differ by port, with `global_access` on. The address can be pinned through `load_balancer_config.address`, and should be: the instance, and with it the attachments, are recreated on any change, and a pinned address keeps the DNS records true across a rebuild with nothing to update in the landing zone. Workers on the peering and clients in the hub resolve all four hostnames to that address and open both ports on it, receiving the instance's own certificate (either default Google-managed or signed by a Private CA pool when `ca_pool_id` is set). The proxy is layer 4 and terminates the TCP connection but not the TLS session, which is why default Google-managed certificates verify end to end without load-balancer certificates, why custom hostnames need `ca_pool_id` rather than the load balancer, and why SNI cannot collapse both services onto one port. A PSC NEG backend accepts only the `UTILIZATION` balancing mode (`CONNECTION` and `RATE` are rejected by the API).
+[`ssm-load-balancers.tf`](./ssm-load-balancers.tf) uses `net-lb-proxy-int` to create 2 regional internal TCP proxy load balancers on ports `443` and `22`. Each load balancer pairs a Private Service Connect network endpoint group (NEG) pointing at one service attachment with a backend service (`UTILIZATION` balancing mode, because the API rejects `CONNECTION` and `RATE` on PSC NEGs), a target TCP proxy, and a forwarding rule with `global_access` enabled. Both forwarding rules share one internal IP address reserved with `SHARED_LOADBALANCER_VIP`.
 
-Three things in the landing zone follow from the pair living in the instance project. The project needs `compute.googleapis.com` and the automation account `roles/compute.loadBalancerAdmin`, both in [project-ssm.yaml](project-ssm.yaml). The project must be a service project of the VPC's host, with `roles/compute.networkUser` at host project level for the automation account and the compute service agent; that is where the role belongs, and a subnet-scoped grant adds to it rather than narrowing it, as the settled points below explain. And the DNS records point at the one address from a zone every peered VPC sees, which in a hub and spoke built on peering is a zone in the hub plus the peered domain on the pool's private service access peering.
+Pin that VIP in `load_balancer_config.address` so DNS records remain valid if the instance and its service attachments are ever recreated. Because the target TCP proxy operates at layer 4 and passes TLS straight through to the instance, clients see the instance's own Google-managed or CAS-signed certificate without configuring certificates on the load balancer; for the same reason, custom hostnames must be configured on the instance with `ca_pool_id`, and HTTP and SSH must stay on separate ports because SNI routing is unavailable.
 
-The single pair in the instance project serves the VPC it is in and everything peered with it. A VPC that is not peered, which is what a segregated environment design looks like, gets its own complete chain in its own project against the same attachments, with nothing shared between them and no peering group limits; the pair is what a landing zone's networking stage builds per VPC when staying on this model.
+Hosting the load balancers in the instance project requires 3 settings in the landing zone:
 
-### Endpoints, the target design
+- `compute.googleapis.com` enabled on the instance project and `roles/compute.loadBalancerAdmin` granted to the automation account, both included in [`project-ssm.yaml`](./project-ssm.yaml)
+- the instance project attached as a Shared VPC service project, with `roles/compute.networkUser` granted at the host project level to the automation account and the Compute Engine service agent
+- DNS A records pointing to the shared VIP in a private zone visible to peered VPCs (for example, in a hub VPC), paired with `peered_domains` on the worker pool's private service access peering
 
-With the pool on Private Service Connect the workers have an interface in the VPC like any other client, and the load balancers have no client left. Each consumer VPC then gets two Private Service Connect endpoints, one per attachment, created by the networking stage, because the address a client reaches the instance at is a property of the client's VPC and not of the instance's project. An endpoint is a forwarding rule aimed at an attachment with an address from one of the VPC's subnets, and it carries no ports: everything sent to the address goes to the attachment, so HTTP and SSH cannot share an address and each VPC ends up with two. The hostnames already allow for it, `api`, `git_http` and `html` resolving to the HTTP endpoint and `git_ssh` to the SSH one.
+One load balancer pair in the instance project serves its own VPC and every VPC peered with it. Unpeered VPCs in segregated environments cannot use that peering, so they deploy their own load balancer pair (or endpoints) in their own projects against the same `service_attachments` outputs, which also avoids VPC peering group limits.
 
-In the networking stage the endpoints are two `addresses.psc` entries in the VPC's `.config.yaml`, with the attachments named through the `service_attachments` context, whose values are static entries in the stage's `defaults.yaml` copied from this configuration's output after the instance is created:
+### Private Service Connect endpoints
+
+When clients live directly inside a VPC (or once the Cloud Build worker pool uses a Private Service Connect network attachment), each consumer VPC can connect to the instance through 2 Private Service Connect endpoints managed by `2-networking`. An endpoint is a subnet-IP forwarding rule pointing directly at a service attachment across all ports, so HTTP and SSH require separate IP addresses: `api`, `git_http`, and `html` resolve to the HTTP endpoint, and `git_ssh` resolves to the SSH endpoint.
+
+In `2-networking`, copy the `service_attachments` output from this template into `defaults.yaml` after creating the instance, and add 2 `addresses.psc` entries in each consumer VPC's `.config.yaml`:
 
 ```yaml
 # 2-networking defaults.yaml
@@ -248,46 +331,64 @@ addresses:
         global_access: true
 ```
 
-`global_access` lets clients in other regions of the same VPC use the endpoint, which matters because Secure Source Manager runs in eleven regions and only two of them are in Europe, so the instance usually cannot sit in the region everything else uses. An endpoint is also reachable from on-premises over VPN or Interconnect, and across Network Connectivity Center spokes via propagated PSC connections, whereas a hub-and-spoke design built on VPC peering needs the load balancer pair in the hub.
+Setting `global_access: true` lets clients in other regions of the same VPC reach the endpoint, which is often needed because Secure Source Manager is available in 11 regions (2 of them in Europe). Private Service Connect endpoints also work from on-premises networks over Cloud VPN or Cloud Interconnect, and across Network Connectivity Center spokes through propagated PSC connections. Hub-and-spoke topologies built on VPC peering use the internal load balancer pair in the hub instead.
 
-The attachments move to a new tenant project on every instance rebuild, so the two context entries are the one thing downstream that has to be updated after a rebuild, and the hostnames are what keep everything else stable. Endpoint addresses are the ones the DNS records point at, and since every VPC has its own, DNS is per VPC: a response policy rule in each VPC, or a private zone per VPC, rather than the single hub zone the load balancer pair allows.
+If an instance is replaced, its service attachments move to a new tenant project, so you update the 2 `service_attachments` entries in `defaults.yaml` and keep your existing DNS names and endpoint IPs. Because each consumer VPC owns its own endpoint IP addresses, configure DNS per VPC with a Cloud DNS response policy or a per-VPC private zone.
 
-Two things must be right at instance creation because they are immutable. `psc_allowed_projects` is keyed on the project that owns the consumer resource, endpoint or network endpoint group, not on the host project of the network it connects from: a consumer created in a project outside the list, on a Shared VPC whose host project is inside it, sits at `pscConnectionStatus: PENDING` and never connects, while the same consumer in a listed project is `ACCEPTED` in seconds; every project in `psc_allowed_projects` must also belong to the same VPC Service Controls perimeter, or `CreateInstance` fails with an egress violation. The pair this configuration builds lives in the instance project, which is allowed implicitly; endpoints or chains created by the networking stage in each VPC's own project need those VPC projects listed, and naming a project costs nothing, so be generous. Check `pscConnectionStatus` on the forwarding rule or NEG first whenever a consumer is silent.
+Check 2 immutable `psc_allowed_projects` rules before creating the instance:
+
+- list the project that owns each consumer forwarding rule or PSC NEG, because Secure Source Manager evaluates `psc_allowed_projects` against the consumer resource's project (a consumer in an unlisted Shared VPC service project stays at `pscConnectionStatus: PENDING` even when the Shared VPC host project is listed, whereas a consumer in a listed project reaches `ACCEPTED` in seconds; the instance's own project is allowed automatically)
+- ensure every project in `psc_allowed_projects` belongs to the same VPC Service Controls perimeter, or `CreateInstance` fails with an egress violation
+
+Adding extra perimeter projects to `psc_allowed_projects` upfront avoids recreating the instance later, because `psc_allowed_projects` cannot be changed in place. When a consumer fails to connect, check `pscConnectionStatus` on the forwarding rule or PSC NEG first.
 
 ## Repository pipeline configuration
 
-Ready-to-edit pipeline files live in [`pipeline-templates/triggers.yaml`](./pipeline-templates/triggers.yaml) (copied to `.cloudbuild/triggers.yaml` on the repository's default branch) and [`pipeline-templates/cloudbuild.yaml`](./pipeline-templates/cloudbuild.yaml) (copied to `.cloudbuild/cloudbuild.yaml`). Keep four behaviours in mind when adapting them:
+Copy [`pipeline-templates/triggers.yaml`](./pipeline-templates/triggers.yaml) to `.cloudbuild/triggers.yaml` on each repository's default branch, and copy [`pipeline-templates/cloudbuild.yaml`](./pipeline-templates/cloudbuild.yaml) to `.cloudbuild/cloudbuild.yaml`. Keep 4 rules in mind when editing them.
 
-- **`serviceAccount` is mandatory on every trigger entry.** Takes the full resource ID (`projects/PROJECT_ID/serviceAccounts/EMAIL`, exposed in `build_identities.<repo>/<id>.id`). Omitting `serviceAccount` on *any* entry causes Secure Source Manager to drop the entire `.cloudbuild/triggers.yaml` file silently before minting a BYOSA token — no UI banner, no commit status check, no audit log entry, and valid sibling triggers in the same file stop firing too. Setting `requiredStatusChecks` on the branch rule is what fails closed if someone breaks the file.
-- **Pipelines clone the repository themselves.** Secure Source Manager passes an empty `sourceProvenance` (`{}`) to Cloud Build along with nine standard substitutions (`COMMIT_SHA`, `BRANCH_NAME`, `SHORT_SHA`, `TRIGGER_NAME`, `REPO_NAME`, `REPO_FULL_NAME`, `REF_NAME`, `REVISION_ID`, `TRIGGER_BUILD_CONFIG_PATH`), so the first step configures `git-credential-gcloud.sh` (or an `oauth2` token helper when custom hostnames are used), clones over the Private Service Connect git hostname, and checks out `$COMMIT_SHA`.
-- **`CLOUD_LOGGING_ONLY` (or a custom logs bucket) is required.** User-managed build service accounts cannot write to Cloud Build's default logs bucket; without `logging: CLOUD_LOGGING_ONLY`, builds fail before executing step 0.
-- **Repository `deletion_policy` defaults to `PREVENT` in the provider.** If an instance is ever replaced or torn down, Terraform cannot destroy child repositories unless `deletion_policy = "DELETE"` has already been applied to state on each `repositories_config` entry.
+Every trigger entry in `.cloudbuild/triggers.yaml` must set `serviceAccount` to the full resource ID (`projects/PROJECT_ID/serviceAccounts/EMAIL`, exposed in `build_identities.<repo>/<id>.id`). If any entry omits `serviceAccount`, Secure Source Manager silently ignores the entire `.cloudbuild/triggers.yaml` file before minting a BYOSA token, with no UI warning, commit status check, or audit log entry, and valid sibling triggers in the same file stop firing too. Configuring `requiredStatusChecks` on the branch rule catches a broken triggers file, because merges block whenever the expected check is missing.
 
-## Security note and repository governance
+Your pipeline steps must clone the repository explicitly, because Secure Source Manager sends an empty `sourceProvenance` (`{}`) to Cloud Build along with 9 substitutions (`COMMIT_SHA`, `BRANCH_NAME`, `SHORT_SHA`, `TRIGGER_NAME`, `REPO_NAME`, `REPO_FULL_NAME`, `REF_NAME`, `REVISION_ID`, `TRIGGER_BUILD_CONFIG_PATH`). The first build step configures `git-credential-gcloud.sh` (or an `oauth2` token helper for custom hostnames), clones over the Private Service Connect git hostname, and checks out `$COMMIT_SHA`.
 
-A person who can commit to a repository's default branch chooses both the identity a build runs as and the event that starts it, because both live in `.cloudbuild/triggers.yaml`. Meanwhile, Cloud Build reads `.cloudbuild/cloudbuild.yaml` from the commit that fired the event — which on a pull request is the unreviewed pull request head. Any `pull_request` trigger on the default branch is therefore a standing grant of its named build identity to everyone who can open a pull request against that repository. Three boundaries follow:
+Set `options.logging: CLOUD_LOGGING_ONLY` (or specify a custom logs bucket) in `.cloudbuild/cloudbuild.yaml`, because user-managed build service accounts cannot write to Cloud Build's default logs bucket and builds fail before step 0 without a log destination.
 
-- **Repository isolation (IAM)** — comes from the set of act-as edges leaving each repository's BYOSA, which is why every repository gets its own service account and why `roles/iam.serviceAccountUser` and repository roles (`repoWriter` / `repoReader`) are granted on individual service accounts and repositories, never at project scope (note that Google's own PSC guide grants `repoReader` on the project, breaking isolation across repositories). The one act-as edge pointing at the BYOSA is the caller's (`projects_config.ssm.automation_principal`, derived from the provider identity when unset), because `CreateRepository` checks `iam.serviceAccounts.actAs` on the caller.
-- **Plan-vs-apply separation (branch governance)** — comes from who may commit `.cloudbuild/triggers.yaml` to the default branch, so branch protection and CODEOWNERS carry weight here that IAM carries in Workload Identity Federation.
-- **Blast radius of `pull_request` identities (IAM)** — comes solely from that identity's own permissions. Build identities default to `roles/securesourcemanager.repoWriter` on their own repository because `repoReader` omits `securesourcemanager.prcomments.create` (needed to post Terraform plan output on pull requests), while `repoWriter` neither approves pull requests nor bypasses branch rules, and anyone who can open a pull request already holds `repoWriter`. Remember that a plan identity able to read Terraform state exposes that state — and any secrets stored in it — to every pull request author on that repository.
+Set `deletion_policy = "DELETE"` in state on each `repositories_config` entry before replacing an instance or tearing down repositories, because the Terraform provider defaults repository `deletion_policy` to `PREVENT`.
 
-### Two branch rule settings are outside Terraform
+## Security model and repository governance
 
-`google_secure_source_manager_branch_rule` currently lacks `requiredStatusChecks` and `requireCodeOwnerApproval`, although `projects.locations.repositories.branchRules` on `securesourcemanager.googleapis.com` exposes both over REST from outside the VPC as well as in the web interface. Configure both per repository after the branch rule is created, and again if the rule is recreated:
+Anyone who can commit to a repository's default branch controls `.cloudbuild/triggers.yaml`, which selects both the build identity and the trigger event. At build time, Cloud Build reads `.cloudbuild/cloudbuild.yaml` from the commit that fired the event, which on a pull request is the unreviewed pull request head. Adding a `pull_request` trigger on the default branch therefore grants its build identity to everyone who can open a pull request on that repository.
 
-- **Required status checks** — add `Cloud Build / <trigger-name>`, which fails closed on both a failing build and an absent check (including when a trigger is removed or `.cloudbuild/triggers.yaml` is silently dropped). Two caveats apply: when an `includedFiles` filter skips a valid trigger, Secure Source Manager posts a passing check for `Cloud Build / <trigger-name>` so the pull request can merge; and `roles/securesourcemanager.repoAdmin` (or `roles/owner`) bypasses branch rules on `pullRequests:merge` unconditionally without a force flag, so human contributors should hold `repoWriter` rather than `repoAdmin`.
-- **Require code owner approval** — without it CODEOWNERS is advisory, leaving the default-branch boundary resting on approval count alone.
+Repository and trigger access rests on 3 controls.
 
-## Settled points and provider gaps
+Repository isolation comes from IAM on the per-repository BYOSA. Each repository gets its own service account, and this template grants `roles/iam.serviceAccountUser` and repository roles (`repoWriter` or `repoReader`) on individual service accounts and individual repositories, keeping project-level IAM clean so one repository cannot act as another's build identities or read another repository. Granting `repoReader` on the project, as shown in Google's PSC guide, would let every build identity read every repository on the instance. The caller running Terraform (`projects_config.ssm.automation_principal`, or the provider identity when null) also receives `roles/iam.serviceAccountUser` on each BYOSA because `CreateRepository` checks `iam.serviceAccounts.actAs` on the caller.
 
-- **Who places grants on resources this configuration does not own.** `roles/iam.serviceAccountTokenCreator` on stage Terraform accounts is placed here under a per-account conditioned delegation in the bootstrap stage; when `ca_pool_id` is set, `roles/privateca.auditor` is also placed here under a project-level delegation on the CA project.
-- **What a consumer in a Shared VPC service project needs.** Both load balancers and endpoints require `roles/compute.networkUser` at host project level for the automation identity and the Compute Engine service agent. Subnet-scoped grants add to project-level bindings rather than restricting them; confining a service project to specific subnets is `compute.restrictSharedVpcSubnetworks`, an organisation policy.
-- **Instance timing and immutability.** Instance creation takes roughly 30–36 minutes (120-minute provider timeout) and deletion roughly 20–25 minutes. Every instance field (`is_private`, `ca_pool`, `custom_host_config`, `psc_allowed_projects`, `kms_key`) is immutable; changing any of them replaces the instance and moves its service attachments to a new `<id>-tp` tenant project. Also note that `CreateRepository` with `initial_config.readme` running in the first second of instance readiness can return a transient `code 13 Internal error` that succeeds on immediate re-apply.
-- **Provider gaps (through `hashicorp/google` 8.10.0).** Require `>= 7.44.0` for `service_account` on `google_secure_source_manager_repository`. Three upstream gaps remain: `requiredStatusChecks` and `requireCodeOwnerApproval` on `google_secure_source_manager_branch_rule`; a Secure Source Manager block on `google_developer_connect_connection`; and `public_ip_address_disabled` on `google_cloudbuild_worker_pool` alongside `private_service_connect`.
+Separation between `plan` and `apply` comes from branch governance on the default branch, because committers to the default branch control `.cloudbuild/triggers.yaml`. Branch protection and CODEOWNERS carry the enforcement role here that OIDC branch claims carry in Workload Identity Federation.
+
+The blast radius of a `pull_request` build comes from the permissions of its build identity. Build identities default to `roles/securesourcemanager.repoWriter` on their own repository because `repoReader` lacks `securesourcemanager.prcomments.create` for posting Terraform plan comments; `repoWriter` cannot approve pull requests or bypass branch rules, and any pull request author already holds `repoWriter`. Remember that a `plan` identity with read access to Terraform state exposes that state and any secrets in it to anyone who can open a pull request against the repository.
+
+### Branch rule settings outside Terraform
+
+`google_secure_source_manager_branch_rule` lacks `requiredStatusChecks` and `requireCodeOwnerApproval` in the Terraform provider, but `projects.locations.repositories.branchRules` on `securesourcemanager.googleapis.com` exposes both over REST from outside the VPC and in the web UI. Configure both settings on each repository after Terraform creates its branch rule, and reapply them if the branch rule is recreated.
+
+For `requiredStatusChecks`, require `Cloud Build / <trigger-name>` so merges block when a build fails, when a trigger is deleted, or when Secure Source Manager drops a malformed `.cloudbuild/triggers.yaml`. Keep 2 behaviors in mind: when an `includedFiles` filter skips a trigger, Secure Source Manager posts a passing `Cloud Build / <trigger-name>` check so the pull request can still merge; and `roles/securesourcemanager.repoAdmin` (or `roles/owner`) bypasses branch rules on `pullRequests:merge` without a force flag, so grant human contributors `repoWriter` and reserve `repoAdmin` for break-glass use.
+
+Enable `requireCodeOwnerApproval` so CODEOWNERS is enforced on merges; without it, CODEOWNERS is advisory and any reviewer approval satisfies the branch rule.
+
+## Operational notes and provider gaps
+
+On Shared VPC service projects, both internal load balancers and Private Service Connect endpoints require `roles/compute.networkUser` at the host project level for the automation account and the Compute Engine service agent. Subnet-level bindings only add permissions on top of project-level ones, so restricting which subnets a service project can use requires the `compute.restrictSharedVpcSubnetworks` organization policy.
+
+Instance creation takes 30 to 36 minutes (with a 120-minute provider timeout) and deletion takes 20 to 25 minutes. Every instance attribute (`is_private`, `ca_pool`, `custom_host_config`, `psc_allowed_projects`, and `kms_key`) is immutable, so changing any of them replaces the instance and moves its service attachments to a new `<id>-tp` tenant project. If `CreateRepository` with `initial_config.readme` runs in the first second after an instance reports ready, the API can return a transient `code 13 Internal error` that succeeds when you rerun `terraform apply`.
+
+This template requires `hashicorp/google` `>= 7.44.0` for `service_account` on `google_secure_source_manager_repository`. Through provider `8.10.0`, 3 upstream provider gaps remain:
+
+- `requiredStatusChecks` and `requireCodeOwnerApproval` on `google_secure_source_manager_branch_rule`
+- a Secure Source Manager source block on `google_developer_connect_connection`
+- `public_ip_address_disabled` alongside `private_service_connect` on `google_cloudbuild_worker_pool`
 
 ## Example
 
-Every value that names something owned elsewhere — projects, networks, subnets, locations, custom roles, principals, the service accounts build identities impersonate, and any CA pool — accepts a context reference as well as a literal, resolved against the `context` variable with the usual `$key:name` form. By default the instance uses Google-managed certificates (`ca_pool_id` and `custom_host_config` omitted):
+Every variable field that references external resources (projects, networks, subnets, locations, custom roles, IAM principals, target Terraform service accounts, and CA pools) accepts either a literal ID or a `$namespace:key` reference resolved from `context`. The default configuration uses Google-managed certificates (`ca_pool_id` and `custom_host_config` omitted):
 
 ```hcl
 module "ssm-cicd" {
@@ -363,7 +464,7 @@ module "ssm-cicd" {
 # tftest modules=8 resources=32 inventory=default.yaml
 ```
 
-To use custom hostnames signed by a Private CA pool instead, set `ca_pool_id` and `custom_host_config` (which also grants `roles/privateca.auditor` on the CA pool's project to each build identity):
+To use custom hostnames signed by a Private CA pool, set `ca_pool_id` and `custom_host_config`, which also grants `roles/privateca.auditor` on the CA pool's project to each build identity:
 
 ```hcl
 module "ssm-cicd" {
@@ -452,24 +553,24 @@ module "ssm-cicd" {
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [build_pool_config](variables.tf#L17) | Cloud Build private worker pool, peered with the VPC over private service access. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
-| [load_balancer_config](variables.tf#L44) | Internal proxy load balancer pair in front of the instance service attachments, for the build workers behind their peering. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
-| [location](variables.tf#L54) | Region for the instance, the load balancers, the build pool, and any CA pool. | <code>string</code> | ✓ |  |
+| [build_pool_config](variables.tf#L17) | Cloud Build private worker pool configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| [load_balancer_config](variables.tf#L44) | Regional internal TCP proxy load balancer configuration for the instance service attachments. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| [location](variables.tf#L54) | Region for the instance, load balancers, worker pool, and optional CA pool. | <code>string</code> | ✓ |  |
 | [projects_config](variables.tf#L77) | Instance project with its number, and optional build project defaulting to the instance project. The automation principal is derived from the provider identity when null. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
 | [context](variables.tf#L28) | Context-specific interpolations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [name](variables.tf#L60) | Base name for the instance and the build pool, prefixed with the prefix. | <code>string</code> |  | <code>&#34;ssm-0&#34;</code> |
+| [name](variables.tf#L60) | Base name for the instance and the worker pool. | <code>string</code> |  | <code>&#34;ssm-0&#34;</code> |
 | [prefix](variables.tf#L67) | Optional prefix for resource names. | <code>string</code> |  | <code>null</code> |
-| [repositories_config](variables.tf#L92) | Repositories, each with its own service account and the build identities its pipelines run as. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [ssm_config](variables.tf#L129) | Instance configuration; ca_pool_id, custom_host_config and psc_allowed_projects are immutable. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [repositories_config](variables.tf#L92) | Repositories to create, with per-repository service accounts and build identities. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [ssm_config](variables.tf#L129) | Secure Source Manager instance settings. All fields are immutable after creation. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
 
 | name | description | sensitive |
 |---|---|:---:|
-| [build_identities](outputs.tf#L17) | Build identity service accounts, keyed <repository>/<identity>; id is what a triggers file names in serviceAccount. |  |
-| [build_pool_id](outputs.tf#L27) | Cloud Build private worker pool id. |  |
-| [load_balancer_address](outputs.tf#L32) | Shared VIP of the load balancer pair, which the DNS records point at. |  |
-| [repository_service_accounts](outputs.tf#L37) | Repository-level service account emails, by repository. |  |
-| [service_attachments](outputs.tf#L42) | PSC service attachments of the instance, to be fronted by endpoints in each consumer VPC; the networking stage takes them as service_attachments context entries. They change on every instance rebuild. |  |
-| [ssm_instance](outputs.tf#L50) | Instance id, hostnames and repository ids. |  |
+| [build_identities](outputs.tf#L17) | Build identity service accounts, keyed by <repository>/<identity>. Set serviceAccount in triggers.yaml to id. |  |
+| [build_pool_id](outputs.tf#L27) | Cloud Build private worker pool ID. |  |
+| [load_balancer_address](outputs.tf#L32) | Shared VIP of the internal load balancer pair for DNS A records. |  |
+| [repository_service_accounts](outputs.tf#L37) | Per-repository service account emails, keyed by repository. |  |
+| [service_attachments](outputs.tf#L42) | PSC service attachments for the instance HTTP and SSH endpoints. Recreated when the instance is replaced. |  |
+| [ssm_instance](outputs.tf#L50) | Instance ID, hostnames, and repository IDs. |  |
 <!-- END TFDOC -->
