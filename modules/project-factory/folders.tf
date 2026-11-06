@@ -120,10 +120,10 @@ module "folder-1-iam" {
     iam_principals  = local.ctx_iam_principals
     kms_keys        = merge(local.ctx.kms_keys, local.kms_keys)
     log_buckets     = merge(local.ctx.log_buckets, local.log_buckets)
-    storage_buckets = merge(local.ctx.storage_buckets, local.storage_buckets)
     project_ids     = local.ctx_project_ids
     project_numbers = local.ctx_project_numbers
     pubsub_topics   = merge(local.ctx.pubsub_topics, local.pubsub_topics)
+    storage_buckets = merge(local.ctx.storage_buckets, local.storage_buckets)
   })
 }
 
@@ -208,10 +208,10 @@ module "folder-2-iam" {
     iam_principals  = local.ctx_iam_principals
     kms_keys        = merge(local.ctx.kms_keys, local.kms_keys)
     log_buckets     = merge(local.ctx.log_buckets, local.log_buckets)
-    storage_buckets = merge(local.ctx.storage_buckets, local.storage_buckets)
     project_ids     = local.ctx_project_ids
     project_numbers = local.ctx_project_numbers
     pubsub_topics   = merge(local.ctx.pubsub_topics, local.pubsub_topics)
+    storage_buckets = merge(local.ctx.storage_buckets, local.storage_buckets)
   })
 }
 
@@ -296,10 +296,10 @@ module "folder-3-iam" {
     iam_principals  = local.ctx_iam_principals
     kms_keys        = merge(local.ctx.kms_keys, local.kms_keys)
     log_buckets     = merge(local.ctx.log_buckets, local.log_buckets)
-    storage_buckets = merge(local.ctx.storage_buckets, local.storage_buckets)
     project_ids     = local.ctx_project_ids
     project_numbers = local.ctx_project_numbers
     pubsub_topics   = merge(local.ctx.pubsub_topics, local.pubsub_topics)
+    storage_buckets = merge(local.ctx.storage_buckets, local.storage_buckets)
   })
 }
 
@@ -384,9 +384,9 @@ module "folder-4-iam" {
     iam_principals  = local.ctx_iam_principals
     kms_keys        = merge(local.ctx.kms_keys, local.kms_keys)
     log_buckets     = merge(local.ctx.log_buckets, local.log_buckets)
-    storage_buckets = merge(local.ctx.storage_buckets, local.storage_buckets)
     project_ids     = local.ctx_project_ids
     project_numbers = local.ctx_project_numbers
     pubsub_topics   = merge(local.ctx.pubsub_topics, local.pubsub_topics)
+    storage_buckets = merge(local.ctx.storage_buckets, local.storage_buckets)
   })
 }

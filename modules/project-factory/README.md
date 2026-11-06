@@ -286,13 +286,13 @@ Assuming keys of the form `my_folder`, `my_project`, `my_sa`, etc. this is an ex
 - `$iam_principalsets:service_accounts/all`
 - `$kms_keys:my_key`
 - `$log_buckets:my_project/my_bucket`
-- `$storage_buckets:my_project/my_bucket`
 - `$locations:my_location`
 - `$notification_channels:my_channel`
 - `$project_ids:my_project`
 - `$service_account_ids:my_project/my_sa`
 - `$service_account_ids:my_project/automation/my_sa`
 - `$service_agents:compute`
+- `$storage_buckets:my_project/my_bucket`
 - `$tag_keys:my_key` *static context*
 - `$tag_keys:my_project/my_key` *project-level tag keys*
 - `$tag_values:my_key/my_value` *static context*
@@ -609,7 +609,7 @@ asset_feeds:
 To setup logging for a given folder:
 ```yaml
 name: Team D
-logging: 
+logging:
   storage_location: europe-west1
   sinks:
     audit_gcs_logs:
