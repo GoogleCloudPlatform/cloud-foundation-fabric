@@ -219,6 +219,8 @@
     <br>*additional properties: string*
   - **project_ids**: *object*
     <br>*additional properties: string*
+  - **security_policies**: *object*
+    <br>*additional properties: string*
   - **service_account_ids**: *object*
     <br>*additional properties: string*
   - **tag_keys**: *object*

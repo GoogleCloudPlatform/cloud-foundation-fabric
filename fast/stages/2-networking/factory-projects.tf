@@ -22,6 +22,9 @@ locals {
   })
   ctx_projects = {
     project_ids = merge(local.ctx.project_ids, module.projects.project_ids)
+    project_numbers = merge(
+      local.ctx.project_numbers, module.projects.project_numbers
+    )
   }
 }
 

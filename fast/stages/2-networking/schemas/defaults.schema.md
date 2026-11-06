@@ -211,6 +211,8 @@
     <br>*additional properties: string*
   - **project_ids**: *object*
     <br>*additional properties: string*
+  - **project_numbers**: *object*
+    <br>*additional properties: string*
   - **security_profile_groups**: *object*
     <br>*additional properties: string*
   - **storage_buckets**: *object*

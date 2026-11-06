@@ -107,6 +107,24 @@ variable "billing_account" {
   default     = null
 }
 
+variable "cloud_armor_policy" {
+  description = "Hierarchical Cloud Armor policy to associate to this project. Project-level associations don't support exclusions. The association name defaults to `project-<number>`. The policy id accepts `$security_policies:` context references. Manage each association either here or via the `attachments` variable of the `net-cloud-armor` module, not both."
+  type = object({
+    name              = optional(string)
+    policy_id         = string
+    excluded_folders  = optional(list(string), [])
+    excluded_projects = optional(list(string), [])
+  })
+  default = null
+  validation {
+    condition = (
+      length(try(var.cloud_armor_policy.excluded_folders, [])) == 0 &&
+      length(try(var.cloud_armor_policy.excluded_projects, [])) == 0
+    )
+    error_message = "Exclusions are not supported for project-level Cloud Armor policy associations."
+  }
+}
+
 variable "compute_metadata" {
   description = "Optional compute metadata key/values. Only usable if compute API has been enabled."
   type        = map(string)
@@ -146,6 +164,7 @@ variable "context" {
     notification_channels = optional(map(string), {})
     project_ids           = optional(map(string), {})
     pubsub_topics         = optional(map(string), {})
+    security_policies     = optional(map(string), {})
     storage_buckets       = optional(map(string), {})
     tag_keys              = optional(map(string), {})
     tag_values            = optional(map(string), {})

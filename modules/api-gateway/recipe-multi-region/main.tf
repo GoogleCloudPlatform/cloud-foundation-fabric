@@ -91,10 +91,6 @@ module "functions" {
   bundle_config = {
     path = "${path.module}/function"
   }
-  function_config = {
-    entry_point = "helloGET"
-    runtime     = "nodejs22"
-  }
   service_account_config = {
     create = true
   }

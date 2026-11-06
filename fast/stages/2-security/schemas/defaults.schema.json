@@ -430,6 +430,21 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
+        "cidr_ranges": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "cidr_ranges_sets": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
         "custom_roles": {
           "type": "object",
           "additionalProperties": {
@@ -473,6 +488,12 @@
           }
         },
         "project_ids": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "project_numbers": {
           "type": "object",
           "additionalProperties": {
             "type": "string"

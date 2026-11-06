@@ -112,7 +112,7 @@ variable "function_config" {
     instance_count  = optional(number, 1)
     memory_mb       = optional(number, 256) # Memory in MB
     cpu             = optional(string, "0.166")
-    runtime         = optional(string, "python310")
+    runtime         = optional(string, "python312")
     timeout_seconds = optional(number, 180)
   })
   default = {
@@ -120,7 +120,7 @@ variable "function_config" {
     instance_count  = 1
     memory_mb       = 256
     cpu             = "0.166"
-    runtime         = "python310"
+    runtime         = "python312"
     timeout_seconds = 180
   }
 }

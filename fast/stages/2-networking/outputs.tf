@@ -18,6 +18,9 @@ locals {
   tfvars = {
     host_project_ids     = module.projects.project_ids
     host_project_numbers = module.projects.project_numbers
+    networking_security_policies = {
+      for k, v in module.security-policies : k => v.id
+    }
     subnet_ips = {
       for vpc_key, vpc in module.vpc-factory.vpcs : vpc_key => vpc.subnet_ips
     }
@@ -78,6 +81,11 @@ output "host_project_ids" {
 output "host_project_numbers" {
   description = "Project numbers."
   value       = local.tfvars.host_project_numbers
+}
+
+output "security_policies" {
+  description = "Hierarchical security policy ids."
+  value       = local.tfvars.networking_security_policies
 }
 
 output "subnet_ips" {

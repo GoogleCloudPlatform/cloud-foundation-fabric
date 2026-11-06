@@ -71,6 +71,14 @@ variable "kms_keys" {
   default     = {}
 }
 
+variable "networking_security_policies" {
+  # tfdoc:variable:source 2-networking
+  description = "Hierarchical security policy ids created in the networking stage."
+  type        = map(string)
+  nullable    = false
+  default     = {}
+}
+
 variable "organization" {
   # tfdoc:variable:source 0-globals
   description = "Organization details."
@@ -102,6 +110,14 @@ variable "prefix" {
 variable "project_ids" {
   # tfdoc:variable:source 0-org-setup
   description = "Projects created in the bootstrap stage."
+  type        = map(string)
+  nullable    = false
+  default     = {}
+}
+
+variable "security_security_policies" {
+  # tfdoc:variable:source 2-security
+  description = "Hierarchical security policy ids created in the security stage."
   type        = map(string)
   nullable    = false
   default     = {}

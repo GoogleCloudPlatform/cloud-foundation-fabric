@@ -1,0 +1,77 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  google_compute_organization_security_policy.hierarchical[0]:
+    advanced_options_config: []
+    description: Terraform managed.
+    display_name: null
+    parent: organizations/1122334455
+    short_name: test-h
+    timeouts: null
+    type: CLOUD_ARMOR
+  google_compute_organization_security_policy_association.hierarchical["organization"]:
+    attachment_id: organizations/1122334455
+    excluded_folders:
+    - folders/2222222222
+    - folders/4444444444
+    excluded_projects:
+    - projects/3333333333
+    - projects/5555555555
+    name: test-h-organization
+    timeouts: null
+  google_compute_organization_security_policy_association.hierarchical["project"]:
+    attachment_id: projects/6666666666
+    excluded_folders: []
+    excluded_projects: []
+    name: test-h-project
+    timeouts: null
+  google_compute_organization_security_policy_association.hierarchical["test"]:
+    attachment_id: folders/1234567890
+    excluded_folders: []
+    excluded_projects:
+    - projects/3333333333
+    name: test-h-test
+    timeouts: null
+  google_compute_organization_security_policy_rule.hierarchical["deny-internal"]:
+    action: deny(403)
+    description: null
+    header_action: []
+    match:
+    - config:
+      - src_ip_ranges:
+        - 10.0.0.0/12
+        - 172.16.0.0/12
+        - 192.168.0.0/16
+        - 8.8.8.8/32
+      description: null
+      expr: []
+      versioned_expr: SRC_IPS_V1
+    preconfigured_waf_config: []
+    preview: false
+    priority: 100
+    redirect_options: []
+    timeouts: null
+
+counts:
+  google_compute_organization_security_policy: 1
+  google_compute_organization_security_policy_association: 3
+  google_compute_organization_security_policy_rule: 1
+  modules: 0
+  resources: 5
+
+outputs:
+  id: __missing__
+  name: test-h
+  self_link: null

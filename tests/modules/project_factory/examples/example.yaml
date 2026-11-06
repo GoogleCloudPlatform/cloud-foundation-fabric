@@ -310,6 +310,16 @@ values:
     parent: folders/5678901234
     tags: null
     timeouts: null
+  module.project-factory.module.folder-1-iam["team-b"].google_compute_firewall_policy_association.default[0]:
+    firewall_policy: folders/1234567890/firewallPolicies/teams-baseline
+    name: teams-baseline
+    timeouts: null
+  module.project-factory.module.folder-1-iam["team-b"].google_compute_organization_security_policy_association.default[0]:
+    excluded_folders: []
+    excluded_projects:
+    - projects/1234567890
+    policy_id: locations/global/securityPolicies/1234567890
+    timeouts: null
   module.project-factory.module.folder-1["team-b"].google_folder.folder[0]:
     deletion_policy: DELETE
     deletion_protection: false
@@ -441,6 +451,11 @@ values:
     deletion_policy: DELETE
     location: europe-west1
     tag_value: $tag_values:context/project-factory
+    timeouts: null
+  ? module.project-factory.module.projects-iam["dev-ta-app0-be"].google_compute_organization_security_policy_association.default[0]
+  : excluded_folders: []
+    excluded_projects: []
+    policy_id: locations/global/securityPolicies/1234567890
     timeouts: null
   ? module.project-factory.module.projects-iam["dev-ta-app0-be"].google_compute_shared_vpc_service_project.shared_vpc_service[0]
   : deletion_policy: null
@@ -1134,6 +1149,8 @@ counts:
   google_bigquery_dataset_iam_binding: 1
   google_billing_budget: 1
   google_cloud_asset_folder_feed: 1
+  google_compute_firewall_policy_association: 1
+  google_compute_organization_security_policy_association: 2
   google_compute_shared_vpc_host_project: 1
   google_compute_shared_vpc_service_project: 1
   google_data_catalog_taxonomy: 1
