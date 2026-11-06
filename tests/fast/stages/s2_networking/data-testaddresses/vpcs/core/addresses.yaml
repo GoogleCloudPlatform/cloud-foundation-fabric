@@ -37,7 +37,7 @@ psc:
     region: $locations:primary
     subnet_self_link: $subnets:core/europe-west1/core-default
     service_attachment:
-      psc_service_attachment_link: projects/producer-project/regions/europe-west1/serviceAttachments/my-sa
+      psc_service_attachment_link: $service_attachments:my-sa
 
   # 3. Global PSC Address only
   psc-global:

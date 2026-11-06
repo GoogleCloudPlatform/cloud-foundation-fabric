@@ -41,9 +41,10 @@ module "vpc-addresses" {
   network_attachments = try(each.value.addresses.network_attachments, {})
 
   context = {
-    locations   = local.ctx.locations
-    networks    = local.ctx_vpcs.self_links
-    project_ids = local.ctx_projects.project_ids
-    subnets     = local.ctx_vpcs.subnets_by_vpc
+    locations           = local.ctx.locations
+    networks            = local.ctx_vpcs.self_links
+    project_ids         = local.ctx_projects.project_ids
+    service_attachments = local.ctx.service_attachments
+    subnets             = local.ctx_vpcs.subnets_by_vpc
   }
 }

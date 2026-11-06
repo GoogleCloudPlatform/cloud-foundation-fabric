@@ -1,0 +1,79 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# Default Google-managed certificate mode with context interpolation
+
+values:
+  module.ssm-cicd.google_cloudbuild_worker_pool.default:
+    location: europe-west4
+    name: test-0-ssm-0
+    network_config:
+    - peered_network: projects/my-dev-net-spoke-0/global/networks/dev-spoke-0
+      peered_network_ip_range: /26
+    project: my-dev-build-pool-0
+  ? module.ssm-cicd.module.build-sa["vpcsc/ro"].google_service_account_iam_member.additive["projects/my-iac-0/serviceAccounts/iac-vpcsc-ro@my-iac-0.iam.gserviceaccount.com-roles/iam.serviceAccountTokenCreator"]
+  : role: roles/iam.serviceAccountTokenCreator
+    service_account_id: projects/my-iac-0/serviceAccounts/iac-vpcsc-ro@my-iac-0.iam.gserviceaccount.com
+  module.ssm-cicd.module.repo-sa["vpcsc"].google_service_account_iam_binding.authoritative["roles/iam.serviceAccountUser"]:
+    members:
+    - serviceAccount:dev-build-ssm-0-rw@my-iac-0.iam.gserviceaccount.com
+    role: roles/iam.serviceAccountUser
+  module.ssm-cicd.module.ssm-instance.google_secure_source_manager_instance.instance[0]:
+    instance_id: test-0-ssm-0
+    location: europe-west4
+    private_config:
+    - ca_pool: null
+      custom_host_config: []
+      is_private: true
+      psc_allowed_projects:
+      - my-dev-net-spoke-0
+      - my-prod-net-landing-0
+    project: my-dev-build-ssm-0
+  module.ssm-cicd.module.ssm-instance.google_secure_source_manager_repository.repositories["vpcsc"]:
+    deletion_policy: DELETE
+    location: europe-west4
+    project: my-dev-build-ssm-0
+    repository_id: vpcsc
+  module.ssm-cicd.module.ssm-lb-ip.google_compute_address.internal["test-0-ssm-0-lb"]:
+    address: 10.8.4.6
+    project: my-dev-build-ssm-0
+    purpose: SHARED_LOADBALANCER_VIP
+    region: europe-west4
+    subnetwork: projects/my-dev-net-spoke-0/regions/europe-west4/subnetworks/gce
+  module.ssm-cicd.module.ssm-lb["http"].google_compute_forwarding_rule.default[""]:
+    allow_global_access: true
+    ip_address: 10.8.4.6
+    load_balancing_scheme: INTERNAL_MANAGED
+    name: test-0-ssm-0-http
+    network: projects/my-dev-net-spoke-0/global/networks/dev-spoke-0
+    port_range: '443'
+    project: my-dev-build-ssm-0
+    region: europe-west4
+  module.ssm-cicd.module.ssm-lb["ssh"].google_compute_forwarding_rule.default[""]:
+    ip_address: 10.8.4.6
+    name: test-0-ssm-0-ssh
+    port_range: '22'
+
+counts:
+  google_cloudbuild_worker_pool: 1
+  google_compute_address: 1
+  google_compute_forwarding_rule: 2
+  google_compute_region_backend_service: 2
+  google_compute_region_network_endpoint_group: 2
+  google_compute_region_target_tcp_proxy: 2
+  google_secure_source_manager_instance: 1
+  google_secure_source_manager_repository: 1
+  google_service_account: 3
+  modules: 8
+  resources: 32
