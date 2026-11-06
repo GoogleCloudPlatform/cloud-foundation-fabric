@@ -14,6 +14,35 @@
  * limitations under the License.
  */
 
+variable "context" {
+  description = "Context-specific interpolations."
+  type = object({
+    ca_pools         = optional(map(string), {})
+    custom_roles     = optional(map(string), {})
+    iam_principals   = optional(map(string), {})
+    kms_keys         = optional(map(string), {})
+    locations        = optional(map(string), {})
+    project_ids      = optional(map(string), {})
+    project_numbers  = optional(map(string), {})
+    service_accounts = optional(map(string), {})
+  })
+  default  = {}
+  nullable = false
+}
+
+variable "deletion_policy" {
+  description = "Instance deletion policy, one of PREVENT, ABANDON, DELETE."
+  type        = string
+  default     = null
+  validation {
+    condition = (
+      var.deletion_policy == null ||
+      contains(["PREVENT", "ABANDON", "DELETE"], coalesce(var.deletion_policy, "-"))
+    )
+    error_message = "Deletion policy must be one of PREVENT, ABANDON, DELETE."
+  }
+}
+
 variable "instance_create" {
   description = "Create SSM Instance. When set to false, uses instance_id to reference existing SSM instance."
   type        = bool
@@ -45,11 +74,25 @@ variable "location" {
 variable "private_configs" {
   description = "The configurations for SSM private instances."
   type = object({
-    is_private = optional(bool, true)
-    ca_pool_id = optional(string)
+    is_private           = optional(bool, true)
+    ca_pool_id           = optional(string)
+    psc_allowed_projects = optional(list(string))
+    custom_host_config = optional(object({
+      api      = string
+      git_http = string
+      git_ssh  = string
+      html     = string
+    }))
   })
   nullable = false
   default  = {}
+  validation {
+    condition = (
+      var.private_configs.custom_host_config == null ||
+      var.private_configs.ca_pool_id != null
+    )
+    error_message = "Custom hostnames need a CA pool to sign their certificate."
+  }
 }
 
 variable "project_id" {
@@ -60,8 +103,19 @@ variable "project_id" {
 variable "repositories" {
   description = "Repositories."
   type = map(object({
-    description = optional(string)
-    iam         = optional(map(list(string)), {})
+    branch_rules = optional(map(object({
+      allow_stale_reviews       = optional(bool)
+      disabled                  = optional(bool, false)
+      include_pattern           = string
+      minimum_approvals_count   = optional(number)
+      minimum_reviews_count     = optional(number)
+      require_comments_resolved = optional(bool)
+      require_linear_history    = optional(bool)
+      require_pull_request      = optional(bool)
+    })), {})
+    description     = optional(string)
+    deletion_policy = optional(string)
+    iam             = optional(map(list(string)), {})
     iam_bindings = optional(map(object({
       role    = string
       members = list(string)
@@ -76,15 +130,10 @@ variable "repositories" {
       license        = optional(string)
       readme         = optional(string)
     }))
-    branch_rules = optional(map(object({
-      disabled                  = optional(bool, false)
-      include_pattern           = string
-      require_pull_request      = optional(bool)
-      minimum_approvals_count   = optional(number)
-      minimum_reviews_count     = optional(number)
-      require_comments_resolved = optional(bool)
-      allow_stale_reviews       = optional(bool)
-      require_linear_history    = optional(bool)
-    })), {})
+    secret_scan_config = optional(object({
+      enabled          = optional(bool)
+      inspect_template = optional(string)
+    }))
+    service_account = optional(string)
   }))
 }

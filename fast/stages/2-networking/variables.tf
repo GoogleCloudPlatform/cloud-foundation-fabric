@@ -29,6 +29,7 @@ variable "context" {
     project_ids             = optional(map(string), {})
     project_numbers         = optional(map(string), {})
     security_profile_groups = optional(map(string), {})
+    service_attachments     = optional(map(string), {})
     storage_buckets         = optional(map(string), {})
     tag_keys                = optional(map(string), {})
     tag_values              = optional(map(string), {})

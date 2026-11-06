@@ -20,6 +20,8 @@ context:
     primary: europe-west1
     secondary: europe-west3
   iam_principals: {}
+  service_attachments:
+    my-sa: projects/producer-project/regions/europe-west1/serviceAttachments/my-sa
 projects:
   defaults:
     locations:

@@ -717,6 +717,12 @@
             "type": "string"
           }
         },
+        "service_attachments": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
         "storage_buckets": {
           "type": "object",
           "additionalProperties": {
