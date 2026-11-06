@@ -36,6 +36,20 @@ values:
         ipv4_enabled: false
         private_network: https://www.googleapis.com/compute/v1/projects/xxx/global/networks/aaa
       tier: db-g1-small
+  module.db.google_sql_database_instance.replicas["replica1"]:
+    database_version: POSTGRES_13
+    master_instance_name: db
+    name: replica1
+    project: project-id
+    region: europe-west8
+    settings:
+    - insights_config:
+      - query_insights_enabled: true
+        query_plans_per_minute: 5
+        query_string_length: 2048
+        record_application_tags: false
+        record_client_address: false
+      tier: db-g1-small
 
 counts:
-  google_sql_database_instance: 1
+  google_sql_database_instance: 2
