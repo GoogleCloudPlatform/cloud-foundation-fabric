@@ -1,0 +1,60 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.glb-0.google_compute_backend_bucket.default["static"]:
+    bucket_name: bucket
+    enable_cdn: true
+  module.glb-0.google_compute_backend_service.default["default"]:
+    enable_cdn: true
+    load_balancing_scheme: EXTERNAL_MANAGED
+  module.glb-0.google_compute_global_forwarding_rule.default[""]:
+    load_balancing_scheme: EXTERNAL_MANAGED
+  module.glb-0.google_compute_url_map.default:
+    path_matcher:
+    - name: pathmap
+      path_rule:
+      - paths:
+        - /static
+        - /static/*
+        route_action:
+        - cache_policy:
+          - cache_bypass_request_header_names: null
+            cache_key_policy: []
+            cache_mode: FORCE_CACHE_ALL
+            client_ttl: []
+            default_ttl:
+            - nanos: null
+              seconds: '3600'
+            max_ttl: []
+            negative_caching: true
+            negative_caching_policy:
+            - code: 404
+              ttl:
+              - nanos: null
+                seconds: '60'
+            request_coalescing: null
+            serve_while_stale: []
+
+counts:
+  google_compute_backend_bucket: 1
+  google_compute_backend_service: 1
+  google_compute_global_forwarding_rule: 1
+  google_compute_health_check: 1
+  google_compute_target_http_proxy: 1
+  google_compute_url_map: 1
+  modules: 1
+  resources: 6
+
+outputs: {}
