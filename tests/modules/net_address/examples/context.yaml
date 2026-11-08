@@ -64,11 +64,27 @@ values:
     terraform_labels:
       goog-terraform-provisioned: 'true'
     timeouts: null
+  module.addresses.google_compute_address.psc["ssm-http"]:
+    address_type: INTERNAL
+    name: ssm-http
+    project: my-project-1
+    region: us-central1
+    subnetwork: projects/prj-host/regions/us-central1/subnetworks/sub-1
+  module.addresses.google_compute_forwarding_rule.psc_consumer["ssm-http"]:
+    allow_psc_global_access: true
+    load_balancing_scheme: ''
+    name: ssm-http
+    project: my-project-1
+    recreate_closed_psc: true
+    region: us-central1
+    subnetwork: projects/prj-host/regions/us-central1/subnetworks/sub-1
+    target: projects/prj-tenant/regions/us-central1/serviceAttachments/http-psc
 
 counts:
-  google_compute_address: 2
+  google_compute_address: 3
+  google_compute_forwarding_rule: 1
   google_compute_global_address: 1
   modules: 1
-  resources: 3
+  resources: 5
 
 outputs: {}

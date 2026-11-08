@@ -12,6 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+values:
+  module.vpc-addresses["core"].google_compute_forwarding_rule.psc_consumer["psc-reg-fr"]:
+    region: europe-west1
+    target: projects/producer-project/regions/europe-west1/serviceAttachments/my-sa
+
 counts:
   google_compute_address: 4
   google_compute_forwarding_rule: 1

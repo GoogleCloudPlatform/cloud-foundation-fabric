@@ -94,7 +94,11 @@ resource "google_compute_global_forwarding_rule" "psc_consumer" {
   )
   ip_address            = google_compute_global_address.psc[each.key].self_link
   load_balancing_scheme = ""
-  target                = each.value.service_attachment.psc_service_attachment_link
+  target = lookup(
+    local.ctx.service_attachments,
+    each.value.service_attachment.psc_service_attachment_link,
+    each.value.service_attachment.psc_service_attachment_link
+  )
   # allow_psc_global_access is not currently supported for global
   # forwarding rules. This parameter is included for potential future
   # compatibility.
@@ -149,12 +153,16 @@ resource "google_compute_forwarding_rule" "psc_consumer" {
     for name, psc in local.regional_psc
     : name => psc if psc.service_attachment != null
   }
-  name                    = coalesce(each.value.name, each.key)
-  project                 = local.project_id
-  ip_address              = google_compute_address.psc[each.key].self_link
-  load_balancing_scheme   = ""
-  recreate_closed_psc     = true
-  target                  = each.value.service_attachment.psc_service_attachment_link
+  name                  = coalesce(each.value.name, each.key)
+  project               = local.project_id
+  ip_address            = google_compute_address.psc[each.key].self_link
+  load_balancing_scheme = ""
+  recreate_closed_psc   = true
+  target = lookup(
+    local.ctx.service_attachments,
+    each.value.service_attachment.psc_service_attachment_link,
+    each.value.service_attachment.psc_service_attachment_link
+  )
   allow_psc_global_access = each.value.service_attachment.global_access
   region = lookup(
     local.ctx.locations,

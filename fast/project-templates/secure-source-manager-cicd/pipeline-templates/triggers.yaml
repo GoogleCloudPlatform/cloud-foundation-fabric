@@ -1,0 +1,43 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# Copy to .cloudbuild/triggers.yaml on the repository's default branch.
+# Omitting serviceAccount on any entry causes Secure Source Manager to drop
+# the entire file silently with no UI banner, status check, or audit log.
+
+triggers:
+  - name: pull-request
+    # TODO: edit to the build project id
+    project: my-dev-build-pool-0
+    eventType: pull_request
+    configFilePath: .cloudbuild/cloudbuild.yaml
+    # TODO: edit to the <repo>/ro build identity id from build_identities output
+    serviceAccount: projects/my-dev-build-pool-0/serviceAccounts/test-0-vpcsc-ro@my-dev-build-pool-0.iam.gserviceaccount.com
+    substitutions:
+      _ACTION: plan
+      # TODO: edit to the read-only Terraform service account email
+      _TF_SA: iac-vpcsc-ro@my-iac-0.iam.gserviceaccount.com
+
+  - name: main-push
+    # TODO: edit to the build project id
+    project: my-dev-build-pool-0
+    eventType: push
+    includedGitRefs: ^main$
+    configFilePath: .cloudbuild/cloudbuild.yaml
+    # TODO: edit to the <repo>/rw build identity id from build_identities output
+    serviceAccount: projects/my-dev-build-pool-0/serviceAccounts/test-0-vpcsc-rw@my-dev-build-pool-0.iam.gserviceaccount.com
+    substitutions:
+      _ACTION: apply
+      # TODO: edit to the read-write Terraform service account email
+      _TF_SA: iac-vpcsc-rw@my-iac-0.iam.gserviceaccount.com
