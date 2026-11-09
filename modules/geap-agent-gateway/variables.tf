@@ -57,6 +57,7 @@ variable "context" {
     networks                     = optional(map(string), {})
     project_ids                  = optional(map(string), {})
     psc_network_attachments      = optional(map(string), {})
+    trust_configs                = optional(map(string), {})
   })
   default  = {}
   nullable = false
@@ -130,11 +131,11 @@ variable "name" {
   nullable    = false
 }
 
-# VPC connectivity is only exposed through agent connectivity templates:
-# these attributes configure the template managed by this module, unless
-# the gateway reuses an existing one.
+# VPC connectivity and egress TLS trust are exposed through agent connectivity
+# templates: these attributes configure the template managed by this module,
+# unless the gateway reuses an existing one.
 variable "networking_config" {
-  description = "The Agent Gateway networking configuration. Set 'psc_i_network_attachment_id' to manage an agent connectivity template here, or 'connectivity_template_reuse' to attach the gateway to an existing one."
+  description = "The Agent Gateway networking configuration. Set 'psc_i_network_attachment_id' or 'tls_config' to manage an agent connectivity template here, or 'connectivity_template_reuse' to attach the gateway to an existing one."
   type = object({
     # Both 'PUBLIC' and 'PRIVATE' can be configured, singly or
     # together. Leaves the API default when null.
@@ -149,17 +150,30 @@ variable "networking_config" {
     # Defaults to the gateway name.
     name                        = optional(string)
     psc_i_network_attachment_id = optional(string)
-    vpc_egress                  = optional(string, "PRIVATE_RANGES_ONLY")
+    tls_config = optional(object({
+      additional_roots         = optional(string, "PUBLICLY_TRUSTED_ROOTS")
+      allowlisted_certificates = optional(list(string), [])
+      description              = optional(string, "Terraform managed.")
+      intermediate_cas         = optional(list(string), [])
+      labels                   = optional(map(string))
+      # Defaults to the connectivity template name.
+      name               = optional(string)
+      trust_anchors      = optional(list(string), [])
+      trust_config_reuse = optional(string)
+    }))
+    vpc_egress = optional(string, "PRIVATE_RANGES_ONLY")
   })
   nullable = false
   default  = {}
 
   validation {
     condition = (
-      var.networking_config.psc_i_network_attachment_id == null
-      || var.networking_config.connectivity_template_reuse == null
+      var.networking_config.connectivity_template_reuse == null || (
+        var.networking_config.psc_i_network_attachment_id == null
+        && var.networking_config.tls_config == null
+      )
     )
-    error_message = "Specify at most one of psc_i_network_attachment_id or connectivity_template_reuse."
+    error_message = "Specify connectivity_template_reuse alone, or configure psc_i_network_attachment_id / tls_config for the template managed here."
   }
 
   validation {
@@ -180,7 +194,10 @@ variable "networking_config" {
 
   validation {
     condition = (
-      var.networking_config.psc_i_network_attachment_id == null
+      (
+        var.networking_config.psc_i_network_attachment_id == null
+        && var.networking_config.tls_config == null
+      )
       || var.access_path != null
     )
     error_message = "You must specify var.access_path when managing a connectivity template."
@@ -201,6 +218,47 @@ variable "networking_config" {
     )) == 0
     error_message = "The connectivity template access_types can only contain 'PRIVATE' and 'PUBLIC'."
   }
+
+  validation {
+    condition = (
+      var.networking_config.tls_config == null
+      ? true
+      : contains(
+        ["NO_ADDITIONAL_ROOTS", "PUBLICLY_TRUSTED_ROOTS"],
+        var.networking_config.tls_config.additional_roots
+      )
+    )
+    error_message = "The connectivity template tls_config.additional_roots can be one of the following: 'NO_ADDITIONAL_ROOTS', 'PUBLICLY_TRUSTED_ROOTS'."
+  }
+
+  validation {
+    condition = (
+      var.networking_config.tls_config == null || (
+        (
+          var.networking_config.tls_config.trust_config_reuse != null ? 1 : 0
+          ) + (
+          (
+            length(var.networking_config.tls_config.trust_anchors) > 0
+            || length(var.networking_config.tls_config.intermediate_cas) > 0
+            || length(var.networking_config.tls_config.allowlisted_certificates) > 0
+          ) ? 1 : 0
+        ) == 1
+      )
+    )
+    error_message = "When tls_config is set, specify either trust_config_reuse or at least one certificate in trust_anchors / allowlisted_certificates (not both)."
+  }
+
+  validation {
+    condition = (
+      var.networking_config.tls_config == null
+      ? true
+      : (
+        length(var.networking_config.tls_config.intermediate_cas) == 0
+        || length(var.networking_config.tls_config.trust_anchors) > 0
+      )
+    )
+    error_message = "Specifying intermediate_cas in tls_config requires at least one root CA certificate in trust_anchors."
+  }
 }
 
 
@@ -211,7 +269,7 @@ variable "project_id" {
 }
 
 variable "project_number" {
-  description = "Project number of var.project_id. Gateways reference connectivity templates by project number: set this to avoid the additional project data source read."
+  description = "Project number of var.project_id. Gateways and connectivity templates reference template and trust config resources by project number: set this to avoid the additional project data source read."
   type        = string
   default     = null
 }

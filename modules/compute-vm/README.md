@@ -413,7 +413,7 @@ module "vm-disk-options-example" {
   shielded_config = {}
 }
 
-# tftest inventory=disk-hyperdisk-pool.yaml e2e
+# tftest inventory=disk-hyperdisk-pool.yaml
 ```
 
 You need to specify additional options if you are using ARM-based instances
