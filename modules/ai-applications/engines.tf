@@ -69,11 +69,24 @@ resource "google_discovery_engine_chat_engine" "default" {
 }
 
 resource "google_discovery_engine_search_engine" "default" {
-  count         = var.engines_configs.search_engine_config == null ? 0 : 1
-  engine_id     = var.name
-  display_name  = var.name
+  count     = var.engines_configs.search_engine_config == null ? 0 : 1
+  project   = local.project_id
+  engine_id = var.name
+  display_name = coalesce(
+    try(var.engines_configs.search_engine_config.display_name, null),
+    var.name
+  )
   collection_id = var.engines_configs.collection_id
-  project       = local.project_id
+  app_type      = var.engines_configs.search_engine_config.app_type
+  kms_key_name = (
+    try(var.engines_configs.search_engine_config.kms_key, null) == null
+    ? null
+    : lookup(
+      local.ctx.kms_keys,
+      var.engines_configs.search_engine_config.kms_key,
+      var.engines_configs.search_engine_config.kms_key
+    )
+  )
   data_store_ids = [
     for ds in var.engines_configs.data_store_ids
     : coalesce(
@@ -95,6 +108,34 @@ resource "google_discovery_engine_search_engine" "default" {
     try(google_discovery_engine_data_store.default[var.engines_configs.data_store_ids[0]].location, null),
     local.location
   )
+  features = (
+    length(var.engines_configs.search_engine_config.features) == 0
+    ? null
+    : var.engines_configs.search_engine_config.features
+  )
+
+  dynamic "common_config" {
+    for_each = (
+      var.engines_configs.search_engine_config.company_name == null
+      ? [] : [""]
+    )
+
+    content {
+      company_name = var.engines_configs.search_engine_config.company_name
+    }
+  }
+
+  dynamic "knowledge_graph_config" {
+    for_each = (
+      var.engines_configs.search_engine_config.enable_private_knowledge_graph == null
+      ? [] : [""]
+    )
+
+    content {
+      enable_private_knowledge_graph = var.engines_configs.search_engine_config.enable_private_knowledge_graph
+    }
+  }
+
   search_engine_config {
     search_add_ons = var.engines_configs.search_engine_config.search_add_ons
     search_tier    = var.engines_configs.search_engine_config.search_tier
@@ -102,4 +143,32 @@ resource "google_discovery_engine_search_engine" "default" {
 
   # CMEK has to be registered before engines are created
   depends_on = [google_discovery_engine_cmek_config.default]
+}
+
+resource "google_discovery_engine_widget_config" "default" {
+  count = (
+    try(var.engines_configs.search_engine_config.widget_config, null) == null
+    ? 0 : 1
+  )
+  project       = local.project_id
+  location      = google_discovery_engine_search_engine.default[0].location
+  collection_id = google_discovery_engine_search_engine.default[0].collection_id
+  engine_id     = google_discovery_engine_search_engine.default[0].engine_id
+
+  access_settings {
+    enable_web_app                   = var.engines_configs.search_engine_config.widget_config.enable_web_app
+    workforce_identity_pool_provider = var.engines_configs.search_engine_config.widget_config.workforce_identity_pool_provider
+  }
+}
+
+resource "google_discovery_engine_search_engine_iam_binding" "default" {
+  for_each      = try(var.engines_configs.search_engine_config.iam, {})
+  project       = local.project_id
+  location      = google_discovery_engine_search_engine.default[0].location
+  collection_id = google_discovery_engine_search_engine.default[0].collection_id
+  engine_id     = google_discovery_engine_search_engine.default[0].engine_id
+  role          = each.key
+  members = [
+    for m in each.value : lookup(local.ctx.iam_principals, m, m)
+  ]
 }

@@ -235,3 +235,145 @@ resource "google_discovery_engine_target_site" "default" {
   type                 = each.value.type
   exact_match          = each.value.exact_match
 }
+
+resource "google_discovery_engine_acl_config" "default" {
+  count    = var.acl_config == null ? 0 : 1
+  project  = local.project_id
+  location = local.location
+
+  idp_config {
+    idp_type = var.acl_config.idp_type
+
+    dynamic "external_idp_config" {
+      for_each = var.acl_config.idp_type == "THIRD_PARTY" ? [""] : []
+
+      content {
+        workforce_pool_name = var.acl_config.workforce_pool_name
+      }
+    }
+  }
+}
+
+resource "google_discovery_engine_license_config" "default" {
+  count             = try(var.license_config.create_free_trial, false) ? 1 : 0
+  project           = local.project_id
+  location          = local.location
+  license_config_id = var.license_config.license_config_id
+  license_count     = var.license_config.license_count
+  subscription_tier = var.license_config.subscription_tier
+  subscription_term = var.license_config.subscription_term
+  free_trial        = true
+
+  start_date {}
+
+  lifecycle {
+    ignore_changes = [
+      start_date,
+      end_date,
+      license_count,
+    ]
+  }
+}
+
+resource "google_discovery_engine_user_store" "default" {
+  count         = var.license_config == null ? 0 : 1
+  project       = local.project_id
+  location      = local.location
+  user_store_id = "default_user_store"
+  default_license_config = coalesce(
+    var.license_config.license_config_name,
+    try(google_discovery_engine_license_config.default[0].name, null)
+  )
+  enable_license_auto_register       = var.license_config.enable_license_auto_register
+  enable_expired_license_auto_update = var.license_config.enable_expired_license_auto_update
+
+  depends_on = [google_discovery_engine_license_config.default]
+}
+
+resource "google_discovery_engine_data_connector" "default" {
+  for_each = var.data_connectors_configs
+  project  = local.project_id
+  location = (
+    each.value.location == null
+    ? local.location
+    : lookup(local.ctx.locations, each.value.location, each.value.location)
+  )
+  collection_id           = coalesce(each.value.collection_id, "${var.name}-${each.key}")
+  collection_display_name = each.value.collection_display_name
+  data_source             = each.value.data_source
+  kms_key_name = (
+    each.value.kms_key == null
+    ? null
+    : lookup(local.ctx.kms_keys, each.value.kms_key, each.value.kms_key)
+  )
+  refresh_interval  = each.value.refresh_interval
+  connector_modes   = each.value.connector_modes
+  sync_mode         = each.value.sync_mode
+  auto_run_disabled = each.value.auto_run_disabled
+  params            = each.value.params
+  json_params       = each.value.json_params
+
+  dynamic "destination_configs" {
+    for_each = each.value.destination_configs
+
+    content {
+      key    = destination_configs.value.key
+      params = destination_configs.value.params
+
+      dynamic "destinations" {
+        for_each = destination_configs.value.destinations
+
+        content {
+          host = destinations.value.host
+          port = destinations.value.port
+        }
+      }
+    }
+  }
+
+  dynamic "action_config" {
+    for_each = each.value.action_config == null ? [] : [""]
+
+    content {
+      create_bap_connection = each.value.action_config.create_bap_connection
+      action_params         = each.value.action_config.action_params
+    }
+  }
+
+  dynamic "bap_config" {
+    for_each = each.value.bap_config == null ? [] : [""]
+
+    content {
+      supported_connector_modes = each.value.bap_config.supported_connector_modes
+      enabled_actions           = each.value.bap_config.enabled_actions
+    }
+  }
+
+  dynamic "entities" {
+    for_each = each.value.entities
+
+    content {
+      entity_name           = entities.value.entity_name
+      data_store            = entities.value.data_store
+      params                = entities.value.params
+      key_property_mappings = entities.value.key_property_mappings
+    }
+  }
+
+  lifecycle {
+    ignore_changes = [
+      entities,
+      kms_key_name,
+      bap_config,
+      action_config,
+      destination_configs,
+      json_params,
+      params,
+    ]
+  }
+
+  depends_on = [
+    google_discovery_engine_acl_config.default,
+    google_discovery_engine_cmek_config.default,
+  ]
+}

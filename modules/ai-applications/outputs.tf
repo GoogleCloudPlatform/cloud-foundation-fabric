@@ -34,6 +34,11 @@ output "chat_engine_id" {
   value       = try(google_discovery_engine_chat_engine.default[0].id, null)
 }
 
+output "data_connectors" {
+  description = "The Discovery Engine data connectors created."
+  value       = google_discovery_engine_data_connector.default
+}
+
 output "data_store_ids" {
   description = "The ids of the data stores created."
   value = {
@@ -55,4 +60,14 @@ output "search_engine" {
 output "search_engine_id" {
   description = "The id of the search engine."
   value       = try(google_discovery_engine_search_engine.default[0].id, null)
+}
+
+output "user_store" {
+  description = "The Discovery Engine default user store object."
+  value       = try(google_discovery_engine_user_store.default[0], null)
+}
+
+output "widget_config" {
+  description = "The Discovery Engine widget configuration object."
+  value       = try(google_discovery_engine_widget_config.default[0], null)
 }
