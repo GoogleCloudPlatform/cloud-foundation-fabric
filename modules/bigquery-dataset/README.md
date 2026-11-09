@@ -200,7 +200,7 @@ module "bigquery-dataset" {
 
 ## Tables, views and routines
 
-Tables are created via the `tables` variable. Support for external tables will be added in a future release.
+Tables are created via the `tables` variable.
 
 ```hcl
 locals {
@@ -251,6 +251,34 @@ module "bigquery-dataset" {
   }
 }
 # tftest modules=1 resources=2 inventory=partitioning.yaml
+```
+
+External tables are configured via the `external_data_configuration` attribute. For hive-partitioned tables with an explicit schema, set `ignore_auto_generated_schema` so the partition key columns BigQuery adds to the schema don't force the table to be replaced on every apply.
+
+```hcl
+module "bigquery-dataset" {
+  source     = "./fabric/modules/bigquery-dataset"
+  project_id = "my-project"
+  id         = "my_dataset"
+  tables = {
+    clicks = {
+      schema = jsonencode([
+        { name = "payload", type = "STRING", mode = "NULLABLE" }
+      ])
+      ignore_auto_generated_schema = true
+      external_data_configuration = {
+        autodetect    = false
+        source_format = "NEWLINE_DELIMITED_JSON"
+        source_uris   = ["gs://my-bucket/clicks/*"]
+        hive_partitioning_options = {
+          mode              = "CUSTOM"
+          source_uri_prefix = "gs://my-bucket/clicks/{dt:DATE}"
+        }
+      }
+    }
+  }
+}
+# tftest modules=1 resources=2 inventory=external.yaml
 ```
 
 To create views use the `views` variable. If you're querying a table created by the same module `terraform apply` will initially fail and eventually succeed once the underlying table has been created. You can probably also use the module's output in the view's query to create a dependency on the table.
@@ -353,7 +381,6 @@ module "bigquery-dataset" {
 ## TODO
 
 - [ ] check for dynamic values in tables and views
-- [ ] add support for external tables
 <!-- BEGIN TFDOC -->
 ## Variables
 
@@ -381,8 +408,8 @@ module "bigquery-dataset" {
 | [options](variables.tf#L165) | Dataset options. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [routines](variables.tf#L184) | Routine definitions. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [tables](variables.tf#L223) | Table definitions. Options and partitioning default to null. Partitioning can only use `range` or `time`, set the unused one to null. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [tag_bindings](variables.tf#L308) | Tag bindings for this dataset, in key => tag value id format. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [views](variables.tf#L315) | View definitions. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [tag_bindings](variables.tf#L309) | Tag bindings for this dataset, in key => tag value id format. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [views](variables.tf#L316) | View definitions. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
 

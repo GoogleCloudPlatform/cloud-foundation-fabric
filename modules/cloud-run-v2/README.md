@@ -24,6 +24,7 @@ Cloud Run Services and Jobs, with support for IAM roles and Eventarc trigger cre
 - [Adding GPUs](#adding-gpus)
 - [Multi-Region Service](#multi-region-service)
 - [Traffic Splitting and Revision Tagging](#traffic-splitting-and-revision-tagging)
+- [Service-level Scaling](#service-level-scaling)
 - [Security Configurations](#security-configurations)
 - [Variables](#variables)
 - [Outputs](#outputs)
@@ -1068,6 +1069,36 @@ module "cloud_run" {
 # tftest inventory=traffic.yaml
 ```
 
+## Service-level Scaling
+
+`service_config.scaling` sets the revision-level scaling limits. Cloud Run also enforces service-level limits, which apply to all revisions receiving traffic combined, and uses the lesser of the two maximums. As the service-level maximum defaults to 100 instances, set it via `service_config.service_scaling` to scale beyond that limit. Manual scaling is configured by setting `mode` to `MANUAL` together with `manual_instance_count`.
+
+```hcl
+module "cloud_run" {
+  source     = "./fabric/modules/cloud-run-v2"
+  project_id = var.project_id
+  region     = var.region
+  name       = "example-scaling"
+  containers = {
+    hello = {
+      image = "us-docker.pkg.dev/cloudrun/container/hello"
+    }
+  }
+  service_config = {
+    scaling = {
+      max_instance_count = 150
+      min_instance_count = 3
+    }
+    service_scaling = {
+      max_instance_count = 150
+      min_instance_count = 3
+    }
+  }
+  deletion_protection = false
+}
+# tftest inventory=service-scaling.yaml e2e
+```
+
 ## Security Configurations
 
 You can enable Binary Authorization to verify container image signatures and disable the default `*.a.run.app` URL when routing traffic exclusively through internal networks or Application Load Balancers:
@@ -1114,11 +1145,11 @@ module "cloud_run" {
 | [revision](variables.tf#L207) | Revision template configurations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [service_account_config](variables-serviceaccount.tf#L17) | Service account configurations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [service_config](variables.tf#L274) | Cloud Run service specific configuration options. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [tag_bindings](variables.tf#L407) | Tag bindings for this service, in key => tag value id format. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [type](variables.tf#L414) | Type of Cloud Run resource to deploy: JOB, SERVICE or WORKERPOOL. | <code>string</code> |  | <code>&#34;SERVICE&#34;</code> |
-| [volumes](variables.tf#L424) | Named volumes in containers in name => attributes format. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [tag_bindings](variables.tf#L423) | Tag bindings for this service, in key => tag value id format. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [type](variables.tf#L430) | Type of Cloud Run resource to deploy: JOB, SERVICE or WORKERPOOL. | <code>string</code> |  | <code>&#34;SERVICE&#34;</code> |
+| [volumes](variables.tf#L440) | Named volumes in containers in name => attributes format. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [vpc_connector_create](variables-vpcconnector.tf#L17) | VPC connector network configuration. Must be provided if new VPC connector is being created. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [workerpool_config](variables.tf#L458) | Cloud Run Worker Pool specific configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [workerpool_config](variables.tf#L474) | Cloud Run Worker Pool specific configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
 

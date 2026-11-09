@@ -25,6 +25,7 @@ This module allows the creation and management of folders, including support for
 - [Cloud Asset Inventory Feeds](#cloud-asset-inventory-feeds)
 - [Tags](#tags)
 - [IAM Deny Policies](#iam-deny-policies)
+- [Model Armor Floor Settings](#model-armor-floor-settings)
 - [Files](#files)
 - [Variables](#variables)
 - [Outputs](#outputs)
@@ -836,6 +837,40 @@ module "folder" {
 # tftest modules=1 resources=3 inventory=iam-deny-policies.yaml
 ```
 
+## Model Armor Floor Settings
+
+A [Model Armor floor setting](https://docs.cloud.google.com/model-armor/configure-floor-settings) defines the minimum filters that Model Armor templates in the folder must apply. It is managed via the `model_armor_floor_setting` variable. The `modelarmor.googleapis.com` service needs to be enabled in the quota project.
+
+Inline screening of Vertex AI and Google Cloud MCP server traffic (`integrated_services`) is only supported by the API on projects, so setting it here fails at plan time; use the `project` module instead. Enforcement is enabled by default when the variable is set, and multi-language detection is disabled by default.
+
+The floor setting is a singleton that always exists: removing the variable only removes the resource from the Terraform state, and does not reset the floor setting in GCP.
+
+```hcl
+module "folder" {
+  source = "./fabric/modules/folder"
+  parent = var.folder_id
+  name   = "Folder name"
+  model_armor_floor_setting = {
+    filters = {
+      malicious_uris = true
+      pi_and_jailbreak = {
+        confidence_level = "MEDIUM_AND_ABOVE"
+      }
+      rai = {
+        DANGEROUS         = "MEDIUM_AND_ABOVE"
+        HARASSMENT        = "MEDIUM_AND_ABOVE"
+        HATE_SPEECH       = "MEDIUM_AND_ABOVE"
+        SEXUALLY_EXPLICIT = "MEDIUM_AND_ABOVE"
+      }
+      sdp = {
+        basic = true
+      }
+    }
+  }
+}
+# tftest modules=1 resources=2 inventory=model-armor-floor-setting.yaml
+```
+
 <!-- TFDOC OPTS files:1 -->
 <!-- BEGIN TFDOC -->
 ## Files
@@ -847,6 +882,7 @@ module "folder" {
 | [iam.tf](./iam.tf) | IAM bindings. | <code>google_folder_iam_binding</code> · <code>google_folder_iam_member</code> |
 | [logging.tf](./logging.tf) | Log sinks and supporting resources. | <code>google_bigquery_dataset_iam_member</code> · <code>google_folder_iam_audit_config</code> · <code>google_logging_folder_exclusion</code> · <code>google_logging_folder_settings</code> · <code>google_logging_folder_sink</code> · <code>google_project_iam_member</code> · <code>google_pubsub_topic_iam_member</code> · <code>google_storage_bucket_iam_member</code> |
 | [main.tf](./main.tf) | Module-level locals and resources. | <code>google_assured_workloads_workload</code> · <code>google_compute_firewall_policy_association</code> · <code>google_compute_organization_security_policy_association</code> · <code>google_essential_contacts_contact</code> · <code>google_folder</code> · <code>google_kms_autokey_config</code> |
+| [model-armor.tf](./model-armor.tf) | Model Armor floor setting. | <code>google_model_armor_floorsetting</code> |
 | [organization-policies.tf](./organization-policies.tf) | Folder-level organization policies. | <code>google_org_policy_policy</code> |
 | [outputs.tf](./outputs.tf) | Module outputs. |  |
 | [pam.tf](./pam.tf) | None | <code>google_privileged_access_manager_entitlement</code> |
@@ -856,6 +892,7 @@ module "folder" {
 | [tags.tf](./tags.tf) | None | <code>google_tags_tag_binding</code> |
 | [variables-iam.tf](./variables-iam.tf) | None |  |
 | [variables-logging.tf](./variables-logging.tf) | None |  |
+| [variables-model-armor.tf](./variables-model-armor.tf) | None |  |
 | [variables-pam.tf](./variables-pam.tf) | None |  |
 | [variables-scc.tf](./variables-scc.tf) | None |  |
 | [variables.tf](./variables.tf) | Module variables. |  |
@@ -888,6 +925,7 @@ module "folder" {
 | [logging_exclusions](variables-logging.tf#L28) | Logging exclusions for this folder in the form {NAME -> FILTER}. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 | [logging_settings](variables-logging.tf#L35) | Default settings for logging resources. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [logging_sinks](variables-logging.tf#L45) | Logging sinks to create for the folder. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [model_armor_floor_setting](variables-model-armor.tf#L17) | Model Armor floor setting for this resource. Integrated services are only supported on projects. Removing it does not reset the floor setting in GCP. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [name](variables.tf#L260) | Folder name. | <code>string</code> |  | <code>null</code> |
 | [org_policies](variables.tf#L266) | Organization policies applied to this folder keyed by policy name. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [pam_entitlements](variables-pam.tf#L17) | Privileged Access Manager entitlements for this resource, keyed by entitlement ID. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
