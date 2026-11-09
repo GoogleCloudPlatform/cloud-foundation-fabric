@@ -304,6 +304,12 @@ variable "service_config" {
       max_instance_count = optional(number)
       min_instance_count = optional(number)
     }))
+    service_scaling = optional(object({
+      manual_instance_count = optional(number)
+      max_instance_count    = optional(number)
+      min_instance_count    = optional(number)
+      mode                  = optional(string)
+    }))
     timeout = optional(string)
     traffic = optional(list(object({
       percent  = optional(number)
@@ -372,6 +378,16 @@ variable "service_config" {
       t.tag == null ? true : (length(t.tag) >= 3 && length(t.tag) <= 47)
     ])
     error_message = "Traffic tag length must be between 3 and 47 characters."
+  }
+
+  validation {
+    condition = (
+      try(var.service_config.service_scaling.mode, null) == null
+      ? true : contains(
+        ["AUTOMATIC", "MANUAL"], var.service_config.service_scaling.mode
+      )
+    )
+    error_message = "Service scaling mode should be one of AUTOMATIC, MANUAL."
   }
 
   validation {
