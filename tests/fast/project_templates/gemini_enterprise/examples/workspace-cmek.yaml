@@ -1,0 +1,108 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.gemini-enterprise.google_kms_crypto_key.gemini_key[0]:
+    name: corp-0-gemini-enterprise-us-key
+    purpose: ENCRYPT_DECRYPT
+    rotation_period: 7776000s
+  module.gemini-enterprise.google_kms_crypto_key_iam_member.discoveryengine_cmek[0]:
+    role: roles/cloudkms.cryptoKeyEncrypterDecrypter
+  module.gemini-enterprise.google_kms_key_ring.gemini_ring[0]:
+    location: us
+    name: corp-0-gemini-enterprise-us-ring
+    project: prod-ai-gemini-enterprise-0
+  module.gemini-enterprise.module.gemini-enterprise-prod.google_discovery_engine_acl_config.default[0]:
+    idp_config:
+    - external_idp_config:
+      - workforce_pool_name: locations/global/workforcePools/corp-pool
+      idp_type: THIRD_PARTY
+    location: us
+    project: prod-ai-gemini-enterprise-0
+  module.gemini-enterprise.module.gemini-enterprise-prod.google_discovery_engine_cmek_config.default["us"]:
+    cmek_config_id: corp-0-gemini-enterprise-prod
+    location: us
+    project: prod-ai-gemini-enterprise-0
+    set_default: true
+  module.gemini-enterprise.module.gemini-enterprise-prod.google_discovery_engine_data_connector.default["google-calendar"]:
+    auto_run_disabled: true
+    collection_id: google-calendar-collection
+    connector_modes:
+    - FEDERATED
+    data_source: google_calendar
+    json_params: '{}'
+    refresh_interval: 0s
+  module.gemini-enterprise.module.gemini-enterprise-prod.google_discovery_engine_data_connector.default["google-chat"]:
+    action_config:
+    - action_params:
+        auth_key: OAuth
+        auth_type: OAUTH
+      create_bap_connection: true
+    auto_run_disabled: true
+    collection_id: google-chat-collection
+    connector_modes:
+    - FEDERATED
+    - ACTIONS
+    data_source: google_chat
+    json_params: '{}'
+    refresh_interval: 0s
+  module.gemini-enterprise.module.gemini-enterprise-prod.google_discovery_engine_data_connector.default["google-drive"]:
+    auto_run_disabled: true
+    collection_id: google-drive-collection
+    connector_modes:
+    - FEDERATED
+    data_source: google_drive
+    json_params: '{}'
+    refresh_interval: 0s
+  module.gemini-enterprise.module.gemini-enterprise-prod.google_discovery_engine_data_connector.default["google-mail"]:
+    auto_run_disabled: true
+    collection_id: google-mail-collection
+    connector_modes:
+    - FEDERATED
+    data_source: google_mail
+    json_params: '{}'
+    refresh_interval: 0s
+  module.gemini-enterprise.module.gemini-enterprise-prod.google_discovery_engine_widget_config.default[0]:
+    access_settings:
+    - enable_web_app: true
+      workforce_identity_pool_provider: locations/global/workforcePools/corp-pool/providers/oidc-provider
+    engine_id: corp-0-gemini-enterprise-prod
+  module.gemini-enterprise.module.gemini-enterprise-validation.google_discovery_engine_widget_config.default[0]:
+    access_settings:
+    - enable_web_app: true
+      workforce_identity_pool_provider: locations/global/workforcePools/corp-pool/providers/oidc-provider
+    engine_id: corp-0-gemini-enterprise-validation
+
+counts:
+  google_discovery_engine_acl_config: 1
+  google_discovery_engine_cmek_config: 1
+  google_discovery_engine_data_connector: 5
+  google_discovery_engine_data_store: 2
+  google_discovery_engine_license_config: 1
+  google_discovery_engine_search_engine: 2
+  google_discovery_engine_search_engine_iam_binding: 2
+  google_discovery_engine_user_store: 1
+  google_discovery_engine_widget_config: 2
+  google_kms_crypto_key: 1
+  google_kms_crypto_key_iam_member: 1
+  google_kms_key_ring: 1
+  google_model_armor_floorsetting: 1
+  google_org_policy_policy: 3
+  google_project_iam_audit_config: 2
+  google_project_service_identity: 1
+  google_storage_bucket: 1
+  google_storage_bucket_iam_member: 1
+  google_storage_bucket_object: 1
+  modules: 3
+  resources: 30

@@ -1,0 +1,177 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.gemini-enterprise.google_discovery_engine_acl_config.default[0]:
+    idp_config:
+    - external_idp_config: []
+      idp_type: GSUITE
+    location: us
+    project: project-id
+  module.gemini-enterprise.google_discovery_engine_data_connector.default["gcs-corpus"]:
+    auto_run_disabled: false
+    collection_display_name: Cloud Storage Knowledge Connector
+    collection_id: gemini-enterprise-prod-gcs-corpus
+    connector_modes:
+    - DATA_INGESTION
+    data_source: gcs
+    entities:
+    - entity_name: gcs_store
+      params: '{"auto_generate_ids":false,"data_schema":"content"}'
+    json_params: '{"instance_uris":["gs://my-enterprise-corpus/docs/*"]}'
+    location: us
+    project: project-id
+  module.gemini-enterprise.google_discovery_engine_data_connector.default["google-calendar"]:
+    auto_run_disabled: true
+    collection_display_name: Google Calendar
+    connector_modes:
+    - FEDERATED
+    data_source: google_calendar
+    json_params: '{}'
+    location: us
+    project: project-id
+    refresh_interval: 0s
+  module.gemini-enterprise.google_discovery_engine_data_connector.default["google-chat"]:
+    action_config:
+    - action_params:
+        auth_key: OAuth
+        auth_type: OAUTH
+      create_bap_connection: true
+    auto_run_disabled: true
+    collection_display_name: Google Chat
+    connector_modes:
+    - FEDERATED
+    - ACTIONS
+    data_source: google_chat
+    json_params: '{}'
+    location: us
+    project: project-id
+    refresh_interval: 0s
+  module.gemini-enterprise.google_discovery_engine_data_connector.default["google-drive"]:
+    auto_run_disabled: true
+    collection_display_name: Google Drive
+    connector_modes:
+    - FEDERATED
+    data_source: google_drive
+    json_params: '{}'
+    location: us
+    project: project-id
+    refresh_interval: 0s
+  module.gemini-enterprise.google_discovery_engine_data_connector.default["google-mail"]:
+    auto_run_disabled: true
+    collection_display_name: Gmail
+    connector_modes:
+    - FEDERATED
+    data_source: google_mail
+    json_params: '{}'
+    location: us
+    project: project-id
+    refresh_interval: 0s
+  module.gemini-enterprise.google_discovery_engine_data_store.default["knowledge-store"]:
+    content_config: CONTENT_REQUIRED
+    create_advanced_site_search: false
+    data_store_id: gemini-enterprise-prod-knowledge-store
+    display_name: Enterprise Knowledge Store
+    document_processing_config:
+    - chunking_config:
+      - layout_based_chunking_config:
+        - chunk_size: 500
+          include_ancestor_headings: true
+      default_parsing_config:
+      - digital_parsing_config:
+        - {}
+    location: us
+    project: project-id
+    solution_types:
+    - SOLUTION_TYPE_SEARCH
+  module.gemini-enterprise.google_discovery_engine_data_store.default["reserved-store"]:
+    content_config: NO_CONTENT
+    create_advanced_site_search: false
+    data_store_id: gemini-enterprise-prod-reserved-store
+    display_name: Reserved Secondary Store
+    location: us
+    project: project-id
+    solution_types:
+    - SOLUTION_TYPE_SEARCH
+  module.gemini-enterprise.google_discovery_engine_license_config.default[0]:
+    free_trial: true
+    license_config_id: free_trial_gemini
+    license_count: 50
+    location: us
+    project: project-id
+    subscription_term: SUBSCRIPTION_TERM_ONE_MONTH
+    subscription_tier: SUBSCRIPTION_TIER_SEARCH_AND_ASSISTANT
+  module.gemini-enterprise.google_discovery_engine_search_engine.default[0]:
+    app_type: APP_TYPE_INTRANET
+    collection_id: default_collection
+    common_config:
+    - company_name: Example Enterprise
+    data_store_ids:
+    - gemini-enterprise-prod-knowledge-store
+    - gemini-enterprise-prod-reserved-store
+    display_name: Gemini Enterprise (Production)
+    engine_id: gemini-enterprise-prod
+    features:
+      agent-sharing-without-admin-approval: FEATURE_STATE_OFF
+      disable-agent-sharing: FEATURE_STATE_OFF
+      enable-end-user-sharing-with-groups: FEATURE_STATE_OFF
+      model-selector: FEATURE_STATE_ON
+      no-code-agent-builder: FEATURE_STATE_ON
+      notebook-lm: FEATURE_STATE_ON
+      personalization-suggested-highlights: FEATURE_STATE_ON
+      prompt-gallery: FEATURE_STATE_ON
+      workflow-agents: FEATURE_STATE_ON
+    knowledge_graph_config:
+    - enable_private_knowledge_graph: true
+    location: us
+    project: project-id
+    search_engine_config:
+    - search_add_ons:
+      - SEARCH_ADD_ON_LLM
+      search_tier: SEARCH_TIER_ENTERPRISE
+  # yamllint disable-line rule:line-length
+  ? module.gemini-enterprise.google_discovery_engine_search_engine_iam_binding.default["roles/discoveryengine.agentspaceUser"]
+  : collection_id: default_collection
+    engine_id: gemini-enterprise-prod
+    location: us
+    members:
+    - domain:example.com
+    project: project-id
+    role: roles/discoveryengine.agentspaceUser
+  module.gemini-enterprise.google_discovery_engine_user_store.default[0]:
+    enable_expired_license_auto_update: true
+    enable_license_auto_register: true
+    location: us
+    project: project-id
+    user_store_id: default_user_store
+  module.gemini-enterprise.google_discovery_engine_widget_config.default[0]:
+    access_settings:
+    - enable_web_app: true
+      workforce_identity_pool_provider: null
+    collection_id: default_collection
+    engine_id: gemini-enterprise-prod
+    location: us
+    project: project-id
+
+counts:
+  google_discovery_engine_acl_config: 1
+  google_discovery_engine_data_connector: 5
+  google_discovery_engine_data_store: 2
+  google_discovery_engine_license_config: 1
+  google_discovery_engine_search_engine: 1
+  google_discovery_engine_search_engine_iam_binding: 1
+  google_discovery_engine_user_store: 1
+  google_discovery_engine_widget_config: 1
+  modules: 1
+  resources: 13

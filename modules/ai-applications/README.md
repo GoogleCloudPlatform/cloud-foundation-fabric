@@ -369,7 +369,7 @@ module "gemini-enterprise" {
     }
   }
 }
-# tftest modules=1 resources=13
+# tftest modules=1 resources=13 inventory=gemini-enterprise.yaml
 ```
 
 ### Data stores

@@ -71,7 +71,40 @@ module "gemini-enterprise" {
   validation_app_principals = ["$iam_principals:ai-admins"]
   workforce_app_principals  = ["$iam_principals:workforce"]
 }
-# tftest modules=3 resources=22
+# tftest modules=3 resources=22 inventory=default.yaml
+```
+
+To enable first-party Google Workspace federated connectors, regional Cloud KMS CMEK encryption, and third-party Workforce Identity Federation SSO:
+
+```hcl
+module "gemini-enterprise" {
+  source     = "./fabric/fast/project-templates/gemini-enterprise"
+  project_id = "$project_ids:ai-prod"
+  location   = "$locations:primary"
+  prefix     = "corp-0"
+  context = {
+    iam_principals = {
+      ai-admins = "principalSet://iam.googleapis.com/locations/global/workforcePools/corp-pool/group/ai-admins"
+      workforce = "principalSet://iam.googleapis.com/locations/global/workforcePools/corp-pool/*"
+    }
+    locations = {
+      primary = "us"
+    }
+    project_ids = {
+      ai-prod = "prod-ai-gemini-enterprise-0"
+    }
+  }
+  enable_cmek                 = true
+  enable_workspace_connectors = true
+  idp_config = {
+    idp_type              = "THIRD_PARTY"
+    workforce_pool_id     = "corp-pool"
+    workforce_provider_id = "oidc-provider"
+  }
+  validation_app_principals = ["$iam_principals:ai-admins"]
+  workforce_app_principals  = ["$iam_principals:workforce"]
+}
+# tftest modules=3 resources=30 inventory=workspace-cmek.yaml
 ```
 <!-- BEGIN TFDOC -->
 ## Variables

@@ -1,0 +1,138 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.gemini-enterprise.google_model_armor_floorsetting.project_guardrails[0]:
+    ai_platform_floor_setting:
+    - enable_cloud_logging: true
+      inspect_and_block: true
+    enable_floor_setting_enforcement: true
+    google_mcp_server_floor_setting:
+    - enable_cloud_logging: true
+      inspect_and_block: true
+    integrated_services:
+    - AI_PLATFORM
+    - GOOGLE_MCP_SERVER
+    location: global
+    parent: projects/prod-ai-gemini-enterprise-0
+  module.gemini-enterprise.google_org_policy_policy.allow_custom_mcp_connector[0]:
+    name: projects/prod-ai-gemini-enterprise-0/policies/discoveryengine.managed.disableCustomMcpServerConnector
+    parent: projects/prod-ai-gemini-enterprise-0
+    spec:
+    - rules:
+      - enforce: 'FALSE'
+  module.gemini-enterprise.google_org_policy_policy.restrict_allowed_data_sources[0]:
+    name: projects/prod-ai-gemini-enterprise-0/policies/discoveryengine.managed.allowedDataSources
+    parent: projects/prod-ai-gemini-enterprise-0
+    spec:
+    - rules:
+      - enforce: 'TRUE'
+  module.gemini-enterprise.google_org_policy_policy.restrict_connector_egress_fqdns[0]:
+    name: projects/prod-ai-gemini-enterprise-0/policies/discoveryengine.managed.allowedEgressFqdns
+    parent: projects/prod-ai-gemini-enterprise-0
+    spec:
+    - rules:
+      - enforce: 'TRUE'
+  module.gemini-enterprise.google_project_iam_audit_config.ai_data_access["aiplatform.googleapis.com"]:
+    audit_log_config:
+    - log_type: ADMIN_READ
+    - log_type: DATA_READ
+    - log_type: DATA_WRITE
+    project: prod-ai-gemini-enterprise-0
+    service: aiplatform.googleapis.com
+  module.gemini-enterprise.google_project_iam_audit_config.ai_data_access["discoveryengine.googleapis.com"]:
+    audit_log_config:
+    - log_type: ADMIN_READ
+    - log_type: DATA_READ
+    - log_type: DATA_WRITE
+    project: prod-ai-gemini-enterprise-0
+    service: discoveryengine.googleapis.com
+  module.gemini-enterprise.google_project_service_identity.discoveryengine_sa:
+    project: prod-ai-gemini-enterprise-0
+    service: discoveryengine.googleapis.com
+  module.gemini-enterprise.google_storage_bucket.knowledge_corpus[0]:
+    location: US
+    name: prod-ai-gemini-enterprise-0-ge-corpus
+    project: prod-ai-gemini-enterprise-0
+    uniform_bucket_level_access: true
+  module.gemini-enterprise.module.gemini-enterprise-prod.google_discovery_engine_acl_config.default[0]:
+    idp_config:
+    - idp_type: GSUITE
+    location: us
+    project: prod-ai-gemini-enterprise-0
+  module.gemini-enterprise.module.gemini-enterprise-prod.google_discovery_engine_data_connector.default["gcs-knowledge"]:
+    collection_id: gcs-knowledge-collection
+    connector_modes:
+    - DATA_INGESTION
+    data_source: gcs
+    entities:
+    - entity_name: gcs_store
+      params: '{"auto_generate_ids":false,"data_schema":"content"}'
+    json_params: '{"instance_uris":["gs://prod-ai-gemini-enterprise-0-ge-corpus/docs/*"]}'
+    location: us
+    project: prod-ai-gemini-enterprise-0
+  module.gemini-enterprise.module.gemini-enterprise-prod.google_discovery_engine_search_engine.default[0]:
+    app_type: APP_TYPE_INTRANET
+    data_store_ids:
+    - gemini-enterprise-prod-knowledge-store
+    - gemini-enterprise-prod-reserved-store
+    engine_id: gemini-enterprise-prod
+    location: us
+    project: prod-ai-gemini-enterprise-0
+  # yamllint disable-line rule:line-length
+  ? module.gemini-enterprise.module.gemini-enterprise-prod.google_discovery_engine_search_engine_iam_binding.default["roles/discoveryengine.agentspaceUser"]
+  : engine_id: gemini-enterprise-prod
+    members:
+    - domain:example.com
+    role: roles/discoveryengine.agentspaceUser
+  module.gemini-enterprise.module.gemini-enterprise-validation.google_discovery_engine_search_engine.default[0]:
+    app_type: APP_TYPE_INTRANET
+    engine_id: gemini-enterprise-validation
+    features:
+      agent-sharing-without-admin-approval: FEATURE_STATE_OFF
+      disable-agent-sharing: FEATURE_STATE_ON
+      enable-end-user-sharing-with-groups: FEATURE_STATE_OFF
+      model-selector: FEATURE_STATE_ON
+      no-code-agent-builder: FEATURE_STATE_ON
+      notebook-lm: FEATURE_STATE_ON
+      personalization-suggested-highlights: FEATURE_STATE_ON
+      prompt-gallery: FEATURE_STATE_ON
+      workflow-agents: FEATURE_STATE_ON
+    location: us
+    project: prod-ai-gemini-enterprise-0
+  # yamllint disable-line rule:line-length
+  ? module.gemini-enterprise.module.gemini-enterprise-validation.google_discovery_engine_search_engine_iam_binding.default["roles/discoveryengine.agentspaceUser"]
+  : engine_id: gemini-enterprise-validation
+    members:
+    - group:ai-platform-admins@example.com
+    role: roles/discoveryengine.agentspaceUser
+
+counts:
+  google_discovery_engine_acl_config: 1
+  google_discovery_engine_data_connector: 1
+  google_discovery_engine_data_store: 2
+  google_discovery_engine_license_config: 1
+  google_discovery_engine_search_engine: 2
+  google_discovery_engine_search_engine_iam_binding: 2
+  google_discovery_engine_user_store: 1
+  google_discovery_engine_widget_config: 2
+  google_model_armor_floorsetting: 1
+  google_org_policy_policy: 3
+  google_project_iam_audit_config: 2
+  google_project_service_identity: 1
+  google_storage_bucket: 1
+  google_storage_bucket_iam_member: 1
+  google_storage_bucket_object: 1
+  modules: 3
+  resources: 22
