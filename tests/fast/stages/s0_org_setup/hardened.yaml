@@ -8100,6 +8100,21 @@ values:
         parameters: null
         values: []
     timeouts: null
+  module.organization-iam[0].google_org_policy_policy.default["run.managed.disableInlinedSource"]:
+    dry_run_spec: []
+    name: organizations/1234567890/policies/run.managed.disableInlinedSource
+    parent: organizations/1234567890
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+    timeouts: null
   module.organization-iam[0].google_org_policy_policy.default["run.managed.disableJobsEphemeralDisk"]:
     dry_run_spec: []
     name: organizations/1234567890/policies/run.managed.disableJobsEphemeralDisk
@@ -10245,7 +10260,7 @@ counts:
   google_logging_project_settings: 3
   google_monitoring_alert_policy: 10
   google_org_policy_custom_constraint: 136
-  google_org_policy_policy: 206
+  google_org_policy_policy: 207
   google_organization_iam_audit_config: 1
   google_organization_iam_binding: 43
   google_organization_iam_custom_role: 16
@@ -10270,7 +10285,7 @@ counts:
   google_tags_tag_value_iam_binding: 4
   local_file: 9
   modules: 54
-  resources: 762
+  resources: 763
   terraform_data: 4
 
 outputs:
