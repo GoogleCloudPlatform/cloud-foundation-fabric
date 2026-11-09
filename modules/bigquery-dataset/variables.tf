@@ -223,12 +223,13 @@ variable "routines" {
 variable "tables" {
   description = "Table definitions. Options and partitioning default to null. Partitioning can only use `range` or `time`, set the unused one to null."
   type = map(object({
-    deletion_protection      = optional(bool)
-    description              = optional(string, "Terraform managed.")
-    friendly_name            = optional(string)
-    labels                   = optional(map(string), {})
-    require_partition_filter = optional(bool)
-    schema                   = optional(string)
+    deletion_protection          = optional(bool)
+    description                  = optional(string, "Terraform managed.")
+    friendly_name                = optional(string)
+    ignore_auto_generated_schema = optional(bool)
+    labels                       = optional(map(string), {})
+    require_partition_filter     = optional(bool)
+    schema                       = optional(string)
     external_data_configuration = optional(object({
       autodetect                = bool
       source_uris               = list(string)

@@ -1,0 +1,36 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.bigquery-dataset.google_bigquery_dataset.default:
+    dataset_id: my_dataset
+    location: EU
+    project: my-project
+  module.bigquery-dataset.google_bigquery_table.default["clicks"]:
+    external_data_configuration:
+    - autodetect: false
+      hive_partitioning_options:
+      - mode: CUSTOM
+        require_partition_filter: null
+        source_uri_prefix: gs://my-bucket/clicks/{dt:DATE}
+      source_format: NEWLINE_DELIMITED_JSON
+      source_uris:
+      - gs://my-bucket/clicks/*
+    ignore_auto_generated_schema: true
+    schema: '[{"mode":"NULLABLE","name":"payload","type":"STRING"}]'
+    table_id: clicks
+
+counts:
+  google_bigquery_dataset: 1
+  google_bigquery_table: 1
