@@ -15,6 +15,10 @@
  */
 
 locals {
+  audit_log_services = var.enable_audit_logs ? toset([
+    "aiplatform.googleapis.com",
+    "discoveryengine.googleapis.com",
+  ]) : toset([])
   ctx = {
     for k, v in var.context : k => {
       for kk, vv in v : "${local.ctx_p}${k}:${kk}" => vv
@@ -144,8 +148,24 @@ resource "google_project_service_identity" "discoveryengine_sa" {
 }
 
 # ------------------------------------------------------------------------------
-# Control Point 1: Org Policy Connector/MCP Guardrails & Model Armor Floors
+# Control Point 1: Org Policy Guardrails, Audit Logs & Model Armor Floors
 # ------------------------------------------------------------------------------
+
+resource "google_project_iam_audit_config" "ai_data_access" {
+  for_each = local.audit_log_services
+  project  = local.project_id
+  service  = each.key
+
+  audit_log_config {
+    log_type = "ADMIN_READ"
+  }
+  audit_log_config {
+    log_type = "DATA_READ"
+  }
+  audit_log_config {
+    log_type = "DATA_WRITE"
+  }
+}
 
 resource "google_org_policy_policy" "allow_custom_mcp_connector" {
   count  = var.enforce_org_policies ? 1 : 0

@@ -15,14 +15,24 @@
 # yaml-language-server: $schema=../../stages/2-project-factory/schemas/project.schema.json
 
 # FAST-compliant project definition for Gemini Enterprise (Production +
-# Connector Validation apps, CMEK, Model Armor floor settings, and
-# Discovery Engine managed Org Policies).
+# Connector Validation apps, CMEK, Data Access Audit Logs, Model Armor
+# floor settings, and Discovery Engine managed Org Policies).
 
 # TODO: edit and uncomment the following line to create the project in a folder
 # parent: $folder_ids:ai-workloads
 
 # project id can be customized here if file name cannot be changed
 # name: prod-ai-gemini-enterprise-0
+
+data_access_logs:
+  aiplatform.googleapis.com:
+    ADMIN_READ: {}
+    DATA_READ: {}
+    DATA_WRITE: {}
+  discoveryengine.googleapis.com:
+    ADMIN_READ: {}
+    DATA_READ: {}
+    DATA_WRITE: {}
 
 services:
   - aiplatform.googleapis.com

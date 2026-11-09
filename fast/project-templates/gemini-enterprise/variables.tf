@@ -65,6 +65,13 @@ variable "context" {
   nullable = false
 }
 
+variable "enable_audit_logs" {
+  description = "Whether to configure project-level Data Access Audit Logs (ADMIN_READ, DATA_READ, DATA_WRITE) on discoveryengine.googleapis.com and aiplatform.googleapis.com in this template (set false when managed via data_access_logs in project.yaml)."
+  type        = bool
+  nullable    = false
+  default     = true
+}
+
 variable "enable_cmek" {
   description = "Whether to provision and bind a regional Cloud KMS CMEK configuration (initial CMEK Spanner provisioning takes 20 to 45 minutes)."
   type        = bool
