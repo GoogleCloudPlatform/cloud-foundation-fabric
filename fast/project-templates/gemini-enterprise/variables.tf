@@ -21,9 +21,12 @@ variable "allowed_data_sources" {
   default = [
     "gcs",
     "bigquery",
+    "google_drive",
+    "google_mail",
+    "google_calendar",
+    "google_chat",
     "gdrive",
     "gmail",
-    "google_calendar",
     "jira",
     "confluence",
     "slack",
@@ -95,6 +98,13 @@ variable "enable_model_armor" {
   type        = bool
   nullable    = false
   default     = true
+}
+
+variable "enable_workspace_connectors" {
+  description = "Whether to provision the 1P Google Workspace federated connectors (Google Drive, Gmail, Google Calendar, and Google Chat)."
+  type        = bool
+  nullable    = false
+  default     = false
 }
 
 variable "enforce_org_policies" {
@@ -188,4 +198,21 @@ variable "workforce_app_principals" {
   description = "IAM principals granted roles/discoveryengine.agentspaceUser on the primary Production Workforce app."
   type        = list(string)
   nullable    = false
+}
+
+variable "workspace_oauth_config" {
+  description = "Optional Web Application OAuth 2.0 client configuration (redirect URI https://vertexaisearch.cloud.google.com/oauth-redirect) to enable write ACTIONS on Google Drive, Gmail, and Google Calendar connectors when enable_workspace_connectors is true."
+  type = object({
+    client_id        = optional(string)
+    client_secret_id = optional(string)
+  })
+  nullable = false
+  default  = {}
+  validation {
+    condition = (
+      (var.workspace_oauth_config.client_id == null) ==
+      (var.workspace_oauth_config.client_secret_id == null)
+    )
+    error_message = "workspace_oauth_config.client_id and workspace_oauth_config.client_secret_id must both be set or both be null."
+  }
 }

@@ -44,6 +44,7 @@ Official Google Cloud Terraform references for Gemini Enterprise:
 ## Operational notes and provider gotchas
 
 - **Cloud Console Location picker default (`global` vs `us` / `eu`):** The Gemini Enterprise Apps page in the Google Cloud Console defaults its Location dropdown to `global`. When deploying in `location = "us"` or `"eu"`, switch the Console Location dropdown from `global` to `us` or `eu` to view the provisioned applications.
+- **Google Workspace federated & actions connectors (`enable_workspace_connectors`):** Setting `enable_workspace_connectors = true` provisions the four first-party Google Workspace connectors (`google_drive`, `google_mail`, `google_calendar`, and `google_chat`) with `refresh_interval = "0s"` and `auto_run_disabled = true`. Federated search (`["FEDERATED"]`) and `google_chat` actions (`["FEDERATED", "ACTIONS"]`) work without a customer OAuth client; passing `workspace_oauth_config = { client_id = "...", client_secret_id = "..." }` (configured with redirect URI `https://vertexaisearch.cloud.google.com/oauth-redirect`) also enables `ACTIONS` on Drive, Gmail, and Calendar.
 - **Unstructured Cloud Storage connector (`auto_generate_ids = false`):** When configuring `google_discovery_engine_data_connector` with `data_source = "gcs"` and `data_schema = "content"`, always set `auto_generate_ids = false` inside `entities[*].params` so scheduled `RunOnce` imports hash document IDs from the GCS URI without failing connector validation.
 - **Parameterized organization policy concurrency:** Applying multiple `google_org_policy_policy` resources on the same project in parallel returns `409 CONCURRENT_POLICY_CHANGES`. This template chains them sequentially via `depends_on` and formats `enforcedProjects` entries with the required trailing slash (`projects/<project_id>/`).
 
@@ -76,25 +77,27 @@ module "gemini-enterprise" {
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [project_id](variables.tf#L175) | Target Google Cloud project ID for Gemini Enterprise. | <code>string</code> | ✓ |  |
-| [validation_app_principals](variables.tf#L181) | IAM principals granted roles/discoveryengine.agentspaceUser on the restricted Connector Validation app. | <code>list&#40;string&#41;</code> | ✓ |  |
-| [workforce_app_principals](variables.tf#L187) | IAM principals granted roles/discoveryengine.agentspaceUser on the primary Production Workforce app. | <code>list&#40;string&#41;</code> | ✓ |  |
+| [project_id](variables.tf#L185) | Target Google Cloud project ID for Gemini Enterprise. | <code>string</code> | ✓ |  |
+| [validation_app_principals](variables.tf#L191) | IAM principals granted roles/discoveryengine.agentspaceUser on the restricted Connector Validation app. | <code>list&#40;string&#41;</code> | ✓ |  |
+| [workforce_app_principals](variables.tf#L197) | IAM principals granted roles/discoveryengine.agentspaceUser on the primary Production Workforce app. | <code>list&#40;string&#41;</code> | ✓ |  |
 | [allowed_data_sources](variables.tf#L17) | Approved connector data_source types enforced by constraints/discoveryengine.managed.allowedDataSources. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#8230;&#93;</code> |
-| [allowed_egress_fqdns](variables.tf#L34) | Approved outbound FQDNs (including OAuth token hosts and MCP endpoints) enforced by constraints/discoveryengine.managed.allowedEgressFqdns. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#8230;&#93;</code> |
-| [company_name](variables.tf#L46) | Organization display name shown in Gemini Enterprise. | <code>string</code> |  | <code>&#34;Example Enterprise&#34;</code> |
-| [context](variables.tf#L53) | Context-specific interpolations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [enable_cmek](variables.tf#L65) | Whether to provision and bind a regional Cloud KMS CMEK configuration (initial CMEK Spanner provisioning takes 20 to 45 minutes). | <code>bool</code> |  | <code>false</code> |
-| [enable_free_trial_license](variables.tf#L72) | Whether to provision a 30-day Gemini Enterprise free_trial_gemini LicenseConfig and auto-assign seats via default_user_store when license_config_name is null. | <code>bool</code> |  | <code>true</code> |
-| [enable_gcs_connector](variables.tf#L79) | Whether to provision a Cloud Storage knowledge bucket and periodic GCS DataConnector with auto_generate_ids = false for unstructured documents. | <code>bool</code> |  | <code>true</code> |
-| [enable_jira_connector](variables.tf#L86) | Whether to provision the 3P Jira Cloud Federated and Actions DataConnector with an explicit bap_config.enabled_actions HITL allowlist. | <code>bool</code> |  | <code>false</code> |
-| [enable_model_armor](variables.tf#L93) | Whether to configure project-wide Model Armor floor settings across Vertex AI and MCP server calls. | <code>bool</code> |  | <code>true</code> |
-| [enforce_org_policies](variables.tf#L100) | Whether to manage the 3 discoveryengine.managed.* project-level organization policies in this template (set false when managed in project.yaml). | <code>bool</code> |  | <code>true</code> |
-| [idp_config](variables.tf#L107) | Identity provider configuration for Gemini Enterprise ACLs and Web App SSO (GSUITE or THIRD_PARTY Workforce Identity Federation). | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [jira_config](variables.tf#L131) | Jira Cloud Federated and Actions connector configuration when enable_jira_connector is true. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [license_config_name](variables.tf#L145) | Optional existing LicenseConfig resource name (projects/.../locations/.../licenseConfigs/...) for automatic seat assignment. | <code>string</code> |  | <code>null</code> |
-| [location](variables.tf#L151) | Gemini Enterprise multi-region location (us, eu, or global). | <code>string</code> |  | <code>&#34;us&#34;</code> |
-| [name](variables.tf#L158) | Base name for the Gemini Enterprise engines and supporting resources. | <code>string</code> |  | <code>&#34;gemini-enterprise&#34;</code> |
-| [prefix](variables.tf#L165) | Optional prefix for resource names. | <code>string</code> |  | <code>null</code> |
+| [allowed_egress_fqdns](variables.tf#L37) | Approved outbound FQDNs (including OAuth token hosts and MCP endpoints) enforced by constraints/discoveryengine.managed.allowedEgressFqdns. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#8230;&#93;</code> |
+| [company_name](variables.tf#L49) | Organization display name shown in Gemini Enterprise. | <code>string</code> |  | <code>&#34;Example Enterprise&#34;</code> |
+| [context](variables.tf#L56) | Context-specific interpolations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [enable_cmek](variables.tf#L68) | Whether to provision and bind a regional Cloud KMS CMEK configuration (initial CMEK Spanner provisioning takes 20 to 45 minutes). | <code>bool</code> |  | <code>false</code> |
+| [enable_free_trial_license](variables.tf#L75) | Whether to provision a 30-day Gemini Enterprise free_trial_gemini LicenseConfig and auto-assign seats via default_user_store when license_config_name is null. | <code>bool</code> |  | <code>true</code> |
+| [enable_gcs_connector](variables.tf#L82) | Whether to provision a Cloud Storage knowledge bucket and periodic GCS DataConnector with auto_generate_ids = false for unstructured documents. | <code>bool</code> |  | <code>true</code> |
+| [enable_jira_connector](variables.tf#L89) | Whether to provision the 3P Jira Cloud Federated and Actions DataConnector with an explicit bap_config.enabled_actions HITL allowlist. | <code>bool</code> |  | <code>false</code> |
+| [enable_model_armor](variables.tf#L96) | Whether to configure project-wide Model Armor floor settings across Vertex AI and MCP server calls. | <code>bool</code> |  | <code>true</code> |
+| [enable_workspace_connectors](variables.tf#L103) | Whether to provision the 1P Google Workspace federated connectors (Google Drive, Gmail, Google Calendar, and Google Chat). | <code>bool</code> |  | <code>false</code> |
+| [enforce_org_policies](variables.tf#L110) | Whether to manage the 3 discoveryengine.managed.* project-level organization policies in this template (set false when managed in project.yaml). | <code>bool</code> |  | <code>true</code> |
+| [idp_config](variables.tf#L117) | Identity provider configuration for Gemini Enterprise ACLs and Web App SSO (GSUITE or THIRD_PARTY Workforce Identity Federation). | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [jira_config](variables.tf#L141) | Jira Cloud Federated and Actions connector configuration when enable_jira_connector is true. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [license_config_name](variables.tf#L155) | Optional existing LicenseConfig resource name (projects/.../locations/.../licenseConfigs/...) for automatic seat assignment. | <code>string</code> |  | <code>null</code> |
+| [location](variables.tf#L161) | Gemini Enterprise multi-region location (us, eu, or global). | <code>string</code> |  | <code>&#34;us&#34;</code> |
+| [name](variables.tf#L168) | Base name for the Gemini Enterprise engines and supporting resources. | <code>string</code> |  | <code>&#34;gemini-enterprise&#34;</code> |
+| [prefix](variables.tf#L175) | Optional prefix for resource names. | <code>string</code> |  | <code>null</code> |
+| [workspace_oauth_config](variables.tf#L203) | Optional Web Application OAuth 2.0 client configuration (redirect URI https://vertexaisearch.cloud.google.com/oauth-redirect) to enable write ACTIONS on Google Drive, Gmail, and Google Calendar connectors when enable_workspace_connectors is true. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
 

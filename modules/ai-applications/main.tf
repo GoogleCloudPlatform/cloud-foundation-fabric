@@ -311,7 +311,11 @@ resource "google_discovery_engine_data_connector" "default" {
   sync_mode         = each.value.sync_mode
   auto_run_disabled = each.value.auto_run_disabled
   params            = each.value.params
-  json_params       = each.value.json_params
+  json_params = (
+    each.value.json_params == null && each.value.params == null
+    ? jsonencode({})
+    : each.value.json_params
+  )
 
   dynamic "destination_configs" {
     for_each = each.value.destination_configs

@@ -43,6 +43,98 @@ locals {
     for m in var.workforce_app_principals :
     lookup(local.ctx.iam_principals, m, m)
   ]
+  workspace_actions_enabled = (
+    var.enable_workspace_connectors &&
+    var.workspace_oauth_config.client_id != null &&
+    var.workspace_oauth_config.client_secret_id != null
+  )
+  workspace_connectors = var.enable_workspace_connectors ? {
+    google-drive = {
+      collection_display_name = "Google Drive"
+      collection_id           = "google-drive-collection"
+      connector_modes = (
+        local.workspace_actions_enabled ? ["FEDERATED", "ACTIONS"] : ["FEDERATED"]
+      )
+      data_source       = "google_drive"
+      kms_key           = local.effective_kms_key
+      refresh_interval  = "0s"
+      auto_run_disabled = true
+      action_config = local.workspace_actions_enabled ? {
+        create_bap_connection = true
+        action_params = {
+          auth_type     = "OAUTH"
+          client_id     = var.workspace_oauth_config.client_id
+          client_secret = data.google_secret_manager_secret_version.workspace_oauth_secret[0].secret_data
+        }
+      } : null
+      entities = [
+        { entity_name = "google_drive" }
+      ]
+    }
+    google-mail = {
+      collection_display_name = "Gmail"
+      collection_id           = "google-mail-collection"
+      connector_modes = (
+        local.workspace_actions_enabled ? ["FEDERATED", "ACTIONS"] : ["FEDERATED"]
+      )
+      data_source       = "google_mail"
+      kms_key           = local.effective_kms_key
+      refresh_interval  = "0s"
+      auto_run_disabled = true
+      action_config = local.workspace_actions_enabled ? {
+        create_bap_connection = true
+        action_params = {
+          auth_type     = "OAUTH"
+          client_id     = var.workspace_oauth_config.client_id
+          client_secret = data.google_secret_manager_secret_version.workspace_oauth_secret[0].secret_data
+        }
+      } : null
+      entities = [
+        { entity_name = "google_mail" }
+      ]
+    }
+    google-calendar = {
+      collection_display_name = "Google Calendar"
+      collection_id           = "google-calendar-collection"
+      connector_modes = (
+        local.workspace_actions_enabled ? ["FEDERATED", "ACTIONS"] : ["FEDERATED"]
+      )
+      data_source       = "google_calendar"
+      kms_key           = local.effective_kms_key
+      refresh_interval  = "0s"
+      auto_run_disabled = true
+      action_config = local.workspace_actions_enabled ? {
+        create_bap_connection = true
+        action_params = {
+          auth_type     = "OAUTH"
+          client_id     = var.workspace_oauth_config.client_id
+          client_secret = data.google_secret_manager_secret_version.workspace_oauth_secret[0].secret_data
+        }
+      } : null
+      entities = [
+        { entity_name = "google_calendar" }
+      ]
+    }
+    google-chat = {
+      collection_display_name = "Google Chat"
+      collection_id           = "google-chat-collection"
+      connector_modes         = ["FEDERATED", "ACTIONS"]
+      data_source             = "google_chat"
+      kms_key                 = local.effective_kms_key
+      refresh_interval        = "0s"
+      auto_run_disabled       = true
+      action_config = {
+        create_bap_connection = true
+        action_params = {
+          auth_type = "OAUTH"
+          auth_key  = "OAuth"
+        }
+      }
+      entities = [
+        { entity_name = "google_chat" }
+      ]
+    }
+  } : {}
 }
 
 resource "google_project_service_identity" "discoveryengine_sa" {
@@ -219,6 +311,12 @@ data "google_secret_manager_secret_version" "jira_refresh_token" {
   secret  = var.jira_config.refresh_token_secret_id
 }
 
+data "google_secret_manager_secret_version" "workspace_oauth_secret" {
+  count   = local.workspace_actions_enabled ? 1 : 0
+  project = local.project_id
+  secret  = var.workspace_oauth_config.client_secret_id
+}
+
 # ------------------------------------------------------------------------------
 # App 1: Primary Production Workforce App (Promoted Foundational Stores Only)
 # ------------------------------------------------------------------------------
@@ -355,7 +453,8 @@ module "gemini-enterprise-prod" {
           { entity_name = "comment" },
         ]
       }
-    } : {}
+    } : {},
+    local.workspace_connectors
   )
 
   engines_configs = {
@@ -423,7 +522,13 @@ module "gemini-enterprise-validation" {
       var.enable_jira_connector ? [
         for entity in module.gemini-enterprise-prod.data_connectors["jira-enterprise"].entities :
         basename(entity.data_store)
-      ] : []
+      ] : [],
+      var.enable_workspace_connectors ? flatten([
+        for k in ["google-drive", "google-mail", "google-calendar", "google-chat"] : [
+          for entity in module.gemini-enterprise-prod.data_connectors[k].entities :
+          basename(entity.data_store)
+        ]
+      ]) : []
     )
     search_engine_config = {
       app_type                       = "APP_TYPE_INTRANET"

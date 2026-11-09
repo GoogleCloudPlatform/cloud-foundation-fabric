@@ -292,6 +292,53 @@ module "gemini-enterprise" {
         }
       ]
     }
+    google-drive = {
+      collection_display_name = "Google Drive"
+      connector_modes         = ["FEDERATED"]
+      data_source             = "google_drive"
+      refresh_interval        = "0s"
+      auto_run_disabled       = true
+      entities = [
+        { entity_name = "google_drive" }
+      ]
+    }
+    google-mail = {
+      collection_display_name = "Gmail"
+      connector_modes         = ["FEDERATED"]
+      data_source             = "google_mail"
+      refresh_interval        = "0s"
+      auto_run_disabled       = true
+      entities = [
+        { entity_name = "google_mail" }
+      ]
+    }
+    google-calendar = {
+      collection_display_name = "Google Calendar"
+      connector_modes         = ["FEDERATED"]
+      data_source             = "google_calendar"
+      refresh_interval        = "0s"
+      auto_run_disabled       = true
+      entities = [
+        { entity_name = "google_calendar" }
+      ]
+    }
+    google-chat = {
+      collection_display_name = "Google Chat"
+      connector_modes         = ["FEDERATED", "ACTIONS"]
+      data_source             = "google_chat"
+      refresh_interval        = "0s"
+      auto_run_disabled       = true
+      action_config = {
+        create_bap_connection = true
+        action_params = {
+          auth_type = "OAUTH"
+          auth_key  = "OAuth"
+        }
+      }
+      entities = [
+        { entity_name = "google_chat" }
+      ]
+    }
   }
   engines_configs = {
     data_store_ids = ["knowledge-store", "reserved-store"]
@@ -322,7 +369,7 @@ module "gemini-enterprise" {
     }
   }
 }
-# tftest modules=1 resources=9
+# tftest modules=1 resources=13
 ```
 
 ### Data stores

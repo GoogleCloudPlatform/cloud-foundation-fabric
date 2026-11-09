@@ -79,7 +79,7 @@ org_policies:
     rules:
       - enforce: true
         parameters: >-
-          {"allowedDataSources":["gcs","bigquery","gdrive","gmail","google_calendar","jira","confluence","slack","custom_mcp"],"enforcedProjects":["projects/prod-ai-gemini-enterprise-0/"]}
+          {"allowedDataSources":["gcs","bigquery","google_drive","google_mail","google_calendar","google_chat","gdrive","gmail","jira","confluence","slack","custom_mcp"],"enforcedProjects":["projects/prod-ai-gemini-enterprise-0/"]}
   discoveryengine.managed.allowedEgressFqdns:
     rules:
       - enforce: true
