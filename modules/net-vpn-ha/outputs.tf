@@ -88,8 +88,11 @@ output "shared_secrets" {
   description = "IPSEC tunnels shared secrets."
   sensitive   = true
   value = {
-    for k, v in var.tunnels
-    : k => coalesce(v.shared_secret, local.secret)
+    for k, v in var.tunnels : k => (
+      try(v.shared_secret.wo_version, null) != null
+      ? null
+      : local.shared_secrets[k]
+    )
   }
 }
 

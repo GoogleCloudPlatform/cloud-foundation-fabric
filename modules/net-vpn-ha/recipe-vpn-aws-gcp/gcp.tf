@@ -68,7 +68,7 @@ module "gcp-vpn" {
       }
       bgp_session_range               = "${aws_vpn_connection.vpn_connections[0].tunnel1_cgw_inside_address}/30"
       peer_external_gateway_interface = 0
-      shared_secret                   = var.shared_secret
+      shared_secret                   = { value = var.shared_secret }
       vpn_gateway_interface           = 0
     }
     remote-1 = {
@@ -78,7 +78,7 @@ module "gcp-vpn" {
       }
       bgp_session_range               = "${aws_vpn_connection.vpn_connections[0].tunnel2_cgw_inside_address}/30"
       peer_external_gateway_interface = 1
-      shared_secret                   = var.shared_secret
+      shared_secret                   = { value = var.shared_secret }
       vpn_gateway_interface           = 0
     }
     remote-2 = {
@@ -88,7 +88,7 @@ module "gcp-vpn" {
       }
       bgp_session_range               = "${aws_vpn_connection.vpn_connections[1].tunnel1_cgw_inside_address}/30"
       peer_external_gateway_interface = 2
-      shared_secret                   = var.shared_secret
+      shared_secret                   = { value = var.shared_secret }
       vpn_gateway_interface           = 1
     }
     remote-3 = {
@@ -98,7 +98,7 @@ module "gcp-vpn" {
       }
       bgp_session_range               = "${aws_vpn_connection.vpn_connections[1].tunnel2_cgw_inside_address}/30"
       peer_external_gateway_interface = 3
-      shared_secret                   = var.shared_secret
+      shared_secret                   = { value = var.shared_secret }
       vpn_gateway_interface           = 1
     }
   }

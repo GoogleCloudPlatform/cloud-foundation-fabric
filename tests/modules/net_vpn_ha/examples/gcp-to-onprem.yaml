@@ -144,9 +144,9 @@ values:
     project: project-id
     region: europe-west8
     router: vpn-mynet-to-onprem
-    shared_secret: mySecret
+    shared_secret: null
     shared_secret_wo: null
-    shared_secret_wo_version: null
+    shared_secret_wo_version: '1'
     target_vpn_gateway: null
     terraform_labels:
       goog-terraform-provisioned: "true"
@@ -165,9 +165,9 @@ values:
     project: project-id
     region: europe-west8
     router: vpn-mynet-to-onprem
-    shared_secret: mySecret
+    shared_secret: null
     shared_secret_wo: null
-    shared_secret_wo_version: null
+    shared_secret_wo_version: '1'
     target_vpn_gateway: null
     terraform_labels:
       goog-terraform-provisioned: "true"
