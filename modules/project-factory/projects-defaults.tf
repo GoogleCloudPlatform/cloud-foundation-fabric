@@ -25,6 +25,13 @@ locals {
     defaults  = try(var.data_defaults, {})
     overrides = try(var.data_overrides, {})
   }
+  # drop null attributes so variable-defined projects match the shape of
+  # YAML-defined projects, where unset attributes are missing
+  _projects_var = {
+    for k, v in var.projects : k => {
+      for kk, vv in v : kk => vv if vv != null
+    }
+  }
   _projects_output = {
     # Semantics of the merges are:
     #   - if data_overrides.<field> is not null, use this value
@@ -33,7 +40,7 @@ locals {
     # This logic is easily implemented using coalesce, even on maps and list and allows to
     # set data_overrides.<field> to "", [] or {} to ensure, that empty value is always passed, or do
     # the same in _projects_input to prevent falling back to default value
-    for k, v in local._projects_input : k => merge(v, {
+    for k, v in merge(local._projects_var, local._projects_input) : k => merge(v, {
       asset_feeds = try(v.asset_feeds, {})
       billing_account = try(coalesce( # type: string
         local.data_defaults.overrides.billing_account,
@@ -206,8 +213,8 @@ locals {
       tags = {
         for tag_name, tag_data in try(v.tags, {}) : tag_name => {
           allowed_values_regex = try(tag_data.allowed_values_regex, null)
-          description = try(
-            tag_data.description,
+          description = coalesce(
+            try(tag_data.description, null),
             "Managed by the Terraform project-factory module."
           )
           id                    = try(tag_data.id, null)
@@ -217,8 +224,8 @@ locals {
           values = {
             for value_name, value_data in try(tag_data.values, {}) :
             value_name => {
-              description = try(
-                value_data.description,
+              description = coalesce(
+                try(value_data.description, null),
                 "Managed by the Terraform project-factory module."
               )
               id                    = try(value_data.id, null)

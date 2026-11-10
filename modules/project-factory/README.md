@@ -29,6 +29,7 @@ The code is meant to be executed by a high level service account with powerful p
 - [Folder hierarchy](#folder-hierarchy)
 - [Projects](#projects)
   - [Factory-wide project defaults, merges, optionals](#factory-wide-project-defaults-merges-optionals)
+  - [Projects defined via the `projects` variable](#projects-defined-via-the-projects-variable)
   - [Project templates](#project-templates)
     - [Context expansion for template-derived resources](#context-expansion-for-template-derived-resources)
   - [Service accounts and buckets](#service-accounts-and-buckets)
@@ -67,7 +68,7 @@ Refer to the [example](#example) below for actual examples of the YAML definitio
 
 The project factory is configured via the `factories_config.projects` variable, and project files are also additionally read from the folder tree described in the previous section. It's best to limit project definition via the hierarchy tree to a minimum to avoid cross-dependencies between folders and projects, which could complicate their lifecycle.
 
-Projects can also be configured via the `projects` variable, which is internally merged in with the factory definitions.
+Projects can also be configured via the `projects` variable, which is internally merged in with the factory definitions as described [below](#projects-defined-via-the-projects-variable).
 
 The YAML format mirrors the project module, refer to the [example](#example) below for actual examples of the YAML definitions.
 
@@ -80,6 +81,41 @@ In addition to the YAML-based project configurations, the factory accepts three 
 - the `data_merges` variable allows specifying additional values for map or set based variables, which are merged with the data coming from YAML
 
 Some examples on where to use each of the three sets are [provided below](#example).
+
+### Projects defined via the `projects` variable
+
+Projects passed in via the `projects` variable go through the same defaults, overrides and merges as YAML-defined projects. If the same key is used in both, the YAML definition wins. Project templates and exclusions only apply to YAML-defined projects.
+
+```hcl
+module "project-factory" {
+  source = "./fabric/modules/project-factory"
+  data_defaults = {
+    billing_account = "012345-67890A-ABCDEF"
+    labels          = { environment = "test" }
+    locations       = { storage = "eu" }
+    parent          = "folders/1234567890"
+    prefix          = "foo"
+  }
+  data_merges = {
+    services = ["logging.googleapis.com"]
+  }
+  factories_config = {
+    basepath = "data"
+  }
+  projects = {
+    hcl-app-0 = {
+      deletion_policy = "PREVENT"
+      services        = ["compute.googleapis.com"]
+      tags = {
+        environment = {
+          values = { test = {} }
+        }
+      }
+    }
+  }
+}
+# tftest inventory=projects-variable.yaml
+```
 
 ### Project templates
 
