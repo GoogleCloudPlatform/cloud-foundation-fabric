@@ -283,6 +283,22 @@ variable "folders" {
         description = optional(string)
       })
     })), {})
+    model_armor_floor_setting = optional(object({
+      enforce                  = optional(bool)
+      multi_language_detection = optional(bool)
+      filters = object({
+        malicious_uris = optional(bool)
+        pi_and_jailbreak = optional(object({
+          confidence_level = optional(string)
+        }))
+        rai = optional(map(string))
+        sdp = optional(object({
+          basic               = optional(bool)
+          inspect_template    = optional(string)
+          deidentify_template = optional(string)
+        }))
+      })
+    }))
     org_policies = optional(map(object({
       inherit_from_parent = optional(bool)
       reset               = optional(bool)
