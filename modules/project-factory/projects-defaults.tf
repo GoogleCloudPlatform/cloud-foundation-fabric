@@ -144,13 +144,18 @@ locals {
       ), null)
       project_reuse = ( # type: object({...})
         try(v.project_reuse, null) != null
-        ? merge(
-          {
-            use_data_source = true
-            attributes      = null
-          },
-          v.project_reuse
-        )
+        ? {
+          use_data_source = try(v.project_reuse.use_data_source, true)
+          attributes = (
+            try(v.project_reuse.attributes, null) != null
+            ? {
+              name             = v.project_reuse.attributes.name
+              number           = v.project_reuse.attributes.number
+              services_enabled = try(v.project_reuse.attributes.services_enabled, [])
+            }
+            : null
+          )
+        }
         : local.data_defaults.defaults.project_reuse
       )
       quotas = try(v.quotas, {})
@@ -234,7 +239,12 @@ locals {
         ? local.data_defaults.overrides.universe
         : (
           try(v.universe, null) != null
-          ? v.universe
+          ? {
+            prefix                         = v.universe.prefix
+            forced_jit_service_identities  = try(v.universe.forced_jit_service_identities, [])
+            unavailable_service_identities = try(v.universe.unavailable_service_identities, [])
+            unavailable_services           = try(v.universe.unavailable_services, [])
+          }
           : local.data_defaults.defaults.universe
         )
       )
