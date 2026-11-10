@@ -6,6 +6,7 @@ This module makes it easy to deploy a [Classic VPN](https://docs.cloud.google.co
 - [Examples](#examples)
   - [Classic VPN with single tunnel](#classic-vpn-with-single-tunnel)
   - [Classic VPN with single tunnel and custom ciphers](#classic-vpn-with-single-tunnel-and-custom-ciphers)
+- [Secret values](#secret-values)
 - [Variables](#variables)
 - [Outputs](#outputs)
 <!-- END TOC -->
@@ -34,8 +35,11 @@ module "vpn" {
   remote_ranges          = ["10.10.0.0/24"]
   tunnels = {
     remote-0 = {
-      peer_ip           = "1.1.1.1"
-      shared_secret     = "mysecret"
+      peer_ip = "1.1.1.1"
+      shared_secret = {
+        value      = "mysecret"
+        wo_version = 1
+      }
       traffic_selectors = { local = ["0.0.0.0/0"], remote = ["0.0.0.0/0"] }
     }
   }
@@ -79,13 +83,25 @@ module "vpn" {
         }
       }
       peer_ip           = "1.1.1.1"
-      shared_secret     = "mysecret"
+      shared_secret     = { value = "mysecret" }
       traffic_selectors = { local = ["0.0.0.0/0"], remote = ["0.0.0.0/0"] }
     }
   }
 }
 # tftest modules=2 resources=8 inventory=vpn-single-tunnel-custom-ciphers.yaml
 ```
+
+## Secret values
+
+`tunnels.*.shared_secret` is an object that follows the [shape used for secrets across modules](../../adrs/modules/20261029-write-only-secrets.md):
+
+- `value` is the secret itself
+- `path` is the path to a file containing the secret, read via `file(pathexpand(path))` and relative to the root module; the file must exist at every plan
+- `wo_version` switches to the provider's write-only attribute, so that the secret is never stored in state; bump the number whenever the secret changes and needs to be sent again
+
+Only one of `value` and `path` can be set. Without `wo_version` the secret is stored in state, and that form should only be used when this is acceptable. With `wo_version` set, both `value` and `path` can be null once the secret has been applied, since the provider leaves the existing write-only value untouched until the version changes: this allows passing `value = try(file("secret.txt"), null)` and removing the file after the first apply.
+
+When `shared_secret` is omitted (`null`), the module falls back to its internally generated `random_secret` (stored in state).
 <!-- BEGIN TFDOC -->
 ## Variables
 
