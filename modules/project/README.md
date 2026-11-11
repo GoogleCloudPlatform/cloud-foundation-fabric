@@ -1352,7 +1352,7 @@ module "project" {
     tags = "data/tags"
   }
 }
-# tftest modules=1 resources=8 files=0,1 inventory=tags-factory.yaml
+# tftest modules=1 resources=10 files=0,1 inventory=tags-factory.yaml
 ```
 
 ```yaml
@@ -1362,9 +1362,21 @@ description: "Tag for workload classifications."
 iam:
   "roles/resourcemanager.tagViewer":
     - "group:devops@example.com"
+iam_bindings:
+  devops-admins:
+    role: roles/resourcemanager.tagAdmin
+    members:
+      - "group:devops-admins@example.com"
+    condition:
+      title: expires_after_2026_12_31
+      expression: request.time < timestamp("2027-01-01T00:00:00Z")
 values:
   frontend:
     description: "Frontend workload."
+    iam_bindings_additive:
+      frontend-user:
+        role: roles/resourcemanager.tagUser
+        member: "group:frontend@example.com"
   backend:
     description: "Backend workload."
 ```

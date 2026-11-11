@@ -965,7 +965,7 @@ module "org" {
     tags = "data/tags"
   }
 }
-# tftest modules=1 resources=7 files=0,1 inventory=tags-factory.yaml
+# tftest modules=1 resources=9 files=0,1 inventory=tags-factory.yaml
 ```
 
 ```yaml
@@ -975,9 +975,21 @@ description: "Tag for internal cost allocation."
 iam:
   "roles/resourcemanager.tagViewer":
     - "group:finance-team@example.com"
+iam_bindings:
+  finance-admins:
+    role: roles/resourcemanager.tagAdmin
+    members:
+      - "group:finance-admins@example.com"
+    condition:
+      title: expires_after_2026_12_31
+      expression: request.time < timestamp("2027-01-01T00:00:00Z")
 values:
   engineering:
     description: "Engineering department."
+    iam_bindings_additive:
+      eng-user:
+        role: roles/resourcemanager.tagUser
+        member: "group:engineering@example.com"
   marketing:
     description: "Marketing department."
 ```
