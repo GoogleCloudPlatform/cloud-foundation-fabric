@@ -69,3 +69,8 @@ output "policy_binding_ids" {
     for k, v in google_iam_projects_policy_binding.default : k => v.id
   }
 }
+
+output "trust_config_id" {
+  description = "The id of the Certificate Manager trust config used by the connectivity template."
+  value       = local.trust_config_id
+}

@@ -90,6 +90,11 @@ duplicates = [
         "modules/organization/schemas/org-policies.schema.json",
     ],
     [
+        "modules/organization/variables-model-armor.tf",
+        "modules/folder/variables-model-armor.tf",
+        "modules/project/variables-model-armor.tf",
+    ],
+    [
         "modules/folder/schemas/pam-entitlements.schema.json",
         "modules/project/schemas/pam-entitlements.schema.json",
         "modules/organization/schemas/pam-entitlements.schema.json",
