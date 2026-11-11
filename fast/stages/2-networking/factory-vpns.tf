@@ -83,17 +83,42 @@ resource "google_compute_ha_vpn_gateway" "default" {
   name       = replace(each.key, "/", "-")
   stack_type = try(each.value.stack_type, null)
   depends_on = [module.vpc-factory]
+
+  lifecycle {
+    precondition {
+      condition = alltrue([
+        for k, t in each.value.tunnels :
+        try(t.shared_secret, null) == null || can(keys(t.shared_secret))
+      ])
+      error_message = "VPN tunnel shared_secret in ${each.key} must be an object ({ value = \"...\" } or { path = \"...\" }). On existing tunnels, omit wo_version to avoid destroying and recreating live IPsec tunnels."
+    }
+    precondition {
+      condition = alltrue([
+        for k, t in each.value.tunnels :
+        !can(keys(t.shared_secret)) ||
+        length(setsubtract(keys(t.shared_secret), ["value", "path", "wo_version"])) == 0
+      ])
+      error_message = "VPN tunnel shared_secret in ${each.key} contains unsupported keys; allowed keys are value, path, and wo_version."
+    }
+  }
 }
 
 module "vpn-ha" {
-  source             = "../../../modules/net-vpn-ha"
-  for_each           = local.vpns
-  project_id         = each.value.project_id
-  name               = replace(each.key, "/", "-")
-  network            = each.value.vpc_name
-  region             = each.value.region
-  router_config      = each.value.router_config
-  tunnels            = each.value.tunnels
+  source        = "../../../modules/net-vpn-ha"
+  for_each      = local.vpns
+  project_id    = each.value.project_id
+  name          = replace(each.key, "/", "-")
+  network       = each.value.vpc_name
+  region        = each.value.region
+  router_config = each.value.router_config
+  tunnels = {
+    for tk, tv in each.value.tunnels : tk => merge(
+      tv,
+      try(tv.shared_secret, null) == null || can(keys(tv.shared_secret))
+      ? {}
+      : { shared_secret = null }
+    )
+  }
   vpn_gateway        = google_compute_ha_vpn_gateway.default[each.key].id
   vpn_gateway_create = null
   peer_gateways = {

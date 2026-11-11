@@ -226,11 +226,48 @@
         "bgp_session_range": {
           "type": "string"
         },
+        "deletion_policy": {
+          "type": "string",
+          "description": "Tunnel deletion policy.",
+          "enum": [
+            "ABANDON",
+            "DELETE",
+            "PREVENT"
+          ]
+        },
         "peer_external_gateway_interface": {
           "type": "number"
         },
         "shared_secret": {
-          "type": "string"
+          "type": "object",
+          "description": "The shared secret (optional).",
+          "additionalProperties": false,
+          "oneOf": [
+            {
+              "required": [
+                "value"
+              ]
+            },
+            {
+              "required": [
+                "path"
+              ]
+            }
+          ],
+          "properties": {
+            "value": {
+              "type": "string",
+              "description": "The shared secret value."
+            },
+            "path": {
+              "type": "string",
+              "description": "File path relative to the stage directory, read at every plan."
+            },
+            "wo_version": {
+              "type": "number",
+              "description": "Switches to the provider write-only attribute."
+            }
+          }
         },
         "vpn_gateway_interface": {
           "type": "number"

@@ -172,17 +172,48 @@ variable "tunnels" {
         pfs        = optional(list(string))
       }))
     }))
+    deletion_policy                 = optional(string)
     ike_version                     = optional(number, 2)
     name                            = optional(string)
     peer_external_gateway_interface = optional(number)
     peer_router_interface_name      = optional(string)
     peer_gateway                    = optional(string, "default")
     router                          = optional(string)
-    shared_secret                   = optional(string)
-    vpn_gateway_interface           = number
+    shared_secret = optional(object({
+      value      = optional(string)
+      path       = optional(string)
+      wo_version = optional(number)
+    }))
+    vpn_gateway_interface = number
   }))
   default  = {}
   nullable = false
+
+  validation {
+    condition = alltrue([
+      for k, v in var.tunnels :
+      contains(["ABANDON", "DELETE", "PREVENT"], coalesce(v.deletion_policy, "DELETE"))
+    ])
+    error_message = "Tunnel deletion_policy must be one of ABANDON, DELETE, or PREVENT."
+  }
+
+  validation {
+    condition = alltrue([
+      for k, v in var.tunnels :
+      try(v.shared_secret.value, null) == null || try(v.shared_secret.path, null) == null
+    ])
+    error_message = "Only one of shared_secret.value and shared_secret.path can be set."
+  }
+
+  validation {
+    condition = alltrue([
+      for k, v in var.tunnels :
+      v.shared_secret == null ||
+      try(v.shared_secret.value, null) != null ||
+      try(v.shared_secret.path, null) != null
+    ])
+    error_message = "When shared_secret is set, either shared_secret.value or shared_secret.path must be non-null."
+  }
 }
 
 variable "vpn_gateway" {

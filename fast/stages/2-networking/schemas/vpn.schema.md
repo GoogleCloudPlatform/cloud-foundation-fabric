@@ -60,8 +60,14 @@
     - **export_policies**: *array*
       - items: *string*
   - **bgp_session_range**: *string*
+  - **deletion_policy**: *string*
+    <br>*enum: ['ABANDON', 'DELETE', 'PREVENT']*
   - **peer_external_gateway_interface**: *number*
-  - **shared_secret**: *string*
+  - **shared_secret**: *object*
+    <br>*additional properties: false*
+    - **value**: *string*
+    - **path**: *string*
+    - **wo_version**: *number*
   - **vpn_gateway_interface**: *number*
 - **ncc_spoke_config**<a name="refs-ncc_spoke_config"></a>: *object*
   - **hub**: *string*
