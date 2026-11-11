@@ -123,6 +123,7 @@ module "folder-1-iam" {
     project_ids     = local.ctx_project_ids
     project_numbers = local.ctx_project_numbers
     pubsub_topics   = merge(local.ctx.pubsub_topics, local.pubsub_topics)
+    storage_buckets = merge(local.ctx.storage_buckets, local.storage_buckets)
   })
 }
 
@@ -210,6 +211,7 @@ module "folder-2-iam" {
     project_ids     = local.ctx_project_ids
     project_numbers = local.ctx_project_numbers
     pubsub_topics   = merge(local.ctx.pubsub_topics, local.pubsub_topics)
+    storage_buckets = merge(local.ctx.storage_buckets, local.storage_buckets)
   })
 }
 
@@ -297,6 +299,7 @@ module "folder-3-iam" {
     project_ids     = local.ctx_project_ids
     project_numbers = local.ctx_project_numbers
     pubsub_topics   = merge(local.ctx.pubsub_topics, local.pubsub_topics)
+    storage_buckets = merge(local.ctx.storage_buckets, local.storage_buckets)
   })
 }
 
@@ -384,5 +387,6 @@ module "folder-4-iam" {
     project_ids     = local.ctx_project_ids
     project_numbers = local.ctx_project_numbers
     pubsub_topics   = merge(local.ctx.pubsub_topics, local.pubsub_topics)
+    storage_buckets = merge(local.ctx.storage_buckets, local.storage_buckets)
   })
 }
