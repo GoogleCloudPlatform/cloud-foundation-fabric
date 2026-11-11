@@ -520,4 +520,25 @@ variable "urlmap_config" {
     ])
     error_message = "Invalid cache_policy.cache_mode, must be one of CACHE_ALL_STATIC, FORCE_CACHE_ALL, USE_ORIGIN_HEADERS."
   }
+  validation {
+    condition = var.use_classic_version == false || alltrue([
+      for p in concat(
+        [try(var.urlmap_config.default_route_action.cache_policy, null)],
+        flatten([
+          for m in values(coalesce(var.urlmap_config.path_matchers, {})) : [
+            [try(m.default_route_action.cache_policy, null)],
+            [
+              for r in coalesce(m.path_rules, []) :
+              try(r.route_action.cache_policy, null)
+            ],
+            [
+              for r in coalesce(m.route_rules, []) :
+              try(r.route_action.cache_policy, null)
+            ]
+          ]
+        ])
+      ) : p == null
+    ])
+    error_message = "Route-level cache_policy requires use_classic_version = false."
+  }
 }

@@ -438,7 +438,7 @@ module "glb-0" {
 # tftest modules=1 resources=6 inventory=cloud-cdn.yaml
 ```
 
-Cache policies can also be set per route via the `cache_policy` attribute of `default_route_action` and `route_action` blocks in `urlmap_config`. A route-level policy replaces the backend `cdn_policy` for matching requests, and does not inherit from policies set at higher levels of the URL map. TTLs are expressed in seconds. Route-level cache policies are only supported by the global external Application Load Balancer, so `use_classic_version` must be set to `false`:
+Cache policies can also be set per route via the `cache_policy` attribute of `default_route_action` and `route_action` blocks in `urlmap_config`. A route-level policy replaces the backend `cdn_policy` for matching requests, and does not inherit from policies set at higher levels of the URL map. TTLs are expressed in seconds. Route-level cache policies do not support a backend service that enables Identity-Aware Proxy (`iap_config` in `backend_service_configs`). Route-level cache policies are only supported by the global external Application Load Balancer, so `use_classic_version` must be set to `false`:
 
 ```hcl
 module "glb-0" {
