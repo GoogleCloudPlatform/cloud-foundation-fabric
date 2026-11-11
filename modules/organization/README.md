@@ -954,6 +954,17 @@ module "org" {
   source          = "./fabric/modules/organization"
   organization_id = var.organization_id
   context = {
+    condition_vars = {
+      conditions = {
+        expiry = "2027-06-01T00:00:00Z"
+      }
+    }
+    custom_roles = {
+      tag_user = "organizations/1122334455/roles/customTagUser"
+    }
+    iam_principals = {
+      marketing_users = "group:marketing@example.com"
+    }
     tag_keys = {
       environment = "tagKeys/1234567890"
     }
@@ -965,7 +976,7 @@ module "org" {
     tags = "data/tags"
   }
 }
-# tftest modules=1 resources=9 files=0,1 inventory=tags-factory.yaml
+# tftest modules=1 resources=10 files=0,1 inventory=tags-factory.yaml
 ```
 
 ```yaml
@@ -992,6 +1003,14 @@ values:
         member: "group:engineering@example.com"
   marketing:
     description: "Marketing department."
+    iam_bindings:
+      marketing-users:
+        role: $custom_roles:tag_user
+        members:
+          - $iam_principals:marketing_users
+        condition:
+          title: expires_after_cutoff
+          expression: request.time < timestamp("${conditions.expiry}")
 ```
 
 ```yaml
