@@ -35,6 +35,7 @@ This stage sets up the networking infrastructure for the organization. It provid
   - Forwarding, Public, Private Zones
   - Response Policy Rules
 - Firewall policies
+- Hierarchical Cloud Armor policies
 - VPC connectivity
   - Network Connectivity Center (NCC)
   - Network Virtual Appliances (NVAs)
@@ -88,6 +89,7 @@ factories_config = {
     ncc_hubs              = "/some/path/data/ncc-hubs"
     nvas                  = "/some/path/data/nvas"
     projects              = "/some/path/data/projects"
+    security_policies     = "/some/path/data/security-policies"
     vpcs                  = "/some/path/data/vpcs"
   }
 }
@@ -111,29 +113,37 @@ ln -s ~/fast-config/tfvars/0-org-setup.auto.tfvars.json ./
 
 # conventional location for this stage terraform.tfvars (manually managed)
 ln -s ~/fast-config/2-networking.auto.tfvars ./
+
+# optional files
+ln -s ~/fast-config/tfvars/1-vpcsc.auto.tfvars.json ./
+ln -s ~/fast-config/tfvars/2-networking-ngfw.auto.tfvars.json ./
 ```
 
 If you have no local output files, check the previous state's outputs for the name of your GCS outputs bucket and replace it in the example below.
 
 ```bash
-../fast-links.sh gs://myprefix-prod-iac-org-0-iac-outputs
+../fast-links.sh gs://myprefix-prod-iac-core-0-iac-outputs
 
 # File linking commands for networking stage
 
 # provider file
-gcloud storage cp gs://myprefix-prod-iac-org-0-iac-outputs/providers/2-networking-providers.tf ./
+gcloud storage cp gs://myprefix-prod-iac-core-0-iac-outputs/providers/2-networking-providers.tf ./
 
 # input files from other stages
-gcloud storage cp gs://myprefix-prod-iac-org-0-iac-outputs/tfvars/0-globals.auto.tfvars.json ./
-gcloud storage cp gs://myprefix-prod-iac-org-0-iac-outputs/tfvars/0-org-setup.auto.tfvars.json ./
+gcloud storage cp gs://myprefix-prod-iac-core-0-iac-outputs/tfvars/0-globals.auto.tfvars.json ./
+gcloud storage cp gs://myprefix-prod-iac-core-0-iac-outputs/tfvars/0-org-setup.auto.tfvars.json ./
 
 # conventional location for this stage terraform.tfvars (manually managed)
-gcloud storage cp gs://myprefix-prod-iac-org-0-iac-outputs/2-networking.auto.tfvars ./
+gcloud storage cp gs://myprefix-prod-iac-core-0-iac-outputs/2-networking.auto.tfvars ./
+
+# optional files
+gcloud storage cp gs://myprefix-prod-iac-core-0-iac-outputs/tfvars/1-vpcsc.auto.tfvars.json ./
+gcloud storage cp gs://myprefix-prod-iac-core-0-iac-outputs/tfvars/2-networking-ngfw.auto.tfvars.json ./
 ```
 
-Once you have one of the above outputs, copy/paste it in your terminal from within this stage's folder.
+Once you have one of the above outputs, copy/paste it in your terminal from within this stage's folder, leaving out the commands for files you don't have.
 
-Note that the last command in both outputs is optional: this is our recommended best practice to centrally store the tfvars file you created for this stage. If this convention works for you, move the tfvars file created in the previous steps to the path shown in the output, then run the command.
+Note that the last three commands in both outputs are optional. The first is our recommended best practice to centrally store the tfvars file you created for this stage: if this convention works for you, move the tfvars file created in the previous steps to the path shown in the output, then run the command. The optional files are only available once the VPC-SC stage or the NGFW add-on have been applied, and their commands should be skipped otherwise as Terraform fails on missing tfvars files.
 
 ### Terraform init/apply cycle
 
