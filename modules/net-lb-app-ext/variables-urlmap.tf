@@ -30,6 +30,29 @@ variable "urlmap_config" {
     }))
     default_route_action = optional(object({
       request_mirror_backend = optional(string)
+      cache_policy = optional(object({
+        cache_bypass_request_header_names = optional(list(string))
+        cache_mode                        = optional(string)
+        client_ttl                        = optional(number)
+        default_ttl                       = optional(number)
+        max_ttl                           = optional(number)
+        negative_caching                  = optional(bool)
+        request_coalescing                = optional(bool)
+        serve_while_stale                 = optional(number)
+        cache_key_policy = optional(object({
+          excluded_query_parameters = optional(list(string))
+          include_host              = optional(bool)
+          include_protocol          = optional(bool)
+          include_query_string      = optional(bool)
+          included_cookie_names     = optional(list(string))
+          included_header_names     = optional(list(string))
+          included_query_parameters = optional(list(string))
+        }))
+        negative_caching_policy = optional(list(object({
+          code = number
+          ttl  = optional(number)
+        })))
+      }))
       cors_policy = optional(object({
         allow_credentials    = optional(bool)
         allow_headers        = optional(list(string))
@@ -124,6 +147,29 @@ variable "urlmap_config" {
       }))
       default_route_action = optional(object({
         request_mirror_backend = optional(string)
+        cache_policy = optional(object({
+          cache_bypass_request_header_names = optional(list(string))
+          cache_mode                        = optional(string)
+          client_ttl                        = optional(number)
+          default_ttl                       = optional(number)
+          max_ttl                           = optional(number)
+          negative_caching                  = optional(bool)
+          request_coalescing                = optional(bool)
+          serve_while_stale                 = optional(number)
+          cache_key_policy = optional(object({
+            excluded_query_parameters = optional(list(string))
+            include_host              = optional(bool)
+            include_protocol          = optional(bool)
+            include_query_string      = optional(bool)
+            included_cookie_names     = optional(list(string))
+            included_header_names     = optional(list(string))
+            included_query_parameters = optional(list(string))
+          }))
+          negative_caching_policy = optional(list(object({
+            code = number
+            ttl  = optional(number)
+          })))
+        }))
         cors_policy = optional(object({
           allow_credentials    = optional(bool)
           allow_headers        = optional(list(string))
@@ -213,6 +259,29 @@ variable "urlmap_config" {
         }))
         route_action = optional(object({
           request_mirror_backend = optional(string)
+          cache_policy = optional(object({
+            cache_bypass_request_header_names = optional(list(string))
+            cache_mode                        = optional(string)
+            client_ttl                        = optional(number)
+            default_ttl                       = optional(number)
+            max_ttl                           = optional(number)
+            negative_caching                  = optional(bool)
+            request_coalescing                = optional(bool)
+            serve_while_stale                 = optional(number)
+            cache_key_policy = optional(object({
+              excluded_query_parameters = optional(list(string))
+              include_host              = optional(bool)
+              include_protocol          = optional(bool)
+              include_query_string      = optional(bool)
+              included_cookie_names     = optional(list(string))
+              included_header_names     = optional(list(string))
+              included_query_parameters = optional(list(string))
+            }))
+            negative_caching_policy = optional(list(object({
+              code = number
+              ttl  = optional(number)
+            })))
+          }))
           cors_policy = optional(object({
             allow_credentials    = optional(bool)
             allow_headers        = optional(list(string))
@@ -328,6 +397,29 @@ variable "urlmap_config" {
         })))
         route_action = optional(object({
           request_mirror_backend = optional(string)
+          cache_policy = optional(object({
+            cache_bypass_request_header_names = optional(list(string))
+            cache_mode                        = optional(string)
+            client_ttl                        = optional(number)
+            default_ttl                       = optional(number)
+            max_ttl                           = optional(number)
+            negative_caching                  = optional(bool)
+            request_coalescing                = optional(bool)
+            serve_while_stale                 = optional(number)
+            cache_key_policy = optional(object({
+              excluded_query_parameters = optional(list(string))
+              include_host              = optional(bool)
+              include_protocol          = optional(bool)
+              include_query_string      = optional(bool)
+              included_cookie_names     = optional(list(string))
+              included_header_names     = optional(list(string))
+              included_query_parameters = optional(list(string))
+            }))
+            negative_caching_policy = optional(list(object({
+              code = number
+              ttl  = optional(number)
+            })))
+          }))
           cors_policy = optional(object({
             allow_credentials    = optional(bool)
             allow_headers        = optional(list(string))
@@ -403,5 +495,50 @@ variable "urlmap_config" {
   })
   default = {
     default_service = "default"
+  }
+  validation {
+    condition = alltrue([
+      for p in concat(
+        [try(var.urlmap_config.default_route_action.cache_policy, null)],
+        flatten([
+          for m in values(coalesce(var.urlmap_config.path_matchers, {})) : [
+            [try(m.default_route_action.cache_policy, null)],
+            [
+              for r in coalesce(m.path_rules, []) :
+              try(r.route_action.cache_policy, null)
+            ],
+            [
+              for r in coalesce(m.route_rules, []) :
+              try(r.route_action.cache_policy, null)
+            ]
+          ]
+        ])
+        ) : contains(
+        ["CACHE_ALL_STATIC", "FORCE_CACHE_ALL", "USE_ORIGIN_HEADERS"],
+        p.cache_mode
+      ) if try(p.cache_mode, null) != null
+    ])
+    error_message = "Invalid cache_policy.cache_mode, must be one of CACHE_ALL_STATIC, FORCE_CACHE_ALL, USE_ORIGIN_HEADERS."
+  }
+  validation {
+    condition = var.use_classic_version == false || alltrue([
+      for p in concat(
+        [try(var.urlmap_config.default_route_action.cache_policy, null)],
+        flatten([
+          for m in values(coalesce(var.urlmap_config.path_matchers, {})) : [
+            [try(m.default_route_action.cache_policy, null)],
+            [
+              for r in coalesce(m.path_rules, []) :
+              try(r.route_action.cache_policy, null)
+            ],
+            [
+              for r in coalesce(m.route_rules, []) :
+              try(r.route_action.cache_policy, null)
+            ]
+          ]
+        ])
+      ) : p == null
+    ])
+    error_message = "Route-level cache_policy requires use_classic_version = false."
   }
 }

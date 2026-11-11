@@ -1,0 +1,135 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  google_compute_backend_service.default["default"]:
+    enable_cdn: true
+    load_balancing_scheme: EXTERNAL_MANAGED
+  google_compute_global_forwarding_rule.default[""]:
+    load_balancing_scheme: EXTERNAL_MANAGED
+  google_compute_url_map.default:
+    default_route_action:
+    - cache_policy:
+      - cache_bypass_request_header_names: null
+        cache_key_policy: []
+        cache_mode: CACHE_ALL_STATIC
+        client_ttl: []
+        default_ttl:
+        - nanos: null
+          seconds: '3600'
+        max_ttl: []
+        negative_caching: true
+        negative_caching_policy: []
+        request_coalescing: null
+        serve_while_stale: []
+    path_matcher:
+    - default_route_action:
+      - cache_policy:
+        - cache_bypass_request_header_names: null
+          cache_key_policy:
+          - excluded_query_parameters: null
+            include_host: true
+            include_protocol: false
+            include_query_string: null
+            included_cookie_names: null
+            included_header_names: null
+            included_query_parameters: null
+          cache_mode: USE_ORIGIN_HEADERS
+          client_ttl: []
+          default_ttl: []
+          max_ttl: []
+          negative_caching: null
+          negative_caching_policy: []
+          request_coalescing: null
+          serve_while_stale: []
+      name: paths
+      path_rule:
+      - paths:
+        - /static/*
+        route_action:
+        - cache_policy:
+          - cache_bypass_request_header_names: null
+            cache_key_policy:
+            - excluded_query_parameters: null
+              include_host: null
+              include_protocol: null
+              include_query_string: null
+              included_cookie_names: null
+              included_header_names: null
+              included_query_parameters:
+              - v
+            cache_mode: FORCE_CACHE_ALL
+            client_ttl:
+            - nanos: null
+              seconds: '0'
+            default_ttl:
+            - nanos: null
+              seconds: '86400'
+            max_ttl: []
+            negative_caching: null
+            negative_caching_policy: []
+            request_coalescing: null
+            serve_while_stale: []
+    - default_route_action: []
+      name: routes
+      route_rules:
+      - priority: 1
+        route_action:
+        - cache_policy:
+          - cache_bypass_request_header_names:
+            - Authorization
+            cache_key_policy:
+            - excluded_query_parameters:
+              - session
+              include_host: null
+              include_protocol: null
+              include_query_string: true
+              included_cookie_names:
+              - lang
+              included_header_names:
+              - X-Client
+              included_query_parameters: null
+            cache_mode: CACHE_ALL_STATIC
+            client_ttl:
+            - nanos: null
+              seconds: '60'
+            default_ttl:
+            - nanos: null
+              seconds: '120'
+            max_ttl:
+            - nanos: null
+              seconds: '600'
+            negative_caching: true
+            negative_caching_policy:
+            - code: 404
+              ttl:
+              - nanos: null
+                seconds: '300'
+            - code: 410
+              ttl:
+              - nanos: null
+                seconds: '60'
+            request_coalescing: false
+            serve_while_stale:
+            - nanos: null
+              seconds: '0'
+
+counts:
+  google_compute_backend_service: 1
+  google_compute_global_forwarding_rule: 1
+  google_compute_health_check: 1
+  google_compute_target_http_proxy: 1
+  google_compute_url_map: 1
+  modules: 0
+  resources: 5
