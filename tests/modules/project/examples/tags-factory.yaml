@@ -58,6 +58,13 @@ values:
     - group:devops@example.com
     role: roles/resourcemanager.tagUser
     tag_value: tagValues/1234567890
+  module.project.google_tags_tag_value_iam_member.bindings["workload/backend:backend-viewer"]:
+    condition:
+    - description: null
+      expression: resource.matchTag('1122334455/environment', 'development')
+      title: match_dev_env
+    member: serviceAccount:backend@test-project.iam.gserviceaccount.com
+    role: projects/test-project/roles/customTagViewer
   module.project.google_tags_tag_value_iam_member.bindings["workload/frontend:frontend-user"]:
     condition: []
     member: group:frontend@example.com
@@ -69,6 +76,6 @@ counts:
   google_tags_tag_key_iam_binding: 3
   google_tags_tag_value: 3
   google_tags_tag_value_iam_binding: 1
-  google_tags_tag_value_iam_member: 1
+  google_tags_tag_value_iam_member: 2
   modules: 1
-  resources: 10
+  resources: 11

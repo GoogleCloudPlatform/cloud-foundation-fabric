@@ -233,7 +233,7 @@ resource "google_tags_tag_key_iam_binding" "default" {
     ? google_tags_tag_key.default[each.value.tag].id
     : lookup(local.ctx.tag_keys, each.value.tag_id, each.value.tag_id)
   )
-  role = each.value.role
+  role = lookup(local.ctx.custom_roles, each.value.role, each.value.role)
   members = [
     for v in local.tags[each.value.tag]["iam"][each.value.role] :
     lookup(local.ctx.iam_principals, v, v)
@@ -247,7 +247,11 @@ resource "google_tags_tag_key_iam_binding" "bindings" {
     ? google_tags_tag_key.default[each.value.tag].id
     : lookup(local.ctx.tag_keys, each.value.tag_id, each.value.tag_id)
   )
-  role = local.tags[each.value.tag]["iam_bindings"][each.value.binding].role
+  role = lookup(
+    local.ctx.custom_roles,
+    local.tags[each.value.tag]["iam_bindings"][each.value.binding].role,
+    local.tags[each.value.tag]["iam_bindings"][each.value.binding].role
+  )
   members = [
     for v in local.tags[each.value.tag]["iam_bindings"][each.value.binding].members :
     lookup(local.ctx.iam_principals, v, v)
@@ -255,7 +259,10 @@ resource "google_tags_tag_key_iam_binding" "bindings" {
   dynamic "condition" {
     for_each = local.tags[each.value.tag]["iam_bindings"][each.value.binding].condition == null ? [] : [""]
     content {
-      expression  = local.tags[each.value.tag]["iam_bindings"][each.value.binding].condition.expression
+      expression = templatestring(
+        local.tags[each.value.tag]["iam_bindings"][each.value.binding].condition.expression,
+        var.context.condition_vars
+      )
       title       = local.tags[each.value.tag]["iam_bindings"][each.value.binding].condition.title
       description = local.tags[each.value.tag]["iam_bindings"][each.value.binding].condition.description
     }
@@ -269,7 +276,11 @@ resource "google_tags_tag_key_iam_member" "bindings" {
     ? google_tags_tag_key.default[each.value.tag].id
     : lookup(local.ctx.tag_keys, each.value.tag_id, each.value.tag_id)
   )
-  role = local.tags[each.value.tag]["iam_bindings_additive"][each.value.binding].role
+  role = lookup(
+    local.ctx.custom_roles,
+    local.tags[each.value.tag]["iam_bindings_additive"][each.value.binding].role,
+    local.tags[each.value.tag]["iam_bindings_additive"][each.value.binding].role
+  )
   member = lookup(
     local.ctx.iam_principals,
     local.tags[each.value.tag]["iam_bindings_additive"][each.value.binding].member,
@@ -278,7 +289,10 @@ resource "google_tags_tag_key_iam_member" "bindings" {
   dynamic "condition" {
     for_each = local.tags[each.value.tag]["iam_bindings_additive"][each.value.binding].condition == null ? [] : [""]
     content {
-      expression  = local.tags[each.value.tag]["iam_bindings_additive"][each.value.binding].condition.expression
+      expression = templatestring(
+        local.tags[each.value.tag]["iam_bindings_additive"][each.value.binding].condition.expression,
+        var.context.condition_vars
+      )
       title       = local.tags[each.value.tag]["iam_bindings_additive"][each.value.binding].condition.title
       description = local.tags[each.value.tag]["iam_bindings_additive"][each.value.binding].condition.description
     }
@@ -305,7 +319,7 @@ resource "google_tags_tag_value_iam_binding" "default" {
     ? google_tags_tag_value.default[each.value.key].id
     : lookup(local.ctx.tag_values, each.value.id, each.value.id)
   )
-  role = each.value.role
+  role = lookup(local.ctx.custom_roles, each.value.role, each.value.role)
   members = [
     for v in local.tags[each.value.tag]["values"][each.value.name]["iam"][each.value.role] :
     lookup(local.ctx.iam_principals, v, v)
@@ -319,7 +333,9 @@ resource "google_tags_tag_value_iam_binding" "bindings" {
     ? google_tags_tag_value.default[each.value.key].id
     : lookup(local.ctx.tag_values, each.value.id, each.value.id)
   )
-  role = (
+  role = lookup(
+    local.ctx.custom_roles,
+    local.tags[each.value.tag]["values"][each.value.name]["iam_bindings"][each.value.binding].role,
     local.tags[each.value.tag]["values"][each.value.name]["iam_bindings"][each.value.binding].role
   )
   members = [
@@ -329,7 +345,10 @@ resource "google_tags_tag_value_iam_binding" "bindings" {
   dynamic "condition" {
     for_each = local.tags[each.value.tag]["values"][each.value.name]["iam_bindings"][each.value.binding].condition == null ? [] : [""]
     content {
-      expression  = local.tags[each.value.tag]["values"][each.value.name]["iam_bindings"][each.value.binding].condition.expression
+      expression = templatestring(
+        local.tags[each.value.tag]["values"][each.value.name]["iam_bindings"][each.value.binding].condition.expression,
+        var.context.condition_vars
+      )
       title       = local.tags[each.value.tag]["values"][each.value.name]["iam_bindings"][each.value.binding].condition.title
       description = local.tags[each.value.tag]["values"][each.value.name]["iam_bindings"][each.value.binding].condition.description
     }
@@ -343,7 +362,9 @@ resource "google_tags_tag_value_iam_member" "bindings" {
     ? google_tags_tag_value.default[each.value.key].id
     : lookup(local.ctx.tag_values, each.value.id, each.value.id)
   )
-  role = (
+  role = lookup(
+    local.ctx.custom_roles,
+    local.tags[each.value.tag]["values"][each.value.name]["iam_bindings_additive"][each.value.binding].role,
     local.tags[each.value.tag]["values"][each.value.name]["iam_bindings_additive"][each.value.binding].role
   )
   member = lookup(
@@ -354,7 +375,10 @@ resource "google_tags_tag_value_iam_member" "bindings" {
   dynamic "condition" {
     for_each = local.tags[each.value.tag]["values"][each.value.name]["iam_bindings_additive"][each.value.binding].condition == null ? [] : [""]
     content {
-      expression  = local.tags[each.value.tag]["values"][each.value.name]["iam_bindings_additive"][each.value.binding].condition.expression
+      expression = templatestring(
+        local.tags[each.value.tag]["values"][each.value.name]["iam_bindings_additive"][each.value.binding].condition.expression,
+        var.context.condition_vars
+      )
       title       = local.tags[each.value.tag]["values"][each.value.name]["iam_bindings_additive"][each.value.binding].condition.title
       description = local.tags[each.value.tag]["values"][each.value.name]["iam_bindings_additive"][each.value.binding].condition.description
     }

@@ -1341,6 +1341,17 @@ module "project" {
   prefix          = var.prefix
   parent          = var.folder_id
   context = {
+    condition_vars = {
+      organization = {
+        id = 1122334455
+      }
+    }
+    custom_roles = {
+      tag_viewer = "projects/test-project/roles/customTagViewer"
+    }
+    iam_principals = {
+      backend_sa = "serviceAccount:backend@test-project.iam.gserviceaccount.com"
+    }
     tag_keys = {
       service = "tagKeys/1234567890"
     }
@@ -1352,7 +1363,7 @@ module "project" {
     tags = "data/tags"
   }
 }
-# tftest modules=1 resources=10 files=0,1 inventory=tags-factory.yaml
+# tftest modules=1 resources=11 files=0,1 inventory=tags-factory.yaml
 ```
 
 ```yaml
@@ -1379,6 +1390,13 @@ values:
         member: "group:frontend@example.com"
   backend:
     description: "Backend workload."
+    iam_bindings_additive:
+      backend-viewer:
+        role: $custom_roles:tag_viewer
+        member: $iam_principals:backend_sa
+        condition:
+          title: match_dev_env
+          expression: resource.matchTag('${organization.id}/environment', 'development')
 ```
 
 ```yaml
