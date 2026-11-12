@@ -22,12 +22,11 @@ Tools to run testing sandboxes, parse plans, and simulate/evaluate agent behavio
 - **[create_e2e_sandbox.sh](./create_e2e_sandbox.sh)**: Bootstraps an isolated end-to-end sandbox directory to safely provision and test CFF examples.
 
 ### 3. Repository Maintenance & Automation
-Tools for version management, automated reviews, GCP service definitions, and release automation.
+Tools for version management, GCP service definitions, and release automation.
 
 - **[changelog.py](./changelog.py)**: Automates the generation and maintenance of the `CHANGELOG.md` based on Git diffs and version changes.
 - **[versions.py](./versions.py)**: Synchronizes required engine and provider version constraints across standard provider configuration files in the repository.
 - **[build_service_agents.py](./build_service_agents.py)**: Parses the official Google Cloud documentation to build a structured representation of GCP service agents and their properties.
-- **[pr_review.py](./pr_review.py)**: Leverages the Gemini API to perform automated, context-aware code reviews on pull requests.
 - **[state_iam.py](./state_iam.py)**: Parses and displays authoritative IAM binding configurations directly from a local Terraform state file.
 
 ### 4. Linting, Quality & Compliance
