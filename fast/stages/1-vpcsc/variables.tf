@@ -66,8 +66,12 @@ variable "access_levels" {
 
 variable "access_policy" {
   description = "Access policy id (used for tenant-level VPC-SC configurations)."
-  type        = number
+  type        = string
   default     = null
+  validation {
+    condition     = var.access_policy == null || can(regex("^[0-9]+$", var.access_policy))
+    error_message = "Access policy id must be a numeric string without the 'accessPolicies/' prefix."
+  }
 }
 
 variable "context" {
