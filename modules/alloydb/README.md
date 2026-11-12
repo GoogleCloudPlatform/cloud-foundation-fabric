@@ -20,6 +20,7 @@ Note that this module assumes that some options are the same for both the primar
   - [Custom flags and users definition](#custom-flags-and-users-definition)
   - [CMEK encryption](#cmek-encryption)
   - [Managed connection pooling](#managed-connection-pooling)
+  - [Automated backups](#automated-backups)
 - [Tag bindings](#tag-bindings)
 - [Variables](#variables)
 - [Outputs](#outputs)
@@ -443,6 +444,31 @@ module "alloydb" {
   deletion_protection = false
 }
 # tftest modules=1 resources=2 inventory=connection_pool.yaml e2e
+```
+
+### Automated backups
+
+When `location` is omitted, automated backups are stored in the cluster's region.
+
+```hcl
+module "alloydb" {
+  source         = "./fabric/modules/alloydb"
+  project_id     = var.project_id
+  project_number = var.project_number
+  cluster_name   = "db"
+  location       = var.region
+  instance_name  = "db"
+  network_config = {
+    psa_config = {
+      network = var.vpc.id
+    }
+  }
+  automated_backup_configuration = {
+    enabled = true
+  }
+  deletion_protection = false
+}
+# tftest modules=1 resources=2 inventory=automated_backup.yaml e2e
 ```
 
 ## Tag bindings
