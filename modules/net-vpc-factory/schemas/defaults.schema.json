@@ -78,7 +78,7 @@
           "type": "boolean",
           "default": false
         },
-        "delete_default_route_on_create": {
+        "delete_default_routes_on_create": {
           "type": "boolean",
           "default": true
         },

@@ -112,8 +112,18 @@
     - **type**: *string*
       <br>*enum: ['PUBLIC', 'PRIVATE']*
 - **ncc_config**<a name="refs-ncc_config"></a>: *object*
+  <br>*additional properties: false*
   - ⁺**hub**: *string*
   - **group**: *string*
+  - **description**: *string*
+  - **labels**: *object*
+    <br>*additional properties: false*
+    - **`^[a-z][a-z0-9_-]{0,62}$`**: *string*
+      <br>*pattern: ^[a-z0-9_-]{0,63}$*
+  - **exclude_export_ranges**: *array*
+    - items: *string*
+  - **include_export_ranges**: *array*
+    - items: *string*
 - **network_attachments**<a name="refs-network_attachments"></a>: *object*
   - **`^[a-z0-9-]+$`**: *object*
     - **subnet**: *string*
