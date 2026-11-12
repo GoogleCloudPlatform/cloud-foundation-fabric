@@ -144,18 +144,24 @@ locals {
       ), null)
       project_reuse = ( # type: object({...})
         try(v.project_reuse, null) != null
-        ? {
-          use_data_source = try(v.project_reuse.use_data_source, true)
-          attributes = (
-            try(v.project_reuse.attributes, null) != null
-            ? {
-              name             = v.project_reuse.attributes.name
-              number           = v.project_reuse.attributes.number
-              services_enabled = try(v.project_reuse.attributes.services_enabled, [])
-            }
-            : null
-          )
-        }
+        ? merge(
+          { use_data_source = true },
+          v.project_reuse,
+          {
+            attributes = (
+              try(v.project_reuse.attributes, null) == null
+              ? null
+              : merge(
+                {
+                  name             = null
+                  number           = null
+                  services_enabled = []
+                },
+                v.project_reuse.attributes
+              )
+            )
+          }
+        )
         : local.data_defaults.defaults.project_reuse
       )
       quotas = try(v.quotas, {})
@@ -239,12 +245,15 @@ locals {
         ? local.data_defaults.overrides.universe
         : (
           try(v.universe, null) != null
-          ? {
-            prefix                         = v.universe.prefix
-            forced_jit_service_identities  = try(v.universe.forced_jit_service_identities, [])
-            unavailable_service_identities = try(v.universe.unavailable_service_identities, [])
-            unavailable_services           = try(v.universe.unavailable_services, [])
-          }
+          ? merge(
+            {
+              prefix                         = null
+              forced_jit_service_identities  = []
+              unavailable_service_identities = []
+              unavailable_services           = []
+            },
+            v.universe
+          )
           : local.data_defaults.defaults.universe
         )
       )
