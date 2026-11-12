@@ -804,6 +804,8 @@ outputs:
   subnet_ips:
     hub:
       europe-west1/hub-default: 10.71.0.0/24
+  subnet_private_nat_self_links:
+    hub: {}
   subnet_proxy_only_self_links:
     hub: {}
   subnet_psc_self_links:

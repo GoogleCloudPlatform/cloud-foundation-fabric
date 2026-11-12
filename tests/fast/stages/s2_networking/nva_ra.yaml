@@ -1113,6 +1113,9 @@ outputs:
       europe-west1/trusted-default: 10.0.1.0/24
     untrusted:
       europe-west1/untrusted-default: 10.0.0.0/24
+  subnet_private_nat_self_links:
+    trusted: {}
+    untrusted: {}
   subnet_proxy_only_self_links:
     trusted: {}
     untrusted: {}
