@@ -152,11 +152,22 @@ locals {
       project_reuse = ( # type: object({...})
         try(v.project_reuse, null) != null
         ? merge(
+          { use_data_source = true },
+          v.project_reuse,
           {
-            use_data_source = true
-            attributes      = null
-          },
-          v.project_reuse
+            attributes = (
+              try(v.project_reuse.attributes, null) == null
+              ? null
+              : merge(
+                {
+                  name             = null
+                  number           = null
+                  services_enabled = []
+                },
+                v.project_reuse.attributes
+              )
+            )
+          }
         )
         : local.data_defaults.defaults.project_reuse
       )
@@ -241,7 +252,15 @@ locals {
         ? local.data_defaults.overrides.universe
         : (
           try(v.universe, null) != null
-          ? v.universe
+          ? merge(
+            {
+              prefix                         = null
+              forced_jit_service_identities  = []
+              unavailable_service_identities = []
+              unavailable_services           = []
+            },
+            v.universe
+          )
           : local.data_defaults.defaults.universe
         )
       )

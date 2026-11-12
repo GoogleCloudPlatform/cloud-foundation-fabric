@@ -328,6 +328,7 @@ Assuming keys of the form `my_folder`, `my_project`, `my_sa`, etc. this is an ex
 - `$service_account_ids:my_project/my_sa`
 - `$service_account_ids:my_project/automation/my_sa`
 - `$service_agents:compute`
+- `$storage_buckets:my_project/my_bucket`
 - `$tag_keys:my_key` *static context*
 - `$tag_keys:my_project/my_key` *project-level tag keys*
 - `$tag_values:my_key/my_value` *static context*
@@ -500,7 +501,11 @@ module "project-factory" {
       teams-baseline = "locations/global/securityPolicies/1234567890"
     }
     storage_buckets = {
-      log-bucket = "log-bucket"
+      log-bucket           = "log-bucket"
+      gcs-audit-log-bucket = "gcs-logging-bucket"
+    }
+    log_buckets = {
+      audit-log-bucket = "projects/my-gcp-project-123456/locations/global/buckets/logging-bucket"
     }
     tag_values = {
       "context/gke"                = "tagValues/654321"
@@ -554,7 +559,7 @@ module "project-factory" {
     }
   }
 }
-# tftest files=t0,0,1,2,2.1,2.2,2.3,3,4,5,6,7,8,9,10,99 inventory=example.yaml
+# tftest files=t0,0,1,2,2.1,2.2,2.3,2.4,3,4,5,6,7,8,9,10,99 inventory=example.yaml
 ```
 
 A project template for GKE projects:
@@ -635,6 +640,31 @@ asset_feeds:
     asset_types:
       - compute.googleapis.com/Instance
 # tftest-file id=2.3 path=data/folders/team-c/apps/test/app-x/.config.yaml schema=folder.schema.json
+```
+
+To setup logging for a given folder:
+```yaml
+name: Team D
+logging:
+  storage_location: europe-west1
+  sinks:
+    audit_gcs_logs:
+      destination: $storage_buckets:gcs-audit-log-bucket # Using a GCS storage bucket
+      type: storage
+      filter: |
+        log_id("cloudaudit.googleapis.com/activity") OR
+        log_id("cloudaudit.googleapis.com/system_event") OR
+        log_id("cloudaudit.googleapis.com/policy") OR
+        log_id("cloudaudit.googleapis.com/access_transparency")
+    audit_log_bucket_logs:
+      destination: $log_buckets:audit-log-bucket # Using a logging bucket
+      type: logging
+      filter: |
+        log_id("cloudaudit.googleapis.com/activity") OR
+        log_id("cloudaudit.googleapis.com/system_event") OR
+        log_id("cloudaudit.googleapis.com/policy") OR
+        log_id("cloudaudit.googleapis.com/access_transparency")
+# tftest-file id=2.4 path=data/folders/team-d/.config.yaml schema=folder.schema.json
 ```
 
 ```yaml
@@ -1099,7 +1129,7 @@ module "project-factory" {
 output "test_1_automation" {
   value = module.project-factory.projects["test-1"].automation
 }
-# tftest files=folder-0,test-0,test-1,test-2 inventory=test-1.yaml
+# tftest files=folder-0,test-0,test-1,test-2,test-3,test-4 inventory=test-1.yaml
 ```
 
 ```yaml
@@ -1265,4 +1295,25 @@ service_accounts:
         role: roles/iam.serviceAccountTokenCreator
         member: $iam_principals:service_accounts/_self_/bindings-only
 # tftest-file id=test-2 path=data/projects/test-2.yaml schema=project.schema.json
+```
+
+```yaml
+parent: folders/1234567890
+# partial universe object, omitted attributes use defaults
+universe:
+  prefix: tpc
+  unavailable_services:
+    - container.googleapis.com
+# tftest-file id=test-3 path=data/projects/test-3.yaml schema=project.schema.json
+```
+
+```yaml
+parent: folders/1234567890
+# partial project reuse attributes, services_enabled uses default
+project_reuse:
+  use_data_source: false
+  attributes:
+    name: foo-test-4
+    number: 1234567890
+# tftest-file id=test-4 path=data/projects/test-4.yaml schema=project.schema.json
 ```

@@ -80,11 +80,11 @@
       "type": "object",
       "additionalProperties": false,
       "patternProperties": {
-        "^roles/": {
+        "^(?:roles/|\\$custom_roles:|organizations/[0-9]+/roles/|([a-z0-9.]+:)?projects/[a-z0-9-]+/roles/)": {
           "type": "array",
           "items": {
             "type": "string",
-            "pattern": "^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|\\$iam_principals:[a-z0-9_-]+)"
+            "pattern": "^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|\\$iam_principals:[a-z0-9_-]+|\\$service_agents:[a-z0-9_-]+|\\$iam_principalsets:service_accounts/all)"
           }
         }
       }
@@ -96,17 +96,21 @@
         "^[a-z0-9_-]+$": {
           "type": "object",
           "additionalProperties": false,
+          "required": [
+            "role",
+            "members"
+          ],
           "properties": {
             "members": {
               "type": "array",
               "items": {
                 "type": "string",
-                "pattern": "^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|\\$iam_principals:[a-z0-9_-]+)"
+                "pattern": "^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|\\$iam_principals:[a-z0-9_-]+|\\$service_agents:[a-z0-9_-]+|\\$iam_principalsets:service_accounts/all)"
               }
             },
             "role": {
               "type": "string",
-              "pattern": "^roles/"
+              "pattern": "^(?:roles/|\\$custom_roles:|organizations/[0-9]+/roles/|([a-z0-9.]+:)?projects/[a-z0-9-]+/roles/)"
             },
             "condition": {
               "type": "object",
@@ -138,14 +142,18 @@
         "^[a-z0-9_-]+$": {
           "type": "object",
           "additionalProperties": false,
+          "required": [
+            "role",
+            "member"
+          ],
           "properties": {
             "member": {
               "type": "string",
-              "pattern": "^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|\\$iam_principals:[a-z0-9_-]+)"
+              "pattern": "^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|\\$iam_principals:[a-z0-9_-]+|\\$service_agents:[a-z0-9_-]+|\\$iam_principalsets:service_accounts/all)"
             },
             "role": {
               "type": "string",
-              "pattern": "^[a-zA-Z0-9_/]+$"
+              "pattern": "^(?:roles/|\\$custom_roles:|organizations/[0-9]+/roles/|([a-z0-9.]+:)?projects/[a-z0-9-]+/roles/)"
             },
             "condition": {
               "type": "object",
