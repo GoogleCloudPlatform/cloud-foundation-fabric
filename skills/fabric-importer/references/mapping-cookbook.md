@@ -1139,13 +1139,13 @@ let plan tell you: it errors loudly and safely on a wrong ID.
   mapped here and NOT through `modules/net-cloudnat`. See the Cloud
   Routers and NAT section for the rule.
 - **`shared_secret` cannot be imported, and cannot be waived.**
-  - Provider constraint: `google_compute_vpn_tunnel.shared_secret` is
-    `ForceNew`, and the Compute API returns only `shared_secret_hash`
-    on read. An imported tunnel therefore holds no plaintext secret.
-  - Fabric constraint: `modules/net-vpn-ha` sets
-    `shared_secret = coalesce(each.value.shared_secret, local.secret)`
-    where `local.secret` is `random_id.secret.b64_url`
-    (`modules/net-vpn-ha/main.tf`). **You cannot leave it unset.**
+  - Provider constraint: `google_compute_vpn_tunnel.shared_secret` and
+    `shared_secret_wo_version` are `ForceNew`, and the Compute API
+    returns only `shared_secret_hash` on read. An imported tunnel
+    therefore holds no plaintext secret and no write-only version.
+  - Fabric constraint: when `shared_secret` is `null`, `modules/net-vpn-ha`
+    falls back to `local.secret` (`random_id.secret.b64_url` in
+    `modules/net-vpn-ha/main.tf`). **You cannot leave it unset.**
     Omitting it does not produce a no-op — it produces an
     unknown-at-plan-time value on a ForceNew attribute, which plans a
     tunnel *replacement*, non-deterministically.

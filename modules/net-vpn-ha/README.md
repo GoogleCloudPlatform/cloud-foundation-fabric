@@ -10,6 +10,8 @@ This module makes it easy to deploy either GCP-to-GCP or GCP-to-On-prem [Cloud H
   - [IPv6 (dual-stack)](#ipv6-dual-stack)
   - [BGP Route Policies](#bgp-route-policies)
 - [Secret values](#secret-values)
+  - [Creating a pre-shared key](#creating-a-pre-shared-key)
+  - [Upgrading existing tunnels safely](#upgrading-existing-tunnels-safely)
 - [Recipes](#recipes)
 - [Variables](#variables)
 - [Outputs](#outputs)
@@ -429,9 +431,27 @@ You can optionally avoid to specify MD5 keys and the module will automatically g
 - `path` is the path to a file containing the secret, read via `file(pathexpand(path))` and relative to the root module; the file must exist at every plan
 - `wo_version` switches to the provider's write-only attribute, so that the secret is never stored in state; bump the number whenever the secret changes and needs to be sent again
 
-Only one of `value` and `path` can be set. Without `wo_version` the secret is stored in state, and that form should only be used when this is acceptable. With `wo_version` set, both `value` and `path` can be null once the secret has been applied, since the provider leaves the existing write-only value untouched until the version changes: this allows passing `value = try(file("secret.txt"), null)` and removing the file after the first apply.
+Only one of `value` and `path` can be set, and the secret value or file must remain present at every plan (`google_compute_vpn_tunnel` enforces `ExactlyOneOf` and `RequiredWith` on raw configuration). Without `wo_version` the secret is stored in state, and that form should only be used when this is acceptable or when upgrading an existing plain-secret tunnel in place.
 
 When `shared_secret` is omitted (`null`), the module falls back to its internally generated `random_secret` (stored in state). When `wo_version` is set on a tunnel, its entry in the `shared_secrets` output is `null` so the secret is not persisted in state.
+
+### Creating a pre-shared key
+
+Cloud VPN accepts pre-shared keys of 1 to 128 printable ASCII characters and recommends a 24-byte random value encoded in Base64 (32 characters):
+
+```bash
+# print a 32-character secret for inline/variable use
+openssl rand -base64 24
+
+# write a secret file for shared_secret.path without a trailing newline
+openssl rand -base64 24 | tr -d '\n' > vpn-psk.txt
+```
+
+Strip the trailing newline (`tr -d '\n'`) when writing secret files referenced via `path`: `file(pathexpand(path))` reads the file verbatim, so a trailing `\n` becomes part of the Google Cloud tunnel secret and will mismatch a peer router configured with the single-line string.
+
+### Upgrading existing tunnels safely
+
+Both `shared_secret` and `shared_secret_wo_version` on `google_compute_vpn_tunnel` are immutable (`ForceNew`). When upgrading an existing deployment from a string secret (`shared_secret = "..."`), migrate to `shared_secret = { value = "..." }` (or `{ path = "..." }`) and leave `wo_version` unset to converge with zero tunnel downtime. Adding or changing `wo_version` on an already-deployed tunnel destroys and recreates the live IPsec tunnel; use `wo_version` on new tunnels or during a planned maintenance window.
 <!-- BEGIN TFDOC -->
 ## Recipes
 
