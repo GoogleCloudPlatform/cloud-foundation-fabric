@@ -1093,7 +1093,7 @@ module "project-factory" {
 output "test_1_automation" {
   value = module.project-factory.projects["test-1"].automation
 }
-# tftest files=folder-0,test-0,test-1,test-2 inventory=test-1.yaml
+# tftest files=folder-0,test-0,test-1,test-2,test-3,test-4 inventory=test-1.yaml
 ```
 
 ```yaml
@@ -1259,4 +1259,25 @@ service_accounts:
         role: roles/iam.serviceAccountTokenCreator
         member: $iam_principals:service_accounts/_self_/bindings-only
 # tftest-file id=test-2 path=data/projects/test-2.yaml schema=project.schema.json
+```
+
+```yaml
+parent: folders/1234567890
+# partial universe object, omitted attributes use defaults
+universe:
+  prefix: tpc
+  unavailable_services:
+    - container.googleapis.com
+# tftest-file id=test-3 path=data/projects/test-3.yaml schema=project.schema.json
+```
+
+```yaml
+parent: folders/1234567890
+# partial project reuse attributes, services_enabled uses default
+project_reuse:
+  use_data_source: false
+  attributes:
+    name: foo-test-4
+    number: 1234567890
+# tftest-file id=test-4 path=data/projects/test-4.yaml schema=project.schema.json
 ```
