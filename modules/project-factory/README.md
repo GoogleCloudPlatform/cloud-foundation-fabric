@@ -86,6 +86,8 @@ Some examples on where to use each of the three sets are [provided below](#examp
 
 Projects passed in via the `projects` variable go through the same defaults, overrides and merges as YAML-defined projects. If the same key is used in both, the YAML definition wins. Project templates and exclusions only apply to YAML-defined projects.
 
+Attributes left unset (`null`) in the variable get their value from `data_defaults`. To create a project without the default prefix, set `prefix` to an empty string in the variable, or to `null` in YAML.
+
 ```hcl
 module "project-factory" {
   source = "./fabric/modules/project-factory"

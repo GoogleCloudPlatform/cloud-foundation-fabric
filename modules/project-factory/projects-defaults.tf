@@ -15,7 +15,8 @@
  */
 
 # inputs:
-#   local._projects_input: raw projects data
+#   local._projects_input: raw projects data from YAML files
+#   var.projects: projects data from the projects variable
 # outputs:
 #   local.data_defaults: normalized defaults/overrides
 #   local._projects_output: normalized project data
@@ -25,12 +26,13 @@ locals {
     defaults  = try(var.data_defaults, {})
     overrides = try(var.data_overrides, {})
   }
-  # drop null attributes so variable-defined projects match the shape of
-  # YAML-defined projects, where unset attributes are missing
-  _projects_var = {
-    for k, v in var.projects : k => {
-      for kk, vv in v : kk => vv if vv != null
-    }
+  # an explicit YAML null prefix disables the default prefix; convert it to
+  # "", which the projects variable uses for the same purpose (a for
+  # expression avoids inconsistent conditional types)
+  _projects_yaml = {
+    for k, v in local._projects_input : k => merge(v, {
+      for a in ["prefix"] : a => "" if try(v.prefix, "") == null
+    })
   }
   _projects_output = {
     # Semantics of the merges are:
@@ -40,7 +42,7 @@ locals {
     # This logic is easily implemented using coalesce, even on maps and list and allows to
     # set data_overrides.<field> to "", [] or {} to ensure, that empty value is always passed, or do
     # the same in _projects_input to prevent falling back to default value
-    for k, v in merge(local._projects_var, local._projects_input) : k => merge(v, {
+    for k, v in merge(var.projects, local._projects_yaml) : k => merge(v, {
       asset_feeds = try(v.asset_feeds, {})
       billing_account = try(coalesce( # type: string
         local.data_defaults.overrides.billing_account,
@@ -130,9 +132,9 @@ locals {
         local.data_defaults.defaults.metric_scopes
       )
       descriptive_name = lookup(v, "descriptive_name", null)
-      name             = lookup(v, "name", basename(k)) # type: string
-      org_policies     = try(v.org_policies, {})        # type: map(object({...}))
-      parent = try(                                     # type: string, nullable
+      name             = coalesce(try(v.name, null), basename(k)) # type: string
+      org_policies     = try(v.org_policies, {})                  # type: map(object({...}))
+      parent = try(                                               # type: string, nullable
         coalesce(
           local.data_defaults.overrides.parent,
           try(v.parent, null),
@@ -144,9 +146,9 @@ locals {
           local.data_defaults.overrides.prefix != null
           ? local.data_defaults.overrides.prefix
           : (
-            try(v.prefix, "-") == "-"
+            try(v.prefix, null) == null
             ? local.data_defaults.defaults.prefix
-            : v.prefix
+            : (v.prefix == "" ? null : v.prefix)
           )
       ), null)
       project_reuse = ( # type: object({...})
@@ -197,10 +199,12 @@ locals {
       )
       shared_vpc_host_config = ( # type: object({...})
         try(v.shared_vpc_host_config, null) != null
-        ? merge(
-          { service_projects = [] },
-          v.shared_vpc_host_config
-        )
+        ? {
+          enabled = v.shared_vpc_host_config.enabled
+          service_projects = coalesce(
+            try(v.shared_vpc_host_config.service_projects, null), []
+          )
+        }
         : null
       )
       shared_vpc_service_config = ( # type: object({...})
