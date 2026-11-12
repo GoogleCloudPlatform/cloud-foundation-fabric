@@ -114,7 +114,7 @@ factories_config = {
 
 Configurations defaults are stored in the `defaults.yaml` file in the dataset selected above. Before starting, edit the following attributes in the file to match your configuration.
 
-The standard datasets use the `gcp-organization-admins` alias to assign administrator roles. The alias is expanded via the `context.iam_principals` attribute in the default file, which should be set to a valid group. Also make sure that the user running the initial apply is a member.
+The standard datasets use the `gcp-organization-admins` alias to assign administrator roles. The alias is expanded via the `context.iam_principals` attribute in the default file, which should be set to a valid group. Also make sure that the user running the initial apply is a member. The same alias is used in `context.email_addresses` for the organization's essential contacts, and should be set to an address in the organization's domain to comply with the `essentialcontacts.allowedContactDomains` org policy.
 
 ```yaml
 global:
@@ -134,9 +134,12 @@ projects:
       logging: $locations:primary
       storage: $locations:primary
 context:
+  email_addresses:
+    # use an address in your organization's domain
+    gcp-organization-admins: gcp-organization-admins@example.org
   iam_principals:
     # make sure the user running apply is a member of this group
-    gcp-organization-admins: group:fabric-fast-owners@example.com
+    gcp-organization-admins: group:gcp-organization-admins@example.org
   locations:
     primary: europe-west1
 ```
@@ -150,7 +153,7 @@ Like in classic FAST, the user running the first apply cycle needs specific perm
 To quickly self-grant the above roles, run the following code snippet as the initial Organization Admin. The best approach is to use the same group used for organization admins above.
 
 ```bash
-export FAST_PRINCIPAL="group:gcp-organization-admins@example.com"
+export FAST_PRINCIPAL="group:gcp-organization-admins@example.org"
 
 # find your organization and export its id in the FAST_ORG variable
 gcloud organizations list
@@ -204,15 +207,15 @@ compute.disableSerialPortAccess                  -            SET
 ```
 
 ```tfvars
-# create or edit the 0-org-setup.auto.tfvars.file
+# create or edit the 0-org-setup.auto.tfvars file
 # do NOT include the 'constraints/' prefix, use the names matching the YAML files
 org_policies_imports = [
-  "compute.managed.restrictProtocolForwardingCreationForTypes",
-  "essentialcontacts.managed.allowedContactDomains",
+  "compute.restrictProtocolForwardingCreationForTypes",
+  "essentialcontacts.allowedContactDomains",
   "iam.allowedPolicyMemberDomains",
   "iam.automaticIamGrantsForDefaultServiceAccounts",
-  "iam.managed.disableServiceAccountKeyCreation",
-  "iam.managed.disableServiceAccountKeyUpload",
+  "iam.disableServiceAccountKeyCreation",
+  "iam.disableServiceAccountKeyUpload",
   "storage.uniformBucketLevelAccess"
 ]
 ```
@@ -223,20 +226,23 @@ Once org policies have been imported, the variable definition can be removed fro
 
 For brownfield implementations you may need to import existing organization IAM policies. These snippets can help you add existing settings into the YAML file.
 
-Scripts below require [yq](https://github.com/mikefarah/yq/) in at least version 4. It was tested using yq `v4.47.2`.
+Scripts below require [yq](https://github.com/mikefarah/yq/) in at least version 4. It was tested using yq `v4.47.2`. Conditional bindings and `deleted:` principals are skipped: conditional bindings need to be added by hand via `iam_bindings` or `iam_by_principals_conditional`.
 
-To create `iam:` part of the `/organization/.config.yaml` file, you can use following snippet:
+To create the `iam:` part of the `organization/.config.yaml` file, you can use the following snippet:
 
 ```shell
-gcloud <resource> get-iam-policy <resource name> | yq '.bindings | map({"key": .role, "value": .members}) | from_entries'
+gcloud <resource> get-iam-policy <resource name> | yq '
+.bindings | map(select(.condition == null) | {"key": .role, "value": .members | map(select(. != "deleted:*"))}) |
+map(select(.value | length > 0)) | from_entries
+'
 ```
 
-To create `iam_by_principals:` part of the factory YAML file, you can use following snippet:
+To create the `iam_by_principals:` part of the factory YAML file, you can use the following snippet:
 
 ```shell
 gcloud <resource> get-iam-policy <resource name> |  yq '
-[.bindings | .[] | .members[] as $member | { "member": $member, "role": .role}] |
-group_by(.member) | sort_by(.[0].member) | .[] | { .[0].member: map(.role)}
+[.bindings | .[] | select(.condition == null) | .members[] as $member | { "member": $member, "role": .role}] |
+map(select(.member != "deleted:*")) | group_by(.member) | sort_by(.[0].member) | .[] | { .[0].member: map(.role)}
 '
 ```
 
@@ -464,8 +470,10 @@ output_files:
     # [...]
 # static values added to context interpolation tables and used in factories
 context:
+  email_addresses:
+    gcp-organization-admins: gcp-organization-admins@example.org
   iam_principals:
-    gcp-organization-admins: group:fabric-fast-owners@example.com
+    gcp-organization-admins: group:gcp-organization-admins@example.org
 ```
 
 ### Billing account IAM and billing export
@@ -557,7 +565,7 @@ Log sinks can refer to project-level destination via different contexts.
 # example log sinks showing different destination contexts
 # file: datasets/classic/organization/.config.yaml
 logging:
-  storage_location: $locations:default
+  storage_location: $locations:primary
   sinks:
     # log bucket destination
     audit-logs:

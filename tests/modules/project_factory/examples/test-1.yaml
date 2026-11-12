@@ -502,6 +502,47 @@ values:
     project: bar-test-2
     service: storage.googleapis.com
     timeouts: null
+  module.project-factory.module.projects["test-3"].google_project.project[0]:
+    auto_create_network: false
+    billing_account: 012345-67890A-ABCDEF
+    deletion_policy: DELETE
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+      owner: foo
+    folder_id: '1234567890'
+    labels:
+      owner: foo
+    name: foo-test-3
+    org_id: null
+    project_id: tpc:foo-test-3
+    tags: null
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+      owner: foo
+    timeouts: null
+  module.project-factory.module.projects["test-3"].google_project_iam_member.service_agents["compute-system"]:
+    condition: []
+    project: tpc:foo-test-3
+    role: roles/compute.serviceAgent
+  module.project-factory.module.projects["test-3"].google_project_service.project_services["compute.googleapis.com"]:
+    deletion_policy: DELETE
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: tpc:foo-test-3
+    service: compute.googleapis.com
+    timeouts: null
+  module.project-factory.module.projects["test-4"].google_project_iam_member.service_agents["compute-system"]:
+    condition: []
+    member: serviceAccount:service-1234567890@compute-system.iam.gserviceaccount.com
+    project: foo-test-4
+    role: roles/compute.serviceAgent
+  module.project-factory.module.projects["test-4"].google_project_service.project_services["compute.googleapis.com"]:
+    deletion_policy: DELETE
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: foo-test-4
+    service: compute.googleapis.com
+    timeouts: null
   ? module.project-factory.module.service-accounts-iam["test-2/bindings-additive-only"].google_service_account_iam_member.bindings["key-admin"]
   : condition: []
     member: user:user1@example.com
@@ -576,9 +617,9 @@ counts:
   google_logging_log_view: 1
   google_logging_log_view_iam_binding: 1
   google_logging_project_bucket_config: 1
-  google_project: 3
-  google_project_iam_member: 7
-  google_project_service: 10
+  google_project: 4
+  google_project_iam_member: 9
+  google_project_service: 12
   google_project_service_identity: 3
   google_pubsub_topic: 1
   google_pubsub_topic_iam_binding: 1
@@ -592,8 +633,8 @@ counts:
   google_tags_tag_key: 1
   google_tags_tag_value: 1
   google_tags_tag_value_iam_binding: 1
-  modules: 26
-  resources: 61
+  modules: 28
+  resources: 66
   terraform_data: 2
 
 outputs:

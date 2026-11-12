@@ -190,7 +190,10 @@ module "organization-iam" {
   )
   logging_data_access = try(local.organization.data_access_logs, {})
   logging_sinks       = try(local.organization.logging.sinks, {})
-  pam_entitlements    = try(local.organization.pam_entitlements, {})
+  model_armor_floor_setting = try(
+    local.organization.model_armor_floor_setting, null
+  )
+  pam_entitlements = try(local.organization.pam_entitlements, {})
   context_aware_access_bindings = lookup(
     local.organization, "context_aware_access_bindings", {}
   )

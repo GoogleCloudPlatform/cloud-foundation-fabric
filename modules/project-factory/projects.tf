@@ -85,7 +85,7 @@ locals {
   project_ids = {
     for k, v in module.projects : k => v.project_id
   }
-  projects_input = merge(var.projects, local._projects_output)
+  projects_input = local._projects_output
   project_numbers = {
     for k, v in module.projects : k => v.number
   }

@@ -23,3 +23,4 @@ tests:
   health-checks-ssl:
   health-checks-tcp:
   urlmaps:
+  cache-policy:
