@@ -19,6 +19,7 @@ The module deploys Gemini Enterprise Agent Platform (GEAP) - Agent Runtime and r
 - [Serialized Object Deployment](#serialized-object-deployment)
 - [Unmanaged deployments](#unmanaged-deployments)
 - [Identities](#identities)
+  - [Restrict direct model inference by agent identities](#restrict-direct-model-inference-by-agent-identities)
 - [Private networking: setup PSC-I](#private-networking-setup-psc-i)
 - [Attach to Agent Gateways](#attach-to-agent-gateways)
 - [Specify an encryption key](#specify-an-encryption-key)
@@ -215,6 +216,63 @@ module "agent_runtime" {
 }
 # tftest inventory=sa-external.yaml
 ```
+
+### Restrict direct model inference by agent identities
+
+When the first agent with an agent identity is deployed in a project, the platform binds `roles/aiplatform.agentDefaultAccess` to the principal set of all agents in that project (`principalSet://agents.global.org-ORG_ID.system.id.goog/attribute.platformContainer/aiplatform/projects/PROJECT_NUMBER`). The role includes `aiplatform.endpoints.predict`, so every agent in the project can call models directly. The binding is not removed when the agents are deleted.
+
+To allow inference only for approved agents, attach an IAM deny policy to the project that denies `aiplatform.googleapis.com/endpoints.predict` to the project's agent principal set, and list the approved agents in `exception_principals`. The module's `identity` output returns the agent's `principal://` identifier.
+
+```hcl
+module "project" {
+  source = "./fabric/modules/project"
+  name   = var.project_id
+  project_reuse = {
+    use_data_source = false
+    attributes = {
+      name   = var.project_id
+      number = var.project_number
+    }
+  }
+  iam_deny_policies = {
+    deny-agent-inference = {
+      display_name = "Deny model inference to non-approved agents"
+      rules = [{
+        description = "Only approved agents can call models."
+        denied_principals = [
+          "principalSet://agents.global.org-${trimprefix(var.organization_id, "organizations/")}.system.id.goog/attribute.platformContainer/aiplatform/projects/${var.project_number}"
+        ]
+        denied_permissions   = ["aiplatform.googleapis.com/endpoints.predict"]
+        exception_principals = [module.agent_runtime.identity]
+      }]
+    }
+  }
+}
+
+module "agent_runtime" {
+  source     = "./fabric/modules/geap-agent-runtime"
+  name       = "my-agent"
+  project_id = var.project_id
+  region     = var.region
+
+  agent_runtime_config = {
+    agent_framework = "google-adk"
+  }
+
+  deployment_config = {
+    source_files_config = {
+      source_path = "assets/src/source.tar.gz"
+    }
+  }
+}
+# tftest inventory=deny-inference.yaml
+```
+
+Calls from non-approved agents then fail with `PERMISSION_DENIED`, and the error message names the IAM deny policy. Note that:
+
+- creating deny policies requires `roles/iam.denyAdmin`, which is not included in `roles/iam.securityAdmin`;
+- deny policies can take several minutes to take effect;
+- the same rule can be set on a folder through the `iam_deny_policies` variable of the [folder module](../folder/), using `principalSet://agents.global.org-ORG_ID.system.id.goog/*` to match all agent identities in the organization.
 
 ## Private networking: setup PSC-I
 
