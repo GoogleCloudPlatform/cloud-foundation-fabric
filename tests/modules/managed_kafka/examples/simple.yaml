@@ -30,7 +30,8 @@ values:
       environment: development
     location: europe-west8
     project: project-id
-    rebalance_config: []
+    rebalance_config:
+    - mode: AUTO_REBALANCE_ON_SCALE_UP
     terraform_labels:
       environment: development
       goog-terraform-provisioned: 'true'

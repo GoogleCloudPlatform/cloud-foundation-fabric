@@ -33,6 +33,8 @@ module "kafka-cluster" {
     var.subnets.primary.id
   ]
 
+  rebalance_mode = "AUTO_REBALANCE_ON_SCALE_UP"
+
   labels = {
     environment = "development"
   }
