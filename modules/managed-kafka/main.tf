@@ -38,7 +38,7 @@ resource "google_managed_kafka_cluster" "cluster" {
   dynamic "rebalance_config" {
     for_each = var.rebalance_mode == null ? [] : [""]
     content {
-      mode = var.rebalance_config.mode
+      mode = var.rebalance_mode
     }
   }
 }
