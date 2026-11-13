@@ -33,7 +33,6 @@ context = {
 }
 create_template = {}
 encryption = {
-  encrypt_boot      = true
   kms_key_self_link = "$kms_keys:test"
 }
 iam = {
