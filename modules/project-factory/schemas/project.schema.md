@@ -211,6 +211,44 @@
   - **`^[a-zA-Z0-9_-]+$`**: *reference([logging_sink](#refs-logging_sink))*
 - **metric_scopes**: *array*
   - items: *string*
+- **model_armor_floor_setting**: *object*
+  <br>*additional properties: false*
+  - **enforce**: *boolean*
+  - **multi_language_detection**: *boolean*
+  - ⁺**filters**: *object*
+    <br>*additional properties: false*
+    - **malicious_uris**: *boolean*
+    - **pi_and_jailbreak**: *object*
+      <br>*additional properties: false*
+      - **confidence_level**: *string*
+        <br>*enum: ['LOW_AND_ABOVE', 'MEDIUM_AND_ABOVE', 'HIGH']*
+    - **rai**: *object*
+      <br>*additional properties: false*
+      - **DANGEROUS**: *string*
+        <br>*enum: ['LOW_AND_ABOVE', 'MEDIUM_AND_ABOVE', 'HIGH']*
+      - **HARASSMENT**: *string*
+        <br>*enum: ['LOW_AND_ABOVE', 'MEDIUM_AND_ABOVE', 'HIGH']*
+      - **HATE_SPEECH**: *string*
+        <br>*enum: ['LOW_AND_ABOVE', 'MEDIUM_AND_ABOVE', 'HIGH']*
+      - **SEXUALLY_EXPLICIT**: *string*
+        <br>*enum: ['LOW_AND_ABOVE', 'MEDIUM_AND_ABOVE', 'HIGH']*
+    - **sdp**: *object*
+      <br>*additional properties: false*
+      - **basic**: *boolean*
+      - **inspect_template**: *string*
+      - **deidentify_template**: *string*
+  - **integrated_services**: *object*
+    <br>*additional properties: false*
+    - **ai_platform**: *object*
+      <br>*additional properties: false*
+      - **mode**: *string*
+        <br>*enum: ['inspect_only', 'inspect_and_block']*
+      - **cloud_logging**: *boolean*
+    - **google_mcp_server**: *object*
+      <br>*additional properties: false*
+      - **mode**: *string*
+        <br>*enum: ['inspect_only', 'inspect_and_block']*
+      - **cloud_logging**: *boolean*
 - **name**: *string*
 - **descriptive_name**: *string*
 - **dns_threat_detector**: *object*
