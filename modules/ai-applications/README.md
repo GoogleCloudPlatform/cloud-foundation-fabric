@@ -9,6 +9,7 @@ This module handles the creation of [AI Applications](https://cloud.google.com/g
   * [Examples](#examples)
     * [Chat Engine](#chat-engine)
     * [Search Engine](#search-engine)
+    * [Gemini Enterprise](#gemini-enterprise)
     * [Deploy your service into a region](#deploy-your-service-into-a-region)
     * [Reference Existing Data Sources](#reference-existing-data-sources)
     * [Using multiple data stores](#using-multiple-data-stores)
@@ -231,6 +232,146 @@ module "ai-applications" {
 # tftest modules=1 resources=2
 ```
 
+### Gemini Enterprise
+
+This example provisions a regional Gemini Enterprise (`APP_TYPE_INTRANET`) application with identity ACL configuration, automatic license seat registration via `default_user_store`, a Cloud Storage knowledge connector (`auto_generate_ids = false` for unstructured documents), a web app widget, and resource-level `roles/discoveryengine.agentspaceUser` IAM bindings.
+
+```hcl
+module "gemini-enterprise" {
+  source     = "./fabric/modules/ai-applications"
+  name       = "gemini-enterprise-prod"
+  project_id = var.project_id
+  location   = "us"
+  acl_config = {
+    idp_type = "GSUITE"
+  }
+  license_config = {
+    create_free_trial            = true
+    enable_license_auto_register = true
+  }
+  data_stores_configs = {
+    knowledge-store = {
+      content_config              = "CONTENT_REQUIRED"
+      create_advanced_site_search = false
+      display_name                = "Enterprise Knowledge Store"
+      solution_types              = ["SOLUTION_TYPE_SEARCH"]
+      document_processing_config = {
+        chunking_config = {
+          layout_based_chunking_config = {
+            chunk_size                = 500
+            include_ancestor_headings = true
+          }
+        }
+        default_parsing_config = {
+          digital_parsing_config = true
+        }
+      }
+    }
+    reserved-store = {
+      content_config              = "NO_CONTENT"
+      create_advanced_site_search = false
+      display_name                = "Reserved Secondary Store"
+      solution_types              = ["SOLUTION_TYPE_SEARCH"]
+    }
+  }
+  data_connectors_configs = {
+    gcs-corpus = {
+      collection_display_name = "Cloud Storage Knowledge Connector"
+      connector_modes         = ["DATA_INGESTION"]
+      data_source             = "gcs"
+      json_params = jsonencode({
+        instance_uris = ["gs://my-enterprise-corpus/docs/*"]
+      })
+      entities = [
+        {
+          entity_name = "gcs_store"
+          params = jsonencode({
+            data_schema       = "content"
+            auto_generate_ids = false
+          })
+        }
+      ]
+    }
+    google-drive = {
+      collection_display_name = "Google Drive"
+      connector_modes         = ["FEDERATED"]
+      data_source             = "google_drive"
+      refresh_interval        = "0s"
+      auto_run_disabled       = true
+      entities = [
+        { entity_name = "google_drive" }
+      ]
+    }
+    google-mail = {
+      collection_display_name = "Gmail"
+      connector_modes         = ["FEDERATED"]
+      data_source             = "google_mail"
+      refresh_interval        = "0s"
+      auto_run_disabled       = true
+      entities = [
+        { entity_name = "google_mail" }
+      ]
+    }
+    google-calendar = {
+      collection_display_name = "Google Calendar"
+      connector_modes         = ["FEDERATED"]
+      data_source             = "google_calendar"
+      refresh_interval        = "0s"
+      auto_run_disabled       = true
+      entities = [
+        { entity_name = "google_calendar" }
+      ]
+    }
+    google-chat = {
+      collection_display_name = "Google Chat"
+      connector_modes         = ["FEDERATED", "ACTIONS"]
+      data_source             = "google_chat"
+      refresh_interval        = "0s"
+      auto_run_disabled       = true
+      action_config = {
+        create_bap_connection = true
+        action_params = {
+          auth_type = "OAUTH"
+          auth_key  = "OAuth"
+        }
+      }
+      entities = [
+        { entity_name = "google_chat" }
+      ]
+    }
+  }
+  engines_configs = {
+    data_store_ids = ["knowledge-store", "reserved-store"]
+    search_engine_config = {
+      app_type                       = "APP_TYPE_INTRANET"
+      company_name                   = "Example Enterprise"
+      display_name                   = "Gemini Enterprise (Production)"
+      enable_private_knowledge_graph = true
+      search_add_ons                 = ["SEARCH_ADD_ON_LLM"]
+      search_tier                    = "SEARCH_TIER_ENTERPRISE"
+      features = {
+        "agent-sharing-without-admin-approval" = "FEATURE_STATE_OFF"
+        "disable-agent-sharing"                = "FEATURE_STATE_OFF"
+        "enable-end-user-sharing-with-groups"  = "FEATURE_STATE_OFF"
+        "model-selector"                       = "FEATURE_STATE_ON"
+        "no-code-agent-builder"                = "FEATURE_STATE_ON"
+        "notebook-lm"                          = "FEATURE_STATE_ON"
+        "personalization-suggested-highlights" = "FEATURE_STATE_ON"
+        "prompt-gallery"                       = "FEATURE_STATE_ON"
+        "workflow-agents"                      = "FEATURE_STATE_ON"
+      }
+      iam = {
+        "roles/discoveryengine.agentspaceUser" = ["domain:example.com"]
+      }
+      widget_config = {
+        enable_web_app = true
+      }
+    }
+  }
+}
+# tftest modules=1 resources=13 inventory=gemini-enterprise.yaml
+```
+
 ### Data stores
 
 You can create and connect from your engines multiple data stores.
@@ -372,14 +513,17 @@ module "ai-applications" {
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [name](variables.tf#L506) | The name of the resources. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L512) | The ID of the project where the data stores and the agents will be created. | <code>string</code> | ✓ |  |
-| [chat_agent_security_configs](variables.tf#L17) | The DLP security configurations for (Dialogflow CX) chat agents. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [context](variables.tf#L305) | Context-specific interpolations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [data_stores_configs](variables.tf#L316) | The ai-applications datastore configurations. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [encryption_configs](variables.tf#L422) | CMEK configurations registered for the project, keyed by location (e.g. us, eu). Data stores and engines are created after keys are registered. KMS key format: 'projects/[PROJECT]/locations/[LOCATION]/keyRings/[RING]/cryptoKeys/[KEY_NAME]'. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [engines_configs](variables.tf#L433) | The AI applications engines configurations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [location](variables.tf#L500) | Location where the data stores and agents will be created. | <code>string</code> |  | <code>&#34;global&#34;</code> |
+| [name](variables.tf#L608) | The name of the resources. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L614) | The ID of the project where the data stores and the agents will be created. | <code>string</code> | ✓ |  |
+| [acl_config](variables.tf#L17) | Regional identity ACL configuration for Gemini Enterprise (GSUITE or THIRD_PARTY Workforce Identity Federation). | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [chat_agent_security_configs](variables.tf#L41) | The DLP security configurations for (Dialogflow CX) chat agents. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [context](variables.tf#L329) | Context-specific interpolations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [data_connectors_configs](variables.tf#L341) | Discovery Engine data connector configurations (1P/3P ingestion, federated search, and actions). | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [data_stores_configs](variables.tf#L382) | The ai-applications datastore configurations. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [encryption_configs](variables.tf#L488) | CMEK configurations registered for the project, keyed by location (e.g. us, eu). Data stores and engines are created after keys are registered. KMS key format: 'projects/[PROJECT]/locations/[LOCATION]/keyRings/[RING]/cryptoKeys/[KEY_NAME]'. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [engines_configs](variables.tf#L499) | The AI applications engines configurations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [license_config](variables.tf#L587) | Gemini Enterprise license configuration and automatic seat assignment via default_user_store. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [location](variables.tf#L602) | Location where the data stores and agents will be created. | <code>string</code> |  | <code>&#34;global&#34;</code> |
 
 ## Outputs
 
@@ -389,8 +533,11 @@ module "ai-applications" {
 | [chat_agent_id](outputs.tf#L22) | The id of the (Dialogflow CX) chat agent. |  |
 | [chat_engine](outputs.tf#L27) | The chat engine object. |  |
 | [chat_engine_id](outputs.tf#L32) | The id of the chat engine. |  |
-| [data_store_ids](outputs.tf#L37) | The ids of the data stores created. |  |
-| [data_stores](outputs.tf#L45) | The data stores resources created. |  |
-| [search_engine](outputs.tf#L50) | The search engines object. |  |
-| [search_engine_id](outputs.tf#L55) | The id of the search engine. |  |
+| [data_connectors](outputs.tf#L37) | The Discovery Engine data connectors created. |  |
+| [data_store_ids](outputs.tf#L42) | The ids of the data stores created. |  |
+| [data_stores](outputs.tf#L50) | The data stores resources created. |  |
+| [search_engine](outputs.tf#L55) | The search engines object. |  |
+| [search_engine_id](outputs.tf#L60) | The id of the search engine. |  |
+| [user_store](outputs.tf#L65) | The Discovery Engine default user store object. |  |
+| [widget_config](outputs.tf#L70) | The Discovery Engine widget configuration object. |  |
 <!-- END TFDOC -->

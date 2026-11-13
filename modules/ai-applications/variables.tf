@@ -14,6 +14,30 @@
  * limitations under the License.
  */
 
+variable "acl_config" {
+  description = "Regional identity ACL configuration for Gemini Enterprise (GSUITE or THIRD_PARTY Workforce Identity Federation)."
+  type = object({
+    idp_type            = string
+    workforce_pool_name = optional(string)
+  })
+  default = null
+  validation {
+    condition = (
+      var.acl_config == null
+      ? true
+      : contains(["GSUITE", "THIRD_PARTY"], var.acl_config.idp_type)
+    )
+    error_message = "acl_config.idp_type must be one of [GSUITE, THIRD_PARTY]."
+  }
+  validation {
+    condition = (
+      try(var.acl_config.idp_type, null) != "THIRD_PARTY"
+      || try(var.acl_config.workforce_pool_name, null) != null
+    )
+    error_message = "acl_config.workforce_pool_name is required when acl_config.idp_type is THIRD_PARTY."
+  }
+}
+
 variable "chat_agent_security_configs" {
   description = "The DLP security configurations for (Dialogflow CX) chat agents."
   type = object({
@@ -305,10 +329,52 @@ variable "chat_agent_security_configs" {
 variable "context" {
   description = "Context-specific interpolations."
   type = object({
-    kms_keys    = optional(map(string), {})
-    locations   = optional(map(string), {})
-    project_ids = optional(map(string), {})
+    iam_principals = optional(map(string), {})
+    kms_keys       = optional(map(string), {})
+    locations      = optional(map(string), {})
+    project_ids    = optional(map(string), {})
   })
+  default  = {}
+  nullable = false
+}
+
+variable "data_connectors_configs" {
+  description = "Discovery Engine data connector configurations (1P/3P ingestion, federated search, and actions)."
+  type = map(object({
+    action_config = optional(object({
+      action_params         = optional(map(string), {})
+      create_bap_connection = optional(bool, true)
+    }))
+    auto_run_disabled = optional(bool, false)
+    bap_config = optional(object({
+      enabled_actions           = optional(list(string), [])
+      supported_connector_modes = optional(list(string), ["ACTIONS"])
+    }))
+    collection_display_name = string
+    collection_id           = optional(string)
+    connector_modes         = optional(list(string), ["DATA_INGESTION"])
+    data_source             = string
+    destination_configs = optional(list(object({
+      key = string
+      destinations = optional(list(object({
+        host = optional(string)
+        port = optional(number)
+      })), [])
+      params = optional(string)
+    })), [])
+    entities = optional(list(object({
+      data_store            = optional(string)
+      entity_name           = string
+      key_property_mappings = optional(map(string))
+      params                = optional(string)
+    })), [])
+    json_params      = optional(string)
+    kms_key          = optional(string)
+    location         = optional(string)
+    params           = optional(map(string))
+    refresh_interval = optional(string, "86400s")
+    sync_mode        = optional(string, "PERIODIC")
+  }))
   default  = {}
   nullable = false
 }
@@ -397,7 +463,7 @@ variable "data_stores_configs" {
   validation {
     condition = alltrue(flatten([
       for k, v in var.data_stores_configs : [
-        for po_k, po_v in try(v.document_processing_config.parsing_config_overrides, {}) : contains([
+        for po_k, po_v in coalesce(try(v.document_processing_config.parsing_config_overrides, null), {}) : contains([
           "docx",
           "html",
           "pdf"
@@ -463,8 +529,19 @@ variable "engines_configs" {
     # This can override var.location and the datastores location
     location = optional(string)
     search_engine_config = optional(object({
-      search_add_ons = optional(list(string), [])
-      search_tier    = optional(string)
+      app_type                       = optional(string)
+      company_name                   = optional(string)
+      display_name                   = optional(string)
+      enable_private_knowledge_graph = optional(bool)
+      features                       = optional(map(string), {})
+      iam                            = optional(map(list(string)), {})
+      kms_key                        = optional(string)
+      search_add_ons                 = optional(list(string), [])
+      search_tier                    = optional(string)
+      widget_config = optional(object({
+        enable_web_app                   = optional(bool, true)
+        workforce_identity_pool_provider = optional(string)
+      }))
     }))
   })
   nullable = false
@@ -477,6 +554,16 @@ variable "engines_configs" {
       : length(var.engines_configs.data_store_ids) > 0 ? true : false
     )
     error_message = "You must specify at least one data store id for each engine."
+  }
+  validation {
+    condition = alltrue([
+      try(var.engines_configs.search_engine_config.app_type, null) == null
+      ? true : contains(
+        ["APP_TYPE_INTRANET", "APP_TYPE_UNSPECIFIED"],
+        var.engines_configs.search_engine_config.app_type
+      )
+    ])
+    error_message = "engines_configs.search_engine_config.app_type must be one of [APP_TYPE_INTRANET, APP_TYPE_UNSPECIFIED]."
   }
   validation {
     condition = alltrue([
@@ -495,6 +582,21 @@ variable "engines_configs" {
     ])
     error_message = "engines_configs.search_engine_config.search_tier must be one of [SEARCH_TIER_ENTERPRISE, SEARCH_TIER_STANDARD]."
   }
+}
+
+variable "license_config" {
+  description = "Gemini Enterprise license configuration and automatic seat assignment via default_user_store."
+  type = object({
+    create_free_trial                  = optional(bool, false)
+    enable_expired_license_auto_update = optional(bool, true)
+    enable_license_auto_register       = optional(bool, true)
+    license_config_id                  = optional(string, "free_trial_gemini")
+    license_config_name                = optional(string)
+    license_count                      = optional(number, 50)
+    subscription_term                  = optional(string, "SUBSCRIPTION_TERM_ONE_MONTH")
+    subscription_tier                  = optional(string, "SUBSCRIPTION_TIER_SEARCH_AND_ASSISTANT")
+  })
+  default = null
 }
 
 variable "location" {

@@ -1,0 +1,97 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# yaml-language-server: $schema=../../stages/2-project-factory/schemas/project.schema.json
+
+# FAST-compliant project definition for Gemini Enterprise (Production +
+# Connector Validation apps, CMEK, Data Access Audit Logs, Model Armor
+# floor settings, and Discovery Engine managed Org Policies).
+
+# TODO: edit and uncomment the following line to create the project in a folder
+# parent: $folder_ids:ai-workloads
+
+# project id can be customized here if file name cannot be changed
+# name: prod-ai-gemini-enterprise-0
+
+data_access_logs:
+  aiplatform.googleapis.com:
+    ADMIN_READ: {}
+    DATA_READ: {}
+    DATA_WRITE: {}
+  discoveryengine.googleapis.com:
+    ADMIN_READ: {}
+    DATA_READ: {}
+    DATA_WRITE: {}
+
+services:
+  - aiplatform.googleapis.com
+  - cloudkms.googleapis.com
+  - cloudresourcemanager.googleapis.com
+  - discoveryengine.googleapis.com
+  - iam.googleapis.com
+  - logging.googleapis.com
+  - modelarmor.googleapis.com
+  - monitoring.googleapis.com
+  - orgpolicy.googleapis.com
+  - secretmanager.googleapis.com
+  - serviceusage.googleapis.com
+  - storage.googleapis.com
+
+automation:
+  # TODO: edit the automation project and optionally edit resource names
+  project: $project_ids:iac-0
+  service_accounts:
+    rw:
+      description: Read/write automation service account for Gemini Enterprise.
+  bucket:
+    name: iac-stage-state
+    create: false
+    managed_folders:
+      gemini-enterprise:
+        iam:
+          roles/storage.objectAdmin:
+            - $iam_principals:service_accounts/gemini-enterprise/automation/rw
+
+iam:
+  roles/viewer:
+    - automation/rw
+  roles/discoveryengine.admin:
+    - automation/rw
+  roles/cloudkms.admin:
+    - automation/rw
+  roles/cloudkms.cryptoKeyEncrypterDecrypter:
+    - $service_agents:discoveryengine
+  roles/modelarmor.admin:
+    - automation/rw
+  roles/orgpolicy.policyAdmin:
+    - automation/rw
+  roles/secretmanager.secretAccessor:
+    - automation/rw
+  roles/storage.admin:
+    - automation/rw
+
+org_policies:
+  discoveryengine.managed.disableCustomMcpServerConnector:
+    rules:
+      - enforce: false
+  discoveryengine.managed.allowedDataSources:
+    rules:
+      - enforce: true
+        parameters: >-
+          {"allowedDataSources":["gcs","bigquery","google_drive","google_mail","google_calendar","google_chat","gdrive","gmail","jira","confluence","slack","custom_mcp"],"enforcedProjects":["projects/prod-ai-gemini-enterprise-0/"]}
+  discoveryengine.managed.allowedEgressFqdns:
+    rules:
+      - enforce: true
+        parameters: >-
+          {"allowedEgressFqdns":["example.atlassian.net","auth.atlassian.com","api.atlassian.com","mcp.internal.example.com"],"enforcedProjects":["projects/prod-ai-gemini-enterprise-0/"]}
