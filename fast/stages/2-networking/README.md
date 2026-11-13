@@ -653,13 +653,14 @@ Internally created resources are mapped to context namespaces, and use specific 
 
 | name | description | sensitive |
 |---|---|:---:|
-| [host_project_ids](outputs.tf#L80) | Project IDs. |  |
-| [host_project_numbers](outputs.tf#L85) | Project numbers. |  |
-| [network_attachment_ids](outputs.tf#L90) | PSC network attachment ids. |  |
-| [security_policies](outputs.tf#L95) | Hierarchical security policy ids. |  |
-| [subnet_ips](outputs.tf#L100) | Subnet IP ranges. |  |
-| [subnet_proxy_only_self_links](outputs.tf#L105) | Subnet proxy-only self-links. |  |
-| [subnet_psc_self_links](outputs.tf#L110) | Subnet PSC self-links. |  |
-| [subnet_self_links](outputs.tf#L115) | Subnet self-links. |  |
-| [vpc_self_links](outputs.tf#L120) | VPC self-links. |  |
+| [host_project_ids](outputs.tf#L85) | Project IDs. |  |
+| [host_project_numbers](outputs.tf#L90) | Project numbers. |  |
+| [network_attachment_ids](outputs.tf#L95) | PSC network attachment ids. |  |
+| [security_policies](outputs.tf#L100) | Hierarchical security policy ids. |  |
+| [subnet_ips](outputs.tf#L105) | Subnet IP ranges. |  |
+| [subnet_private_nat_self_links](outputs.tf#L110) | Subnet private NAT self-links. |  |
+| [subnet_proxy_only_self_links](outputs.tf#L115) | Subnet proxy-only self-links. |  |
+| [subnet_psc_self_links](outputs.tf#L120) | Subnet PSC self-links. |  |
+| [subnet_self_links](outputs.tf#L125) | Subnet self-links. |  |
+| [vpc_self_links](outputs.tf#L130) | VPC self-links. |  |
 <!-- END TFDOC -->
