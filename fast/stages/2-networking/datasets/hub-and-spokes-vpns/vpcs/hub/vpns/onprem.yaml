@@ -50,7 +50,8 @@ tunnels:
       #   - import-drop-all
     bgp_session_range: "169.254.128.2/30"
     peer_external_gateway_interface: 0
-    shared_secret: "mySecret"
+    shared_secret:
+      value: "mySecret"
     vpn_gateway_interface: 0
   remote-1:
     bgp_peer:
@@ -71,5 +72,6 @@ tunnels:
       #     "199.36.153.4/30": "restricted-googleapis-com"
     bgp_session_range: "169.254.128.6/30"
     peer_external_gateway_interface: 0
-    shared_secret: "mySecret"
+    shared_secret:
+      value: "mySecret"
     vpn_gateway_interface: 1

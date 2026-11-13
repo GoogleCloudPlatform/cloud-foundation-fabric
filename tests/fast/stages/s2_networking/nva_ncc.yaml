@@ -4828,6 +4828,11 @@ outputs:
     transit:
       europe-west1/transit-primary: 10.64.16.0/24
       europe-west8/transit-secondary: 10.64.17.0/24
+  subnet_private_nat_self_links:
+    dev: {}
+    prod: {}
+    routing: {}
+    transit: {}
   subnet_proxy_only_self_links:
     dev: {}
     prod: {}

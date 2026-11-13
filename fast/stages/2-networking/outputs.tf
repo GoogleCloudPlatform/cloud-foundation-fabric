@@ -31,6 +31,11 @@ locals {
     subnet_self_links = {
       for vpc_key, vpc in module.vpc-factory.vpcs : vpc_key => vpc.subnet_ids
     }
+    subnet_private_nat_self_links = {
+      for vpc_key, vpc in module.vpc-factory.vpcs : vpc_key => {
+        for subnet_key, subnet in vpc.subnets_private_nat : subnet_key => subnet.id
+      }
+    }
     subnet_proxy_only_self_links = {
       for vpc_key, vpc in module.vpc-factory.vpcs : vpc_key => {
         for subnet_key, subnet in vpc.subnets_proxy_only : subnet_key => subnet.id
@@ -100,6 +105,11 @@ output "security_policies" {
 output "subnet_ips" {
   description = "Subnet IP ranges."
   value       = local.tfvars.subnet_ips
+}
+
+output "subnet_private_nat_self_links" {
+  description = "Subnet private NAT self-links."
+  value       = local.tfvars.subnet_private_nat_self_links
 }
 
 output "subnet_proxy_only_self_links" {

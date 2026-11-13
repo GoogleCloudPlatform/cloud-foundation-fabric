@@ -27,6 +27,17 @@ locals {
     }
   }
   secret = random_id.secret.b64_url
+  shared_secrets = {
+    for k, v in var.tunnels : k => (
+      v.shared_secret == null
+      ? local.secret
+      : (
+        v.shared_secret.path == null
+        ? v.shared_secret.value
+        : file(pathexpand(v.shared_secret.path))
+      )
+    )
+  }
 }
 
 resource "google_compute_address" "gateway" {
@@ -101,8 +112,18 @@ resource "google_compute_vpn_tunnel" "tunnels" {
   local_traffic_selector  = each.value.traffic_selectors.local
   remote_traffic_selector = each.value.traffic_selectors.remote
   ike_version             = each.value.ike_version
-  shared_secret           = coalesce(each.value.shared_secret, local.secret)
-  target_vpn_gateway      = google_compute_vpn_gateway.gateway.self_link
+  shared_secret = (
+    try(each.value.shared_secret.wo_version, null) != null
+    ? null
+    : local.shared_secrets[each.key]
+  )
+  shared_secret_wo = (
+    try(each.value.shared_secret.wo_version, null) == null
+    ? null
+    : local.shared_secrets[each.key]
+  )
+  shared_secret_wo_version = try(each.value.shared_secret.wo_version, null)
+  target_vpn_gateway       = google_compute_vpn_gateway.gateway.self_link
 
   dynamic "cipher_suite" {
     for_each = each.value.cipher_suite != null ? [each.value.cipher_suite] : []

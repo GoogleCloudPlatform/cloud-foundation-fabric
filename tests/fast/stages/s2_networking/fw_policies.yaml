@@ -88,6 +88,7 @@ outputs:
   host_project_ids: {}
   host_project_numbers: {}
   subnet_ips: {}
+  subnet_private_nat_self_links: {}
   subnet_proxy_only_self_links: {}
   subnet_psc_self_links: {}
   subnet_self_links: {}

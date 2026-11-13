@@ -690,6 +690,135 @@
         "type": "string"
       }
     },
+    "model_armor_floor_setting": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "filters"
+      ],
+      "properties": {
+        "enforce": {
+          "type": "boolean"
+        },
+        "multi_language_detection": {
+          "type": "boolean"
+        },
+        "filters": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "malicious_uris": {
+              "type": "boolean"
+            },
+            "pi_and_jailbreak": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "confidence_level": {
+                  "type": "string",
+                  "enum": [
+                    "LOW_AND_ABOVE",
+                    "MEDIUM_AND_ABOVE",
+                    "HIGH"
+                  ]
+                }
+              }
+            },
+            "rai": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "DANGEROUS": {
+                  "type": "string",
+                  "enum": [
+                    "LOW_AND_ABOVE",
+                    "MEDIUM_AND_ABOVE",
+                    "HIGH"
+                  ]
+                },
+                "HARASSMENT": {
+                  "type": "string",
+                  "enum": [
+                    "LOW_AND_ABOVE",
+                    "MEDIUM_AND_ABOVE",
+                    "HIGH"
+                  ]
+                },
+                "HATE_SPEECH": {
+                  "type": "string",
+                  "enum": [
+                    "LOW_AND_ABOVE",
+                    "MEDIUM_AND_ABOVE",
+                    "HIGH"
+                  ]
+                },
+                "SEXUALLY_EXPLICIT": {
+                  "type": "string",
+                  "enum": [
+                    "LOW_AND_ABOVE",
+                    "MEDIUM_AND_ABOVE",
+                    "HIGH"
+                  ]
+                }
+              }
+            },
+            "sdp": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "basic": {
+                  "type": "boolean"
+                },
+                "inspect_template": {
+                  "type": "string"
+                },
+                "deidentify_template": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "integrated_services": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "ai_platform": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "enum": [
+                    "inspect_only",
+                    "inspect_and_block"
+                  ]
+                },
+                "cloud_logging": {
+                  "type": "boolean"
+                }
+              }
+            },
+            "google_mcp_server": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "enum": [
+                    "inspect_only",
+                    "inspect_and_block"
+                  ]
+                },
+                "cloud_logging": {
+                  "type": "boolean"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "name": {
       "type": "string"
     },

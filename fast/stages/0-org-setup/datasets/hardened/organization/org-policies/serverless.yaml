@@ -82,6 +82,10 @@ run.managed.disableEphemeralDisk:
   rules:
     - enforce: true
 
+run.managed.disableInlinedSource:
+  rules:
+    - enforce: true
+
 run.managed.disableJobsEphemeralDisk:
   rules:
     - enforce: true

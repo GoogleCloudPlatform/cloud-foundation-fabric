@@ -178,11 +178,23 @@ variable "tunnels" {
     peer_router_interface_name      = optional(string)
     peer_gateway                    = optional(string, "default")
     router                          = optional(string)
-    shared_secret                   = optional(string)
-    vpn_gateway_interface           = number
+    shared_secret = optional(object({
+      value      = optional(string)
+      path       = optional(string)
+      wo_version = optional(number)
+    }))
+    vpn_gateway_interface = number
   }))
   default  = {}
   nullable = false
+
+  validation {
+    condition = alltrue([
+      for k, v in var.tunnels :
+      try(v.shared_secret.value, null) == null || try(v.shared_secret.path, null) == null
+    ])
+    error_message = "Only one of shared_secret.value and shared_secret.path can be set."
+  }
 }
 
 variable "vpn_gateway" {

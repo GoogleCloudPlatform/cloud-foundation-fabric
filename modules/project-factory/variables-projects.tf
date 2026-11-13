@@ -493,6 +493,32 @@ variable "projects" {
     })), {})
     logging_exclusions = optional(map(string), {})
     metric_scopes      = optional(list(string))
+    model_armor_floor_setting = optional(object({
+      enforce                  = optional(bool)
+      multi_language_detection = optional(bool)
+      filters = object({
+        malicious_uris = optional(bool)
+        pi_and_jailbreak = optional(object({
+          confidence_level = optional(string)
+        }))
+        rai = optional(map(string))
+        sdp = optional(object({
+          basic               = optional(bool)
+          inspect_template    = optional(string)
+          deidentify_template = optional(string)
+        }))
+      })
+      integrated_services = optional(object({
+        ai_platform = optional(object({
+          mode          = optional(string)
+          cloud_logging = optional(bool)
+        }))
+        google_mcp_server = optional(object({
+          mode          = optional(string)
+          cloud_logging = optional(bool)
+        }))
+      }))
+    }))
     pam_entitlements = optional(map(object({
       max_request_duration = string
       eligible_users       = list(string)

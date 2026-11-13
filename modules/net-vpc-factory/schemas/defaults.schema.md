@@ -29,7 +29,7 @@
 - **vpcs**: *object*
   <br>*additional properties: false*
   - **auto_create_subnetworks**: *boolean*
-  - **delete_default_route_on_create**: *boolean*
+  - **delete_default_routes_on_create**: *boolean*
   - **mtu**: *number*
     <br>*default: 1500*
 
