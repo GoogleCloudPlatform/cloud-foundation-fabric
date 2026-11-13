@@ -18,6 +18,7 @@
   - [Cloud NAT and Routers](#cloud-nat-and-routers)
   - [Network Virtual Appliances (NVAs)](#network-virtual-appliances-nvas)
   - [VPC Connectivity](#vpc-connectivity)
+    - [VPN shared secrets](#vpn-shared-secrets)
 - [Context-based interpolation](#context-based-interpolation)
 - [Files](#files)
 - [Variables](#variables)
@@ -549,6 +550,36 @@ This stage supports multiple ways to connect VPCs to other VPCs or other network
 - **VPNs:** High-availability VPNs are defined in the `vpcs/[vpc-name]/vpns` directory.
 - **Network Connectivity Center (NCC):** Managed via the `ncc_config` section in a VPC's `.config.yaml` file for VPC spokes, `ncc_spoke_config` in VPN and VLAN attachment files for hybrid spokes, and `ncc_ra_config` in NVA files for Router Appliance spokes.
 - **Network Virtual Appliances (NVAs):** Defined in the `nvas` directory, see the [dedicated section](#network-virtual-appliances-nvas).
+
+#### VPN shared secrets
+
+In `vpcs/[vpc-name]/vpns/*.yaml`, each tunnel's `shared_secret` follows the [standard secret value object](../../../adrs/modules/20261029-write-only-secrets.md) (`value`, `path`, `wo_version`) so pre-shared keys stay out of committed YAML files and out of Terraform state:
+
+1. Generate a 24-byte random Base64 pre-shared key (32 printable ASCII characters, within Cloud VPN's 1 to 128 character limit) without a trailing newline, and keep the secret file outside version control:
+
+   ```bash
+   openssl rand -base64 24 | tr -d '\n' > vpn-onprem-0.psk
+   ```
+
+   Strip the trailing newline (`tr -d '\n'`): `file(pathexpand(path))` reads the file verbatim relative to the `2-networking` stage directory, so a trailing `\n` becomes part of the tunnel secret and mismatches a peer router configured with the single-line value.
+
+2. Reference `path` and set `wo_version` in the VPN YAML file:
+
+   ```yaml
+   tunnels:
+     remote-0:
+       bgp_peer:
+         address: 169.254.128.2
+         asn: 64513
+       bgp_session_range: "169.254.128.1/30"
+       peer_external_gateway_interface: 0
+       shared_secret:
+         path: ./secrets/vpn-onprem-0.psk
+         wo_version: 1
+       vpn_gateway_interface: 0
+   ```
+
+When upgrading an existing VPN YAML file from a legacy string (`shared_secret: "..."`), wrap the existing secret as `shared_secret: { value: "..." }` (or `{ path: "..." }`) and leave `wo_version` unset: both `shared_secret` and `shared_secret_wo_version` on `google_compute_vpn_tunnel` are `ForceNew`, so adding `wo_version` to an already-deployed tunnel destroys and recreates the live IPsec tunnel. Use `wo_version` on new tunnels or during a planned maintenance window.
 
 ## Context-based interpolation
 

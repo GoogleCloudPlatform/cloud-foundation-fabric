@@ -28,7 +28,17 @@ locals {
     : var.router_config.name
   )
   secret = random_id.default.b64_url
-
+  shared_secrets = {
+    for k, v in var.tunnels : k => (
+      v.shared_secret == null
+      ? local.secret
+      : (
+        v.shared_secret.path == null
+        ? v.shared_secret.value
+        : file(pathexpand(v.shared_secret.path))
+      )
+    )
+  }
 }
 
 resource "google_compute_ha_vpn_gateway" "default" {
@@ -144,13 +154,23 @@ resource "google_compute_router_interface" "default" {
 }
 
 resource "google_compute_vpn_tunnel" "default" {
-  for_each                        = var.tunnels
-  project                         = var.project_id
-  region                          = var.region
-  name                            = "${var.name}-${each.key}"
-  vpn_gateway                     = google_compute_ha_vpn_gateway.default.id
-  peer_external_gateway           = local.peer_gateway_id
-  shared_secret                   = coalesce(each.value.shared_secret, local.secret)
+  for_each              = var.tunnels
+  project               = var.project_id
+  region                = var.region
+  name                  = "${var.name}-${each.key}"
+  vpn_gateway           = google_compute_ha_vpn_gateway.default.id
+  peer_external_gateway = local.peer_gateway_id
+  shared_secret = (
+    try(each.value.shared_secret.wo_version, null) != null
+    ? null
+    : local.shared_secrets[each.key]
+  )
+  shared_secret_wo = (
+    try(each.value.shared_secret.wo_version, null) == null
+    ? null
+    : local.shared_secrets[each.key]
+  )
+  shared_secret_wo_version        = try(each.value.shared_secret.wo_version, null)
   router                          = local.router
   vpn_gateway_interface           = each.value.vpn_gateway_interface
   peer_external_gateway_interface = each.value.peer_external_gateway_interface
