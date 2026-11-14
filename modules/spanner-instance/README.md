@@ -86,6 +86,30 @@ module "spanner_instance" {
 # tftest modules=1 resources=2 inventory=instance-with-custom-config.yaml
 ```
 
+### Free instance
+
+When `instance_type` is set to `FREE_INSTANCE`, capacity settings (`num_nodes`, `processing_units`, `autoscaling`), `edition`, and `AUTOMATIC` backup schedules are not supported.
+
+```hcl
+module "spanner_instance" {
+  source     = "./fabric/modules/spanner-instance"
+  project_id = var.project_id
+  instance = {
+    name                         = "my-free-instance"
+    display_name                 = "Free instance in us-central1"
+    instance_type                = "FREE_INSTANCE"
+    default_backup_schedule_type = "NONE"
+    config = {
+      name = "regional-us-central1"
+    }
+  }
+  databases = {
+    my-database = {}
+  }
+}
+# tftest modules=1 resources=2 inventory=free-instance.yaml
+```
+
 ### New database in existing instance
 
 ```hcl
@@ -169,12 +193,12 @@ module "spanner_instance" {
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
 | [instance](variables.tf#L90) | Instance attributes. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
-| [project_id](variables.tf#L137) | Project id. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L158) | Project id. | <code>string</code> | ✓ |  |
 | [databases](variables.tf#L17) | Databases. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam](variables.tf#L64) | IAM bindings in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam_bindings](variables.tf#L70) | Authoritative IAM bindings in {KEY => {role = ROLE, members = [], condition = {}}}. Keys are arbitrary. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam_bindings_additive](variables.tf#L80) | Individual additive IAM bindings. Keys are arbitrary. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [instance_create](variables.tf#L130) | Set to false to manage databases and IAM bindings in an existing instance. | <code>bool</code> |  | <code>true</code> |
+| [instance_create](variables.tf#L151) | Set to false to manage databases and IAM bindings in an existing instance. | <code>bool</code> |  | <code>true</code> |
 
 ## Outputs
 
