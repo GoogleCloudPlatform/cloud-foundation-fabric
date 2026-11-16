@@ -105,9 +105,10 @@ variable "databases" {
 }
 
 variable "disk_autoresize" {
-  description = "Enable automatic disk resize independently of disk_size. Defaults to (disk_size == null) for backwards compatibility."
+  description = "Enable automatic disk resize, capped by disk_autoresize_limit."
   type        = bool
-  default     = null
+  default     = true
+  nullable    = false
 }
 
 variable "disk_autoresize_limit" {
@@ -117,7 +118,7 @@ variable "disk_autoresize_limit" {
 }
 
 variable "disk_size" {
-  description = "Disk size in GB. Acts as the initial size; when disk_autoresize is true, storage can grow beyond it."
+  description = "Disk size in GB. Acts as the initial minimum size when disk_autoresize is true, or a fixed size when disk_autoresize is false."
   type        = number
   default     = null
 }
