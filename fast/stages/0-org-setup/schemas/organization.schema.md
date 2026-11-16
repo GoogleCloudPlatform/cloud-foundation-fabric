@@ -95,6 +95,32 @@
       - **filter**: *string*
       - **type**: *string*
         <br>*default: logging*, *enum: ['bigquery', 'logging', 'project', 'pubsub', 'storage']*
+- **model_armor_floor_setting**: *object*
+  <br>*additional properties: false*
+  - **enforce**: *boolean*
+  - **multi_language_detection**: *boolean*
+  - ⁺**filters**: *object*
+    <br>*additional properties: false*
+    - **malicious_uris**: *boolean*
+    - **pi_and_jailbreak**: *object*
+      <br>*additional properties: false*
+      - **confidence_level**: *string*
+        <br>*enum: ['LOW_AND_ABOVE', 'MEDIUM_AND_ABOVE', 'HIGH']*
+    - **rai**: *object*
+      <br>*additional properties: false*
+      - **DANGEROUS**: *string*
+        <br>*enum: ['LOW_AND_ABOVE', 'MEDIUM_AND_ABOVE', 'HIGH']*
+      - **HARASSMENT**: *string*
+        <br>*enum: ['LOW_AND_ABOVE', 'MEDIUM_AND_ABOVE', 'HIGH']*
+      - **HATE_SPEECH**: *string*
+        <br>*enum: ['LOW_AND_ABOVE', 'MEDIUM_AND_ABOVE', 'HIGH']*
+      - **SEXUALLY_EXPLICIT**: *string*
+        <br>*enum: ['LOW_AND_ABOVE', 'MEDIUM_AND_ABOVE', 'HIGH']*
+    - **sdp**: *object*
+      <br>*additional properties: false*
+      - **basic**: *boolean*
+      - **inspect_template**: *string*
+      - **deidentify_template**: *string*
 - **org_policies**: *object*
   <br>*additional properties: false*
   - **`^[a-z]+\.`**: *object*

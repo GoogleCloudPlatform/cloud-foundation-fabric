@@ -22,6 +22,8 @@ tests:
   custom_roles:
   iam_by_principals_additive:
   iam_by_principals_conditional:
+  model_armor_nulls:
+  model_armor_sdp_templates:
   no_parent:
   no_prefix:
   org_policies:

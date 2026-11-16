@@ -156,6 +156,7 @@ In that case, the controls placed in the `organization/scc-sha-custom-modules` f
 | `run.allowedIngress` | Ensure Cloud Run services only allow internal and load balancer traffic. |  |
 | `run.allowedVPCEgress` | Ensure all egress traffic from Cloud Run services and jobs is routed through a VPC network. |  |
 | `run.managed.disableEphemeralDisk` | Disable unencrypted ephemeral disk storage on Cloud Run services. | **FedRAMP 20x** |
+| `run.managed.disableInlinedSource` | Prevent deploying Cloud Run services using inlined source code. |  |
 | `run.managed.disableJobsEphemeralDisk` | Disable unencrypted ephemeral disk storage on Cloud Run jobs. | **FedRAMP 20x** |
 | `run.managed.disableWorkerPoolsEphemeralDisk` | Disable unencrypted ephemeral disk storage on Cloud Run worker pools. | **FedRAMP 20x** |
 | `run.managed.requireInvokerIam` | Enforce an IAM invoker check for Cloud Run services. |  |
@@ -293,7 +294,6 @@ In that case, the controls placed in the `organization/scc-sha-custom-modules` f
 | `networkDisableWeakSSLPolicy` | Prevent the use of weak SSL policies on HTTPS and SSL Proxy load balancers. | **CIS for GCP 3.0**: 3.9 |
 | `networkRequireBackendServiceLogging` | Enforce the enablement of logging for all HTTP(S) load balancers. | **CIS for GCP 3.0**: 2.16<br>**CIS Controls 8.0**: 8.2<br>**PCI-DSS 4.0**: 10.2.1, 10.2.1.1, 10.2.1.2, 10.2.1.3, 10.2.1.4, 10.2.1.5, 10.2.1.6, 10.2.1.7, 10.2.2, 5.3.4, 6.4.1, 6.4.2<br>**NIST 800-53 R5**: AU-12, AU-2, AU-7<br>**NIST Cybersecurity Framework 1.0**: DE-AE-3, PR-PT-1<br>**ISO-2700-1 v2022**: A.8.15, A.8.20<br>**HIPAA**: 164.312(b) |
 | `networkRequireCustomModeVpc` | Ensure That the Default Network Does Not Exist in a Project | **CIS for GCP 3.0**: 3.1<br>**CIS Controls 8.0**: 4.2<br>**PCI-DSS 4.0**: 1.1.1, 1.2.1, 1.2.6, 1.2.7, 1.4.2, 1.5.1, 2.1.1, 2.2.1<br>**NIST 800-53 R5**: AC-18, CM-2, CM-6, CM-7, CM-9<br>**NIST Cybersecurity Framework 1.0**: PR-IP-1<br>**ISO-2700-1 v2022**: A.8.9<br>**SOC2 v2017**: CC5.2.2<br>**Cloud Controls Matrix 4**: ISV-04 |
-| `networkRequireSubnetPrivateGoogleAccess` | Enforce Private Google Access for all VPC network subnets. |  |
 | `redisRequireMaintenancePolicy` | Ensure Memorystore for Redis instances have a weekly maintenance window configured. | **Cloud Controls Matrix 4** |
 | `storageAllowedStorageClasses` | Restrict Cloud Storage buckets and SetStorageClass lifecycle rules to approved storage classes (STANDARD, NEARLINE, COLDLINE, ARCHIVE). | **CIS Controls 8.0** |
 | `storageRequireBucketLogging` | Enforce access and storage logging on Cloud Storage buckets. | **CIS Controls 8.0** |

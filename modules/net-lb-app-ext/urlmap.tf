@@ -69,6 +69,68 @@ resource "google_compute_url_map" "default" {
     )
     iterator = route_action
     content {
+      dynamic "cache_policy" {
+        for_each = route_action.value.cache_policy[*]
+        iterator = cp
+        content {
+          cache_bypass_request_header_names = (
+            cp.value.cache_bypass_request_header_names
+          )
+          cache_mode         = cp.value.cache_mode
+          negative_caching   = cp.value.negative_caching
+          request_coalescing = cp.value.request_coalescing
+          dynamic "cache_key_policy" {
+            for_each = cp.value.cache_key_policy[*]
+            iterator = ck
+            content {
+              excluded_query_parameters = ck.value.excluded_query_parameters
+              include_host              = ck.value.include_host
+              include_protocol          = ck.value.include_protocol
+              include_query_string      = ck.value.include_query_string
+              included_cookie_names     = ck.value.included_cookie_names
+              included_header_names     = ck.value.included_header_names
+              included_query_parameters = ck.value.included_query_parameters
+            }
+          }
+          dynamic "client_ttl" {
+            for_each = cp.value.client_ttl[*]
+            content {
+              seconds = tostring(client_ttl.value)
+            }
+          }
+          dynamic "default_ttl" {
+            for_each = cp.value.default_ttl[*]
+            content {
+              seconds = tostring(default_ttl.value)
+            }
+          }
+          dynamic "max_ttl" {
+            for_each = cp.value.max_ttl[*]
+            content {
+              seconds = tostring(max_ttl.value)
+            }
+          }
+          dynamic "negative_caching_policy" {
+            for_each = coalesce(cp.value.negative_caching_policy, [])
+            iterator = nc
+            content {
+              code = nc.value.code
+              dynamic "ttl" {
+                for_each = nc.value.ttl[*]
+                content {
+                  seconds = tostring(ttl.value)
+                }
+              }
+            }
+          }
+          dynamic "serve_while_stale" {
+            for_each = cp.value.serve_while_stale[*]
+            content {
+              seconds = tostring(serve_while_stale.value)
+            }
+          }
+        }
+      }
       dynamic "cors_policy" {
         for_each = (
           route_action.value.cors_policy == null
@@ -318,6 +380,68 @@ resource "google_compute_url_map" "default" {
         )
         iterator = route_action
         content {
+          dynamic "cache_policy" {
+            for_each = route_action.value.cache_policy[*]
+            iterator = cp
+            content {
+              cache_bypass_request_header_names = (
+                cp.value.cache_bypass_request_header_names
+              )
+              cache_mode         = cp.value.cache_mode
+              negative_caching   = cp.value.negative_caching
+              request_coalescing = cp.value.request_coalescing
+              dynamic "cache_key_policy" {
+                for_each = cp.value.cache_key_policy[*]
+                iterator = ck
+                content {
+                  excluded_query_parameters = ck.value.excluded_query_parameters
+                  include_host              = ck.value.include_host
+                  include_protocol          = ck.value.include_protocol
+                  include_query_string      = ck.value.include_query_string
+                  included_cookie_names     = ck.value.included_cookie_names
+                  included_header_names     = ck.value.included_header_names
+                  included_query_parameters = ck.value.included_query_parameters
+                }
+              }
+              dynamic "client_ttl" {
+                for_each = cp.value.client_ttl[*]
+                content {
+                  seconds = tostring(client_ttl.value)
+                }
+              }
+              dynamic "default_ttl" {
+                for_each = cp.value.default_ttl[*]
+                content {
+                  seconds = tostring(default_ttl.value)
+                }
+              }
+              dynamic "max_ttl" {
+                for_each = cp.value.max_ttl[*]
+                content {
+                  seconds = tostring(max_ttl.value)
+                }
+              }
+              dynamic "negative_caching_policy" {
+                for_each = coalesce(cp.value.negative_caching_policy, [])
+                iterator = nc
+                content {
+                  code = nc.value.code
+                  dynamic "ttl" {
+                    for_each = nc.value.ttl[*]
+                    content {
+                      seconds = tostring(ttl.value)
+                    }
+                  }
+                }
+              }
+              dynamic "serve_while_stale" {
+                for_each = cp.value.serve_while_stale[*]
+                content {
+                  seconds = tostring(serve_while_stale.value)
+                }
+              }
+            }
+          }
           dynamic "cors_policy" {
             for_each = (
               route_action.value.cors_policy == null
@@ -552,6 +676,68 @@ resource "google_compute_url_map" "default" {
               : [path_rule.value.route_action]
             )
             content {
+              dynamic "cache_policy" {
+                for_each = route_action.value.cache_policy[*]
+                iterator = cp
+                content {
+                  cache_bypass_request_header_names = (
+                    cp.value.cache_bypass_request_header_names
+                  )
+                  cache_mode         = cp.value.cache_mode
+                  negative_caching   = cp.value.negative_caching
+                  request_coalescing = cp.value.request_coalescing
+                  dynamic "cache_key_policy" {
+                    for_each = cp.value.cache_key_policy[*]
+                    iterator = ck
+                    content {
+                      excluded_query_parameters = ck.value.excluded_query_parameters
+                      include_host              = ck.value.include_host
+                      include_protocol          = ck.value.include_protocol
+                      include_query_string      = ck.value.include_query_string
+                      included_cookie_names     = ck.value.included_cookie_names
+                      included_header_names     = ck.value.included_header_names
+                      included_query_parameters = ck.value.included_query_parameters
+                    }
+                  }
+                  dynamic "client_ttl" {
+                    for_each = cp.value.client_ttl[*]
+                    content {
+                      seconds = tostring(client_ttl.value)
+                    }
+                  }
+                  dynamic "default_ttl" {
+                    for_each = cp.value.default_ttl[*]
+                    content {
+                      seconds = tostring(default_ttl.value)
+                    }
+                  }
+                  dynamic "max_ttl" {
+                    for_each = cp.value.max_ttl[*]
+                    content {
+                      seconds = tostring(max_ttl.value)
+                    }
+                  }
+                  dynamic "negative_caching_policy" {
+                    for_each = coalesce(cp.value.negative_caching_policy, [])
+                    iterator = nc
+                    content {
+                      code = nc.value.code
+                      dynamic "ttl" {
+                        for_each = nc.value.ttl[*]
+                        content {
+                          seconds = tostring(ttl.value)
+                        }
+                      }
+                    }
+                  }
+                  dynamic "serve_while_stale" {
+                    for_each = cp.value.serve_while_stale[*]
+                    content {
+                      seconds = tostring(serve_while_stale.value)
+                    }
+                  }
+                }
+              }
               dynamic "cors_policy" {
                 for_each = (
                   route_action.value.cors_policy == null
@@ -870,6 +1056,68 @@ resource "google_compute_url_map" "default" {
               : [route_rules.value.route_action]
             )
             content {
+              dynamic "cache_policy" {
+                for_each = route_action.value.cache_policy[*]
+                iterator = cp
+                content {
+                  cache_bypass_request_header_names = (
+                    cp.value.cache_bypass_request_header_names
+                  )
+                  cache_mode         = cp.value.cache_mode
+                  negative_caching   = cp.value.negative_caching
+                  request_coalescing = cp.value.request_coalescing
+                  dynamic "cache_key_policy" {
+                    for_each = cp.value.cache_key_policy[*]
+                    iterator = ck
+                    content {
+                      excluded_query_parameters = ck.value.excluded_query_parameters
+                      include_host              = ck.value.include_host
+                      include_protocol          = ck.value.include_protocol
+                      include_query_string      = ck.value.include_query_string
+                      included_cookie_names     = ck.value.included_cookie_names
+                      included_header_names     = ck.value.included_header_names
+                      included_query_parameters = ck.value.included_query_parameters
+                    }
+                  }
+                  dynamic "client_ttl" {
+                    for_each = cp.value.client_ttl[*]
+                    content {
+                      seconds = tostring(client_ttl.value)
+                    }
+                  }
+                  dynamic "default_ttl" {
+                    for_each = cp.value.default_ttl[*]
+                    content {
+                      seconds = tostring(default_ttl.value)
+                    }
+                  }
+                  dynamic "max_ttl" {
+                    for_each = cp.value.max_ttl[*]
+                    content {
+                      seconds = tostring(max_ttl.value)
+                    }
+                  }
+                  dynamic "negative_caching_policy" {
+                    for_each = coalesce(cp.value.negative_caching_policy, [])
+                    iterator = nc
+                    content {
+                      code = nc.value.code
+                      dynamic "ttl" {
+                        for_each = nc.value.ttl[*]
+                        content {
+                          seconds = tostring(ttl.value)
+                        }
+                      }
+                    }
+                  }
+                  dynamic "serve_while_stale" {
+                    for_each = cp.value.serve_while_stale[*]
+                    content {
+                      seconds = tostring(serve_while_stale.value)
+                    }
+                  }
+                }
+              }
               dynamic "cors_policy" {
                 for_each = (
                   route_action.value.cors_policy == null

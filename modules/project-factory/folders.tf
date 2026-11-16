@@ -111,6 +111,7 @@ module "folder-1-iam" {
   iam_deny_policies             = lookup(each.value, "iam_deny_policies", {})
   logging_data_access           = lookup(each.value, "data_access_logs", {})
   logging_sinks                 = try(each.value.logging.sinks, {})
+  model_armor_floor_setting     = lookup(each.value, "model_armor_floor_setting", null)
   tag_bindings                  = lookup(each.value, "tag_bindings", {})
   context = merge(local.ctx, {
     tag_vars = {
@@ -123,6 +124,7 @@ module "folder-1-iam" {
     project_ids     = local.ctx_project_ids
     project_numbers = local.ctx_project_numbers
     pubsub_topics   = merge(local.ctx.pubsub_topics, local.pubsub_topics)
+    storage_buckets = merge(local.ctx.storage_buckets, local.storage_buckets)
   })
 }
 
@@ -195,6 +197,7 @@ module "folder-2-iam" {
   iam_deny_policies             = lookup(each.value, "iam_deny_policies", {})
   logging_data_access           = lookup(each.value, "data_access_logs", {})
   logging_sinks                 = try(each.value.logging.sinks, {})
+  model_armor_floor_setting     = lookup(each.value, "model_armor_floor_setting", null)
   tag_bindings                  = lookup(each.value, "tag_bindings", {})
   context = merge(local.ctx, {
     folder_ids = merge(local.ctx.folder_ids, {
@@ -210,6 +213,7 @@ module "folder-2-iam" {
     project_ids     = local.ctx_project_ids
     project_numbers = local.ctx_project_numbers
     pubsub_topics   = merge(local.ctx.pubsub_topics, local.pubsub_topics)
+    storage_buckets = merge(local.ctx.storage_buckets, local.storage_buckets)
   })
 }
 
@@ -282,6 +286,7 @@ module "folder-3-iam" {
   iam_deny_policies             = lookup(each.value, "iam_deny_policies", {})
   logging_data_access           = lookup(each.value, "data_access_logs", {})
   logging_sinks                 = try(each.value.logging.sinks, {})
+  model_armor_floor_setting     = lookup(each.value, "model_armor_floor_setting", null)
   tag_bindings                  = lookup(each.value, "tag_bindings", {})
   context = merge(local.ctx, {
     folder_ids = merge(local.ctx.folder_ids, {
@@ -297,6 +302,7 @@ module "folder-3-iam" {
     project_ids     = local.ctx_project_ids
     project_numbers = local.ctx_project_numbers
     pubsub_topics   = merge(local.ctx.pubsub_topics, local.pubsub_topics)
+    storage_buckets = merge(local.ctx.storage_buckets, local.storage_buckets)
   })
 }
 
@@ -368,6 +374,7 @@ module "folder-4-iam" {
   iam_by_principals_conditional = lookup(each.value, "iam_by_principals_conditional", {})
   logging_data_access           = lookup(each.value, "data_access_logs", {})
   logging_sinks                 = try(each.value.logging.sinks, {})
+  model_armor_floor_setting     = lookup(each.value, "model_armor_floor_setting", null)
   tag_bindings                  = lookup(each.value, "tag_bindings", {})
   iam_deny_policies             = lookup(each.value, "iam_deny_policies", {})
   context = merge(local.ctx, {
@@ -384,5 +391,6 @@ module "folder-4-iam" {
     project_ids     = local.ctx_project_ids
     project_numbers = local.ctx_project_numbers
     pubsub_topics   = merge(local.ctx.pubsub_topics, local.pubsub_topics)
+    storage_buckets = merge(local.ctx.storage_buckets, local.storage_buckets)
   })
 }

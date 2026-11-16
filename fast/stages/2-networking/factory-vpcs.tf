@@ -52,10 +52,6 @@ locals {
         psa_configs                       = try(v.psa_configs, [])
         routes                            = try(v.routes, {})
         routing_mode                      = try(v.routing_mode, "GLOBAL")
-        subnets_private_nat               = try(v.subnets_private_nat, [])
-        subnets_proxy_only                = try(v.subnets_proxy_only, [])
-        subnets_psc                       = try(v.subnets_psc, [])
-        subnets                           = try(v.subnets, [])
         subnets_factory_config = {
           subnets_folder = try(
             startswith(v.factories_config.subnets, "/") || startswith(v.factories_config.subnets, ".") ? v.factories_config.subnets :

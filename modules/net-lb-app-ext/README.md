@@ -438,6 +438,61 @@ module "glb-0" {
 # tftest modules=1 resources=6 inventory=cloud-cdn.yaml
 ```
 
+Cache policies can also be set per route via the `cache_policy` attribute of `default_route_action` and `route_action` blocks in `urlmap_config`. A route-level policy replaces the backend `cdn_policy` for matching requests, and does not inherit from policies set at higher levels of the URL map. TTLs are expressed in seconds. Route-level cache policies do not support a backend service that enables Identity-Aware Proxy (`iap_config` in `backend_service_configs`). Route-level cache policies are only supported by the global external Application Load Balancer, so `use_classic_version` must be set to `false`:
+
+```hcl
+module "glb-0" {
+  source              = "./fabric/modules/net-lb-app-ext"
+  project_id          = var.project_id
+  name                = "glb-test-0"
+  use_classic_version = false
+  backend_buckets_config = {
+    static = {
+      bucket_name = var.bucket
+      enable_cdn  = true
+    }
+  }
+  backend_service_configs = {
+    default = {
+      backends = [{
+        group = "projects/my-project/zones/europe-west8-b/instanceGroups/ig-b"
+      }]
+      enable_cdn = true
+    }
+  }
+  urlmap_config = {
+    default_service = "default"
+    host_rules = [{
+      hosts        = ["*"]
+      path_matcher = "pathmap"
+    }]
+    path_matchers = {
+      pathmap = {
+        default_service = "default"
+        path_rules = [{
+          paths   = ["/static", "/static/*"]
+          service = "static"
+          route_action = {
+            cache_policy = {
+              cache_mode       = "FORCE_CACHE_ALL"
+              default_ttl      = 3600
+              negative_caching = true
+              negative_caching_policy = [{
+                code = 404
+                ttl  = 60
+              }]
+            }
+          }
+        }]
+      }
+    }
+  }
+}
+# tftest modules=1 resources=6 inventory=cloud-cdn-route.yaml
+```
+
+The provider sends `false` for unset `negative_caching` and `request_coalescing`, which turns off these Cloud CDN defaults, so set them explicitly if you need them. For the same reason `cache_key_policy` can't be used on routes that only point to backend buckets, as the API rejects the `include_host`, `include_protocol` and `include_query_string` values the provider always sends.
+
 #### Network Endpoint Groups (NEGs)
 
 Supported Network Endpoint Groups (NEGs) can also be used as backends. Similarly to groups, you can pass a self link for existing NEGs or have the module manage them for you. A simple example using an existing zonal NEG:

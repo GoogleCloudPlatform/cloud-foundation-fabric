@@ -40,3 +40,8 @@ tests:
       - caa.yaml
     extra_dirs:
       - ../../../tests/fast/stages/s0_org_setup/data-caa
+  model-armor:
+    inventory:
+      - model-armor.yaml
+    extra_dirs:
+      - ../../../tests/fast/stages/s0_org_setup/data-model-armor

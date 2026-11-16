@@ -233,36 +233,74 @@ tags = {
   test = {
     id = "$tag_keys:test"
     iam = {
-      "roles/tagAdmin" = ["$iam_principals:mygroup"]
+      "roles/tagAdmin"           = ["$iam_principals:mygroup"]
+      "$custom_roles:myrole_one" = ["$iam_principals:mygroup"]
     }
     iam_bindings = {
       tag_user = {
         role    = "roles/tagUser"
         members = ["$iam_principals:myuser"]
       }
+      tag_user_ctx = {
+        role    = "$custom_roles:myrole_two"
+        members = ["$iam_principals:myuser"]
+        condition = {
+          title      = "Test"
+          expression = "resource.matchTag('$${organization.id}/environment', 'development')"
+        }
+      }
     }
     iam_bindings_additive = {
+      sa_tag = {
+        role   = "roles/tagViewer"
+        member = "$service_agents:compute"
+      }
       tag_viewer = {
         role   = "roles/tagViewer"
         member = "$iam_principals:mysa"
+      }
+      tag_viewer_ctx = {
+        role   = "$custom_roles:myrole_two"
+        member = "$iam_principals:mysa"
+        condition = {
+          title      = "Test"
+          expression = "resource.matchTag('$${organization.id}/environment', 'development')"
+        }
       }
     }
     values = {
       one = {
         id = "$tag_values:test/one"
         iam = {
-          "roles/tagAdmin" = ["$iam_principals:mygroup"]
+          "roles/tagAdmin"           = ["$iam_principals:mygroup"]
+          "$custom_roles:myrole_one" = ["$iam_principals:mygroup"]
         }
         iam_bindings = {
           tag_user = {
             role    = "roles/tagUser"
             members = ["$iam_principals:myuser"]
           }
+          tag_user_ctx = {
+            role    = "$custom_roles:myrole_two"
+            members = ["$iam_principals:myuser"]
+            condition = {
+              title      = "Test"
+              expression = "resource.matchTag('$${organization.id}/environment', 'development')"
+            }
+          }
         }
         iam_bindings_additive = {
           tag_viewer = {
             role   = "roles/tagViewer"
             member = "$iam_principals:mysa"
+          }
+          tag_viewer_ctx = {
+            role   = "$custom_roles:myrole_two"
+            member = "$iam_principals:mysa"
+            condition = {
+              title      = "Test"
+              expression = "resource.matchTag('$${organization.id}/environment', 'development')"
+            }
           }
         }
       }

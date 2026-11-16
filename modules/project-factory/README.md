@@ -29,6 +29,7 @@ The code is meant to be executed by a high level service account with powerful p
 - [Folder hierarchy](#folder-hierarchy)
 - [Projects](#projects)
   - [Factory-wide project defaults, merges, optionals](#factory-wide-project-defaults-merges-optionals)
+  - [Projects defined via the `projects` variable](#projects-defined-via-the-projects-variable)
   - [Project templates](#project-templates)
     - [Context expansion for template-derived resources](#context-expansion-for-template-derived-resources)
   - [Service accounts and buckets](#service-accounts-and-buckets)
@@ -44,6 +45,7 @@ The code is meant to be executed by a high level service account with powerful p
   - [Other context ids](#other-context-ids)
   - [IAM condition variables](#iam-condition-variables)
 - [Service agent grants outside the project](#service-agent-grants-outside-the-project)
+- [Model Armor floor settings](#model-armor-floor-settings)
 - [Example](#example)
 - [Files](#files)
 - [Variables](#variables)
@@ -67,7 +69,7 @@ Refer to the [example](#example) below for actual examples of the YAML definitio
 
 The project factory is configured via the `factories_config.projects` variable, and project files are also additionally read from the folder tree described in the previous section. It's best to limit project definition via the hierarchy tree to a minimum to avoid cross-dependencies between folders and projects, which could complicate their lifecycle.
 
-Projects can also be configured via the `projects` variable, which is internally merged in with the factory definitions.
+Projects can also be configured via the `projects` variable, which is internally merged in with the factory definitions as described [below](#projects-defined-via-the-projects-variable).
 
 The YAML format mirrors the project module, refer to the [example](#example) below for actual examples of the YAML definitions.
 
@@ -80,6 +82,43 @@ In addition to the YAML-based project configurations, the factory accepts three 
 - the `data_merges` variable allows specifying additional values for map or set based variables, which are merged with the data coming from YAML
 
 Some examples on where to use each of the three sets are [provided below](#example).
+
+### Projects defined via the `projects` variable
+
+Projects passed in via the `projects` variable go through the same defaults, overrides and merges as YAML-defined projects. If the same key is used in both, the YAML definition wins. Project templates and exclusions only apply to YAML-defined projects.
+
+Attributes left unset (`null`) in the variable get their value from `data_defaults`. To create a project without the default prefix, set `prefix` to an empty string in the variable, or to `null` in YAML.
+
+```hcl
+module "project-factory" {
+  source = "./fabric/modules/project-factory"
+  data_defaults = {
+    billing_account = "012345-67890A-ABCDEF"
+    labels          = { environment = "test" }
+    locations       = { storage = "eu" }
+    parent          = "folders/1234567890"
+    prefix          = "foo"
+  }
+  data_merges = {
+    services = ["logging.googleapis.com"]
+  }
+  factories_config = {
+    basepath = "data"
+  }
+  projects = {
+    hcl-app-0 = {
+      deletion_policy = "PREVENT"
+      services        = ["compute.googleapis.com"]
+      tags = {
+        environment = {
+          values = { test = {} }
+        }
+      }
+    }
+  }
+}
+# tftest inventory=projects-variable.yaml
+```
 
 ### Project templates
 
@@ -292,6 +331,7 @@ Assuming keys of the form `my_folder`, `my_project`, `my_sa`, etc. this is an ex
 - `$service_account_ids:my_project/my_sa`
 - `$service_account_ids:my_project/automation/my_sa`
 - `$service_agents:compute`
+- `$storage_buckets:my_project/my_bucket`
 - `$tag_keys:my_key` *static context*
 - `$tag_keys:my_project/my_key` *project-level tag keys*
 - `$tag_values:my_key/my_value` *static context*
@@ -436,6 +476,61 @@ Where both the granting project and the target are managed by the same factory, 
 
 Reach for the service agent grants attributes when the target lives outside the factory, for example a folder or a project owned by a preceding stage. Service agents are defined here and are not known on the resource side, so granting from this end avoids shuffling static values around between stages, in the form of fully qualified service agent emails.
 
+## Model Armor floor settings
+
+Folders and projects support the `model_armor_floor_setting` attribute, which is passed through to the `model_armor_floor_setting` variable of the [folder](../folder/) and [project](../project/) modules. Integrated services (`ai_platform`, `google_mcp_server`) are only supported on projects, so they are only accepted in project files. A folder floor setting also applies to the projects under it.
+
+The floor setting is a singleton: removing the attribute does not reset it in GCP. The identity running the factory needs the Model Armor floor settings admin role (`roles/modelarmor.floorSettingsAdmin`) on the folder or project.
+
+```hcl
+module "project-factory" {
+  source = "./fabric/modules/project-factory"
+  data_defaults = {
+    billing_account = "012345-67890A-ABCDEF"
+    locations = {
+      storage = "eu"
+    }
+    prefix = "foo"
+  }
+  factories_config = {
+    basepath = "data"
+  }
+}
+# tftest files=ma-0,ma-1 inventory=model-armor.yaml
+```
+
+```yaml
+parent: folders/1234567890
+name: AI workloads
+model_armor_floor_setting:
+  filters:
+    malicious_uris: true
+    pi_and_jailbreak:
+      confidence_level: MEDIUM_AND_ABOVE
+    rai:
+      DANGEROUS: MEDIUM_AND_ABOVE
+      HARASSMENT: HIGH
+    sdp:
+      basic: true
+# tftest-file id=ma-0 path=data/folders/ai/.config.yaml schema=folder.schema.json
+```
+
+```yaml
+parent: $folder_ids:ai
+services:
+  - modelarmor.googleapis.com
+model_armor_floor_setting:
+  multi_language_detection: true
+  filters:
+    pi_and_jailbreak:
+      confidence_level: HIGH
+  integrated_services:
+    ai_platform:
+      mode: inspect_and_block
+      cloud_logging: true
+# tftest-file id=ma-1 path=data/projects/ai-app-0.yaml schema=project.schema.json
+```
+
 ## Example
 
 This show a module invocation using all optional features:
@@ -464,7 +559,11 @@ module "project-factory" {
       teams-baseline = "locations/global/securityPolicies/1234567890"
     }
     storage_buckets = {
-      log-bucket = "log-bucket"
+      log-bucket           = "log-bucket"
+      gcs-audit-log-bucket = "gcs-logging-bucket"
+    }
+    log_buckets = {
+      audit-log-bucket = "projects/my-gcp-project-123456/locations/global/buckets/logging-bucket"
     }
     tag_values = {
       "context/gke"                = "tagValues/654321"
@@ -518,7 +617,7 @@ module "project-factory" {
     }
   }
 }
-# tftest files=t0,0,1,2,2.1,2.2,2.3,3,4,5,6,7,8,9,10,99 inventory=example.yaml
+# tftest files=t0,0,1,2,2.1,2.2,2.3,2.4,3,4,5,6,7,8,9,10,99 inventory=example.yaml
 ```
 
 A project template for GKE projects:
@@ -599,6 +698,31 @@ asset_feeds:
     asset_types:
       - compute.googleapis.com/Instance
 # tftest-file id=2.3 path=data/folders/team-c/apps/test/app-x/.config.yaml schema=folder.schema.json
+```
+
+To setup logging for a given folder:
+```yaml
+name: Team D
+logging:
+  storage_location: europe-west1
+  sinks:
+    audit_gcs_logs:
+      destination: $storage_buckets:gcs-audit-log-bucket # Using a GCS storage bucket
+      type: storage
+      filter: |
+        log_id("cloudaudit.googleapis.com/activity") OR
+        log_id("cloudaudit.googleapis.com/system_event") OR
+        log_id("cloudaudit.googleapis.com/policy") OR
+        log_id("cloudaudit.googleapis.com/access_transparency")
+    audit_log_bucket_logs:
+      destination: $log_buckets:audit-log-bucket # Using a logging bucket
+      type: logging
+      filter: |
+        log_id("cloudaudit.googleapis.com/activity") OR
+        log_id("cloudaudit.googleapis.com/system_event") OR
+        log_id("cloudaudit.googleapis.com/policy") OR
+        log_id("cloudaudit.googleapis.com/access_transparency")
+# tftest-file id=2.4 path=data/folders/team-d/.config.yaml schema=folder.schema.json
 ```
 
 ```yaml
@@ -1063,7 +1187,7 @@ module "project-factory" {
 output "test_1_automation" {
   value = module.project-factory.projects["test-1"].automation
 }
-# tftest files=folder-0,test-0,test-1,test-2 inventory=test-1.yaml
+# tftest files=folder-0,test-0,test-1,test-2,test-3,test-4 inventory=test-1.yaml
 ```
 
 ```yaml
@@ -1229,4 +1353,25 @@ service_accounts:
         role: roles/iam.serviceAccountTokenCreator
         member: $iam_principals:service_accounts/_self_/bindings-only
 # tftest-file id=test-2 path=data/projects/test-2.yaml schema=project.schema.json
+```
+
+```yaml
+parent: folders/1234567890
+# partial universe object, omitted attributes use defaults
+universe:
+  prefix: tpc
+  unavailable_services:
+    - container.googleapis.com
+# tftest-file id=test-3 path=data/projects/test-3.yaml schema=project.schema.json
+```
+
+```yaml
+parent: folders/1234567890
+# partial project reuse attributes, services_enabled uses default
+project_reuse:
+  use_data_source: false
+  attributes:
+    name: foo-test-4
+    number: 1234567890
+# tftest-file id=test-4 path=data/projects/test-4.yaml schema=project.schema.json
 ```

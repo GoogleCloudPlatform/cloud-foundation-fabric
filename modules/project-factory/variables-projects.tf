@@ -331,7 +331,7 @@ variable "projects" {
       name      = optional(string)
       policy_id = string
     }))
-    contacts = optional(map(list(string)), {})
+    contacts = optional(map(list(string)))
     custom_roles = optional(map(object({
       permissions = list(string)
       title       = optional(string)
@@ -343,6 +343,7 @@ variable "projects" {
       friendly_name  = optional(string)
       location       = optional(string)
     })), {})
+    deletion_policy = optional(string)
     dns_threat_detector = optional(object({
       enabled                  = optional(bool, false)
       excluded_networks        = optional(list(string), [])
@@ -448,7 +449,7 @@ variable "projects" {
         })), {})
       })), {})
     }), {})
-    labels      = optional(map(string), {})
+    labels      = optional(map(string))
     lien_reason = optional(string)
     log_buckets = optional(map(object({
       description  = optional(string)
@@ -491,7 +492,33 @@ variable "projects" {
       resource_names = list(string)
     })), {})
     logging_exclusions = optional(map(string), {})
-    metric_scopes      = optional(list(string), [])
+    metric_scopes      = optional(list(string))
+    model_armor_floor_setting = optional(object({
+      enforce                  = optional(bool)
+      multi_language_detection = optional(bool)
+      filters = object({
+        malicious_uris = optional(bool)
+        pi_and_jailbreak = optional(object({
+          confidence_level = optional(string)
+        }))
+        rai = optional(map(string))
+        sdp = optional(object({
+          basic               = optional(bool)
+          inspect_template    = optional(string)
+          deidentify_template = optional(string)
+        }))
+      })
+      integrated_services = optional(object({
+        ai_platform = optional(object({
+          mode          = optional(string)
+          cloud_logging = optional(bool)
+        }))
+        google_mcp_server = optional(object({
+          mode          = optional(string)
+          cloud_logging = optional(bool)
+        }))
+      }))
+    }))
     pam_entitlements = optional(map(object({
       max_request_duration = string
       eligible_users       = list(string)
@@ -542,6 +569,14 @@ variable "projects" {
     })), {})
     parent = optional(string)
     prefix = optional(string)
+    project_reuse = optional(object({
+      use_data_source = optional(bool, true)
+      attributes = optional(object({
+        name             = string
+        number           = number
+        services_enabled = optional(list(string), [])
+      }))
+    }))
     pubsub_topics = optional(map(object({
       iam = optional(map(list(string)), {})
       iam_bindings = optional(map(object({
@@ -640,6 +675,16 @@ variable "projects" {
         }))
       })), {})
     })), {})
+    quotas = optional(map(object({
+      service              = string
+      quota_id             = string
+      preferred_value      = number
+      dimensions           = optional(map(string), {})
+      justification        = optional(string)
+      contact_email        = optional(string)
+      annotations          = optional(map(string))
+      ignore_safety_checks = optional(string)
+    })), {})
     service_accounts = optional(map(object({
       description  = optional(string)
       display_name = optional(string)
@@ -730,7 +775,7 @@ variable "projects" {
       grant_default_roles        = optional(bool, true)
       grant_service_agent_editor = optional(bool, true)
       skip_iam                   = optional(set(string), [])
-    }), {})
+    }))
     service_agents_folder_bindings = optional(map(object({
       service = string
       folder  = string
@@ -751,8 +796,8 @@ variable "projects" {
         description = optional(string)
       }))
     })), {})
-    service_encryption_key_ids = optional(map(list(string)), {})
-    services                   = optional(list(string), [])
+    service_encryption_key_ids = optional(map(list(string)))
+    services                   = optional(list(string))
     shared_vpc_host_config = optional(object({
       enabled          = bool
       service_projects = optional(list(string), [])
@@ -765,9 +810,57 @@ variable "projects" {
       service_iam_grants       = optional(list(string), [])
       network_subnet_users     = optional(map(list(string)), {})
     }))
-    tag_bindings = optional(map(string), {})
+    tag_bindings = optional(map(string))
+    tags = optional(map(object({
+      allowed_values_regex = optional(string)
+      id                   = optional(string)
+      description          = optional(string)
+      iam                  = optional(map(list(string)), {})
+      iam_bindings = optional(map(object({
+        members = list(string)
+        role    = string
+        condition = optional(object({
+          expression  = string
+          title       = string
+          description = optional(string)
+        }))
+      })), {})
+      iam_bindings_additive = optional(map(object({
+        member = string
+        role   = string
+        condition = optional(object({
+          expression  = string
+          title       = string
+          description = optional(string)
+        }))
+      })), {})
+      values = optional(map(object({
+        id          = optional(string)
+        description = optional(string)
+        iam         = optional(map(list(string)), {})
+        iam_bindings = optional(map(object({
+          members = list(string)
+          role    = string
+          condition = optional(object({
+            expression  = string
+            title       = string
+            description = optional(string)
+          }))
+        })), {})
+        iam_bindings_additive = optional(map(object({
+          member = string
+          role   = string
+          condition = optional(object({
+            expression  = string
+            title       = string
+            description = optional(string)
+          }))
+        })), {})
+      })), {})
+    })), {})
     universe = optional(object({
       prefix                         = string
+      forced_jit_service_identities  = optional(list(string), [])
       unavailable_services           = optional(list(string), [])
       unavailable_service_identities = optional(list(string), [])
     }))

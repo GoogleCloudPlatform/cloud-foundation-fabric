@@ -34,7 +34,8 @@ tunnels:
       asn: 64513
     bgp_session_range: "169.254.128.2/30"
     peer_external_gateway_interface: 0
-    shared_secret: "mySecret"
+    shared_secret:
+      value: "mySecret"
     vpn_gateway_interface: 0
   remote-1:
     bgp_peer:
@@ -42,5 +43,6 @@ tunnels:
       asn: 64513
     bgp_session_range: "169.254.128.6/30"
     peer_external_gateway_interface: 0
-    shared_secret: "mySecret"
+    shared_secret:
+      value: "mySecret"
     vpn_gateway_interface: 1

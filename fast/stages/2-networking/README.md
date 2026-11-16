@@ -18,6 +18,7 @@
   - [Cloud NAT and Routers](#cloud-nat-and-routers)
   - [Network Virtual Appliances (NVAs)](#network-virtual-appliances-nvas)
   - [VPC Connectivity](#vpc-connectivity)
+    - [VPN shared secrets](#vpn-shared-secrets)
 - [Context-based interpolation](#context-based-interpolation)
 - [Files](#files)
 - [Variables](#variables)
@@ -35,6 +36,7 @@ This stage sets up the networking infrastructure for the organization. It provid
   - Forwarding, Public, Private Zones
   - Response Policy Rules
 - Firewall policies
+- Hierarchical Cloud Armor policies
 - VPC connectivity
   - Network Connectivity Center (NCC)
   - Network Virtual Appliances (NVAs)
@@ -88,6 +90,7 @@ factories_config = {
     ncc_hubs              = "/some/path/data/ncc-hubs"
     nvas                  = "/some/path/data/nvas"
     projects              = "/some/path/data/projects"
+    security_policies     = "/some/path/data/security-policies"
     vpcs                  = "/some/path/data/vpcs"
   }
 }
@@ -111,29 +114,37 @@ ln -s ~/fast-config/tfvars/0-org-setup.auto.tfvars.json ./
 
 # conventional location for this stage terraform.tfvars (manually managed)
 ln -s ~/fast-config/2-networking.auto.tfvars ./
+
+# optional files
+ln -s ~/fast-config/tfvars/1-vpcsc.auto.tfvars.json ./
+ln -s ~/fast-config/tfvars/2-networking-ngfw.auto.tfvars.json ./
 ```
 
 If you have no local output files, check the previous state's outputs for the name of your GCS outputs bucket and replace it in the example below.
 
 ```bash
-../fast-links.sh gs://myprefix-prod-iac-org-0-iac-outputs
+../fast-links.sh gs://myprefix-prod-iac-core-0-iac-outputs
 
 # File linking commands for networking stage
 
 # provider file
-gcloud storage cp gs://myprefix-prod-iac-org-0-iac-outputs/providers/2-networking-providers.tf ./
+gcloud storage cp gs://myprefix-prod-iac-core-0-iac-outputs/providers/2-networking-providers.tf ./
 
 # input files from other stages
-gcloud storage cp gs://myprefix-prod-iac-org-0-iac-outputs/tfvars/0-globals.auto.tfvars.json ./
-gcloud storage cp gs://myprefix-prod-iac-org-0-iac-outputs/tfvars/0-org-setup.auto.tfvars.json ./
+gcloud storage cp gs://myprefix-prod-iac-core-0-iac-outputs/tfvars/0-globals.auto.tfvars.json ./
+gcloud storage cp gs://myprefix-prod-iac-core-0-iac-outputs/tfvars/0-org-setup.auto.tfvars.json ./
 
 # conventional location for this stage terraform.tfvars (manually managed)
-gcloud storage cp gs://myprefix-prod-iac-org-0-iac-outputs/2-networking.auto.tfvars ./
+gcloud storage cp gs://myprefix-prod-iac-core-0-iac-outputs/2-networking.auto.tfvars ./
+
+# optional files
+gcloud storage cp gs://myprefix-prod-iac-core-0-iac-outputs/tfvars/1-vpcsc.auto.tfvars.json ./
+gcloud storage cp gs://myprefix-prod-iac-core-0-iac-outputs/tfvars/2-networking-ngfw.auto.tfvars.json ./
 ```
 
-Once you have one of the above outputs, copy/paste it in your terminal from within this stage's folder.
+Once you have one of the above outputs, copy/paste it in your terminal from within this stage's folder, leaving out the commands for files you don't have.
 
-Note that the last command in both outputs is optional: this is our recommended best practice to centrally store the tfvars file you created for this stage. If this convention works for you, move the tfvars file created in the previous steps to the path shown in the output, then run the command.
+Note that the last three commands in both outputs are optional. The first is our recommended best practice to centrally store the tfvars file you created for this stage: if this convention works for you, move the tfvars file created in the previous steps to the path shown in the output, then run the command. The optional files are only available once the VPC-SC stage or the NGFW add-on have been applied, and their commands should be skipped otherwise as Terraform fails on missing tfvars files.
 
 ### Terraform init/apply cycle
 
@@ -540,6 +551,36 @@ This stage supports multiple ways to connect VPCs to other VPCs or other network
 - **Network Connectivity Center (NCC):** Managed via the `ncc_config` section in a VPC's `.config.yaml` file for VPC spokes, `ncc_spoke_config` in VPN and VLAN attachment files for hybrid spokes, and `ncc_ra_config` in NVA files for Router Appliance spokes.
 - **Network Virtual Appliances (NVAs):** Defined in the `nvas` directory, see the [dedicated section](#network-virtual-appliances-nvas).
 
+#### VPN shared secrets
+
+In `vpcs/[vpc-name]/vpns/*.yaml`, each tunnel's `shared_secret` follows the [standard secret value object](../../../adrs/modules/20261029-write-only-secrets.md) (`value`, `path`, `wo_version`) so pre-shared keys stay out of committed YAML files and out of Terraform state:
+
+1. Generate a 24-byte random Base64 pre-shared key (32 printable ASCII characters, within Cloud VPN's 1 to 128 character limit) without a trailing newline, and keep the secret file outside version control:
+
+   ```bash
+   openssl rand -base64 24 | tr -d '\n' > vpn-onprem-0.psk
+   ```
+
+   Strip the trailing newline (`tr -d '\n'`): `file(pathexpand(path))` reads the file verbatim relative to the `2-networking` stage directory, so a trailing `\n` becomes part of the tunnel secret and mismatches a peer router configured with the single-line value.
+
+2. Reference `path` and set `wo_version` in the VPN YAML file:
+
+   ```yaml
+   tunnels:
+     remote-0:
+       bgp_peer:
+         address: 169.254.128.2
+         asn: 64513
+       bgp_session_range: "169.254.128.1/30"
+       peer_external_gateway_interface: 0
+       shared_secret:
+         path: ./secrets/vpn-onprem-0.psk
+         wo_version: 1
+       vpn_gateway_interface: 0
+   ```
+
+When upgrading an existing VPN YAML file from a legacy string (`shared_secret: "..."`), wrap the existing secret as `shared_secret: { value: "..." }` (or `{ path: "..." }`) and leave `wo_version` unset: both `shared_secret` and `shared_secret_wo_version` on `google_compute_vpn_tunnel` are `ForceNew`, so adding `wo_version` to an already-deployed tunnel destroys and recreates the live IPsec tunnel. Use `wo_version` on new tunnels or during a planned maintenance window.
+
 ## Context-based interpolation
 
 Interpolation allows referring to resources that are either created at runtime or externally managed via short aliases.
@@ -643,13 +684,14 @@ Internally created resources are mapped to context namespaces, and use specific 
 
 | name | description | sensitive |
 |---|---|:---:|
-| [host_project_ids](outputs.tf#L80) | Project IDs. |  |
-| [host_project_numbers](outputs.tf#L85) | Project numbers. |  |
-| [network_attachment_ids](outputs.tf#L90) | PSC network attachment ids. |  |
-| [security_policies](outputs.tf#L95) | Hierarchical security policy ids. |  |
-| [subnet_ips](outputs.tf#L100) | Subnet IP ranges. |  |
-| [subnet_proxy_only_self_links](outputs.tf#L105) | Subnet proxy-only self-links. |  |
-| [subnet_psc_self_links](outputs.tf#L110) | Subnet PSC self-links. |  |
-| [subnet_self_links](outputs.tf#L115) | Subnet self-links. |  |
-| [vpc_self_links](outputs.tf#L120) | VPC self-links. |  |
+| [host_project_ids](outputs.tf#L85) | Project IDs. |  |
+| [host_project_numbers](outputs.tf#L90) | Project numbers. |  |
+| [network_attachment_ids](outputs.tf#L95) | PSC network attachment ids. |  |
+| [security_policies](outputs.tf#L100) | Hierarchical security policy ids. |  |
+| [subnet_ips](outputs.tf#L105) | Subnet IP ranges. |  |
+| [subnet_private_nat_self_links](outputs.tf#L110) | Subnet private NAT self-links. |  |
+| [subnet_proxy_only_self_links](outputs.tf#L115) | Subnet proxy-only self-links. |  |
+| [subnet_psc_self_links](outputs.tf#L120) | Subnet PSC self-links. |  |
+| [subnet_self_links](outputs.tf#L125) | Subnet self-links. |  |
+| [vpc_self_links](outputs.tf#L130) | VPC self-links. |  |
 <!-- END TFDOC -->

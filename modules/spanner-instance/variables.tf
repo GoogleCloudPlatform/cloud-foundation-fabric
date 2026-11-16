@@ -119,12 +119,34 @@ variable "instance" {
     display_name                 = optional(string)
     edition                      = optional(string)
     default_backup_schedule_type = optional(string)
+    instance_type                = optional(string)
     labels                       = optional(map(string), {})
     name                         = string
     num_nodes                    = optional(number)
     processing_units             = optional(number)
     force_destroy                = optional(bool)
   })
+  nullable = false
+  validation {
+    condition = (
+      var.instance.instance_type == null
+      ? true
+      : contains(["PROVISIONED", "FREE_INSTANCE"], var.instance.instance_type)
+    )
+    error_message = "Invalid instance_type. If set, possible values are: PROVISIONED, FREE_INSTANCE"
+  }
+  validation {
+    condition = (
+      var.instance.instance_type != "FREE_INSTANCE" || (
+        var.instance.autoscaling == null &&
+        var.instance.edition == null &&
+        var.instance.num_nodes == null &&
+        var.instance.processing_units == null &&
+        coalesce(var.instance.default_backup_schedule_type, "NONE") == "NONE"
+      )
+    )
+    error_message = "FREE_INSTANCE does not support autoscaling, edition, num_nodes, processing_units, or AUTOMATIC default_backup_schedule_type."
+  }
 }
 
 variable "instance_create" {

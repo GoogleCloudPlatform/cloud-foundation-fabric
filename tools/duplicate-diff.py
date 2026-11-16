@@ -92,6 +92,7 @@ duplicates = [
     [
         "modules/organization/variables-model-armor.tf",
         "modules/folder/variables-model-armor.tf",
+        "modules/project/variables-model-armor.tf",
     ],
     [
         "modules/folder/schemas/pam-entitlements.schema.json",

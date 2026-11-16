@@ -85,7 +85,7 @@ locals {
   project_ids = {
     for k, v in module.projects : k => v.project_id
   }
-  projects_input = merge(var.projects, local._projects_output)
+  projects_input = local._projects_output
   project_numbers = {
     for k, v in module.projects : k => v.number
   }
@@ -257,6 +257,9 @@ module "projects-iam" {
   metric_scopes = distinct(concat(
     each.value.metric_scopes, var.data_merges.metric_scopes
   ))
+  model_armor_floor_setting = lookup(
+    each.value, "model_armor_floor_setting", null
+  )
   pam_entitlements = try(each.value.pam_entitlements, {})
   # The second pass handles the authoritative cloudservices editor binding.
   # We disable primary agents creation and default roles here because they

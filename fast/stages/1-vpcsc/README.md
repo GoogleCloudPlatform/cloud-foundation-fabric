@@ -1,6 +1,6 @@
 # VPC Service Controls
 
-This stage sets up VPC Service Controls (VPC-SC) for the whole organization and is a thing FAST-compliant wrapper on the [VPC-SC module](../../../modules/vpc-sc/), with some minimal defaults.
+This stage sets up VPC Service Controls (VPC-SC) for the whole organization and is a thin FAST-compliant wrapper on the [VPC-SC module](../../../modules/vpc-sc/), with some minimal defaults.
 
 <!-- BEGIN TOC -->
 - [Design overview and choices](#design-overview-and-choices)
@@ -51,9 +51,9 @@ The stage is designed to allow defining additional perimeters via the `perimeter
 
 Restricted services, access levels, ingress and egress policies and perimeters can all be configured via YAML-based files, which allow intuitive editing and minimize the complexity of running operations.
 
-The default setup only contains a single access level and an initial list of restricted services in the `datasets/classic/access-levels` folder and the `datasets/classic/restricted-services.yaml` file.
+The default setup in `datasets/classic` contains a single perimeter, a geo-based access level, an ingress policy for organization-level log sinks, and an initial list of restricted services, in the `perimeters`, `access-levels` and `ingress-policies` folders and the `restricted-services.yaml` file.
 
-To configure ingress and egress policies simply add `ingress_policies` and/or `egress_policies` folders under `data`, or point the factories to your own folders by changing the `factories_config` variable values. For more details on how the `factories_config` interface works, refer to the [documentation for stage 0](../0-org-setup/README.md#selectconfigure-a-factory-dataset).
+To configure ingress and egress policies simply add YAML files to the `ingress-policies` and/or `egress-policies` folders in the dataset (the latter needs to be created), or point the factories to your own folders by changing the `factories_config` variable values. For more details on how the `factories_config` interface works, refer to the [documentation for stage 0](../0-org-setup/README.md#selectconfigure-a-factory-dataset).
 
 Examples on how to write access level and policy YAML files are provided further down in this document.
 
@@ -75,7 +75,7 @@ More access levels can be of course added to better tailor the configuration to 
 
 ### Ingress policy for organization-level log sinks
 
-An ingress policy that allows ingress to the perimeter for identities used in organization-level sinks is automatically created, but needs to be explicitly referenced in the perimeter via the `$identity_sets:logging_identities` context expansion.
+An ingress policy that allows ingress to the perimeter for identities used in organization-level sinks is defined in the [`ingress-policies/fast-org-log-sinks.yaml`](datasets/classic/ingress-policies/fast-org-log-sinks.yaml) file via the `$identity_sets:logging_identities` and `$resource_sets:logging_project` context expansions, and is referenced in the default perimeter as `$ingress_policies:fast-org-log-sinks`.
 
 This only supports sinks defined in the bootstrap stage, but it can easily be used as a reference for different, specific needs (or replaced with a policy leveraging Asset Inventory for automatic inclusion of folder-level sinks).
 
@@ -183,17 +183,17 @@ In much the same way as other FAST stages and underlying modules, context expans
 
 These are the available context namespaces in this stage.
 
-| context            | type               |
-| :----------------- | :----------------- |
-| `folder_ids`       | `map(string)`      |
-| `iam_principals`   | `map(string)`      |
-| `identity_sets`    | `map(map(string))` |
-| `organization_ids` | `map(string)`      |
-| `project_numbers`  | `map(string)`      |
-| `psc_endpoints`    | `map(string)`      |
-| `resource_sets`    | `map(map(string))` |
-| `service_sets`     | `map(map(string))` |
-| `storage_buckets`  | `map(string)`      |
+| context            | type                |
+| :----------------- | :------------------ |
+| `folder_ids`       | `map(string)`       |
+| `iam_principals`   | `map(string)`       |
+| `identity_sets`    | `map(list(string))` |
+| `organization_ids` | `map(string)`       |
+| `project_numbers`  | `map(number)`       |
+| `psc_endpoints`    | `map(string)`       |
+| `resource_sets`    | `map(list(string))` |
+| `service_sets`     | `map(list(string))` |
+| `storage_buckets`  | `map(string)`       |
 
 The following sub-sections illustrate how both work.
 
@@ -247,6 +247,8 @@ When this stage is used as part of a FAST installation, it consumes data made av
   project numbers for projects created in the 0-org-setup stage
 - `$resource_sets:discovered_projects` \
   set of projects numbers for discovered projects (when discovery is enabled)
+- `$resource_sets:logging_project` \
+  set of project numbers for destination projects of log sinks created in the 0-org-setup stage
 - `$resource_sets:org_setup_projects` \
   set of projects numbers for projects created in the 0-org-setup stage
 - `$service_sets:restricted_services` \
@@ -262,12 +264,12 @@ It's of course possible to run this stage in isolation, but that's outside the s
 
 ### Provider and Terraform variables
 
-As all other FAST stages, the [mechanism used to pass variable values and pre-built provider files from one stage to the next](../0-org-setup/README.md#output-files-and-cross-stage-variables) is also leveraged here.
+As all other FAST stages, the [mechanism used to pass variable values and pre-built provider files from one stage to the next](../0-org-setup/README.md#local-output-files-storage) is also leveraged here.
 
-The commands to link or copy the provider and terraform variable files can be get from the `fast-links.sh` script in the FAST stages folder, passing it a single argument with the local output files folder or GCS output bucket. The following examples demonstrate both cases, and the resulting commands that then need to be copy/pasted and run.
+The commands to link or copy the provider and terraform variable files can be easily derived from the `fast-links.sh` script in the FAST stages folder, passing it a single argument with the local output files folder or GCS output bucket. The following examples demonstrate both cases, and the resulting commands that then need to be copy/pasted and run.
 
 ```bash
-../fast-links.sh ~/fast-config
+../fast-links.sh ~/fast-config/fast-test-00
 
 # File linking commands for vpc service controls stage
 
@@ -278,30 +280,32 @@ ln -s ~/fast-config/fast-test-00/providers/1-vpcsc-providers.tf ./
 ln -s ~/fast-config/fast-test-00/tfvars/0-globals.auto.tfvars.json ./
 ln -s ~/fast-config/fast-test-00/tfvars/0-org-setup.auto.tfvars.json ./
 
-# conventional place for stage tfvars (manually created)
+# conventional location for this stage terraform.tfvars (manually managed)
 ln -s ~/fast-config/fast-test-00/1-vpcsc.auto.tfvars ./
 ```
 
 ```bash
 # the outputs bucket name is in the stage 0 outputs and tfvars file
-../fast-links.sh gs://xxx-prod-iac-core-outputs-0
+../fast-links.sh gs://xxx-prod-iac-core-0-iac-outputs
 
 # File linking commands for vpc service controls stage
 
 # provider file
-gcloud storage cp gs://xxx-prod-iac-core-outputs-0/providers/1-vpcsc-providers.tf ./
+gcloud storage cp gs://xxx-prod-iac-core-0-iac-outputs/providers/1-vpcsc-providers.tf ./
 
 # input files from other stages
-gcloud storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/0-globals.auto.tfvars.json ./
-gcloud storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/0-org-setup.auto.tfvars.json ./
+gcloud storage cp gs://xxx-prod-iac-core-0-iac-outputs/tfvars/0-globals.auto.tfvars.json ./
+gcloud storage cp gs://xxx-prod-iac-core-0-iac-outputs/tfvars/0-org-setup.auto.tfvars.json ./
 
-# conventional place for stage tfvars (manually created)
-gcloud storage cp gs://xxx-prod-iac-core-outputs-0/1-vpcsc.auto.tfvars ./
+# conventional location for this stage terraform.tfvars (manually managed)
+gcloud storage cp gs://xxx-prod-iac-core-0-iac-outputs/1-vpcsc.auto.tfvars ./
 ```
+
+Note that the last command in both outputs is optional: it is our recommended best practice to centrally store this stage's tfvars file, and can be skipped if you don't have one or don't follow this convention.
 
 ### Impersonating the automation service account
 
-The preconfigured provider file uses impersonation to run with this stage's automation service account's credentials. The `gcp-devops` and `organization-admins` groups have the necessary IAM bindings in place to do that, so make sure the current user is a member of one of those groups.
+The preconfigured provider file uses impersonation to run with this stage's automation service account's credentials. The `gcp-organization-admins` group has the necessary IAM bindings in place to do that, so make sure the current user is a member of that group.
 
 ### Variable configuration
 
@@ -309,7 +313,7 @@ Variables in this stage -- like most other FAST stages -- are broadly divided in
 
 - variables which refer to global values for the whole organization (org id, billing account id, prefix, etc.), which are pre-populated via the `0-globals.auto.tfvars.json` file linked or copied above
 - variables which refer to resources managed by previous stages, which are prepopulated here via the `0-org-setup.auto.tfvars.json` file linked or copied above
-- and finally variables that optionally control this stage's behaviour and customizations, that you are expected to configure in a custom `terraform.tfvars` file
+- and finally variables that optionally control this stage's behaviour and customizations, which you can configure in a custom `1-vpcsc.auto.tfvars` or `terraform.tfvars` file
 
 The latter set is explained in the [Customization](#customizations) sections below, and the full list can be found in the [Variables](#variables) table at the bottom of this document.
 
@@ -471,18 +475,18 @@ Some references that might be useful in setting up this stage:
 |---|---|:---:|:---:|:---:|:---:|
 | [organization](variables-fast.tf#L56) | Organization details. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>0-org-setup</code> |
 | [access_levels](variables.tf#L17) | Access level definitions. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |  |
-| [access_policy](variables.tf#L67) | Access policy id (used for tenant-level VPC-SC configurations). | <code>number</code> |  | <code>null</code> |  |
-| [context](variables.tf#L73) | External context used in replacements. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |  |
-| [egress_policies](variables.tf#L90) | Egress policy definitions that can be referenced in perimeters. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |  |
-| [factories_config](variables.tf#L134) | Paths to folders that enable factory functionality. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |  |
+| [access_policy](variables.tf#L67) | Access policy id (used for tenant-level VPC-SC configurations). | <code>string</code> |  | <code>null</code> |  |
+| [context](variables.tf#L77) | External context used in replacements. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |  |
+| [egress_policies](variables.tf#L94) | Egress policy definitions that can be referenced in perimeters. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |  |
+| [factories_config](variables.tf#L138) | Paths to folders that enable factory functionality. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |  |
 | [folder_ids](variables-fast.tf#L17) | Folders created in the bootstrap stage. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-org-setup</code> |
 | [iam_principals](variables-fast.tf#L25) | Org-level IAM principals. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-org-setup</code> |
-| [ingress_policies](variables.tf#L151) | Ingress policy definitions that can be referenced in perimeters. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |  |
+| [ingress_policies](variables.tf#L155) | Ingress policy definitions that can be referenced in perimeters. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |  |
 | [logging_sinks](variables-fast.tf#L33) | Log sinks for the organization. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-org-setup</code> |
-| [perimeters](variables.tf#L194) | Perimeter definitions. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |  |
+| [perimeters](variables.tf#L198) | Perimeter definitions. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |  |
 | [project_ids](variables-fast.tf#L67) | Project IDs. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-org-setup</code> |
 | [project_numbers](variables-fast.tf#L75) | Project numbers. | <code>map&#40;number&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-org-setup</code> |
-| [resource_discovery](variables.tf#L240) | Automatic discovery of perimeter projects. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |  |
+| [resource_discovery](variables.tf#L244) | Automatic discovery of perimeter projects. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |  |
 | [root_node](variables-fast.tf#L83) | Root node for the hierarchy, if running in tenant mode. | <code>string</code> |  | <code>null</code> | <code>0-org-setup</code> |
 | [service_accounts](variables-fast.tf#L97) | Org-level service accounts. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-org-setup</code> |
 | [storage_buckets](variables-fast.tf#L105) | Storage buckets created in the bootstrap stage. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-org-setup</code> |

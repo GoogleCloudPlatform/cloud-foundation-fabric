@@ -1,0 +1,80 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.organization-iam[0].google_model_armor_floorsetting.default[0]:
+    ai_platform_floor_setting: []
+    enable_floor_setting_enforcement: true
+    filter_config:
+    - malicious_uri_filter_settings:
+      - filter_enforcement: ENABLED
+      pi_and_jailbreak_filter_settings:
+      - confidence_level: LOW_AND_ABOVE
+        filter_enforcement: ENABLED
+      rai_settings:
+      - rai_filters:
+        - confidence_level: HIGH
+          filter_type: HARASSMENT
+        - confidence_level: MEDIUM_AND_ABOVE
+          filter_type: DANGEROUS
+      sdp_settings:
+      - advanced_config: []
+        basic_config:
+        - filter_enforcement: ENABLED
+    floor_setting_metadata:
+    - multi_language_detection:
+      - enable_multi_language_detection: true
+    google_mcp_server_floor_setting: []
+    integrated_services: []
+    location: global
+    parent: organizations/1234567890
+    timeouts: null
+  module.organization-iam[0].google_organization_iam_binding.authoritative["roles/modelarmor.floorSettingsAdmin"]:
+    condition: []
+    members:
+    - serviceAccount:iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    org_id: '1234567890'
+    role: roles/modelarmor.floorSettingsAdmin
+
+counts:
+  google_bigquery_dataset: 1
+  google_bigquery_default_service_account: 3
+  google_compute_firewall: 6
+  google_compute_network: 2
+  google_compute_route: 6
+  google_compute_shared_vpc_host_project: 2
+  google_compute_shared_vpc_service_project: 2
+  google_compute_subnetwork: 2
+  google_folder: 2
+  google_logging_organization_settings: 1
+  google_logging_organization_sink: 1
+  google_logging_project_bucket_config: 1
+  google_logging_project_settings: 5
+  google_model_armor_floorsetting: 1
+  google_organization_iam_binding: 22
+  google_project: 5
+  google_project_iam_binding: 6
+  google_project_iam_member: 21
+  google_project_service: 41
+  google_project_service_identity: 14
+  google_service_account: 1
+  google_storage_bucket: 2
+  google_storage_bucket_iam_binding: 2
+  google_storage_bucket_object: 4
+  google_storage_project_service_account: 3
+  google_tags_tag_binding: 2
+  local_file: 3
+  modules: 27
+  resources: 165
+  terraform_data: 4

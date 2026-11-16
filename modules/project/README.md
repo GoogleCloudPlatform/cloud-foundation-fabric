@@ -51,6 +51,7 @@ This module implements the creation and management of one GCP project including 
 - [Observability factory](#observability-factory)
 - [Workload Identity Federation](#workload-identity-federation)
 - [IAM Deny Policies](#iam-deny-policies)
+- [Model Armor Floor Settings](#model-armor-floor-settings)
 - [Files](#files)
 - [Variables](#variables)
 - [Outputs](#outputs)
@@ -1340,6 +1341,17 @@ module "project" {
   prefix          = var.prefix
   parent          = var.folder_id
   context = {
+    condition_vars = {
+      organization = {
+        id = 1122334455
+      }
+    }
+    custom_roles = {
+      tag_viewer = "projects/test-project/roles/customTagViewer"
+    }
+    iam_principals = {
+      backend_sa = "serviceAccount:backend@test-project.iam.gserviceaccount.com"
+    }
     tag_keys = {
       service = "tagKeys/1234567890"
     }
@@ -1351,7 +1363,7 @@ module "project" {
     tags = "data/tags"
   }
 }
-# tftest modules=1 resources=8 files=0,1 inventory=tags-factory.yaml
+# tftest modules=1 resources=11 files=0,1 inventory=tags-factory.yaml
 ```
 
 ```yaml
@@ -1361,11 +1373,30 @@ description: "Tag for workload classifications."
 iam:
   "roles/resourcemanager.tagViewer":
     - "group:devops@example.com"
+iam_bindings:
+  devops-admins:
+    role: roles/resourcemanager.tagAdmin
+    members:
+      - "group:devops-admins@example.com"
+    condition:
+      title: expires_after_2026_12_31
+      expression: request.time < timestamp("2027-01-01T00:00:00Z")
 values:
   frontend:
     description: "Frontend workload."
+    iam_bindings_additive:
+      frontend-user:
+        role: roles/resourcemanager.tagUser
+        member: "group:frontend@example.com"
   backend:
     description: "Backend workload."
+    iam_bindings_additive:
+      backend-viewer:
+        role: $custom_roles:tag_viewer
+        member: $iam_principals:backend_sa
+        condition:
+          title: match_dev_env
+          expression: resource.matchTag('${organization.id}/environment', 'development')
 ```
 
 ```yaml
@@ -2472,6 +2503,49 @@ module "project" {
 # tftest modules=1 resources=3 inventory=iam-deny-policies.yaml
 ```
 
+## Model Armor Floor Settings
+
+A [Model Armor floor setting](https://docs.cloud.google.com/model-armor/configure-floor-settings) defines the minimum filters that Model Armor templates in the project must apply, and can screen Vertex AI and Google Cloud MCP server traffic inline. It is managed via the `model_armor_floor_setting` variable. The `modelarmor.googleapis.com` service needs to be enabled in the project, by listing it in the `services` variable.
+
+Each `integrated_services` entry also adds the service to the floor setting's integrated services, and `mode` selects between `inspect_only` (default) and `inspect_and_block`. Inline screening of Vertex AI and MCP server traffic is applied per project, and a project floor setting takes precedence over the ones set on its folders or organization. Integrated services are only supported on project floor settings, not on folders or the organization. Enforcement is enabled by default when the variable is set, and multi-language detection is disabled by default.
+
+The floor setting is a singleton that always exists: removing the variable only removes the resource from the Terraform state, and does not reset the floor setting in GCP.
+
+```hcl
+module "project" {
+  source          = "./fabric/modules/project"
+  name            = "my-project"
+  parent          = var.folder_id
+  billing_account = var.billing_account_id
+  services = [
+    "aiplatform.googleapis.com",
+    "modelarmor.googleapis.com"
+  ]
+  model_armor_floor_setting = {
+    filters = {
+      malicious_uris = true
+      pi_and_jailbreak = {
+        confidence_level = "MEDIUM_AND_ABOVE"
+      }
+      rai = {
+        DANGEROUS  = "MEDIUM_AND_ABOVE"
+        HARASSMENT = "HIGH"
+      }
+      sdp = {
+        basic = true
+      }
+    }
+    integrated_services = {
+      ai_platform = {
+        mode          = "inspect_and_block"
+        cloud_logging = true
+      }
+    }
+  }
+}
+# tftest modules=1 resources=26 inventory=model-armor-floor-setting.yaml
+```
+
 <!-- TFDOC OPTS files:1 -->
 <!-- BEGIN TFDOC -->
 ## Files
@@ -2489,6 +2563,7 @@ module "project" {
 | [logging-metrics.tf](./logging-metrics.tf) | None | <code>google_logging_metric</code> |
 | [logging.tf](./logging.tf) | Log sinks and supporting resources. | <code>google_bigquery_dataset_iam_member</code> · <code>google_logging_log_scope</code> · <code>google_logging_project_exclusion</code> · <code>google_logging_project_sink</code> · <code>google_project_iam_audit_config</code> · <code>google_project_iam_member</code> · <code>google_pubsub_topic_iam_member</code> · <code>google_storage_bucket_iam_member</code> |
 | [main.tf](./main.tf) | Module-level locals and resources. | <code>google_compute_organization_security_policy_association</code> · <code>google_compute_project_default_network_tier</code> · <code>google_compute_project_metadata_item</code> · <code>google_essential_contacts_contact</code> · <code>google_kms_key_handle</code> · <code>google_monitoring_monitored_project</code> · <code>google_project</code> · <code>google_project_service</code> · <code>google_resource_manager_lien</code> |
+| [model-armor.tf](./model-armor.tf) | Model Armor floor setting. | <code>google_model_armor_floorsetting</code> |
 | [notification-channels.tf](./notification-channels.tf) | None | <code>google_monitoring_notification_channel</code> |
 | [organization-policies.tf](./organization-policies.tf) | Project-level organization policies. | <code>google_org_policy_policy</code> |
 | [outputs.tf](./outputs.tf) | Module outputs. |  |
@@ -2502,6 +2577,7 @@ module "project" {
 | [tags.tf](./tags.tf) | Manages GCP Secure Tags, keys, values, and IAM. | <code>google_tags_tag_binding</code> · <code>google_tags_tag_key</code> · <code>google_tags_tag_key_iam_binding</code> · <code>google_tags_tag_key_iam_member</code> · <code>google_tags_tag_value</code> · <code>google_tags_tag_value_iam_binding</code> · <code>google_tags_tag_value_iam_member</code> |
 | [variables-iam.tf](./variables-iam.tf) | None |  |
 | [variables-identity-providers.tf](./variables-identity-providers.tf) | None |  |
+| [variables-model-armor.tf](./variables-model-armor.tf) | None |  |
 | [variables-observability.tf](./variables-observability.tf) | None |  |
 | [variables-pam.tf](./variables-pam.tf) | None |  |
 | [variables-quotas.tf](./variables-quotas.tf) | None |  |
@@ -2548,6 +2624,7 @@ module "project" {
 | [logging_metrics](variables-observability.tf#L145) | Log-based metrics. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [logging_sinks](variables-observability.tf#L185) | Logging sinks to create for this project. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [metric_scopes](variables-observability.tf#L216) | List of projects that will act as metric scopes for this project. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
+| [model_armor_floor_setting](variables-model-armor.tf#L17) | Model Armor floor setting for this resource. Integrated services are only supported on projects. Removing it does not reset the floor setting in GCP. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [network_tags](variables-tags.tf#L17) | Network tags by key name. If `id` is provided, key creation is skipped. The `iam` attribute behaves like the similarly named one at module level. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [notification_channels](variables-observability.tf#L223) | Monitoring notification channels. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [org_policies](variables.tf#L290) | Organization policies applied to this project keyed by policy name. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |

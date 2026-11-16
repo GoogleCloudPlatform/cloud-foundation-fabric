@@ -27,9 +27,9 @@ locals {
   _defaults = yamldecode(file(local.paths.defaults))
   # provide sane VPC defaults
   _vpc_defaults = {
-    auto_create_subnetworks        = false
-    delete_default_route_on_create = true
-    mtu                            = 1500
+    auto_create_subnetworks         = false
+    delete_default_routes_on_create = true
+    mtu                             = 1500
   }
   ctx = merge(local._ctx, {
     custom_roles = merge(var.custom_roles, local._ctx.custom_roles)
