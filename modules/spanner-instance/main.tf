@@ -57,6 +57,7 @@ resource "google_spanner_instance" "spanner_instance" {
   )
   name                         = var.instance.name
   display_name                 = coalesce(var.instance.display_name, var.instance.name)
+  instance_type                = var.instance.instance_type
   num_nodes                    = var.instance.num_nodes
   labels                       = var.instance.labels
   force_destroy                = var.instance.force_destroy
