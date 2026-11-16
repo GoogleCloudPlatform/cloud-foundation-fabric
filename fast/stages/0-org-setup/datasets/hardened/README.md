@@ -156,6 +156,7 @@ In that case, the controls placed in the `organization/scc-sha-custom-modules` f
 | `run.allowedIngress` | Ensure Cloud Run services only allow internal and load balancer traffic. |  |
 | `run.allowedVPCEgress` | Ensure all egress traffic from Cloud Run services and jobs is routed through a VPC network. |  |
 | `run.managed.disableEphemeralDisk` | Disable unencrypted ephemeral disk storage on Cloud Run services. | **FedRAMP 20x** |
+| `run.managed.disableInlinedSource` | Prevent deploying Cloud Run services using inlined source code. |  |
 | `run.managed.disableJobsEphemeralDisk` | Disable unencrypted ephemeral disk storage on Cloud Run jobs. | **FedRAMP 20x** |
 | `run.managed.disableWorkerPoolsEphemeralDisk` | Disable unencrypted ephemeral disk storage on Cloud Run worker pools. | **FedRAMP 20x** |
 | `run.managed.requireInvokerIam` | Enforce an IAM invoker check for Cloud Run services. |  |

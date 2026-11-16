@@ -130,9 +130,9 @@ values:
     remote_traffic_selector:
     - 0.0.0.0/0
     router: null
-    shared_secret: mysecret
+    shared_secret: null
     shared_secret_wo: null
-    shared_secret_wo_version: null
+    shared_secret_wo_version: '1'
     terraform_labels:
       goog-terraform-provisioned: 'true'
     timeouts: null

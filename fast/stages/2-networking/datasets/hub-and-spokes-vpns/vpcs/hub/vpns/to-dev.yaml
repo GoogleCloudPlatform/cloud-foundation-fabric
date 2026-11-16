@@ -38,14 +38,16 @@ router_config:
   name: $routers:hub/vpn-router
 tunnels:
   remote-0:
-    shared_secret: foobar
+    shared_secret:
+      value: foobar
     bgp_peer:
       address: 169.254.3.1
       asn: 64516
     bgp_session_range: "169.254.3.2/30"
     vpn_gateway_interface: 0
   remote-1:
-    shared_secret: foobar
+    shared_secret:
+      value: foobar
     bgp_peer:
       address: 169.254.3.5
       asn: 64516

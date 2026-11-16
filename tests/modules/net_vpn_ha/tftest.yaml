@@ -16,3 +16,6 @@ module: modules/net-vpn-ha
 
 tests:
   context:
+  shared_secret_path:
+    extra_dirs:
+      - ../../tests/modules/net_vpn_ha/vpn-secret

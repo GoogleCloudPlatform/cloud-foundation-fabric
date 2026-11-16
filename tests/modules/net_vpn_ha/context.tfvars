@@ -40,7 +40,7 @@ tunnels = {
       asn     = 64514
     }
     bgp_session_range     = "169.254.1.1/30"
-    shared_secret         = "foo"
+    shared_secret         = { value = "foo" }
     vpn_gateway_interface = 0
   }
   remote-1 = {
@@ -49,7 +49,7 @@ tunnels = {
       asn     = 64514
     }
     bgp_session_range     = "169.254.2.1/30"
-    shared_secret         = "foo"
+    shared_secret         = { value = "foo" }
     vpn_gateway_interface = 1
   }
 }

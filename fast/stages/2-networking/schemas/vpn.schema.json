@@ -230,7 +230,23 @@
           "type": "number"
         },
         "shared_secret": {
-          "type": "string"
+          "type": "object",
+          "description": "The shared secret (optional).",
+          "additionalProperties": false,
+          "properties": {
+            "value": {
+              "type": "string",
+              "description": "The shared secret value."
+            },
+            "path": {
+              "type": "string",
+              "description": "File path relative to the stage directory, read at every plan."
+            },
+            "wo_version": {
+              "type": "number",
+              "description": "Switches to the provider write-only attribute."
+            }
+          }
         },
         "vpn_gateway_interface": {
           "type": "number"
