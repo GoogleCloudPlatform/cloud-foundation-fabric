@@ -1,0 +1,146 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  google_spanner_database.spanner_databases["my-db"]:
+    ddl: []
+    default_time_zone: null
+    deletion_policy: DELETE
+    deletion_protection: false
+    enable_drop_protection: false
+    encryption_config:
+    - kms_key_name: projects/kms-prj/locations/us-central1/keyRings/kr/cryptoKeys/key
+    instance: my-instance
+    name: my-db
+    project: test-spanner-prj
+    timeouts: null
+  google_spanner_database_iam_binding.authoritative["my-db.$custom_roles:myrole"]:
+    condition: []
+    database: my-db
+    instance: my-instance
+    members:
+    - group:group1@example.com
+    project: test-spanner-prj
+    role: organizations/366118655033/roles/myRoleOne
+  google_spanner_database_iam_binding.authoritative["my-db.roles/spanner.databaseUser"]:
+    condition: []
+    database: my-db
+    instance: my-instance
+    members:
+    - user:user1@example.com
+    project: test-spanner-prj
+    role: roles/spanner.databaseUser
+  google_spanner_database_iam_binding.bindings["my-db.db-reader"]:
+    condition:
+    - description: null
+      expression: resource.name.endsWith('/my_role')
+      title: db-role
+    database: my-db
+    instance: my-instance
+    members:
+    - group:group1@example.com
+    project: test-spanner-prj
+    role: roles/spanner.fineGrainedAccessUser
+  google_spanner_database_iam_member.bindings["my-db.db-admin"]:
+    condition:
+    - description: null
+      expression: resource.name.endsWith('/my_role')
+      title: db-admin-role
+    database: my-db
+    instance: my-instance
+    member: user:user1@example.com
+    project: test-spanner-prj
+    role: roles/spanner.databaseAdmin
+  google_spanner_instance.spanner_instance[0]:
+    autoscaling_config: []
+    config: custom-regional-config
+    deletion_policy: DELETE
+    display_name: Custom config instance
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    force_destroy: false
+    labels: null
+    name: my-instance
+    num_nodes: 1
+    project: test-spanner-prj
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+  google_spanner_instance_config.spanner_instance_config[0]:
+    base_config: nam3
+    deletion_policy: DELETE
+    display_name: custom-regional-config
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    labels: null
+    name: custom-regional-config
+    project: test-spanner-prj
+    replicas:
+    - default_leader_location: false
+      location: us-east1
+      type: READ_ONLY
+    - default_leader_location: true
+      location: us-central1
+      type: READ_WRITE
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+  google_spanner_instance_iam_binding.authoritative["$custom_roles:myrole"]:
+    condition: []
+    members:
+    - user:user1@example.com
+    project: test-spanner-prj
+    role: organizations/366118655033/roles/myRoleOne
+  google_spanner_instance_iam_binding.authoritative["roles/spanner.viewer"]:
+    condition: []
+    members:
+    - group:group1@example.com
+    project: test-spanner-prj
+    role: roles/spanner.viewer
+  google_spanner_instance_iam_binding.bindings["instance-reader"]:
+    condition:
+    - description: null
+      expression: resource.name.endsWith('/my_role')
+      title: instance-role
+    members:
+    - group:group1@example.com
+    project: test-spanner-prj
+    role: roles/spanner.databaseReader
+  google_spanner_instance_iam_member.bindings["instance-admin"]:
+    condition:
+    - description: null
+      expression: resource.name.endsWith('/my_role')
+      title: instance-admin-role
+    member: user:user1@example.com
+    project: test-spanner-prj
+    role: organizations/366118655033/roles/myRoleOne
+
+counts:
+  google_spanner_database: 1
+  google_spanner_database_iam_binding: 3
+  google_spanner_database_iam_member: 1
+  google_spanner_instance: 1
+  google_spanner_instance_config: 1
+  google_spanner_instance_iam_binding: 3
+  google_spanner_instance_iam_member: 1
+  modules: 0
+  resources: 11
+
+outputs:
+  spanner_database_ids: __missing__
+  spanner_databases: __missing__
+  spanner_instance: __missing__
+  spanner_instance_config: __missing__
+  spanner_instance_config_id: __missing__
+  spanner_instance_id: __missing__
