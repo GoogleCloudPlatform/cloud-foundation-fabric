@@ -53,6 +53,16 @@ values:
     member: group:group3@myorg.com
     project: project-id
     role: roles/spanner.databaseAdmin
+  module.spanner_instance.google_spanner_instance_iam_binding.bindings["spanner-instance-reader"]:
+    condition:
+    - description: null
+      expression: resource.name.endsWith('/my_role')
+      title: instance-role
+    instance: __missing__
+    members:
+    - group:group1@myorg.com
+    project: project-id
+    role: roles/spanner.databaseReader
   module.spanner_instance.google_spanner_instance.spanner_instance[0]:
     autoscaling_config: []
     config: regional-us-central1
@@ -69,5 +79,6 @@ counts:
   google_spanner_database_iam_binding: 2
   google_spanner_database_iam_member: 1
   google_spanner_instance: 1
+  google_spanner_instance_iam_binding: 1
   modules: 1
-  resources: 5
+  resources: 6
