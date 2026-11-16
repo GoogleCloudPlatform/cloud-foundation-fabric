@@ -1,0 +1,120 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.project-factory.module.folder-1-iam["ai"].google_model_armor_floorsetting.default[0]:
+    ai_platform_floor_setting: []
+    enable_floor_setting_enforcement: true
+    filter_config:
+    - malicious_uri_filter_settings:
+      - filter_enforcement: ENABLED
+      pi_and_jailbreak_filter_settings:
+      - confidence_level: MEDIUM_AND_ABOVE
+        filter_enforcement: ENABLED
+      rai_settings:
+      - rai_filters:
+        - confidence_level: HIGH
+          filter_type: HARASSMENT
+        - confidence_level: MEDIUM_AND_ABOVE
+          filter_type: DANGEROUS
+      sdp_settings:
+      - advanced_config: []
+        basic_config:
+        - filter_enforcement: ENABLED
+    floor_setting_metadata:
+    - multi_language_detection:
+      - enable_multi_language_detection: false
+    google_mcp_server_floor_setting: []
+    integrated_services: []
+    location: global
+    timeouts: null
+  module.project-factory.module.folder-1["ai"].google_folder.folder[0]:
+    deletion_policy: DELETE
+    deletion_protection: false
+    display_name: AI workloads
+    parent: folders/1234567890
+    tags: null
+    timeouts: null
+  module.project-factory.module.projects-iam["ai-app-0"].google_model_armor_floorsetting.default[0]:
+    ai_platform_floor_setting:
+    - enable_cloud_logging: true
+      inspect_and_block: true
+      inspect_only: null
+    enable_floor_setting_enforcement: true
+    filter_config:
+    - malicious_uri_filter_settings: []
+      pi_and_jailbreak_filter_settings:
+      - confidence_level: HIGH
+        filter_enforcement: ENABLED
+      rai_settings: []
+      sdp_settings: []
+    floor_setting_metadata:
+    - multi_language_detection:
+      - enable_multi_language_detection: true
+    google_mcp_server_floor_setting: []
+    integrated_services:
+    - AI_PLATFORM
+    location: global
+    parent: projects/foo-ai-app-0
+    timeouts: null
+  module.project-factory.module.projects["ai-app-0"].google_project.project[0]:
+    auto_create_network: false
+    billing_account: 012345-67890A-ABCDEF
+    deletion_policy: DELETE
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    labels: null
+    name: foo-ai-app-0
+    org_id: null
+    project_id: foo-ai-app-0
+    tags: null
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+  module.project-factory.module.projects["ai-app-0"].google_project_iam_member.service_agents["modelarmor"]:
+    condition: []
+    project: foo-ai-app-0
+    role: roles/modelarmor.serviceAgent
+  module.project-factory.module.projects["ai-app-0"].google_project_service.project_services["modelarmor.googleapis.com"]:
+    deletion_policy: DELETE
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: foo-ai-app-0
+    service: modelarmor.googleapis.com
+    timeouts: null
+  module.project-factory.module.projects["ai-app-0"].google_project_service_identity.default["modelarmor.googleapis.com"]:
+    project: foo-ai-app-0
+    service: modelarmor.googleapis.com
+    timeouts: null
+  module.project-factory.terraform_data.defaults_preconditions:
+    input: null
+    output: null
+    triggers_replace: null
+  module.project-factory.terraform_data.project_preconditions:
+    input: null
+    output: null
+    triggers_replace: null
+
+counts:
+  google_folder: 1
+  google_model_armor_floorsetting: 2
+  google_project: 1
+  google_project_iam_member: 1
+  google_project_service: 1
+  google_project_service_identity: 1
+  modules: 5
+  resources: 9
+  terraform_data: 2
+
+outputs: {}

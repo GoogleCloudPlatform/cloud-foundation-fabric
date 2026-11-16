@@ -75,9 +75,13 @@ variable "tunnels" {
         pfs        = optional(list(string))
       }))
     }))
-    ike_version   = optional(number, 2)
-    peer_ip       = string
-    shared_secret = optional(string)
+    ike_version = optional(number, 2)
+    peer_ip     = string
+    shared_secret = optional(object({
+      value      = optional(string)
+      path       = optional(string)
+      wo_version = optional(number)
+    }))
     traffic_selectors = object({
       local  = list(string)
       remote = list(string)
@@ -85,4 +89,12 @@ variable "tunnels" {
   }))
   default  = {}
   nullable = false
+
+  validation {
+    condition = alltrue([
+      for k, v in var.tunnels :
+      try(v.shared_secret.value, null) == null || try(v.shared_secret.path, null) == null
+    ])
+    error_message = "Only one of shared_secret.value and shared_secret.path can be set."
+  }
 }

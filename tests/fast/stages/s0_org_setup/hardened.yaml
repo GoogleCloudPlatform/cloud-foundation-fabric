@@ -4596,20 +4596,6 @@ values:
     resource_types:
     - compute.googleapis.com/Network
     timeouts: null
-  ? module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.networkRequireSubnetPrivateGoogleAccess"]
-  : action_type: DENY
-    condition: '!resource.privateIpGoogleAccess && resource.purpose in [''REGIONAL_MANAGED_PROXY'',
-      ''GLOBAL_MANAGED_PROXY''] == false'
-    description: Enforce that the VPC network subnets are configured with private
-      Google access
-    display_name: Require Private Google Access
-    method_types:
-    - CREATE
-    name: custom.networkRequireSubnetPrivateGoogleAccess
-    parent: organizations/1234567890
-    resource_types:
-    - compute.googleapis.com/Subnetwork
-    timeouts: null
   module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.redisRequireMaintenancePolicy"]:
     action_type: DENY
     condition: '!has(resource.maintenancePolicy) ||
@@ -7377,21 +7363,6 @@ values:
         parameters: null
         values: []
     timeouts: null
-  module.organization-iam[0].google_org_policy_policy.default["custom.networkRequireSubnetPrivateGoogleAccess"]:
-    dry_run_spec: []
-    name: organizations/1234567890/policies/custom.networkRequireSubnetPrivateGoogleAccess
-    parent: organizations/1234567890
-    spec:
-    - inherit_from_parent: null
-      reset: null
-      rules:
-      - allow_all: null
-        condition: []
-        deny_all: null
-        enforce: 'TRUE'
-        parameters: null
-        values: []
-    timeouts: null
   module.organization-iam[0].google_org_policy_policy.default["custom.storageRequireRetentionOrSoftDelete"]:
     dry_run_spec: []
     name: organizations/1234567890/policies/custom.storageRequireRetentionOrSoftDelete
@@ -8088,6 +8059,21 @@ values:
   module.organization-iam[0].google_org_policy_policy.default["run.managed.disableEphemeralDisk"]:
     dry_run_spec: []
     name: organizations/1234567890/policies/run.managed.disableEphemeralDisk
+    parent: organizations/1234567890
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+    timeouts: null
+  module.organization-iam[0].google_org_policy_policy.default["run.managed.disableInlinedSource"]:
+    dry_run_spec: []
+    name: organizations/1234567890/policies/run.managed.disableInlinedSource
     parent: organizations/1234567890
     spec:
     - inherit_from_parent: null
@@ -10244,7 +10230,7 @@ counts:
   google_logging_project_bucket_config: 6
   google_logging_project_settings: 3
   google_monitoring_alert_policy: 10
-  google_org_policy_custom_constraint: 136
+  google_org_policy_custom_constraint: 135
   google_org_policy_policy: 206
   google_organization_iam_audit_config: 1
   google_organization_iam_binding: 43
@@ -10270,7 +10256,7 @@ counts:
   google_tags_tag_value_iam_binding: 4
   local_file: 9
   modules: 54
-  resources: 762
+  resources: 761
   terraform_data: 4
 
 outputs:

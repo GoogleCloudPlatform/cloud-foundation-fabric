@@ -257,6 +257,9 @@ module "projects-iam" {
   metric_scopes = distinct(concat(
     each.value.metric_scopes, var.data_merges.metric_scopes
   ))
+  model_armor_floor_setting = lookup(
+    each.value, "model_armor_floor_setting", null
+  )
   pam_entitlements = try(each.value.pam_entitlements, {})
   # The second pass handles the authoritative cloudservices editor binding.
   # We disable primary agents creation and default roles here because they

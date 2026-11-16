@@ -9,6 +9,9 @@ This module makes it easy to deploy either GCP-to-GCP or GCP-to-On-prem [Cloud H
   - [GCP to on-prem with custom ciphers](#gcp-to-on-prem-with-custom-ciphers)
   - [IPv6 (dual-stack)](#ipv6-dual-stack)
   - [BGP Route Policies](#bgp-route-policies)
+- [Secret values](#secret-values)
+  - [Creating a pre-shared key](#creating-a-pre-shared-key)
+  - [Upgrading existing tunnels safely](#upgrading-existing-tunnels-safely)
 - [Recipes](#recipes)
 - [Variables](#variables)
 - [Outputs](#outputs)
@@ -74,7 +77,7 @@ module "vpn-2" {
         asn     = 64514
       }
       bgp_session_range     = "169.254.1.1/30"
-      shared_secret         = module.vpn-1.shared_secrets["remote-0"]
+      shared_secret         = { value = module.vpn-1.shared_secrets["remote-0"] }
       vpn_gateway_interface = 0
     }
     remote-1 = {
@@ -83,7 +86,7 @@ module "vpn-2" {
         asn     = 64514
       }
       bgp_session_range     = "169.254.2.1/30"
-      shared_secret         = module.vpn-1.shared_secrets["remote-1"]
+      shared_secret         = { value = module.vpn-1.shared_secrets["remote-1"] }
       vpn_gateway_interface = 1
     }
   }
@@ -130,8 +133,11 @@ module "vpn_ha" {
       }
       bgp_session_range               = "169.254.1.2/30"
       peer_external_gateway_interface = 0
-      shared_secret                   = "mySecret"
-      vpn_gateway_interface           = 0
+      shared_secret = {
+        value      = "mySecret"
+        wo_version = 1
+      }
+      vpn_gateway_interface = 0
     }
     remote-1 = {
       bgp_peer = {
@@ -151,8 +157,11 @@ module "vpn_ha" {
       }
       bgp_session_range               = "169.254.2.2/30"
       peer_external_gateway_interface = 0
-      shared_secret                   = "mySecret"
-      vpn_gateway_interface           = 1
+      shared_secret = {
+        value      = "mySecret"
+        wo_version = 1
+      }
+      vpn_gateway_interface = 1
     }
   }
 }
@@ -209,7 +218,7 @@ module "vpn_ha" {
         }
       }
       peer_external_gateway_interface = 0
-      shared_secret                   = "mySecret"
+      shared_secret                   = { value = "mySecret" }
       vpn_gateway_interface           = 0
     }
     remote-1 = {
@@ -243,7 +252,7 @@ module "vpn_ha" {
         }
       }
       peer_external_gateway_interface = 0
-      shared_secret                   = "mySecret"
+      shared_secret                   = { value = "mySecret" }
       vpn_gateway_interface           = 1
     }
   }
@@ -280,7 +289,7 @@ module "vpn_ha" {
       }
       bgp_session_range               = "169.254.1.2/30"
       peer_external_gateway_interface = 0
-      shared_secret                   = "mySecret"
+      shared_secret                   = { value = "mySecret" }
       vpn_gateway_interface           = 0
     }
     remote-1 = {
@@ -294,7 +303,7 @@ module "vpn_ha" {
       }
       bgp_session_range               = "169.254.2.2/30"
       peer_external_gateway_interface = 0
-      shared_secret                   = "mySecret"
+      shared_secret                   = { value = "mySecret" }
       vpn_gateway_interface           = 1
     }
   }
@@ -390,7 +399,7 @@ module "vpn_ha" {
       }
       bgp_session_range               = "169.254.1.2/30"
       peer_external_gateway_interface = 0
-      shared_secret                   = "mySecret"
+      shared_secret                   = { value = "mySecret" }
       vpn_gateway_interface           = 0
     }
     remote-1 = {
@@ -402,7 +411,7 @@ module "vpn_ha" {
       }
       bgp_session_range               = "169.254.2.2/30"
       peer_external_gateway_interface = 0
-      shared_secret                   = "mySecret"
+      shared_secret                   = { value = "mySecret" }
       vpn_gateway_interface           = 1
     }
   }
@@ -413,6 +422,36 @@ module "vpn_ha" {
 Policies are created on the router with their map key as name, and peers reference them by that same key. Editing a term is an in-place update, so names stay stable. Names the module does not manage (for example policies already defined on a pre-existing router) are passed through to the peer unchanged.
 
 You can optionally avoid to specify MD5 keys and the module will automatically generate them for you.
+
+## Secret values
+
+`tunnels.*.shared_secret` is an object that follows the [shape used for secrets across modules](../../adrs/modules/20261029-write-only-secrets.md):
+
+- `value` is the secret itself
+- `path` is the path to a file containing the secret, read via `file(pathexpand(path))` and relative to the root module; the file must exist at every plan
+- `wo_version` switches to the provider's write-only attribute, so that the secret is never stored in state; bump the number whenever the secret changes and needs to be sent again
+
+Only one of `value` and `path` can be set, and the secret value or file must remain present at every plan (`google_compute_vpn_tunnel` enforces `ExactlyOneOf` and `RequiredWith` on raw configuration). Without `wo_version` the secret is stored in state, and that form should only be used when this is acceptable or when upgrading an existing plain-secret tunnel in place.
+
+When `shared_secret` is omitted (`null`), the module falls back to its internally generated `random_secret` (stored in state). When `wo_version` is set on a tunnel, its entry in the `shared_secrets` output is `null` so the secret is not persisted in state.
+
+### Creating a pre-shared key
+
+Cloud VPN accepts pre-shared keys of 1 to 128 printable ASCII characters and recommends a 24-byte random value encoded in Base64 (32 characters):
+
+```bash
+# print a 32-character secret for inline/variable use
+openssl rand -base64 24
+
+# write a secret file for shared_secret.path without a trailing newline
+openssl rand -base64 24 | tr -d '\n' > vpn-psk.txt
+```
+
+Strip the trailing newline (`tr -d '\n'`) when writing secret files referenced via `path`: `file(pathexpand(path))` reads the file verbatim, so a trailing `\n` becomes part of the Google Cloud tunnel secret and will mismatch a peer router configured with the single-line string.
+
+### Upgrading existing tunnels safely
+
+Both `shared_secret` and `shared_secret_wo_version` on `google_compute_vpn_tunnel` are immutable (`ForceNew`). When upgrading an existing deployment from a string secret (`shared_secret = "..."`), migrate to `shared_secret = { value = "..." }` (or `{ path = "..." }`) and leave `wo_version` unset to converge with zero tunnel downtime. Adding or changing `wo_version` on an already-deployed tunnel destroys and recreates the live IPsec tunnel; use `wo_version` on new tunnels or during a planned maintenance window.
 <!-- BEGIN TFDOC -->
 ## Recipes
 
@@ -430,8 +469,8 @@ You can optionally avoid to specify MD5 keys and the module will automatically g
 | [context](variables.tf#L17) | Context-specific interpolations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [peer_gateways](variables.tf#L41) | Configuration of the (external or GCP) peer gateway. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [tunnels](variables.tf#L132) | VPN tunnel configurations. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [vpn_gateway](variables.tf#L188) | HA VPN Gateway Self Link for using an existing HA VPN Gateway. Ignored if `vpn_gateway_create` is set to `true`. | <code>string</code> |  | <code>null</code> |
-| [vpn_gateway_create](variables.tf#L194) | Create HA VPN Gateway. Set to null to avoid creation. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [vpn_gateway](variables.tf#L200) | HA VPN Gateway Self Link for using an existing HA VPN Gateway. Ignored if `vpn_gateway_create` is set to `true`. | <code>string</code> |  | <code>null</code> |
+| [vpn_gateway_create](variables.tf#L206) | Create HA VPN Gateway. Set to null to avoid creation. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
 
@@ -449,7 +488,7 @@ You can optionally avoid to specify MD5 keys and the module will automatically g
 | [router_name](outputs.tf#L77) | Router name. |  |
 | [self_link](outputs.tf#L82) | HA VPN gateway self link. |  |
 | [shared_secrets](outputs.tf#L87) | IPSEC tunnels shared secrets. | ✓ |
-| [tunnel_names](outputs.tf#L96) | VPN tunnel names. |  |
-| [tunnel_self_links](outputs.tf#L104) | VPN tunnel self links. |  |
-| [tunnels](outputs.tf#L112) | VPN tunnel resources. |  |
+| [tunnel_names](outputs.tf#L99) | VPN tunnel names. |  |
+| [tunnel_self_links](outputs.tf#L107) | VPN tunnel self links. |  |
+| [tunnels](outputs.tf#L115) | VPN tunnel resources. |  |
 <!-- END TFDOC -->

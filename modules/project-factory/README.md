@@ -45,6 +45,7 @@ The code is meant to be executed by a high level service account with powerful p
   - [Other context ids](#other-context-ids)
   - [IAM condition variables](#iam-condition-variables)
 - [Service agent grants outside the project](#service-agent-grants-outside-the-project)
+- [Model Armor floor settings](#model-armor-floor-settings)
 - [Example](#example)
 - [Files](#files)
 - [Variables](#variables)
@@ -474,6 +475,61 @@ The `service_agents_project_bindings` and `service_agents_folder_bindings` proje
 Where both the granting project and the target are managed by the same factory, using `iam_by_principals` in combination with the `$service_agents` context is the preferred way of accomplishing the same, as it defines IAM grants in the context of the resource they apply to instead of the other way round.
 
 Reach for the service agent grants attributes when the target lives outside the factory, for example a folder or a project owned by a preceding stage. Service agents are defined here and are not known on the resource side, so granting from this end avoids shuffling static values around between stages, in the form of fully qualified service agent emails.
+
+## Model Armor floor settings
+
+Folders and projects support the `model_armor_floor_setting` attribute, which is passed through to the `model_armor_floor_setting` variable of the [folder](../folder/) and [project](../project/) modules. Integrated services (`ai_platform`, `google_mcp_server`) are only supported on projects, so they are only accepted in project files. A folder floor setting also applies to the projects under it.
+
+The floor setting is a singleton: removing the attribute does not reset it in GCP. The identity running the factory needs the Model Armor floor settings admin role (`roles/modelarmor.floorSettingsAdmin`) on the folder or project.
+
+```hcl
+module "project-factory" {
+  source = "./fabric/modules/project-factory"
+  data_defaults = {
+    billing_account = "012345-67890A-ABCDEF"
+    locations = {
+      storage = "eu"
+    }
+    prefix = "foo"
+  }
+  factories_config = {
+    basepath = "data"
+  }
+}
+# tftest files=ma-0,ma-1 inventory=model-armor.yaml
+```
+
+```yaml
+parent: folders/1234567890
+name: AI workloads
+model_armor_floor_setting:
+  filters:
+    malicious_uris: true
+    pi_and_jailbreak:
+      confidence_level: MEDIUM_AND_ABOVE
+    rai:
+      DANGEROUS: MEDIUM_AND_ABOVE
+      HARASSMENT: HIGH
+    sdp:
+      basic: true
+# tftest-file id=ma-0 path=data/folders/ai/.config.yaml schema=folder.schema.json
+```
+
+```yaml
+parent: $folder_ids:ai
+services:
+  - modelarmor.googleapis.com
+model_armor_floor_setting:
+  multi_language_detection: true
+  filters:
+    pi_and_jailbreak:
+      confidence_level: HIGH
+  integrated_services:
+    ai_platform:
+      mode: inspect_and_block
+      cloud_logging: true
+# tftest-file id=ma-1 path=data/projects/ai-app-0.yaml schema=project.schema.json
+```
 
 ## Example
 

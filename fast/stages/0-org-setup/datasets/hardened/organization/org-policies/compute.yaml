@@ -166,10 +166,6 @@ compute.vmExternalIpAccess:
 #   rules:
 #     - enforce: true
 
-custom.networkRequireSubnetPrivateGoogleAccess:
-  rules:
-    - enforce: true
-
 gcp.restrictTLSCipherSuites:
   rules:
     - allow:

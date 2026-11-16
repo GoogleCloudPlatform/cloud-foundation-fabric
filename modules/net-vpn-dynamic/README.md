@@ -7,6 +7,9 @@ This module makes it easy to deploy a [Classic VPN](https://docs.cloud.google.co
   - [Classic VPN with single tunnel](#classic-vpn-with-single-tunnel)
   - [Classic VPN with single tunnel and custom ciphers](#classic-vpn-with-single-tunnel-and-custom-ciphers)
   - [Classic VPN with single tunnel and BGP Route Policies](#classic-vpn-with-single-tunnel-and-bgp-route-policies)
+- [Secret values](#secret-values)
+  - [Creating a pre-shared key](#creating-a-pre-shared-key)
+  - [Upgrading existing tunnels safely](#upgrading-existing-tunnels-safely)
 - [Variables](#variables)
 - [Outputs](#outputs)
 <!-- END TOC -->
@@ -225,6 +228,36 @@ module "vpn-dynamic" {
 ```
 
 Policies are created on the router with their map key as name, and peers reference them by that same key. Editing a term is an in-place update, so names stay stable. Names the module does not manage (for example policies already defined on a pre-existing router) are passed through to the peer unchanged.
+
+## Secret values
+
+`tunnels.*.shared_secret` is an object that follows the [shape used for secrets across modules](../../adrs/modules/20261029-write-only-secrets.md):
+
+- `value` is the secret itself
+- `path` is the path to a file containing the secret, read via `file(pathexpand(path))` and relative to the root module; the file must exist at every plan
+- `wo_version` switches to the provider's write-only attribute, so that the secret is never stored in state; bump the number whenever the secret changes and needs to be sent again
+
+Only one of `value` and `path` can be set, and the secret value or file must remain present at every plan (`google_compute_vpn_tunnel` enforces `ExactlyOneOf` and `RequiredWith` on raw configuration). Without `wo_version` the secret is stored in state, and that form should only be used when this is acceptable or when upgrading an existing plain-secret tunnel in place.
+
+When `shared_secret` is omitted (`null`), the module falls back to its internally generated `random_secret` (stored in state).
+
+### Creating a pre-shared key
+
+Cloud VPN accepts pre-shared keys of 1 to 128 printable ASCII characters and recommends a 24-byte random value encoded in Base64 (32 characters):
+
+```bash
+# print a 32-character secret for inline/variable use
+openssl rand -base64 24
+
+# write a secret file for shared_secret.path without a trailing newline
+openssl rand -base64 24 | tr -d '\n' > vpn-psk.txt
+```
+
+Strip the trailing newline (`tr -d '\n'`) when writing secret files referenced via `path`: `file(pathexpand(path))` reads the file verbatim, so a trailing `\n` becomes part of the Google Cloud tunnel secret and will mismatch a peer router configured with the single-line string.
+
+### Upgrading existing tunnels safely
+
+Both `shared_secret` and `shared_secret_wo_version` on `google_compute_vpn_tunnel` are immutable (`ForceNew`). When upgrading an existing deployment from a string secret (`shared_secret = "..."`), migrate to `shared_secret = { value = "..." }` (or `{ path = "..." }`) and leave `wo_version` unset to converge with zero tunnel downtime. Adding or changing `wo_version` on an already-deployed tunnel destroys and recreates the live IPsec tunnel; use `wo_version` on new tunnels or during a planned maintenance window.
 <!-- BEGIN TFDOC -->
 ## Variables
 

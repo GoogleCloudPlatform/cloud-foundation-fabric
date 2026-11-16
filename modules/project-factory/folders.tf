@@ -111,6 +111,7 @@ module "folder-1-iam" {
   iam_deny_policies             = lookup(each.value, "iam_deny_policies", {})
   logging_data_access           = lookup(each.value, "data_access_logs", {})
   logging_sinks                 = try(each.value.logging.sinks, {})
+  model_armor_floor_setting     = lookup(each.value, "model_armor_floor_setting", null)
   tag_bindings                  = lookup(each.value, "tag_bindings", {})
   context = merge(local.ctx, {
     tag_vars = {
@@ -196,6 +197,7 @@ module "folder-2-iam" {
   iam_deny_policies             = lookup(each.value, "iam_deny_policies", {})
   logging_data_access           = lookup(each.value, "data_access_logs", {})
   logging_sinks                 = try(each.value.logging.sinks, {})
+  model_armor_floor_setting     = lookup(each.value, "model_armor_floor_setting", null)
   tag_bindings                  = lookup(each.value, "tag_bindings", {})
   context = merge(local.ctx, {
     folder_ids = merge(local.ctx.folder_ids, {
@@ -284,6 +286,7 @@ module "folder-3-iam" {
   iam_deny_policies             = lookup(each.value, "iam_deny_policies", {})
   logging_data_access           = lookup(each.value, "data_access_logs", {})
   logging_sinks                 = try(each.value.logging.sinks, {})
+  model_armor_floor_setting     = lookup(each.value, "model_armor_floor_setting", null)
   tag_bindings                  = lookup(each.value, "tag_bindings", {})
   context = merge(local.ctx, {
     folder_ids = merge(local.ctx.folder_ids, {
@@ -371,6 +374,7 @@ module "folder-4-iam" {
   iam_by_principals_conditional = lookup(each.value, "iam_by_principals_conditional", {})
   logging_data_access           = lookup(each.value, "data_access_logs", {})
   logging_sinks                 = try(each.value.logging.sinks, {})
+  model_armor_floor_setting     = lookup(each.value, "model_armor_floor_setting", null)
   tag_bindings                  = lookup(each.value, "tag_bindings", {})
   iam_deny_policies             = lookup(each.value, "iam_deny_policies", {})
   context = merge(local.ctx, {

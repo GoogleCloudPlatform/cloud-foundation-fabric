@@ -114,3 +114,15 @@ subnets = [
     }
   }
 ]
+subnets_private_nat = [
+  {
+    name          = "private-nat"
+    region        = "$locations:ew8"
+    ip_cidr_range = "$cidr_ranges:rfc1918-10"
+    flow_logs_config = {
+      aggregation_interval = "INTERVAL_5_SEC"
+      flow_sampling        = 0.5
+      metadata             = "INCLUDE_ALL_METADATA"
+    }
+  }
+]

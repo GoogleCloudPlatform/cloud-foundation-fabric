@@ -1,4 +1,4 @@
-# Copyright 2025 Google LLC
+# Copyright 2026 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,16 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# yaml-language-server: $schema=../../../../schemas/custom-constraint.schema.json
-
-custom.networkRequireSubnetPrivateGoogleAccess:
-  action_type: DENY
-  condition: |-
-    !resource.privateIpGoogleAccess && resource.purpose in ['REGIONAL_MANAGED_PROXY', 'GLOBAL_MANAGED_PROXY'] == false
-  description: Enforce that the VPC network subnets are configured with private Google
-    access
-  display_name: Require Private Google Access
-  method_types:
-  - CREATE
-  resource_types:
-  - compute.googleapis.com/Subnetwork
+# tftest schema=fast/stages/2-networking/schemas/vpc.schema.json
+project_id: $project_ids:net-dev-0
+name: dev-0
+ncc_config:
+  hub: $ncc_hubs:hub
+  group: $ncc_groups:hub/default
+  description: Custom NCC spoke description
+  labels:
+    env: dev
+  include_export_ranges:
+    - 10.10.0.0/16
+  exclude_export_ranges:
+    - 10.10.1.0/24

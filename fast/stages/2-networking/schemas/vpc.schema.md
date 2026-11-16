@@ -34,14 +34,6 @@
 - **peering_config**: *reference([peering_config](#refs-peering_config))*
 - **psa_configs**: *array*
   - items: *reference([psa_config](#refs-psa_config))*
-- **subnets**: *array*
-  - items: *reference([subnet](#refs-subnet))*
-- **subnets_private_nat**: *array*
-  - items: *reference([simple_subnet](#refs-simple_subnet))*
-- **subnets_proxy_only**: *array*
-  - items: *reference([proxy_only_subnet](#refs-proxy_only_subnet))*
-- **subnets_psc**: *array*
-  - items: *reference([simple_subnet](#refs-simple_subnet))*
 - **nat_config**: *reference([nat_config](#refs-nat_config))*
 - **ncc_config**: *reference([ncc_config](#refs-ncc_config))*
 
@@ -118,8 +110,18 @@
     - **type**: *string*
       <br>*enum: ['PUBLIC', 'PRIVATE']*
 - **ncc_config**<a name="refs-ncc_config"></a>: *object*
+  <br>*additional properties: false*
   - ⁺**hub**: *string*
   - **group**: *string*
+  - **description**: *string*
+  - **labels**: *object*
+    <br>*additional properties: false*
+    - **`^[a-z][a-z0-9_-]{0,62}$`**: *string*
+      <br>*pattern: ^[a-z0-9_-]{0,63}$*
+  - **exclude_export_ranges**: *array*
+    - items: *string*
+  - **include_export_ranges**: *array*
+    - items: *string*
 - **network_attachments**<a name="refs-network_attachments"></a>: *object*
   - **`^[a-z0-9-]+$`**: *object*
     - **subnet**: *string*
@@ -249,26 +251,6 @@
           - items: *string*
         - **import_policies**: *array*
           - items: *string*
-- **simple_subnet**<a name="refs-simple_subnet"></a>: *object*
-  - ⁺**name**: *string*
-  - ⁺**ip_cidr_range**: *string*
-  - ⁺**region**: *string*
-  - **description**: *string*
-- **subnet**<a name="refs-subnet"></a>: *object*
-  - ⁺**name**: *string*
-  - **ip_cidr_range**: *string*
-  - ⁺**region**: *string*
-  - **description**: *string*
-  - **enable_private_access**: *boolean*
-  - **allow_subnet_cidr_routes_overlap**: *boolean*
-  - **reserved_internal_range**: *string*
-- **proxy_only_subnet**<a name="refs-proxy_only_subnet"></a>: *object*
-  - ⁺**name**: *string*
-  - ⁺**ip_cidr_range**: *string*
-  - ⁺**region**: *string*
-  - **description**: *string*
-  - **active**: *boolean*
-  - **global**: *boolean*
 - **service_connection_policies**<a name="refs-service_connection_policies"></a>: *object*
   <br>*additional properties: false*
   - **`^[a-z0-9-]+$`**: *object*
