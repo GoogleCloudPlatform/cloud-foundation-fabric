@@ -126,6 +126,7 @@ variable "instance" {
     processing_units             = optional(number)
     force_destroy                = optional(bool)
   })
+  nullable = false
   validation {
     condition = (
       var.instance.instance_type == null
