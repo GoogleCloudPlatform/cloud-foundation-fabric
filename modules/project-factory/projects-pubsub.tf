@@ -43,7 +43,7 @@ module "pubsub" {
   for_each = {
     for k in local.projects_pubsub_topics : "${k.project_key}/${k.name}" => k
   }
-  project_id = module.projects-iam[each.value.project_key].project_id
+  project_id = module.projects[each.value.project_key].project_id
   name       = each.value.name
   context = merge(local.ctx, {
     iam_principals = merge(

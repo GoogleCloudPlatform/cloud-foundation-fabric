@@ -88,7 +88,7 @@ locals {
 module "buckets" {
   source                        = "../gcs"
   for_each                      = { for k in local.projects_buckets : k.key => k }
-  project_id                    = module.projects-iam[each.value.project_key].project_id
+  project_id                    = module.projects[each.value.project_key].project_id
   prefix                        = each.value.prefix
   name                          = each.value.name
   autoclass                     = each.value.autoclass

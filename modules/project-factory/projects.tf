@@ -161,7 +161,6 @@ module "projects" {
   log_scopes            = try(each.value.log_scopes, null)
   logging_exclusions    = try(each.value.logging_exclusions, {})
   logging_metrics       = try(each.value.logging_metrics, null)
-  logging_sinks         = try(each.value.logging_sinks, {})
   notification_channels = try(each.value.notification_channels, null)
   quotas                = each.value.quotas
   # Most service agent permissions must be granted in this first pass
@@ -219,8 +218,12 @@ module "projects-iam" {
       projects     = merge(try(local.ctx.tag_vars.projects, {}), local.tag_vars_projects)
       organization = try(local.ctx.tag_vars.organization, {})
     }
-    folder_ids = local.ctx_folder_ids
-    kms_keys   = merge(local.ctx.kms_keys, local.kms_keys)
+    folder_ids      = local.ctx_folder_ids
+    kms_keys        = merge(local.ctx.kms_keys, local.kms_keys)
+    pubsub_topics   = merge(local.ctx.pubsub_topics, local.pubsub_topics)
+    storage_buckets = merge(local.ctx.storage_buckets, local.storage_buckets)
+    log_buckets     = merge(local.ctx.log_buckets, local.log_buckets)
+    logging_sinks   = try(each.value.logging_sinks, {})
     iam_principals = merge(
       local.ctx_iam_principals,
       lookup(local.per_project_service_agents, each.key, {}),
