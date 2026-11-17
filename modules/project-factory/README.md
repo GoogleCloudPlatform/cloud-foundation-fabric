@@ -32,6 +32,7 @@ The code is meant to be executed by a high level service account with powerful p
   - [Projects defined via the `projects` variable](#projects-defined-via-the-projects-variable)
   - [Project templates](#project-templates)
     - [Context expansion for template-derived resources](#context-expansion-for-template-derived-resources)
+  - [Organization policies and tag bindings](#organization-policies-and-tag-bindings)
   - [Service accounts and buckets](#service-accounts-and-buckets)
   - [Automation resources](#automation-resources)
     - [Prefix handling](#prefix-handling)
@@ -133,6 +134,12 @@ The set of available templates is defined via a dedicated path in the `factories
 #### Context expansion for template-derived resources
 
 Using a template makes it hard or impossible to reference project-level resources that contain the project key in the context id, as for example `$iam_principals:service_accounts/my-project/rw`. In those cases, alternate context ids are provided of the form `$iam_principals:service_accounts/_self_/rw`. Those are only available within the scope of the project itself and are currently only supported for service accounts in the `$iam_principals` and `$service_account_ids` context namespaces.
+
+### Organization policies and tag bindings
+
+Project-level organization policies and tag bindings are created after the project's own resources (services, Workload Identity pools and providers, and the other resources of the first module call), because they need the expanded context. The same is true of organization policies and tag bindings set on folders managed by the factory.
+
+An exception that must be in place for one of those resources to be created, for example an allowed issuer in `iam.workloadIdentityPoolProviders` for the project's own providers, or the tag binding that a conditional policy matches on, cannot be introduced in the same change as the resources that need it. Organization policies can also take several minutes to become effective, so a single apply would not work even if they were created first: apply the exception first, at folder or project level, and add the resources that need it in a later change.
 
 ### Service accounts and buckets
 
