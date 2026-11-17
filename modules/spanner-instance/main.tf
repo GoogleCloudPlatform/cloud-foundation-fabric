@@ -15,6 +15,13 @@
  */
 
 locals {
+  ctx = {
+    for k, v in var.context : k => {
+      for kk, vv in v : "${local.ctx_p}${k}:${kk}" => vv
+    } if !endswith(k, "_vars")
+  }
+  ctx_p      = "$"
+  project_id = lookup(local.ctx.project_ids, var.project_id, var.project_id)
   spanner_instance = (
     var.instance_create
     ? google_spanner_instance.spanner_instance[0]
@@ -25,7 +32,7 @@ locals {
 resource "google_spanner_instance_config" "spanner_instance_config" {
   count   = try(var.instance.config.auto_create, null) == null ? 0 : 1
   name    = var.instance.config.name
-  project = var.project_id
+  project = local.project_id
   display_name = coalesce(
     var.instance.config.auto_create.display_name, var.instance.config.name
   )
@@ -33,7 +40,9 @@ resource "google_spanner_instance_config" "spanner_instance_config" {
   dynamic "replicas" {
     for_each = var.instance.config.auto_create.replicas
     content {
-      location                = replicas.value.location
+      location = lookup(
+        local.ctx.locations, replicas.value.location, replicas.value.location
+      )
       type                    = replicas.value.type
       default_leader_location = replicas.value.default_leader_location
     }
@@ -43,13 +52,13 @@ resource "google_spanner_instance_config" "spanner_instance_config" {
 
 data "google_spanner_instance" "spanner_instance" {
   count   = var.instance_create ? 0 : 1
-  project = var.project_id
+  project = local.project_id
   name    = var.instance.name
 }
 
 resource "google_spanner_instance" "spanner_instance" {
   count   = var.instance_create ? 1 : 0
-  project = var.project_id
+  project = local.project_id
   config = (
     var.instance.config.auto_create == null
     ? var.instance.config.name
@@ -57,6 +66,7 @@ resource "google_spanner_instance" "spanner_instance" {
   )
   name                         = var.instance.name
   display_name                 = coalesce(var.instance.display_name, var.instance.name)
+  instance_type                = var.instance.instance_type
   num_nodes                    = var.instance.num_nodes
   labels                       = var.instance.labels
   force_destroy                = var.instance.force_destroy
@@ -90,7 +100,7 @@ resource "google_spanner_instance" "spanner_instance" {
 
 resource "google_spanner_database" "spanner_databases" {
   for_each                 = var.databases
-  project                  = var.project_id
+  project                  = local.project_id
   instance                 = local.spanner_instance.name
   name                     = each.key
   ddl                      = each.value.ddl
@@ -101,7 +111,9 @@ resource "google_spanner_database" "spanner_databases" {
   dynamic "encryption_config" {
     for_each = each.value.kms_key_name == null ? [] : [""]
     content {
-      kms_key_name = each.value.kms_key_name
+      kms_key_name = lookup(
+        local.ctx.kms_keys, each.value.kms_key_name, each.value.kms_key_name
+      )
     }
   }
 }

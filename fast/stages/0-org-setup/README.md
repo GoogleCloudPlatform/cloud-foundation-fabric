@@ -816,7 +816,7 @@ workload_identity_pools:
             template: okta
 ```
 
-- Under `org_policies`, add your Okta issuer URL to the list of allowed Workload Identity providers:
+- Under `org_policies`, add your Okta issuer URL to the list of allowed Workload Identity providers. Apply this change before adding the provider above: the policy is created after the project's Workload Identity providers and takes several minutes to become effective, so the two cannot go in the same apply.
 
 ```yaml
 # datasets/classic/projects/core/iac-0.yaml

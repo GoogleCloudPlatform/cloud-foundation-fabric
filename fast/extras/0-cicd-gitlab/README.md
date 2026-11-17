@@ -280,18 +280,20 @@ terraform init
 terraform apply
 ```
 
-Navigate Gitlab URL and check whether new groups and projects has been
-bootstrapped successfully. Update the default pipeline template replacing the
-ssh-keyscan default configuration with the following commands:
+Open the GitLab URL and check that Terraform created the groups and projects.
+For a self-hosted GitLab instance, replace the default `gitlab.com` `known_hosts`
+entries in the workflow template with your server's verified SSH host public keys:
 
 ```bash
-ssh-keyscan -p 2222 -H 'gitlab.gcp.example.com' >> ~/.ssh/known_hosts
-ssh-keyscan -p 2222 gitlab.gcp.example.com | sort -u - ~/.ssh/known_hosts -o ~/.ssh/known_hosts
+cat <<'EOF' > ~/.ssh/known_hosts
+[gitlab.gcp.example.com]:2222 ssh-ed25519 <VERIFIED_HOST_PUBLIC_KEY>
+EOF
 ```
 
-Please specify the right hostname and port for the gitlab executor to fetch the
-right host key otherwise you might get an _Host key verification failed._ during
-terraform init.
+Verify the host key fingerprint out of band on your GitLab instance's
+`/help/instance_configuration` page before adding it. Use the exact hostname and
+SSH port that the runner connects to, or `terraform init` fails with
+`Host key verification failed.`
 
 Try to create a merge request to trigger a CI pipeline on one of FAST stages and
 check if the plan pipeline executes successfully.

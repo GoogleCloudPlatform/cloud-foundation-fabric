@@ -86,6 +86,30 @@ module "spanner_instance" {
 # tftest modules=1 resources=2 inventory=instance-with-custom-config.yaml
 ```
 
+### Free instance
+
+When `instance_type` is set to `FREE_INSTANCE`, capacity settings (`num_nodes`, `processing_units`, `autoscaling`), `edition`, and `AUTOMATIC` backup schedules are not supported.
+
+```hcl
+module "spanner_instance" {
+  source     = "./fabric/modules/spanner-instance"
+  project_id = var.project_id
+  instance = {
+    name                         = "my-free-instance"
+    display_name                 = "Free instance in us-central1"
+    instance_type                = "FREE_INSTANCE"
+    default_backup_schedule_type = "NONE"
+    config = {
+      name = "regional-us-central1"
+    }
+  }
+  databases = {
+    my-database = {}
+  }
+}
+# tftest modules=1 resources=2 inventory=free-instance.yaml
+```
+
 ### New database in existing instance
 
 ```hcl
@@ -111,6 +135,17 @@ module "spanner_instance" {
 module "spanner_instance" {
   source     = "./fabric/modules/spanner-instance"
   project_id = var.project_id
+  context = {
+    condition_vars = {
+      spanner = {
+        db_role = "my_role"
+      }
+    }
+    iam_principals = {
+      group1 = "group:group1@myorg.com"
+      group2 = "group:group2@myorg.com"
+    }
+  }
   instance = {
     name         = "my-instance"
     display_name = "Regional instance"
@@ -118,6 +153,16 @@ module "spanner_instance" {
       name = "regional-us-central1"
     }
     num_nodes = 1
+  }
+  iam_bindings = {
+    "spanner-instance-reader" = {
+      role    = "roles/spanner.databaseReader"
+      members = ["$iam_principals:group1"]
+      condition = {
+        title      = "instance-role"
+        expression = "resource.name.endsWith('/$${spanner.db_role}')"
+      }
+    }
   }
   databases = {
     my-database = {
@@ -161,20 +206,22 @@ module "spanner_instance" {
     }
   }
 }
-# tftest modules=1 resources=5 inventory=iam.yaml
+# tftest modules=1 resources=6 inventory=iam.yaml
 ```
 <!-- BEGIN TFDOC -->
 ## Variables
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [instance](variables.tf#L90) | Instance attributes. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
-| [project_id](variables.tf#L137) | Project id. | <code>string</code> | ✓ |  |
-| [databases](variables.tf#L17) | Databases. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [iam](variables.tf#L64) | IAM bindings in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [iam_bindings](variables.tf#L70) | Authoritative IAM bindings in {KEY => {role = ROLE, members = [], condition = {}}}. Keys are arbitrary. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [iam_bindings_additive](variables.tf#L80) | Individual additive IAM bindings. Keys are arbitrary. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [instance_create](variables.tf#L130) | Set to false to manage databases and IAM bindings in an existing instance. | <code>bool</code> |  | <code>true</code> |
+| [instance](variables.tf#L122) | Instance attributes. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| [project_id](variables.tf#L190) | Project id. | <code>string</code> | ✓ |  |
+| [context](variables.tf#L17) | Context-specific interpolations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [databases](variables.tf#L31) | Databases. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [iam](variables.tf#L79) | IAM bindings in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [iam_bindings](variables.tf#L85) | Authoritative IAM bindings in {KEY => {role = ROLE, members = [], condition = {}}}. Keys are arbitrary. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [iam_bindings_additive](variables.tf#L100) | Individual additive IAM bindings. Keys are arbitrary. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [iam_by_principals](variables.tf#L115) | Authoritative IAM binding in {PRINCIPAL => [ROLES]} format. Principals need to be statically defined to avoid cycle errors. Merged internally with the `iam` variable. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [instance_create](variables.tf#L184) | Set to false to manage databases and IAM bindings in an existing instance. | <code>bool</code> |  | <code>true</code> |
 
 ## Outputs
 

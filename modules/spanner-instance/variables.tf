@@ -14,6 +14,20 @@
  * limitations under the License.
  */
 
+variable "context" {
+  description = "Context-specific interpolations."
+  type = object({
+    condition_vars = optional(map(map(string)), {})
+    custom_roles   = optional(map(string), {})
+    iam_principals = optional(map(string), {})
+    kms_keys       = optional(map(string), {})
+    locations      = optional(map(string), {})
+    project_ids    = optional(map(string), {})
+  })
+  default  = {}
+  nullable = false
+}
+
 variable "databases" {
   description = "Databases."
   type = map(object({
@@ -41,6 +55,7 @@ variable "databases" {
         description = optional(string)
       }))
     })), {})
+    iam_by_principals        = optional(map(list(string)), {})
     kms_key_name             = optional(string)
     version_retention_period = optional(string)
   }))
@@ -72,6 +87,11 @@ variable "iam_bindings" {
   type = map(object({
     members = list(string)
     role    = string
+    condition = optional(object({
+      expression  = string
+      title       = string
+      description = optional(string)
+    }))
   }))
   nullable = false
   default  = {}
@@ -82,9 +102,21 @@ variable "iam_bindings_additive" {
   type = map(object({
     member = string
     role   = string
+    condition = optional(object({
+      expression  = string
+      title       = string
+      description = optional(string)
+    }))
   }))
   nullable = false
   default  = {}
+}
+
+variable "iam_by_principals" {
+  description = "Authoritative IAM binding in {PRINCIPAL => [ROLES]} format. Principals need to be statically defined to avoid cycle errors. Merged internally with the `iam` variable."
+  type        = map(list(string))
+  default     = {}
+  nullable    = false
 }
 
 variable "instance" {
@@ -119,12 +151,34 @@ variable "instance" {
     display_name                 = optional(string)
     edition                      = optional(string)
     default_backup_schedule_type = optional(string)
+    instance_type                = optional(string)
     labels                       = optional(map(string), {})
     name                         = string
     num_nodes                    = optional(number)
     processing_units             = optional(number)
     force_destroy                = optional(bool)
   })
+  nullable = false
+  validation {
+    condition = (
+      var.instance.instance_type == null
+      ? true
+      : contains(["PROVISIONED", "FREE_INSTANCE"], var.instance.instance_type)
+    )
+    error_message = "Invalid instance_type. If set, possible values are: PROVISIONED, FREE_INSTANCE"
+  }
+  validation {
+    condition = (
+      var.instance.instance_type != "FREE_INSTANCE" || (
+        var.instance.autoscaling == null &&
+        var.instance.edition == null &&
+        var.instance.num_nodes == null &&
+        var.instance.processing_units == null &&
+        coalesce(var.instance.default_backup_schedule_type, "NONE") == "NONE"
+      )
+    )
+    error_message = "FREE_INSTANCE does not support autoscaling, edition, num_nodes, processing_units, or AUTOMATIC default_backup_schedule_type."
+  }
 }
 
 variable "instance_create" {
@@ -132,7 +186,6 @@ variable "instance_create" {
   type        = bool
   default     = true
 }
-
 
 variable "project_id" {
   description = "Project id."
