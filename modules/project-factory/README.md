@@ -46,7 +46,7 @@ The code is meant to be executed by a high level service account with powerful p
   - [Other context ids](#other-context-ids)
   - [IAM condition variables](#iam-condition-variables)
 - [Service agent grants outside the project](#service-agent-grants-outside-the-project)
-- [Model Armor floor settings](#model-armor-floor-settings)
+- [Model Armor floor settings and templates](#model-armor-floor-settings-and-templates)
 - [Example](#example)
 - [Files](#files)
 - [Variables](#variables)
@@ -483,11 +483,13 @@ Where both the granting project and the target are managed by the same factory, 
 
 Reach for the service agent grants attributes when the target lives outside the factory, for example a folder or a project owned by a preceding stage. Service agents are defined here and are not known on the resource side, so granting from this end avoids shuffling static values around between stages, in the form of fully qualified service agent emails.
 
-## Model Armor floor settings
+## Model Armor floor settings and templates
 
 Folders and projects support the `model_armor_floor_setting` attribute, which is passed through to the `model_armor_floor_setting` variable of the [folder](../folder/) and [project](../project/) modules. Integrated services (`ai_platform`, `google_mcp_server`) are only supported on projects, so they are only accepted in project files. A folder floor setting also applies to the projects under it.
 
 The floor setting is a singleton: removing the attribute does not reset it in GCP. The identity running the factory needs the Model Armor floor settings admin role (`roles/modelarmor.floorSettingsAdmin`) on the folder or project.
+
+Projects also support the `model_armor_templates` attribute, which is passed through to the `model_armor_templates` variable of the [project](../project/) module.
 
 ```hcl
 module "project-factory" {
@@ -535,6 +537,14 @@ model_armor_floor_setting:
     ai_platform:
       mode: inspect_and_block
       cloud_logging: true
+model_armor_templates:
+  default:
+    location: europe-west4
+    filters:
+      malicious_uris: true
+      pi_and_jailbreak: {}
+    metadata:
+      enforcement_type: INSPECT_AND_BLOCK
 # tftest-file id=ma-1 path=data/projects/ai-app-0.yaml schema=project.schema.json
 ```
 

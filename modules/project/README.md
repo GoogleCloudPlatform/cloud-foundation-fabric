@@ -52,6 +52,7 @@ This module implements the creation and management of one GCP project including 
 - [Workload Identity Federation](#workload-identity-federation)
 - [IAM Deny Policies](#iam-deny-policies)
 - [Model Armor Floor Settings](#model-armor-floor-settings)
+- [Model Armor Templates](#model-armor-templates)
 - [Files](#files)
 - [Variables](#variables)
 - [Outputs](#outputs)
@@ -2546,6 +2547,56 @@ module "project" {
 # tftest modules=1 resources=26 inventory=model-armor-floor-setting.yaml
 ```
 
+## Model Armor Templates
+
+[Model Armor templates](https://docs.cloud.google.com/model-armor/manage-templates) are managed via the `model_armor_templates` variable, keyed by template id. Each template needs a regional or multi-regional (`eu`, `us`) `location`, since templates are not supported in `global`. The `modelarmor.googleapis.com` service needs to be enabled in the project, by listing it in the `services` variable.
+
+The `filters` attribute uses the same shape as the floor setting filters. The `model_armor_template_ids` output returns the fully qualified template ids keyed by template id, which can be used for example in the `request_template_id` and `response_template_id` attributes of the [geap-agent-gateway](../geap-agent-gateway/) module `model_armor_config` variable.
+
+```hcl
+module "project" {
+  source          = "./fabric/modules/project"
+  name            = "my-project"
+  parent          = var.folder_id
+  billing_account = var.billing_account_id
+  services = [
+    "modelarmor.googleapis.com"
+  ]
+  model_armor_templates = {
+    agent-gateway = {
+      location = "europe-west4"
+      filters = {
+        malicious_uris = true
+        pi_and_jailbreak = {
+          confidence_level = "MEDIUM_AND_ABOVE"
+        }
+        rai = {
+          DANGEROUS   = "MEDIUM_AND_ABOVE"
+          HATE_SPEECH = "MEDIUM_AND_ABOVE"
+        }
+        sdp = {
+          basic = true
+        }
+      }
+      metadata = {
+        enforcement_type        = "INSPECT_AND_BLOCK"
+        log_sanitize_operations = true
+      }
+    }
+    inspect-only = {
+      location = "eu"
+      filters = {
+        pi_and_jailbreak = {}
+      }
+      metadata = {
+        enforcement_type = "INSPECT_ONLY"
+      }
+    }
+  }
+}
+# tftest modules=1 resources=6 inventory=model-armor-templates.yaml
+```
+
 <!-- TFDOC OPTS files:1 -->
 <!-- BEGIN TFDOC -->
 ## Files
@@ -2563,7 +2614,7 @@ module "project" {
 | [logging-metrics.tf](./logging-metrics.tf) | None | <code>google_logging_metric</code> |
 | [logging.tf](./logging.tf) | Log sinks and supporting resources. | <code>google_bigquery_dataset_iam_member</code> · <code>google_logging_log_scope</code> · <code>google_logging_project_exclusion</code> · <code>google_logging_project_sink</code> · <code>google_project_iam_audit_config</code> · <code>google_project_iam_member</code> · <code>google_pubsub_topic_iam_member</code> · <code>google_storage_bucket_iam_member</code> |
 | [main.tf](./main.tf) | Module-level locals and resources. | <code>google_compute_organization_security_policy_association</code> · <code>google_compute_project_default_network_tier</code> · <code>google_compute_project_metadata_item</code> · <code>google_essential_contacts_contact</code> · <code>google_kms_key_handle</code> · <code>google_monitoring_monitored_project</code> · <code>google_project</code> · <code>google_project_service</code> · <code>google_resource_manager_lien</code> |
-| [model-armor.tf](./model-armor.tf) | Model Armor floor setting. | <code>google_model_armor_floorsetting</code> |
+| [model-armor.tf](./model-armor.tf) | Model Armor floor setting and templates. | <code>google_model_armor_floorsetting</code> · <code>google_model_armor_template</code> |
 | [notification-channels.tf](./notification-channels.tf) | None | <code>google_monitoring_notification_channel</code> |
 | [organization-policies.tf](./organization-policies.tf) | Project-level organization policies. | <code>google_org_policy_policy</code> |
 | [outputs.tf](./outputs.tf) | Module outputs. |  |
@@ -2577,6 +2628,7 @@ module "project" {
 | [tags.tf](./tags.tf) | Manages GCP Secure Tags, keys, values, and IAM. | <code>google_tags_tag_binding</code> · <code>google_tags_tag_key</code> · <code>google_tags_tag_key_iam_binding</code> · <code>google_tags_tag_key_iam_member</code> · <code>google_tags_tag_value</code> · <code>google_tags_tag_value_iam_binding</code> · <code>google_tags_tag_value_iam_member</code> |
 | [variables-iam.tf](./variables-iam.tf) | None |  |
 | [variables-identity-providers.tf](./variables-identity-providers.tf) | None |  |
+| [variables-model-armor-templates.tf](./variables-model-armor-templates.tf) | None |  |
 | [variables-model-armor.tf](./variables-model-armor.tf) | None |  |
 | [variables-observability.tf](./variables-observability.tf) | None |  |
 | [variables-pam.tf](./variables-pam.tf) | None |  |
@@ -2625,6 +2677,7 @@ module "project" {
 | [logging_sinks](variables-observability.tf#L185) | Logging sinks to create for this project. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [metric_scopes](variables-observability.tf#L216) | List of projects that will act as metric scopes for this project. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
 | [model_armor_floor_setting](variables-model-armor.tf#L17) | Model Armor floor setting for this resource. Integrated services are only supported on projects. Removing it does not reset the floor setting in GCP. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [model_armor_templates](variables-model-armor-templates.tf#L17) | Model Armor templates keyed by template id. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [network_tags](variables-tags.tf#L17) | Network tags by key name. If `id` is provided, key creation is skipped. The `iam` attribute behaves like the similarly named one at module level. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [notification_channels](variables-observability.tf#L223) | Monitoring notification channels. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [org_policies](variables.tf#L290) | Organization policies applied to this project keyed by policy name. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
@@ -2663,25 +2716,26 @@ module "project" {
 | [default_service_accounts](outputs.tf#L50) | Emails of the default service accounts for this project. |  |
 | [id](outputs.tf#L55) | Project id. |  |
 | [kms_autokeys](outputs.tf#L75) | KMS Autokey key ids. |  |
-| [name](outputs.tf#L82) | Project name. |  |
-| [network_tag_keys](outputs.tf#L94) | Tag key resources. |  |
-| [network_tag_values](outputs.tf#L103) | Tag value resources. |  |
-| [notification_channel_names](outputs.tf#L111) | Notification channel names. |  |
-| [notification_channels](outputs.tf#L119) | Full notification channel objects. |  |
-| [number](outputs.tf#L124) | Project number. |  |
-| [organization_policies_ids](outputs.tf#L141) | Map of ORGANIZATION_POLICIES => ID in the organization. |  |
-| [project_id](outputs.tf#L148) | Project id. |  |
-| [quota_configs](outputs.tf#L168) | Quota configurations. |  |
-| [quotas](outputs.tf#L179) | Quota resources. |  |
-| [scc_custom_sha_modules_ids](outputs.tf#L184) | Map of SCC CUSTOM SHA MODULES => ID in the project. |  |
-| [service_agents](outputs.tf#L189) | List of all (active) service agents for this project. |  |
-| [services](outputs.tf#L200) | Service APIs to enable in the project. |  |
-| [sink_writer_identities](outputs.tf#L209) | Writer identities created for each sink. |  |
-| [tag_keys](outputs.tf#L216) | Tag key resources. |  |
-| [tag_values](outputs.tf#L225) | Tag value resources. |  |
-| [workload_identity_pool_ids](outputs.tf#L233) | Workload identity provider ids. |  |
-| [workload_identity_provider_ids](outputs.tf#L240) | Workload identity provider attributes. |  |
-| [workload_identity_providers](outputs.tf#L248) | Workload identity provider attributes. |  |
+| [model_armor_template_ids](outputs.tf#L82) | Model Armor template ids. |  |
+| [name](outputs.tf#L89) | Project name. |  |
+| [network_tag_keys](outputs.tf#L101) | Tag key resources. |  |
+| [network_tag_values](outputs.tf#L110) | Tag value resources. |  |
+| [notification_channel_names](outputs.tf#L118) | Notification channel names. |  |
+| [notification_channels](outputs.tf#L126) | Full notification channel objects. |  |
+| [number](outputs.tf#L131) | Project number. |  |
+| [organization_policies_ids](outputs.tf#L148) | Map of ORGANIZATION_POLICIES => ID in the organization. |  |
+| [project_id](outputs.tf#L155) | Project id. |  |
+| [quota_configs](outputs.tf#L175) | Quota configurations. |  |
+| [quotas](outputs.tf#L186) | Quota resources. |  |
+| [scc_custom_sha_modules_ids](outputs.tf#L191) | Map of SCC CUSTOM SHA MODULES => ID in the project. |  |
+| [service_agents](outputs.tf#L196) | List of all (active) service agents for this project. |  |
+| [services](outputs.tf#L207) | Service APIs to enable in the project. |  |
+| [sink_writer_identities](outputs.tf#L216) | Writer identities created for each sink. |  |
+| [tag_keys](outputs.tf#L223) | Tag key resources. |  |
+| [tag_values](outputs.tf#L232) | Tag value resources. |  |
+| [workload_identity_pool_ids](outputs.tf#L240) | Workload identity provider ids. |  |
+| [workload_identity_provider_ids](outputs.tf#L247) | Workload identity provider attributes. |  |
+| [workload_identity_providers](outputs.tf#L255) | Workload identity provider attributes. |  |
 
 ## Fixtures
 
