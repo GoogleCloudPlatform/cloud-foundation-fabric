@@ -16,9 +16,14 @@
 
 output "id" {
   description = "Connection id."
-  value = (var.connection_create ?
-    google_cloudbuildv2_connection.connection[0].id :
-  "projects/${local.project_id}/locations/${var.location}/connections/${local.name}")
+  value = (
+    var.connection_create
+    ? google_cloudbuildv2_connection.connection[0].id
+    : format(
+      "projects/%s/locations/%s/connections/%s",
+      local.project_id, local.location, local.name
+    )
+  )
 }
 
 output "repositories" {
