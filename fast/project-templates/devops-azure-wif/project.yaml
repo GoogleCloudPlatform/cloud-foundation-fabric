@@ -67,6 +67,8 @@ service_accounts:
 # TODO: uncomment for self hosted agent on GCP
 # shared_vpc_service_config:
 #   host_project: $project_ids:dev-spoke-0
+# if the constraint is enforced in the hierarchy, apply the org policy above
+# first and add the pools in a later change
 workload_identity_pools:
   # pool name on GCP
   cicd-0:

@@ -327,6 +327,10 @@ parent: $folder_ids:team-a/dev
 
 All of the [project module](../../../modules/project/) attributes (and some service account attributes) can of course be leveraged in the configuration files. Refer to the [project schema](./schemas/project.schema.json) for the complete set of available attributes.
 
+Project-level organization policies and tag bindings are created after the project's own resources (services, Workload Identity pools and providers, and the other resources of the first module call), because they need the expanded context. The same is true of organization policies and tag bindings set on folders managed by the factory.
+
+An exception that must be in place for one of those resources to be created, for example an allowed issuer in `iam.workloadIdentityPoolProviders` for the project's own providers, or the tag binding that a conditional policy matches on, cannot be introduced in the same change as the resources that need it. Organization policies can also take several minutes to become effective, so a single apply would not work even if they were created first: apply the exception first, at folder or project level, and add the resources that need it in a later change.
+
 ### Automation Resources for Projects
 
 When created projects are meant to be managed via IaC downstream, an initial set of automation resources can be created in a "controlling project". The preferred pattern is to first create one or more controlling projects for the project factory, and then leverage them for service account and GCS bucket creation.
