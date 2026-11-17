@@ -301,6 +301,7 @@ service_accounts:
     display_name: IaC service account for project factory (read-only).
   iac-pf-rw:
     display_name: IaC service account for project factory (read-write).
+# apply the iam.workloadIdentityPoolProviders org policy above before enabling
 # workload_identity_pools:
 #   default:
 #     display_name: Default pool for CI/CD.
