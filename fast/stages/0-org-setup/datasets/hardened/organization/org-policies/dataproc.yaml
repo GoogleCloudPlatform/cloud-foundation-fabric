@@ -26,10 +26,6 @@ custom.dataprocDisableDefaultServiceAccount:
   rules:
     - enforce: true
 
-custom.dataprocRequireInternalIp:
-  rules:
-    - enforce: true
-
 custom.dataprocRequireKerberos:
   rules:
     - enforce: true
