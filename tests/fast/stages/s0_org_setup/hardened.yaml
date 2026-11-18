@@ -664,6 +664,7 @@ values:
     default_encryption_configuration:
     - {}
     default_partition_expiration_ms: null
+    default_rounding_mode: null
     default_table_expiration_ms: null
     delete_contents_on_destroy: false
     deletion_policy: DELETE
@@ -2925,20 +2926,6 @@ values:
     resource_types:
     - cloudkms.googleapis.com/CryptoKey
     timeouts: null
-  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.cloudkmsAllowedProtectionLevel"]:
-    action_type: DENY
-    condition: has(resource.versionTemplate.protectionLevel) && resource.versionTemplate.protectionLevel
-      in ["SOFTWARE"] == false
-    description: Ensure the protection level for Cloud KMS keys is configured correctly
-    display_name: Require Cloud KMS keys protection level to be configured correctly
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.cloudkmsAllowedProtectionLevel
-    parent: organizations/1234567890
-    resource_types:
-    - cloudkms.googleapis.com/CryptoKey
-    timeouts: null
   module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.cloudkmsAllowedPurpose"]:
     action_type: DENY
     condition: 'has(resource.purpose) &&
@@ -2967,24 +2954,6 @@ values:
     resource_types:
     - cloudkms.googleapis.com/CryptoKey
     timeouts: null
-  ? module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.cloudrunDisableEnvironmentVariablePattern"]
-  : action_type: DENY
-    condition: "resource.spec.template.spec.containers.exists(container,\n  container.env.exists(env,\n\
-      \    [\"[sS][eE][cC][rR][eE][tT]\", \"[kK][eE][yY]\", \"[pP][aA][sS][sS][wW][oO][rR][dD]\"\
-      , \"[tT][oO][kK][eE][nN]\"].exists(\n      pattern, env.name.matches(pattern)\n\
-      \    )\n  )\n)"
-    description: Enforce that certain patterns are not used in environment variables
-      of Cloud Run Service or Cloud Run Functions
-    display_name: Disable usage of certain patterns in Cloud Run Service or Cloud
-      Run Functions environment variables
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.cloudrunDisableEnvironmentVariablePattern
-    parent: organizations/1234567890
-    resource_types:
-    - run.googleapis.com/Service
-    timeouts: null
   ? module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.cloudrunJobDisableDefaultServiceAccount"]
   : action_type: DENY
     condition: resource.spec.template.spec.template.spec.serviceAccountName.endsWith('@developer.gserviceaccount.com')
@@ -2999,19 +2968,6 @@ values:
     resource_types:
     - run.googleapis.com/Job
     timeouts: null
-  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.cloudrunJobRequireBinaryAuthorization"]:
-    action_type: DENY
-    condition: '!(''run.googleapis.com/binary-authorization'' in resource.metadata.annotations)'
-    description: Enforce that Cloud Run Job are using binary authorization
-    display_name: Disable creation of Cloud Run Job without Binary Authorization
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.cloudrunJobRequireBinaryAuthorization
-    parent: organizations/1234567890
-    resource_types:
-    - run.googleapis.com/Job
-    timeouts: null
   ? module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.cloudrunServiceDisableDefaultServiceAccount"]
   : action_type: DENY
     condition: resource.spec.template.spec.serviceAccountName.endsWith('@developer.gserviceaccount.com')
@@ -3022,19 +2978,6 @@ values:
     - CREATE
     - UPDATE
     name: custom.cloudrunServiceDisableDefaultServiceAccount
-    parent: organizations/1234567890
-    resource_types:
-    - run.googleapis.com/Service
-    timeouts: null
-  ? module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.cloudrunServiceRequireBinaryAuthorization"]
-  : action_type: DENY
-    condition: '!(''run.googleapis.com/binary-authorization'' in resource.metadata.annotations)'
-    description: Enforce that Cloud Run Service are using binary authorization
-    display_name: Disable creation of Cloud Run Service without Binary Authorization
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.cloudrunServiceRequireBinaryAuthorization
     parent: organizations/1234567890
     resource_types:
     - run.googleapis.com/Service
@@ -3103,22 +3046,6 @@ values:
     - CREATE
     - UPDATE
     name: custom.cloudsqlDisablePostgreSQLLogStatementStatsFlag
-    parent: organizations/1234567890
-    resource_types:
-    - sqladmin.googleapis.com/Instance
-    timeouts: null
-  ? module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.cloudsqlDisablePublicAuthorizedNetworks"]
-  : action_type: DENY
-    condition: resource.settings.ipConfiguration.authorizedNetworks.exists(network,
-      network.value == '0.0.0.0/0')
-    description: Ensure That Cloud SQL database instances do not implicitly whitelist
-      all public IP addresses
-    display_name: Require Cloud SQL database instances to not whitelist all public
-      IP addresses
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.cloudsqlDisablePublicAuthorizedNetworks
     parent: organizations/1234567890
     resource_types:
     - sqladmin.googleapis.com/Instance
@@ -3398,33 +3325,6 @@ values:
     resource_types:
     - dataproc.googleapis.com/Cluster
     timeouts: null
-  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.dataprocRequireDiskCmekEncryption"]:
-    action_type: DENY
-    condition: has(resource.config.encryptionConfig.gcePdKmsKeyName) == false
-    description: Enforce that the Dataproc cluster is created with an CMEK encryption
-      key.
-    display_name: Enable Dataproc CMEK encryption
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.dataprocRequireDiskCmekEncryption
-    parent: organizations/1234567890
-    resource_types:
-    - dataproc.googleapis.com/Cluster
-    timeouts: null
-  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.dataprocRequireInternalIp"]:
-    action_type: DENY
-    condition: resource.config.gceClusterConfig.internalIpOnly == false
-    description: Enforce that the Dataproc cluster is created with Internal IPs only
-    display_name: Require Dataproc with internal IPs
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.dataprocRequireInternalIp
-    parent: organizations/1234567890
-    resource_types:
-    - dataproc.googleapis.com/Cluster
-    timeouts: null
   module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.dataprocRequireKerberos"]:
     action_type: DENY
     condition: resource.config.securityConfig.kerberosConfig.enableKerberos == false
@@ -3531,509 +3431,6 @@ values:
     resource_types:
     - compute.googleapis.com/Firewall
     timeouts: null
-  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.firewallRequireDescription"]:
-    action_type: DENY
-    condition: "(\n  resource.description == \"\" &&\n  !resource.name.startsWith(\"\
-      gke-\") &&\n  !resource.name.startsWith(\"k8s-\") &&\n  !resource.name.endsWith(\"\
-      -hc\") &&\n  !resource.name.startsWith(\"k8s2-\") &&\n  !resource.name.startsWith(\"\
-      gkegw1-l7-\") &&\n  !resource.name.startsWith(\"gkemcg1-l7-\")\n)"
-    description: Prevent the creation of VPC firewall rule that does not have description
-      provided. Description can be used for auditing to refer to security control
-    display_name: Require description on Firewall rule
-    method_types:
-    - CREATE
-    name: custom.firewallRequireDescription
-    parent: organizations/1234567890
-    resource_types:
-    - compute.googleapis.com/Firewall
-    timeouts: null
-  ? module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.firewallRestrictCacheSearchDatabasesPolicyRule"]
-  : action_type: DENY
-    condition: "resource.rules.exists(r, r.priority < 2147483644 && r.direction ==\
-      \ 'INGRESS' &&\n  r.match.srcIpRanges.exists(r, r == '0.0.0.0/0') &&\n  (\n\
-      \    r.match.layer4Configs.containsIpProtocolAndPort('tcp', '6379') ||\n   \
-      \ r.match.layer4Configs.containsIpProtocolAndPort('udp', '6379') ||\n    r.match.layer4Configs.containsIpProtocolAndPort('tcp',\
-      \ '9200') ||\n    r.match.layer4Configs.containsIpProtocolAndPort('udp', '9200')\
-      \ ||\n    r.match.layer4Configs.containsIpProtocolAndPort('tcp', '9300') ||\n\
-      \    r.match.layer4Configs.containsIpProtocolAndPort('udp', '9300') ||\n   \
-      \ r.match.layer4Configs.containsIpProtocolAndPort('tcp', '11211') ||\n    r.match.layer4Configs.containsIpProtocolAndPort('udp',\
-      \ '11211') ||\n    r.match.layer4Configs.containsIpProtocolAndPort('tcp', '11214')\
-      \ ||\n    r.match.layer4Configs.containsIpProtocolAndPort('udp', '11214') ||\n\
-      \    r.match.layer4Configs.containsIpProtocolAndPort('tcp', '11215') ||\n  \
-      \  r.match.layer4Configs.containsIpProtocolAndPort('udp', '11215')\n  )\n)"
-    description: Ensure that cache and search database ports (Elasticsearch, Memcached,
-      Redis) are not accessible from any source when using Firewall Policy Rule
-    display_name: Restrict Firewall Policy rules allowing cache/search database port
-      access from any source
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.firewallRestrictCacheSearchDatabasesPolicyRule
-    parent: organizations/1234567890
-    resource_types:
-    - compute.googleapis.com/FirewallPolicy
-    timeouts: null
-  ? module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.firewallRestrictCacheSearchDatabasesRule"]
-  : action_type: DENY
-    condition: "resource.direction.matches('INGRESS') &&\n  resource.sourceRanges.exists(range,\
-      \ range == '0.0.0.0/0') &&\n  (\n    resource.allowed.containsFirewallPort('tcp',\
-      \ '9200') ||\n    resource.allowed.containsFirewallPort('tcp', '9300') ||\n\
-      \    resource.allowed.containsFirewallPort('tcp', '11211') ||\n    resource.allowed.containsFirewallPort('tcp',\
-      \ '11214') ||\n    resource.allowed.containsFirewallPort('tcp', '11215') ||\n\
-      \    resource.allowed.containsFirewallPort('tcp', '6379') ||\n    resource.allowed.containsFirewallPort('udp',\
-      \ '11211') ||\n    resource.allowed.containsFirewallPort('udp', '11214') ||\n\
-      \    resource.allowed.containsFirewallPort('udp', '11215')\n  )"
-    description: Ensure that cache and search database ports (Elasticsearch, Memcached,
-      Redis) are not accessible from any source when using VPC Firewall Rule.
-    display_name: Restrict VPC Firewall rules allowing cache/search database port
-      access from any source
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.firewallRestrictCacheSearchDatabasesRule
-    parent: organizations/1234567890
-    resource_types:
-    - compute.googleapis.com/Firewall
-    timeouts: null
-  ? module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.firewallRestrictDirectoryServicesPolicyRule"]
-  : action_type: DENY
-    condition: "resource.rules.exists(rule,\n  rule.priority < 2147483644 &&\n  rule.direction\
-      \ == 'INGRESS' &&\n  rule.match.srcIpRanges.exists(range, range == '0.0.0.0/0')\
-      \ &&\n  (\n    rule.match.layer4Configs.containsIpProtocolAndPort('udp', '445')\
-      \ ||\n    rule.match.layer4Configs.containsIpProtocolAndPort('udp', '389') ||\n\
-      \    rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '445') ||\n \
-      \   rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '389') ||\n  \
-      \  rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '636')\n  )\n)"
-    description: Ensure that directory and authentication services (SMB/CIFS, LDAP)
-      are not accessible from the Internet when using Firewall Policy Rule
-    display_name: Restrict Firewall Policy rules allowing directory service access
-      from any source
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.firewallRestrictDirectoryServicesPolicyRule
-    parent: organizations/1234567890
-    resource_types:
-    - compute.googleapis.com/FirewallPolicy
-    timeouts: null
-  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.firewallRestrictDirectoryServicesRule"]:
-    action_type: DENY
-    condition: "resource.direction.matches('INGRESS') &&\n  resource.sourceRanges.exists(range,\
-      \ range == '0.0.0.0/0') &&\n  (\n    resource.allowed.containsFirewallPort('tcp',\
-      \ '445') ||\n    resource.allowed.containsFirewallPort('tcp', '389') ||\n  \
-      \  resource.allowed.containsFirewallPort('tcp', '636') ||\n    resource.allowed.containsFirewallPort('udp',\
-      \ '445') ||\n    resource.allowed.containsFirewallPort('udp', '389')\n  )"
-    description: Ensure that directory and authentication services (SMB/CIFS, LDAP)
-      are not accessible from the Internet when using VPC Firewall Rule
-    display_name: Restrict VPC Firewall rules allowing directory service access from
-      any source
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.firewallRestrictDirectoryServicesRule
-    parent: organizations/1234567890
-    resource_types:
-    - compute.googleapis.com/Firewall
-    timeouts: null
-  ? module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.firewallRestrictExplicitAllPortsPolicyRule"]
-  : action_type: DENY
-    condition: "resource.rules.exists(rule,\n  rule.action == 'allow' &&\n  rule.priority\
-      \ < 2147483644 &&\n  rule.direction == 'INGRESS' &&\n  rule.match.layer4Configs.exists(l4,\n\
-      \    l4.ipProtocol in ['tcp', 'udp'] && (\n      !has(l4.ports) ||\n      '0-65535'\
-      \ in l4.ports ||\n      '1-65535' in l4.ports\n    )\n  )\n)"
-    description: Prevent Firewall Policy rules that explicitly specify all TCP/UDP
-      ports using ranges like 0-65535 or 1-65535
-    display_name: Restrict Firewall Policy rules with explicit all-ports specifications
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.firewallRestrictExplicitAllPortsPolicyRule
-    parent: organizations/1234567890
-    resource_types:
-    - compute.googleapis.com/FirewallPolicy
-    timeouts: null
-  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.firewallRestrictExplicitAllPortsRule"]:
-    action_type: DENY
-    condition: "resource.direction == 'INGRESS' &&\nresource.allowed.exists(rule,\n\
-      \  rule.IPProtocol in ['tcp', 'udp'] && (\n    !has(rule.ports) ||\n    '0-65535'\
-      \ in rule.ports ||\n    '1-65535' in rule.ports\n  )\n) &&\n!resource.name.startsWith('gke-')\
-      \ &&\n!resource.name.startsWith('k8s-') &&\n!resource.name.endsWith('-hc') &&\n\
-      !resource.name.startsWith('k8s2-') &&\n!resource.name.startsWith('gkegw1-l7-')\
-      \ &&\n!resource.name.startsWith('gkemcg1-l7-')"
-    description: Prevent VPC firewall rules that explicitly specify all TCP/UDP ports
-      using ranges like 0-65535 or 1-65535
-    display_name: Restrict VPC Firewall rules with explicit all-ports specifications
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.firewallRestrictExplicitAllPortsRule
-    parent: organizations/1234567890
-    resource_types:
-    - compute.googleapis.com/Firewall
-    timeouts: null
-  ? module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.firewallRestrictInsecureProtocolsPolicyRule"]
-  : action_type: DENY
-    condition: "resource.rules.exists(rule,\n  rule.priority < 2147483644 &&\n  rule.direction\
-      \ == 'INGRESS' &&\n  rule.match.srcIpRanges.exists(range, range == '0.0.0.0/0')\
-      \ &&\n  (\n    rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '21')\
-      \ ||\n    rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '23') ||\n\
-      \    rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '80')\n  )\n)"
-    description: Ensure that insecure legacy protocols (Telnet, FTP, HTTP) are not
-      accessible from any source when using Firewall Policy Rule
-    display_name: Restrict Firewall Policy rules allowing insecure protocol access
-      from any source
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.firewallRestrictInsecureProtocolsPolicyRule
-    parent: organizations/1234567890
-    resource_types:
-    - compute.googleapis.com/FirewallPolicy
-    timeouts: null
-  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.firewallRestrictInsecureProtocolsRule"]:
-    action_type: DENY
-    condition: "resource.direction.matches('INGRESS') &&\n  resource.sourceRanges.exists(range,\
-      \ range == '0.0.0.0/0') &&\n  (\n    resource.allowed.containsFirewallPort('tcp',\
-      \ '21') ||\n    resource.allowed.containsFirewallPort('tcp', '23') ||\n    resource.allowed.containsFirewallPort('tcp',\
-      \ '80')\n  )"
-    description: Ensure that insecure legacy protocols (Telnet, FTP, HTTP) are not
-      accessible from any source when using VPC Firewall Rule
-    display_name: Restrict VPC Firewall rules allowing insecure protocol access from
-      any source
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.firewallRestrictInsecureProtocolsRule
-    parent: organizations/1234567890
-    resource_types:
-    - compute.googleapis.com/Firewall
-    timeouts: null
-  ? module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.firewallRestrictMailProtocolsPolicyRule"]
-  : action_type: DENY
-    condition: "resource.rules.exists(rule,\n  rule.priority < 2147483644 &&\n  rule.direction\
-      \ == 'INGRESS' &&\n  rule.match.srcIpRanges.exists(range, range == '0.0.0.0/0')\
-      \ &&\n  (\n    rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '25')\
-      \ ||\n    rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '110')\n\
-      \  )\n)"
-    description: Ensure that mail protocols (SMTP, POP3) are not accessible from any
-      source when using Firewall Policy Rule
-    display_name: Restrict Firewall Policy rules allowing mail protocol access from
-      any source
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.firewallRestrictMailProtocolsPolicyRule
-    parent: organizations/1234567890
-    resource_types:
-    - compute.googleapis.com/FirewallPolicy
-    timeouts: null
-  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.firewallRestrictMailProtocolsRule"]:
-    action_type: DENY
-    condition: "resource.direction.matches('INGRESS') &&\n  resource.sourceRanges.exists(range,\
-      \ range == '0.0.0.0/0') &&\n  (\n    resource.allowed.containsFirewallPort('tcp',\
-      \ '25') ||\n    resource.allowed.containsFirewallPort('tcp', '110')\n  )"
-    description: Ensure that mail protocols (SMTP, POP3) are not accessible from any
-      source when using VPC Firewall Rule
-    display_name: Restrict VPC Firewall rules allowing mail protocol access from any
-      source
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.firewallRestrictMailProtocolsRule
-    parent: organizations/1234567890
-    resource_types:
-    - compute.googleapis.com/Firewall
-    timeouts: null
-  ? module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.firewallRestrictManagementPortsPolicyRule"]
-  : action_type: DENY
-    condition: "resource.rules.exists(rule,\n  rule.priority < 2147483644 &&\n  rule.direction\
-      \ == 'INGRESS' &&\n  rule.match.srcIpRanges.exists(range, range == '0.0.0.0/0')\
-      \ &&\n  rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '9090')\n)"
-    description: Ensure that management interfaces (Cisco Secure WebSM) are not accessible
-      from any source when using Firewall Policy Rule
-    display_name: Restrict Firewall Policy rules allowing management port access from
-      any source
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.firewallRestrictManagementPortsPolicyRule
-    parent: organizations/1234567890
-    resource_types:
-    - compute.googleapis.com/FirewallPolicy
-    timeouts: null
-  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.firewallRestrictManagementPortsRule"]:
-    action_type: DENY
-    condition: "resource.direction.matches('INGRESS') &&\n  resource.sourceRanges.exists(range,\
-      \ range == '0.0.0.0/0') &&\n  resource.allowed.containsFirewallPort('tcp', '9090')"
-    description: Ensure that management interfaces (Cisco Secure WebSM) are not accessible
-      from any source when using VPC Firewall Rule
-    display_name: Restrict VPC Firewall rules allowing management port access from
-      any source
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.firewallRestrictManagementPortsRule
-    parent: organizations/1234567890
-    resource_types:
-    - compute.googleapis.com/Firewall
-    timeouts: null
-  ? module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.firewallRestrictNetworkServicesPolicyRule"]
-  : action_type: DENY
-    condition: "resource.rules.exists(rule,\n  rule.priority < 2147483644 &&\n  rule.direction\
-      \ == 'INGRESS' &&\n  rule.match.srcIpRanges.exists(range, range == '0.0.0.0/0')\
-      \ &&\n  (\n    rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '53')\
-      \ ||\n    rule.match.layer4Configs.containsIpProtocolAndPort('udp', '53') ||\n\
-      \    rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '137') ||\n \
-      \   rule.match.layer4Configs.containsIpProtocolAndPort('udp', '137') ||\n  \
-      \  rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '138') ||\n   \
-      \ rule.match.layer4Configs.containsIpProtocolAndPort('udp', '138') ||\n    rule.match.layer4Configs.containsIpProtocolAndPort('tcp',\
-      \ '139') ||\n    rule.match.layer4Configs.containsIpProtocolAndPort('udp', '139')\n\
-      \  )\n)"
-    description: Ensure that network infrastructure services (DNS, NetBIOS) are not
-      accessible from any source when using Firewall Policy Rule
-    display_name: Restrict Firewall Policy rules allowing network service access from
-      any source
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.firewallRestrictNetworkServicesPolicyRule
-    parent: organizations/1234567890
-    resource_types:
-    - compute.googleapis.com/FirewallPolicy
-    timeouts: null
-  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.firewallRestrictNetworkServicesRule"]:
-    action_type: DENY
-    condition: "resource.direction.matches('INGRESS') &&\n  resource.sourceRanges.exists(range,\
-      \ range == '0.0.0.0/0') &&\n  (\n    resource.allowed.containsFirewallPort('tcp',\
-      \ '53') ||\n    resource.allowed.containsFirewallPort('udp', '53') ||\n    resource.allowed.containsFirewallPort('tcp',\
-      \ '137') ||\n    resource.allowed.containsFirewallPort('udp', '137') ||\n  \
-      \  resource.allowed.containsFirewallPort('tcp', '138') ||\n    resource.allowed.containsFirewallPort('udp',\
-      \ '138') ||\n    resource.allowed.containsFirewallPort('tcp', '139') ||\n  \
-      \  resource.allowed.containsFirewallPort('udp', '139')\n  )"
-    description: Ensure that network infrastructure services (DNS, NetBIOS) are not
-      accessible from any source when using VPC Firewall Rule
-    display_name: Restrict VPC Firewall rules allowing network service access from
-      any source
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.firewallRestrictNetworkServicesRule
-    parent: organizations/1234567890
-    resource_types:
-    - compute.googleapis.com/Firewall
-    timeouts: null
-  ? module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.firewallRestrictNoSQLDatabasesPolicyRule"]
-  : action_type: DENY
-    condition: "resource.rules.exists(rule,\n  rule.priority < 2147483644 &&\n  rule.direction\
-      \ == 'INGRESS' &&\n  rule.match.srcIpRanges.exists(range, range == '0.0.0.0/0')\
-      \ &&\n  (\n    rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '7000')\
-      \ ||\n    rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '7001')\
-      \ ||\n    rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '7199')\
-      \ ||\n    rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '8888')\
-      \ ||\n    rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '9042')\
-      \ ||\n    rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '9160')\
-      \ ||\n    rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '61620')\
-      \ ||\n    rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '61621')\
-      \ ||\n    rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '27017')\
-      \ ||\n    rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '27018')\
-      \ ||\n    rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '27019')\n\
-      \  )\n)"
-    description: Ensure that NoSQL database ports (Cassandra, MongoDB) are not accessible
-      from any source when using Firewall Policy Rule
-    display_name: Restrict Firewall Policy rules allowing NoSQL database port access
-      from any source
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.firewallRestrictNoSQLDatabasesPolicyRule
-    parent: organizations/1234567890
-    resource_types:
-    - compute.googleapis.com/FirewallPolicy
-    timeouts: null
-  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.firewallRestrictNoSQLDatabasesRule"]:
-    action_type: DENY
-    condition: "resource.direction.matches('INGRESS') &&\n  resource.sourceRanges.exists(range,\
-      \ range == '0.0.0.0/0') &&\n  (\n    resource.allowed.containsFirewallPort('tcp',\
-      \ '7000') ||\n    resource.allowed.containsFirewallPort('tcp', '7001') ||\n\
-      \    resource.allowed.containsFirewallPort('tcp', '7199') ||\n    resource.allowed.containsFirewallPort('tcp',\
-      \ '8888') ||\n    resource.allowed.containsFirewallPort('tcp', '9042') ||\n\
-      \    resource.allowed.containsFirewallPort('tcp', '9160') ||\n    resource.allowed.containsFirewallPort('tcp',\
-      \ '61620') ||\n    resource.allowed.containsFirewallPort('tcp', '61621') ||\n\
-      \    resource.allowed.containsFirewallPort('tcp', '27017') ||\n    resource.allowed.containsFirewallPort('tcp',\
-      \ '27018') ||\n    resource.allowed.containsFirewallPort('tcp', '27019')\n \
-      \ )"
-    description: Ensure that NoSQL database ports (Cassandra, MongoDB) are not accessible
-      from any source when using Firewall Policy Rule
-    display_name: Restrict VPC Firewall rules allowing NoSQL database port access
-      from any source
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.firewallRestrictNoSQLDatabasesRule
-    parent: organizations/1234567890
-    resource_types:
-    - compute.googleapis.com/Firewall
-    timeouts: null
-  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.firewallRestrictPublicAccessPolicyRule"]:
-    action_type: DENY
-    condition: "resource.rules.exists(rule,\n  rule.action == 'allow' &&\n  rule.priority\
-      \ < 2147483644 &&\n  rule.direction == 'INGRESS' &&\n  rule.match.srcIpRanges.exists(range,\
-      \ range == '0.0.0.0/0') &&\n  !rule.match.layer4Configs.exists(l4,\n    l4.ipProtocol\
-      \ == 'icmp'\n  )\n)"
-    description: Prevent Firewall Policy ingress rules from 0.0.0.0/0 except for allowed
-      protocols (ICMP)
-    display_name: Restrict Firewall Policy ingress rules allowing public Internet
-      access
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.firewallRestrictPublicAccessPolicyRule
-    parent: organizations/1234567890
-    resource_types:
-    - compute.googleapis.com/FirewallPolicy
-    timeouts: null
-  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.firewallRestrictPublicAccessRule"]:
-    action_type: DENY
-    condition: "resource.direction == 'INGRESS' &&\nsize(resource.allowed) > 0 &&\n\
-      resource.sourceRanges.exists(r, r == '0.0.0.0/0') &&\n!resource.allowed.exists(a,\n\
-      \  a.IPProtocol == 'icmp'\n)"
-    description: Prevent VPC Firewall ingress rules from 0.0.0.0/0 except for allowed
-      protocols (ICMP).
-    display_name: Restrict VPC Firewall ingress rules allowing public Internet access
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.firewallRestrictPublicAccessRule
-    parent: organizations/1234567890
-    resource_types:
-    - compute.googleapis.com/Firewall
-    timeouts: null
-  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.firewallRestrictRdpPolicyRule"]:
-    action_type: DENY
-    condition: "resource.rules.exists(rule,\n    rule.priority < 2147483644 &&\n \
-      \   rule.direction == 'INGRESS' &&\n    !rule.match.srcIpRanges.all(ipRange,\n\
-      \        ipRange == '35.235.240.0/20' ||\n        ipRange.startsWith('192.168.')\
-      \ ||\n        ipRange.matches('^172\\\\.(?:1[6-9]|2\\\\d|3[0-1]).*') ||\n  \
-      \      ipRange.startsWith('10.')\n    ) &&\n    rule.match.layer4Configs.all(l4config,\n\
-      \        l4config.ipProtocol == 'tcp' &&\n        l4config.ports.all(port, port\
-      \ == '3389')\n    )\n)"
-    description: Ensure that RDP access is restricted from any source when using Firewall
-      Policy Rule
-    display_name: Restrict Firewall Policy rules allowing RDP access from any source
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.firewallRestrictRdpPolicyRule
-    parent: organizations/1234567890
-    resource_types:
-    - compute.googleapis.com/FirewallPolicy
-    timeouts: null
-  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.firewallRestrictRdpRule"]:
-    action_type: DENY
-    condition: "resource.direction.matches('INGRESS') &&\n!resource.name.startsWith('gke-')\
-      \ &&\n!resource.name.startsWith('k8s-') &&\n!resource.name.endsWith('-hc') &&\n\
-      !resource.name.startsWith('k8s2-') &&\n!resource.name.startsWith('gkegw1-l7-')\
-      \ &&\n!resource.name.startsWith('gkemcg1-l7-') &&\nresource.allowed.containsFirewallPort('tcp',\
-      \ '3389') &&\n!resource.sourceRanges.all(range,\n  range == '35.235.240.0/20'\
-      \ ||\n  range.startsWith('10.') ||\n  range.matches('^172\\\\.(?:1[6-9]|2\\\\\
-      d|3[0-1]).*') ||\n  range.startsWith('192.168.')\n)"
-    description: Ensure that RDP access is restricted from any source when using VPC
-      Firewall Rule
-    display_name: Restrict VPC Firewall rules allowing RDP access from any source
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.firewallRestrictRdpRule
-    parent: organizations/1234567890
-    resource_types:
-    - compute.googleapis.com/Firewall
-    timeouts: null
-  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.firewallRestrictSQLDatabasesPolicyRule"]:
-    action_type: DENY
-    condition: "resource.rules.exists(rule,\n  rule.priority < 2147483644 &&\n  rule.direction\
-      \ == 'INGRESS' &&\n  rule.match.srcIpRanges.exists(range, range == '0.0.0.0/0')\
-      \ &&\n  (\n    rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '3306')\
-      \ ||\n    rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '1521')\
-      \ ||\n    rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '2483')\
-      \ ||\n    rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '2484')\
-      \ ||\n    rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '5432')\
-      \ ||\n    rule.match.layer4Configs.containsIpProtocolAndPort('udp', '2483')\
-      \ ||\n    rule.match.layer4Configs.containsIpProtocolAndPort('udp', '2484')\
-      \ ||\n    rule.match.layer4Configs.containsIpProtocolAndPort('udp', '5432')\n\
-      \  )\n)"
-    description: Ensure that SQL database ports (MySQL, Oracle, PostgreSQL) are not
-      accessible from any source when using Firewall Policy Rule
-    display_name: Restrict Firewall Policy rules allowing SQL database port access
-      from any source
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.firewallRestrictSQLDatabasesPolicyRule
-    parent: organizations/1234567890
-    resource_types:
-    - compute.googleapis.com/FirewallPolicy
-    timeouts: null
-  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.firewallRestrictSQLDatabasesRule"]:
-    action_type: DENY
-    condition: "resource.direction.matches('INGRESS') &&\n  resource.sourceRanges.exists(range,\
-      \ range == '0.0.0.0/0') &&\n  (\n    resource.allowed.containsFirewallPort('tcp',\
-      \ '3306') ||\n    resource.allowed.containsFirewallPort('tcp', '1521') ||\n\
-      \    resource.allowed.containsFirewallPort('tcp', '2483') ||\n    resource.allowed.containsFirewallPort('tcp',\
-      \ '2484') ||\n    resource.allowed.containsFirewallPort('tcp', '5432') ||\n\
-      \    resource.allowed.containsFirewallPort('udp', '2483') ||\n    resource.allowed.containsFirewallPort('udp',\
-      \ '2484') ||\n    resource.allowed.containsFirewallPort('udp', '5432')\n  )"
-    description: Ensure that SQL database ports (MySQL, Oracle, PostgreSQL) are not
-      accessible from any source when using VPC Firewall Rule
-    display_name: Restrict VPC Firewall rules allowing SQL database port access from
-      any source
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.firewallRestrictSQLDatabasesRule
-    parent: organizations/1234567890
-    resource_types:
-    - compute.googleapis.com/Firewall
-    timeouts: null
-  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.firewallRestrictSshPolicyRule"]:
-    action_type: DENY
-    condition: "resource.rules.exists(rule,\n    rule.priority < 2147483644 &&\n \
-      \   rule.direction == 'INGRESS' &&\n    !rule.match.srcIpRanges.all(ipRange,\n\
-      \        ipRange == '35.235.240.0/20' ||\n        ipRange.startsWith('192.168.')\
-      \ ||\n        ipRange.matches('^172\\\\.(?:1[6-9]|2\\\\d|3[0-1]).*') ||\n  \
-      \      ipRange.startsWith('10.')\n    ) &&\n    rule.match.layer4Configs.all(l4config,\n\
-      \        l4config.ipProtocol == 'tcp' &&\n        l4config.ports.all(port, port\
-      \ == '22')\n    )\n)"
-    description: Ensure that SSH access is restricted from any source when using Firewall
-      Policy Rule
-    display_name: Restrict Firewall Policy rules allowing SSH access from any source
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.firewallRestrictSshPolicyRule
-    parent: organizations/1234567890
-    resource_types:
-    - compute.googleapis.com/FirewallPolicy
-    timeouts: null
-  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.firewallRestrictSshRule"]:
-    action_type: DENY
-    condition: "resource.direction.matches('INGRESS') &&\n!resource.name.startsWith('gke-')\
-      \ &&\n!resource.name.startsWith('k8s-') &&\n!resource.name.endsWith('-hc') &&\n\
-      !resource.name.startsWith('k8s2-') &&\n!resource.name.startsWith('gkegw1-l7-')\
-      \ &&\n!resource.name.startsWith('gkemcg1-l7-') &&\nresource.allowed.containsFirewallPort('tcp',\
-      \ '22') &&\n!resource.sourceRanges.all(range,\n  range == '35.235.240.0/20'\
-      \ ||\n  range.startsWith('10.') ||\n  range.matches('^172\\\\.(?:1[6-9]|2\\\\\
-      d|3[0-1]).*') ||\n  range.startsWith('192.168.')\n)"
-    description: Ensure that SSH access is restricted from any source when using VPC
-      Firewall Rule
-    display_name: Restrict VPC Firewall rules allowing SSH access from any source
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.firewallRestrictSshRule
-    parent: organizations/1234567890
-    resource_types:
-    - compute.googleapis.com/Firewall
-    timeouts: null
   module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.gkeAllowedNodePoolImages"]:
     action_type: DENY
     condition: resource.config.imageType in ["COS_CONTAINERD"] == false
@@ -4087,19 +3484,6 @@ values:
     resource_types:
     - container.googleapis.com/Cluster
     timeouts: null
-  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.gkeDisableLegacyAbac"]:
-    action_type: DENY
-    condition: resource.legacyAbac.enabled == true
-    description: Enforce that GKE clusters is configured with no legacy ABAC enabled
-    display_name: Disable legacy ABAC
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.gkeDisableLegacyAbac
-    parent: organizations/1234567890
-    resource_types:
-    - container.googleapis.com/Cluster
-    timeouts: null
   module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.gkeDisableLegacyMetadataEndpoints"]:
     action_type: DENY
     condition: '(''disable-legacy-endpoints'' in resource.config.metadata &&
@@ -4130,19 +3514,6 @@ values:
     resource_types:
     - container.googleapis.com/NodePool
     timeouts: null
-  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.gkeRequireConfidentialNodes"]:
-    action_type: DENY
-    condition: resource.confidentialNodes.enabled == false
-    description: Enforce that the GKE clusters is using confidential nodes
-    display_name: Require confidential nodes
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.gkeRequireConfidentialNodes
-    parent: organizations/1234567890
-    resource_types:
-    - container.googleapis.com/Cluster
-    timeouts: null
   module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.gkeRequireDataplaneV2"]:
     action_type: DENY
     condition: resource.networkConfig.datapathProvider != 'ADVANCED_DATAPATH'
@@ -4155,34 +3526,6 @@ values:
     parent: organizations/1234567890
     resource_types:
     - container.googleapis.com/Cluster
-    timeouts: null
-  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.gkeRequireGKEMetadataServer"]:
-    action_type: DENY
-    condition: resource.config.workloadMetadataConfig.mode != 'GKE_METADATA'
-    description: Enforce that GKE clusters are configured with GKE metadata server
-      enabled
-    display_name: Require GKE metadata server
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.gkeRequireGKEMetadataServer
-    parent: organizations/1234567890
-    resource_types:
-    - container.googleapis.com/NodePool
-    timeouts: null
-  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.gkeRequireIntegrityMonitoring"]:
-    action_type: DENY
-    condition: resource.config.shieldedInstanceConfig.enableIntegrityMonitoring ==
-      false
-    description: Enforce that GKE nodes are configured with integrity monitoring enabled
-    display_name: Enable integrity monitoring
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.gkeRequireIntegrityMonitoring
-    parent: organizations/1234567890
-    resource_types:
-    - container.googleapis.com/NodePool
     timeouts: null
   module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.gkeRequireIntraNodeVisibility"]:
     action_type: DENY
@@ -4282,34 +3625,6 @@ values:
     resource_types:
     - container.googleapis.com/NodePool
     timeouts: null
-  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.gkeRequireNodePoolCMEKEncryption"]:
-    action_type: DENY
-    condition: has(resource.config.bootDiskKmsKey) == false
-    description: Enforce that GKE nodes are configured with CMEK Encryption
-    display_name: Require NodePool CMEK Encryption
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.gkeRequireNodePoolCMEKEncryption
-    parent: organizations/1234567890
-    resource_types:
-    - container.googleapis.com/NodePool
-    timeouts: null
-  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.gkeRequireNodePoolSandbox"]:
-    action_type: DENY
-    condition: "resource.name.matches(\"default-pool\") == false &&\n  has(resource.config.sandboxConfig)\
-      \ == false &&\n  resource.config.sandboxConfig.type != 'GVISOR'"
-    description: Enforce that the GKE clusters nodes are isolated using GKE sandbox
-      (excepting the default node pool)
-    display_name: Require GKE Sandbox runtime
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.gkeRequireNodePoolSandbox
-    parent: organizations/1234567890
-    resource_types:
-    - container.googleapis.com/NodePool
-    timeouts: null
   module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.gkeRequirePrivateEndpoint"]:
     action_type: DENY
     condition: resource.privateClusterConfig.enablePrivateEndpoint == false
@@ -4378,54 +3693,17 @@ values:
     resource_types:
     - container.googleapis.com/Cluster
     timeouts: null
-  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.iamAllowedMembers"]:
-    action_type: DENY
-    condition: "resource.bindings.exists(binding,\n  binding.members.exists(member,\n\
-      \    MemberSubjectStartsWith(member, ['user:', 'group:']) &&\n    !MemberSubjectEndsWith(member,\
-      \ ['@example.org', 'group:fabric-fast-owners@google.com'])\n  )\n)"
-    description: Ensure no binding are done with members outside the organization
-      domain
-    display_name: Deny principals and members outside the organization domain
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.iamAllowedMembers
-    parent: organizations/1234567890
-    resource_types:
-    - iam.googleapis.com/AllowPolicy
-    timeouts: null
-  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.iamDisableAdminServiceAccount"]:
-    action_type: DENY
-    condition: "resource.bindings.exists(binding,\n  binding.members.exists(member,\n\
-      \    !MemberSubjectEndsWith(member, ['@cloudservices.gserviceaccount.com'])\
-      \ &&\n    MemberSubjectStartsWith(member, ['serviceAccount:']) &&\n    !MemberSubjectEndsWith(member,\
-      \ ['@ft0-prod-iac-core-0.iam.gserviceaccount.com'])\n  ) &&\n  (\n    RoleNameMatches(binding.role,\
-      \ ['roles/owner', 'roles/admin']) ||\n    RoleNameMatches(binding.role, ['roles/editor',\
-      \ 'roles/writer']) ||\n    RoleNameContains(binding.role, ['admin', 'Admin'])\n\
-      \  )\n)"
-    description: Ensure no use of the legacy basic roles (owner and editor), basic
-      roles (admin, writer) and usage of admin roles for service account
-    display_name: Deny use of the legacy basic roles, basic roles and usage of admin
-      role for service account
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.iamDisableAdminServiceAccount
-    parent: organizations/1234567890
-    resource_types:
-    - iam.googleapis.com/AllowPolicy
-    timeouts: null
   module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.iamDisableBasicRoles"]:
     action_type: DENY
-    condition: "resource.bindings.exists(binding,\n  binding.members.exists(member,\n\
-      \    MemberSubjectStartsWith(member, ['user:', 'group:']) &&\n    !MemberSubjectStartsWith(member,\
-      \ ['group:fabric-fast-owners@google.com']) &&\n    (\n      RoleNameMatches(binding.role,\
-      \ ['roles/owner', 'roles/admin']) ||\n      RoleNameMatches(binding.role, ['roles/editor',\
-      \ 'roles/writer']) ||\n      RoleNameContains(binding.role, ['roles/viewer',\
-      \ 'roles/reader'])\n    )\n  )\n)"
-    description: Ensure no use of the legacy basic roles (viewer, editor and owner)
-      and basic roles (reader, writer and admin)
-    display_name: Deny use of the basic roles
+    condition: "resource.bindings.exists(binding,\n  RoleNameMatches(binding.role,\
+      \ [\n    'roles/owner',\n    'roles/editor',\n    'roles/admin',\n    'roles/writer'\n\
+      \  ]) &&\n  binding.members.exists(member,\n    !MemberSubjectMatches(member,\
+      \ ['group:fabric-fast-owners@google.com']) &&\n    !(\n      MemberSubjectStartsWith(member,\
+      \ ['serviceAccount:']) &&\n      MemberSubjectEndsWith(member, ['@cloudservices.gserviceaccount.com'])\n\
+      \    )\n  )\n)"
+    description: Ensure no use of the legacy privileged basic roles (editor and owner)
+      and privileged basic roles (writer and admin)
+    display_name: Deny use of the privileged basic roles
     method_types:
     - CREATE
     - UPDATE
@@ -4450,38 +3728,6 @@ values:
     - CREATE
     - UPDATE
     name: custom.iamDisableProjectServiceAccountImpersonationRoles
-    parent: organizations/1234567890
-    resource_types:
-    - iam.googleapis.com/AllowPolicy
-    timeouts: null
-  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.iamDisablePublicBindings"]:
-    action_type: DENY
-    condition: "resource.bindings.exists(binding,\n  binding.members.exists(member,\n\
-      \    MemberSubjectMatches(member, ['allUsers', 'allAuthenticatedUsers'])\n \
-      \ )\n)"
-    description: Ensure no use of public bindings (allUsers, allAuthenticatedUsers)
-    display_name: Deny use of public access bindings with allUsers or allAuthenticatedUsers
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.iamDisablePublicBindings
-    parent: organizations/1234567890
-    resource_types:
-    - iam.googleapis.com/AllowPolicy
-    timeouts: null
-  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.iamDisableRedisAdminRoles"]:
-    action_type: DENY
-    condition: "resource.bindings.exists(binding,\n  binding.members.exists(member,\n\
-      \    !MemberSubjectMatches(member, []) &&\n    (\n      RoleNameMatches(binding.role,\
-      \ ['roles/redis.admin']) ||\n      RoleNameMatches(binding.role, ['roles/redis.editor'])\
-      \ ||\n      RoleNameContains(binding.role, ['roles/redis.viewer'])\n    )\n\
-      \  )\n)"
-    description: Ensure no use of the basic roles (viewer, editor and owner)
-    display_name: Deny use of the basic roles
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.iamDisableRedisAdminRoles
     parent: organizations/1234567890
     resource_types:
     - iam.googleapis.com/AllowPolicy
@@ -4535,19 +3781,6 @@ values:
     parent: organizations/1234567890
     resource_types:
     - logging.googleapis.com/LogBucket
-    timeouts: null
-  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.networkDisableTargetHTTPProxy"]:
-    action_type: DENY
-    condition: true == true
-    description: Ensure Target HTTP Proxy are not used
-    display_name: Deny usage and creation of Target HTTP Proxy
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.networkDisableTargetHTTPProxy
-    parent: organizations/1234567890
-    resource_types:
-    - compute.googleapis.com/TargetHttpProxy
     timeouts: null
   module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.networkDisableWeakSSLPolicy"]:
     action_type: DENY
@@ -4658,24 +3891,6 @@ values:
     resource_types:
     - storage.googleapis.com/Bucket
     timeouts: null
-  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.storageRequireBucketRetentionPolicy"]:
-    action_type: DENY
-    condition: '!has(resource.retentionPolicy) ||
-
-      !has(resource.retentionPolicy.retentionPeriod) ||
-
-      int(resource.retentionPolicy.retentionPeriod) < 7776000'
-    description: Enforce that Cloud Storage buckets have a retention policy of at
-      least 90 days configured
-    display_name: Require retention policy on Cloud Storage buckets
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.storageRequireBucketRetentionPolicy
-    parent: organizations/1234567890
-    resource_types:
-    - storage.googleapis.com/Bucket
-    timeouts: null
   module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.storageRequireDeleteLifecycleIsLive"]:
     action_type: ALLOW
     condition: "has(resource.lifecycle) &&\nresource.lifecycle.rule.exists(\n  r,\n\
@@ -4717,41 +3932,6 @@ values:
     - CREATE
     - UPDATE
     name: custom.storageRequireOwnerLabel
-    parent: organizations/1234567890
-    resource_types:
-    - storage.googleapis.com/Bucket
-    timeouts: null
-  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.storageRequireRegionalLocation"]:
-    action_type: DENY
-    condition: '(has(resource.customPlacementConfig) && resource.customPlacementConfig.dataLocations.size()
-      > 0) ||
-
-      !resource.location.matches(''^[a-zA-Z]+-[a-zA-Z]+[0-9]+$'')'
-    description: Ensure Cloud Storage buckets are deployed in a single region rather
-      than multi-region or dual-region locations
-    display_name: Require regional deployment for Cloud Storage buckets
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.storageRequireRegionalLocation
-    parent: organizations/1234567890
-    resource_types:
-    - storage.googleapis.com/Bucket
-    timeouts: null
-  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.storageRequireRetentionOrSoftDelete"]:
-    action_type: DENY
-    condition: "has(resource.softDeletePolicy) &&\nresource.softDeletePolicy.retentionDurationSeconds\
-      \ <= 0 &&\n!(\n  has(resource.versioning) &&\n  resource.versioning.enabled\
-      \ &&\n  has(resource.objectRetention) &&\n  resource.objectRetention.mode ==\
-      \ 'Enabled'\n)"
-    description: Ensure Cloud Storage buckets have a non-zero soft delete policy or
-      both object versioning and object retention enabled
-    display_name: Require soft delete policy or object versioning with object retention
-      on Cloud Storage buckets
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.storageRequireRetentionOrSoftDelete
     parent: organizations/1234567890
     resource_types:
     - storage.googleapis.com/Bucket
@@ -4845,26 +4025,6 @@ values:
     resource_types:
     - notebooks.googleapis.com/Instance
     timeouts: null
-  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.vertexaiWorkbenchRequireAutoUpgrade"]:
-    action_type: DENY
-    condition: '!has(resource.gceSetup) ||
-
-      !has(resource.gceSetup.systemMetadata) ||
-
-      !(''notebook-upgrade-schedule'' in resource.gceSetup.systemMetadata) ||
-
-      resource.gceSetup.systemMetadata[''notebook-upgrade-schedule''] == '''''
-    description: Enforce that Vertex AI Workbench instances have an automatic upgrade
-      schedule configured
-    display_name: Require automatic upgrades on Vertex AI Workbench instances
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.vertexaiWorkbenchRequireAutoUpgrade
-    parent: organizations/1234567890
-    resource_types:
-    - notebooks.googleapis.com/Instance
-    timeouts: null
   module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.vertexaiWorkbenchRequireDeleteToTrash"]:
     action_type: DENY
     condition: '!has(resource.gceSetup) ||
@@ -4885,24 +4045,6 @@ values:
     resource_types:
     - notebooks.googleapis.com/Instance
     timeouts: null
-  ? module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.vertexaiWorkbenchRequireIntegrityMonitoring"]
-  : action_type: DENY
-    condition: 'has(resource.gceSetup) &&
-
-      has(resource.gceSetup.shieldedInstanceConfig) &&
-
-      resource.gceSetup.shieldedInstanceConfig.enableIntegrityMonitoring == false'
-    description: Enforce that Vertex AI Workbench instances are configured with integrity
-      monitoring enabled
-    display_name: Enable integrity monitoring on Vertex AI Workbench instances
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.vertexaiWorkbenchRequireIntegrityMonitoring
-    parent: organizations/1234567890
-    resource_types:
-    - notebooks.googleapis.com/Instance
-    timeouts: null
   module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.vertexaiWorkbenchRequireSecureBoot"]:
     action_type: DENY
     condition: '!has(resource.gceSetup) ||
@@ -4919,24 +4061,6 @@ values:
     - CREATE
     - UPDATE
     name: custom.vertexaiWorkbenchRequireSecureBoot
-    parent: organizations/1234567890
-    resource_types:
-    - notebooks.googleapis.com/Instance
-    timeouts: null
-  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.vertexaiWorkbenchRequireVtpm"]:
-    action_type: DENY
-    condition: 'has(resource.gceSetup) &&
-
-      has(resource.gceSetup.shieldedInstanceConfig) &&
-
-      resource.gceSetup.shieldedInstanceConfig.enableVtpm == false'
-    description: Enforce that Vertex AI Workbench instances are configured with virtual
-      Trusted Platform Module (vTPM) enabled
-    display_name: Enable vTPM on Vertex AI Workbench instances
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.vertexaiWorkbenchRequireVtpm
     parent: organizations/1234567890
     resource_types:
     - notebooks.googleapis.com/Instance
@@ -5196,54 +4320,9 @@ values:
         parameters: null
         values: []
     timeouts: null
-  module.organization-iam[0].google_org_policy_policy.default["compute.disableGuestAttributesAccess"]:
-    dry_run_spec: []
-    name: organizations/1234567890/policies/compute.disableGuestAttributesAccess
-    parent: organizations/1234567890
-    spec:
-    - inherit_from_parent: null
-      reset: null
-      rules:
-      - allow_all: null
-        condition: []
-        deny_all: null
-        enforce: 'TRUE'
-        parameters: null
-        values: []
-    timeouts: null
   module.organization-iam[0].google_org_policy_policy.default["compute.disableInternetNetworkEndpointGroup"]:
     dry_run_spec: []
     name: organizations/1234567890/policies/compute.disableInternetNetworkEndpointGroup
-    parent: organizations/1234567890
-    spec:
-    - inherit_from_parent: null
-      reset: null
-      rules:
-      - allow_all: null
-        condition: []
-        deny_all: null
-        enforce: 'TRUE'
-        parameters: null
-        values: []
-    timeouts: null
-  module.organization-iam[0].google_org_policy_policy.default["compute.disableNestedVirtualization"]:
-    dry_run_spec: []
-    name: organizations/1234567890/policies/compute.disableNestedVirtualization
-    parent: organizations/1234567890
-    spec:
-    - inherit_from_parent: null
-      reset: null
-      rules:
-      - allow_all: null
-        condition: []
-        deny_all: null
-        enforce: 'TRUE'
-        parameters: null
-        values: []
-    timeouts: null
-  module.organization-iam[0].google_org_policy_policy.default["compute.disableSerialPortAccess"]:
-    dry_run_spec: []
-    name: organizations/1234567890/policies/compute.disableSerialPortAccess
     parent: organizations/1234567890
     spec:
     - inherit_from_parent: null
@@ -5316,6 +4395,51 @@ values:
         parameters: null
         values: []
     timeouts: null
+  module.organization-iam[0].google_org_policy_policy.default["compute.managed.disableGuestAttributesAccess"]:
+    dry_run_spec: []
+    name: organizations/1234567890/policies/compute.managed.disableGuestAttributesAccess
+    parent: organizations/1234567890
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+    timeouts: null
+  module.organization-iam[0].google_org_policy_policy.default["compute.managed.disableNestedVirtualization"]:
+    dry_run_spec: []
+    name: organizations/1234567890/policies/compute.managed.disableNestedVirtualization
+    parent: organizations/1234567890
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+    timeouts: null
+  module.organization-iam[0].google_org_policy_policy.default["compute.managed.disableSerialPortAccess"]:
+    dry_run_spec: []
+    name: organizations/1234567890/policies/compute.managed.disableSerialPortAccess
+    parent: organizations/1234567890
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+    timeouts: null
   module.organization-iam[0].google_org_policy_policy.default["compute.managed.disableSerialPortLogging"]:
     dry_run_spec: []
     name: organizations/1234567890/policies/compute.managed.disableSerialPortLogging
@@ -5329,6 +4453,51 @@ values:
         deny_all: null
         enforce: 'TRUE'
         parameters: null
+        values: []
+    timeouts: null
+  module.organization-iam[0].google_org_policy_policy.default["compute.managed.requireOsConfig"]:
+    dry_run_spec: []
+    name: organizations/1234567890/policies/compute.managed.requireOsConfig
+    parent: organizations/1234567890
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+    timeouts: null
+  module.organization-iam[0].google_org_policy_policy.default["compute.managed.requireOsLogin"]:
+    dry_run_spec: []
+    name: organizations/1234567890/policies/compute.managed.requireOsLogin
+    parent: organizations/1234567890
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+    timeouts: null
+  module.organization-iam[0].google_org_policy_policy.default["compute.managed.restrictProtocolForwardingCreationForTypes"]:
+    dry_run_spec: []
+    name: organizations/1234567890/policies/compute.managed.restrictProtocolForwardingCreationForTypes
+    parent: organizations/1234567890
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: '{"allowedSchemes":["INTERNAL"]}'
         values: []
     timeouts: null
   module.organization-iam[0].google_org_policy_policy.default["compute.managed.vmCanIpForward"]:
@@ -5346,24 +4515,9 @@ values:
         parameters: null
         values: []
     timeouts: null
-  module.organization-iam[0].google_org_policy_policy.default["compute.requireOsConfig"]:
+  module.organization-iam[0].google_org_policy_policy.default["compute.managed.vmExternalIpAccess"]:
     dry_run_spec: []
-    name: organizations/1234567890/policies/compute.requireOsConfig
-    parent: organizations/1234567890
-    spec:
-    - inherit_from_parent: null
-      reset: null
-      rules:
-      - allow_all: null
-        condition: []
-        deny_all: null
-        enforce: 'TRUE'
-        parameters: null
-        values: []
-    timeouts: null
-  module.organization-iam[0].google_org_policy_policy.default["compute.requireOsLogin"]:
-    dry_run_spec: []
-    name: organizations/1234567890/policies/compute.requireOsLogin
+    name: organizations/1234567890/policies/compute.managed.vmExternalIpAccess
     parent: organizations/1234567890
     spec:
     - inherit_from_parent: null
@@ -5489,24 +4643,6 @@ values:
         enforce: null
         parameters: null
     timeouts: null
-  module.organization-iam[0].google_org_policy_policy.default["compute.restrictProtocolForwardingCreationForTypes"]:
-    dry_run_spec: []
-    name: organizations/1234567890/policies/compute.restrictProtocolForwardingCreationForTypes
-    parent: organizations/1234567890
-    spec:
-    - inherit_from_parent: null
-      reset: null
-      rules:
-      - allow_all: null
-        condition: []
-        deny_all: null
-        enforce: null
-        parameters: null
-        values:
-        - allowed_values:
-          - is:INTERNAL
-          denied_values: null
-    timeouts: null
   module.organization-iam[0].google_org_policy_policy.default["compute.restrictSharedVpcHostProjects"]:
     dry_run_spec: []
     name: organizations/1234567890/policies/compute.restrictSharedVpcHostProjects
@@ -5610,21 +4746,6 @@ values:
           - is:projects/rocky-linux-accelerator-cloud
           - is:projects/ubuntu-os-accelerator-images
           denied_values: null
-    timeouts: null
-  module.organization-iam[0].google_org_policy_policy.default["compute.vmExternalIpAccess"]:
-    dry_run_spec: []
-    name: organizations/1234567890/policies/compute.vmExternalIpAccess
-    parent: organizations/1234567890
-    spec:
-    - inherit_from_parent: null
-      reset: null
-      rules:
-      - allow_all: null
-        condition: []
-        deny_all: 'TRUE'
-        enforce: null
-        parameters: null
-        values: []
     timeouts: null
   module.organization-iam[0].google_org_policy_policy.default["container.managed.disableABAC"]:
     dry_run_spec: []
@@ -5971,21 +5092,6 @@ values:
         parameters: null
         values: []
     timeouts: null
-  module.organization-iam[0].google_org_policy_policy.default["custom.cloudkmsAllowedProtectionLevel"]:
-    dry_run_spec: []
-    name: organizations/1234567890/policies/custom.cloudkmsAllowedProtectionLevel
-    parent: organizations/1234567890
-    spec:
-    - inherit_from_parent: null
-      reset: null
-      rules:
-      - allow_all: null
-        condition: []
-        deny_all: null
-        enforce: 'TRUE'
-        parameters: null
-        values: []
-    timeouts: null
   module.organization-iam[0].google_org_policy_policy.default["custom.cloudkmsAllowedPurpose"]:
     dry_run_spec: []
     name: organizations/1234567890/policies/custom.cloudkmsAllowedPurpose
@@ -6016,21 +5122,6 @@ values:
         parameters: null
         values: []
     timeouts: null
-  module.organization-iam[0].google_org_policy_policy.default["custom.cloudrunDisableEnvironmentVariablePattern"]:
-    dry_run_spec: []
-    name: organizations/1234567890/policies/custom.cloudrunDisableEnvironmentVariablePattern
-    parent: organizations/1234567890
-    spec:
-    - inherit_from_parent: null
-      reset: null
-      rules:
-      - allow_all: null
-        condition: []
-        deny_all: null
-        enforce: 'TRUE'
-        parameters: null
-        values: []
-    timeouts: null
   module.organization-iam[0].google_org_policy_policy.default["custom.cloudrunJobDisableDefaultServiceAccount"]:
     dry_run_spec: []
     name: organizations/1234567890/policies/custom.cloudrunJobDisableDefaultServiceAccount
@@ -6046,39 +5137,9 @@ values:
         parameters: null
         values: []
     timeouts: null
-  module.organization-iam[0].google_org_policy_policy.default["custom.cloudrunJobRequireBinaryAuthorization"]:
-    dry_run_spec: []
-    name: organizations/1234567890/policies/custom.cloudrunJobRequireBinaryAuthorization
-    parent: organizations/1234567890
-    spec:
-    - inherit_from_parent: null
-      reset: null
-      rules:
-      - allow_all: null
-        condition: []
-        deny_all: null
-        enforce: 'TRUE'
-        parameters: null
-        values: []
-    timeouts: null
   module.organization-iam[0].google_org_policy_policy.default["custom.cloudrunServiceDisableDefaultServiceAccount"]:
     dry_run_spec: []
     name: organizations/1234567890/policies/custom.cloudrunServiceDisableDefaultServiceAccount
-    parent: organizations/1234567890
-    spec:
-    - inherit_from_parent: null
-      reset: null
-      rules:
-      - allow_all: null
-        condition: []
-        deny_all: null
-        enforce: 'TRUE'
-        parameters: null
-        values: []
-    timeouts: null
-  module.organization-iam[0].google_org_policy_policy.default["custom.cloudrunServiceRequireBinaryAuthorization"]:
-    dry_run_spec: []
-    name: organizations/1234567890/policies/custom.cloudrunServiceRequireBinaryAuthorization
     parent: organizations/1234567890
     spec:
     - inherit_from_parent: null
@@ -6139,21 +5200,6 @@ values:
   module.organization-iam[0].google_org_policy_policy.default["custom.cloudsqlDisablePostgreSQLLogStatementStatsFlag"]:
     dry_run_spec: []
     name: organizations/1234567890/policies/custom.cloudsqlDisablePostgreSQLLogStatementStatsFlag
-    parent: organizations/1234567890
-    spec:
-    - inherit_from_parent: null
-      reset: null
-      rules:
-      - allow_all: null
-        condition: []
-        deny_all: null
-        enforce: 'TRUE'
-        parameters: null
-        values: []
-    timeouts: null
-  module.organization-iam[0].google_org_policy_policy.default["custom.cloudsqlDisablePublicAuthorizedNetworks"]:
-    dry_run_spec: []
-    name: organizations/1234567890/policies/custom.cloudsqlDisablePublicAuthorizedNetworks
     parent: organizations/1234567890
     spec:
     - inherit_from_parent: null
@@ -6376,36 +5422,6 @@ values:
         parameters: null
         values: []
     timeouts: null
-  module.organization-iam[0].google_org_policy_policy.default["custom.dataprocRequireDiskCmekEncryption"]:
-    dry_run_spec: []
-    name: organizations/1234567890/policies/custom.dataprocRequireDiskCmekEncryption
-    parent: organizations/1234567890
-    spec:
-    - inherit_from_parent: null
-      reset: null
-      rules:
-      - allow_all: null
-        condition: []
-        deny_all: null
-        enforce: 'TRUE'
-        parameters: null
-        values: []
-    timeouts: null
-  module.organization-iam[0].google_org_policy_policy.default["custom.dataprocRequireInternalIp"]:
-    dry_run_spec: []
-    name: organizations/1234567890/policies/custom.dataprocRequireInternalIp
-    parent: organizations/1234567890
-    spec:
-    - inherit_from_parent: null
-      reset: null
-      rules:
-      - allow_all: null
-        condition: []
-        deny_all: null
-        enforce: 'TRUE'
-        parameters: null
-        values: []
-    timeouts: null
   module.organization-iam[0].google_org_policy_policy.default["custom.dataprocRequireKerberos"]:
     dry_run_spec: []
     name: organizations/1234567890/policies/custom.dataprocRequireKerberos
@@ -6511,381 +5527,6 @@ values:
         parameters: null
         values: []
     timeouts: null
-  module.organization-iam[0].google_org_policy_policy.default["custom.firewallRequireDescription"]:
-    dry_run_spec: []
-    name: organizations/1234567890/policies/custom.firewallRequireDescription
-    parent: organizations/1234567890
-    spec:
-    - inherit_from_parent: null
-      reset: null
-      rules:
-      - allow_all: null
-        condition: []
-        deny_all: null
-        enforce: 'TRUE'
-        parameters: null
-        values: []
-    timeouts: null
-  module.organization-iam[0].google_org_policy_policy.default["custom.firewallRestrictCacheSearchDatabasesPolicyRule"]:
-    dry_run_spec: []
-    name: organizations/1234567890/policies/custom.firewallRestrictCacheSearchDatabasesPolicyRule
-    parent: organizations/1234567890
-    spec:
-    - inherit_from_parent: null
-      reset: null
-      rules:
-      - allow_all: null
-        condition: []
-        deny_all: null
-        enforce: 'TRUE'
-        parameters: null
-        values: []
-    timeouts: null
-  module.organization-iam[0].google_org_policy_policy.default["custom.firewallRestrictCacheSearchDatabasesRule"]:
-    dry_run_spec: []
-    name: organizations/1234567890/policies/custom.firewallRestrictCacheSearchDatabasesRule
-    parent: organizations/1234567890
-    spec:
-    - inherit_from_parent: null
-      reset: null
-      rules:
-      - allow_all: null
-        condition: []
-        deny_all: null
-        enforce: 'TRUE'
-        parameters: null
-        values: []
-    timeouts: null
-  module.organization-iam[0].google_org_policy_policy.default["custom.firewallRestrictDirectoryServicesPolicyRule"]:
-    dry_run_spec: []
-    name: organizations/1234567890/policies/custom.firewallRestrictDirectoryServicesPolicyRule
-    parent: organizations/1234567890
-    spec:
-    - inherit_from_parent: null
-      reset: null
-      rules:
-      - allow_all: null
-        condition: []
-        deny_all: null
-        enforce: 'TRUE'
-        parameters: null
-        values: []
-    timeouts: null
-  module.organization-iam[0].google_org_policy_policy.default["custom.firewallRestrictDirectoryServicesRule"]:
-    dry_run_spec: []
-    name: organizations/1234567890/policies/custom.firewallRestrictDirectoryServicesRule
-    parent: organizations/1234567890
-    spec:
-    - inherit_from_parent: null
-      reset: null
-      rules:
-      - allow_all: null
-        condition: []
-        deny_all: null
-        enforce: 'TRUE'
-        parameters: null
-        values: []
-    timeouts: null
-  module.organization-iam[0].google_org_policy_policy.default["custom.firewallRestrictExplicitAllPortsPolicyRule"]:
-    dry_run_spec: []
-    name: organizations/1234567890/policies/custom.firewallRestrictExplicitAllPortsPolicyRule
-    parent: organizations/1234567890
-    spec:
-    - inherit_from_parent: null
-      reset: null
-      rules:
-      - allow_all: null
-        condition: []
-        deny_all: null
-        enforce: 'TRUE'
-        parameters: null
-        values: []
-    timeouts: null
-  module.organization-iam[0].google_org_policy_policy.default["custom.firewallRestrictExplicitAllPortsRule"]:
-    dry_run_spec: []
-    name: organizations/1234567890/policies/custom.firewallRestrictExplicitAllPortsRule
-    parent: organizations/1234567890
-    spec:
-    - inherit_from_parent: null
-      reset: null
-      rules:
-      - allow_all: null
-        condition: []
-        deny_all: null
-        enforce: 'TRUE'
-        parameters: null
-        values: []
-    timeouts: null
-  module.organization-iam[0].google_org_policy_policy.default["custom.firewallRestrictInsecureProtocolsPolicyRule"]:
-    dry_run_spec: []
-    name: organizations/1234567890/policies/custom.firewallRestrictInsecureProtocolsPolicyRule
-    parent: organizations/1234567890
-    spec:
-    - inherit_from_parent: null
-      reset: null
-      rules:
-      - allow_all: null
-        condition: []
-        deny_all: null
-        enforce: 'TRUE'
-        parameters: null
-        values: []
-    timeouts: null
-  module.organization-iam[0].google_org_policy_policy.default["custom.firewallRestrictInsecureProtocolsRule"]:
-    dry_run_spec: []
-    name: organizations/1234567890/policies/custom.firewallRestrictInsecureProtocolsRule
-    parent: organizations/1234567890
-    spec:
-    - inherit_from_parent: null
-      reset: null
-      rules:
-      - allow_all: null
-        condition: []
-        deny_all: null
-        enforce: 'TRUE'
-        parameters: null
-        values: []
-    timeouts: null
-  module.organization-iam[0].google_org_policy_policy.default["custom.firewallRestrictMailProtocolsPolicyRule"]:
-    dry_run_spec: []
-    name: organizations/1234567890/policies/custom.firewallRestrictMailProtocolsPolicyRule
-    parent: organizations/1234567890
-    spec:
-    - inherit_from_parent: null
-      reset: null
-      rules:
-      - allow_all: null
-        condition: []
-        deny_all: null
-        enforce: 'TRUE'
-        parameters: null
-        values: []
-    timeouts: null
-  module.organization-iam[0].google_org_policy_policy.default["custom.firewallRestrictMailProtocolsRule"]:
-    dry_run_spec: []
-    name: organizations/1234567890/policies/custom.firewallRestrictMailProtocolsRule
-    parent: organizations/1234567890
-    spec:
-    - inherit_from_parent: null
-      reset: null
-      rules:
-      - allow_all: null
-        condition: []
-        deny_all: null
-        enforce: 'TRUE'
-        parameters: null
-        values: []
-    timeouts: null
-  module.organization-iam[0].google_org_policy_policy.default["custom.firewallRestrictManagementPortsPolicyRule"]:
-    dry_run_spec: []
-    name: organizations/1234567890/policies/custom.firewallRestrictManagementPortsPolicyRule
-    parent: organizations/1234567890
-    spec:
-    - inherit_from_parent: null
-      reset: null
-      rules:
-      - allow_all: null
-        condition: []
-        deny_all: null
-        enforce: 'TRUE'
-        parameters: null
-        values: []
-    timeouts: null
-  module.organization-iam[0].google_org_policy_policy.default["custom.firewallRestrictManagementPortsRule"]:
-    dry_run_spec: []
-    name: organizations/1234567890/policies/custom.firewallRestrictManagementPortsRule
-    parent: organizations/1234567890
-    spec:
-    - inherit_from_parent: null
-      reset: null
-      rules:
-      - allow_all: null
-        condition: []
-        deny_all: null
-        enforce: 'TRUE'
-        parameters: null
-        values: []
-    timeouts: null
-  module.organization-iam[0].google_org_policy_policy.default["custom.firewallRestrictNetworkServicesPolicyRule"]:
-    dry_run_spec: []
-    name: organizations/1234567890/policies/custom.firewallRestrictNetworkServicesPolicyRule
-    parent: organizations/1234567890
-    spec:
-    - inherit_from_parent: null
-      reset: null
-      rules:
-      - allow_all: null
-        condition: []
-        deny_all: null
-        enforce: 'TRUE'
-        parameters: null
-        values: []
-    timeouts: null
-  module.organization-iam[0].google_org_policy_policy.default["custom.firewallRestrictNetworkServicesRule"]:
-    dry_run_spec: []
-    name: organizations/1234567890/policies/custom.firewallRestrictNetworkServicesRule
-    parent: organizations/1234567890
-    spec:
-    - inherit_from_parent: null
-      reset: null
-      rules:
-      - allow_all: null
-        condition: []
-        deny_all: null
-        enforce: 'TRUE'
-        parameters: null
-        values: []
-    timeouts: null
-  module.organization-iam[0].google_org_policy_policy.default["custom.firewallRestrictNoSQLDatabasesPolicyRule"]:
-    dry_run_spec: []
-    name: organizations/1234567890/policies/custom.firewallRestrictNoSQLDatabasesPolicyRule
-    parent: organizations/1234567890
-    spec:
-    - inherit_from_parent: null
-      reset: null
-      rules:
-      - allow_all: null
-        condition: []
-        deny_all: null
-        enforce: 'TRUE'
-        parameters: null
-        values: []
-    timeouts: null
-  module.organization-iam[0].google_org_policy_policy.default["custom.firewallRestrictNoSQLDatabasesRule"]:
-    dry_run_spec: []
-    name: organizations/1234567890/policies/custom.firewallRestrictNoSQLDatabasesRule
-    parent: organizations/1234567890
-    spec:
-    - inherit_from_parent: null
-      reset: null
-      rules:
-      - allow_all: null
-        condition: []
-        deny_all: null
-        enforce: 'TRUE'
-        parameters: null
-        values: []
-    timeouts: null
-  module.organization-iam[0].google_org_policy_policy.default["custom.firewallRestrictPublicAccessPolicyRule"]:
-    dry_run_spec: []
-    name: organizations/1234567890/policies/custom.firewallRestrictPublicAccessPolicyRule
-    parent: organizations/1234567890
-    spec:
-    - inherit_from_parent: null
-      reset: null
-      rules:
-      - allow_all: null
-        condition: []
-        deny_all: null
-        enforce: 'TRUE'
-        parameters: null
-        values: []
-    timeouts: null
-  module.organization-iam[0].google_org_policy_policy.default["custom.firewallRestrictPublicAccessRule"]:
-    dry_run_spec: []
-    name: organizations/1234567890/policies/custom.firewallRestrictPublicAccessRule
-    parent: organizations/1234567890
-    spec:
-    - inherit_from_parent: null
-      reset: null
-      rules:
-      - allow_all: null
-        condition: []
-        deny_all: null
-        enforce: 'TRUE'
-        parameters: null
-        values: []
-    timeouts: null
-  module.organization-iam[0].google_org_policy_policy.default["custom.firewallRestrictRdpPolicyRule"]:
-    dry_run_spec: []
-    name: organizations/1234567890/policies/custom.firewallRestrictRdpPolicyRule
-    parent: organizations/1234567890
-    spec:
-    - inherit_from_parent: null
-      reset: null
-      rules:
-      - allow_all: null
-        condition: []
-        deny_all: null
-        enforce: 'TRUE'
-        parameters: null
-        values: []
-    timeouts: null
-  module.organization-iam[0].google_org_policy_policy.default["custom.firewallRestrictRdpRule"]:
-    dry_run_spec: []
-    name: organizations/1234567890/policies/custom.firewallRestrictRdpRule
-    parent: organizations/1234567890
-    spec:
-    - inherit_from_parent: null
-      reset: null
-      rules:
-      - allow_all: null
-        condition: []
-        deny_all: null
-        enforce: 'TRUE'
-        parameters: null
-        values: []
-    timeouts: null
-  module.organization-iam[0].google_org_policy_policy.default["custom.firewallRestrictSQLDatabasesPolicyRule"]:
-    dry_run_spec: []
-    name: organizations/1234567890/policies/custom.firewallRestrictSQLDatabasesPolicyRule
-    parent: organizations/1234567890
-    spec:
-    - inherit_from_parent: null
-      reset: null
-      rules:
-      - allow_all: null
-        condition: []
-        deny_all: null
-        enforce: 'TRUE'
-        parameters: null
-        values: []
-    timeouts: null
-  module.organization-iam[0].google_org_policy_policy.default["custom.firewallRestrictSQLDatabasesRule"]:
-    dry_run_spec: []
-    name: organizations/1234567890/policies/custom.firewallRestrictSQLDatabasesRule
-    parent: organizations/1234567890
-    spec:
-    - inherit_from_parent: null
-      reset: null
-      rules:
-      - allow_all: null
-        condition: []
-        deny_all: null
-        enforce: 'TRUE'
-        parameters: null
-        values: []
-    timeouts: null
-  module.organization-iam[0].google_org_policy_policy.default["custom.firewallRestrictSshPolicyRule"]:
-    dry_run_spec: []
-    name: organizations/1234567890/policies/custom.firewallRestrictSshPolicyRule
-    parent: organizations/1234567890
-    spec:
-    - inherit_from_parent: null
-      reset: null
-      rules:
-      - allow_all: null
-        condition: []
-        deny_all: null
-        enforce: 'TRUE'
-        parameters: null
-        values: []
-    timeouts: null
-  module.organization-iam[0].google_org_policy_policy.default["custom.firewallRestrictSshRule"]:
-    dry_run_spec: []
-    name: organizations/1234567890/policies/custom.firewallRestrictSshRule
-    parent: organizations/1234567890
-    spec:
-    - inherit_from_parent: null
-      reset: null
-      rules:
-      - allow_all: null
-        condition: []
-        deny_all: null
-        enforce: 'TRUE'
-        parameters: null
-        values: []
-    timeouts: null
   module.organization-iam[0].google_org_policy_policy.default["custom.gkeAllowedNodePoolImages"]:
     dry_run_spec: []
     name: organizations/1234567890/policies/custom.gkeAllowedNodePoolImages
@@ -6946,21 +5587,6 @@ values:
         parameters: null
         values: []
     timeouts: null
-  module.organization-iam[0].google_org_policy_policy.default["custom.gkeDisableLegacyAbac"]:
-    dry_run_spec: []
-    name: organizations/1234567890/policies/custom.gkeDisableLegacyAbac
-    parent: organizations/1234567890
-    spec:
-    - inherit_from_parent: null
-      reset: null
-      rules:
-      - allow_all: null
-        condition: []
-        deny_all: null
-        enforce: 'TRUE'
-        parameters: null
-        values: []
-    timeouts: null
   module.organization-iam[0].google_org_policy_policy.default["custom.gkeDisableLegacyMetadataEndpoints"]:
     dry_run_spec: []
     name: organizations/1234567890/policies/custom.gkeDisableLegacyMetadataEndpoints
@@ -6994,36 +5620,6 @@ values:
   module.organization-iam[0].google_org_policy_policy.default["custom.gkeRequireDataplaneV2"]:
     dry_run_spec: []
     name: organizations/1234567890/policies/custom.gkeRequireDataplaneV2
-    parent: organizations/1234567890
-    spec:
-    - inherit_from_parent: null
-      reset: null
-      rules:
-      - allow_all: null
-        condition: []
-        deny_all: null
-        enforce: 'TRUE'
-        parameters: null
-        values: []
-    timeouts: null
-  module.organization-iam[0].google_org_policy_policy.default["custom.gkeRequireGKEMetadataServer"]:
-    dry_run_spec: []
-    name: organizations/1234567890/policies/custom.gkeRequireGKEMetadataServer
-    parent: organizations/1234567890
-    spec:
-    - inherit_from_parent: null
-      reset: null
-      rules:
-      - allow_all: null
-        condition: []
-        deny_all: null
-        enforce: 'TRUE'
-        parameters: null
-        values: []
-    timeouts: null
-  module.organization-iam[0].google_org_policy_policy.default["custom.gkeRequireIntegrityMonitoring"]:
-    dry_run_spec: []
-    name: organizations/1234567890/policies/custom.gkeRequireIntegrityMonitoring
     parent: organizations/1234567890
     spec:
     - inherit_from_parent: null
@@ -7111,36 +5707,6 @@ values:
         parameters: null
         values: []
     timeouts: null
-  module.organization-iam[0].google_org_policy_policy.default["custom.gkeRequireNodePoolCMEKEncryption"]:
-    dry_run_spec: []
-    name: organizations/1234567890/policies/custom.gkeRequireNodePoolCMEKEncryption
-    parent: organizations/1234567890
-    spec:
-    - inherit_from_parent: null
-      reset: null
-      rules:
-      - allow_all: null
-        condition: []
-        deny_all: null
-        enforce: 'TRUE'
-        parameters: null
-        values: []
-    timeouts: null
-  module.organization-iam[0].google_org_policy_policy.default["custom.gkeRequireNodePoolSandbox"]:
-    dry_run_spec: []
-    name: organizations/1234567890/policies/custom.gkeRequireNodePoolSandbox
-    parent: organizations/1234567890
-    spec:
-    - inherit_from_parent: null
-      reset: null
-      rules:
-      - allow_all: null
-        condition: []
-        deny_all: null
-        enforce: 'TRUE'
-        parameters: null
-        values: []
-    timeouts: null
   module.organization-iam[0].google_org_policy_policy.default["custom.gkeRequirePrivateEndpoint"]:
     dry_run_spec: []
     name: organizations/1234567890/policies/custom.gkeRequirePrivateEndpoint
@@ -7216,21 +5782,6 @@ values:
         parameters: null
         values: []
     timeouts: null
-  module.organization-iam[0].google_org_policy_policy.default["custom.iamDisableAdminServiceAccount"]:
-    dry_run_spec: []
-    name: organizations/1234567890/policies/custom.iamDisableAdminServiceAccount
-    parent: organizations/1234567890
-    spec:
-    - inherit_from_parent: null
-      reset: null
-      rules:
-      - allow_all: null
-        condition: []
-        deny_all: null
-        enforce: 'TRUE'
-        parameters: null
-        values: []
-    timeouts: null
   module.organization-iam[0].google_org_policy_policy.default["custom.iamDisableBasicRoles"]:
     dry_run_spec: []
     name: organizations/1234567890/policies/custom.iamDisableBasicRoles
@@ -7273,51 +5824,6 @@ values:
         parameters: null
         values: []
     timeouts: null
-  module.organization-iam[0].google_org_policy_policy.default["custom.iamDisablePublicBindings"]:
-    dry_run_spec: []
-    name: organizations/1234567890/policies/custom.iamDisablePublicBindings
-    parent: organizations/1234567890
-    spec:
-    - inherit_from_parent: null
-      reset: null
-      rules:
-      - allow_all: null
-        condition: []
-        deny_all: null
-        enforce: 'TRUE'
-        parameters: null
-        values: []
-    timeouts: null
-  module.organization-iam[0].google_org_policy_policy.default["custom.iamDisableRedisAdminRoles"]:
-    dry_run_spec: []
-    name: organizations/1234567890/policies/custom.iamDisableRedisAdminRoles
-    parent: organizations/1234567890
-    spec:
-    - inherit_from_parent: null
-      reset: null
-      rules:
-      - allow_all: null
-        condition: []
-        deny_all: null
-        enforce: 'FALSE'
-        parameters: null
-        values: []
-    timeouts: null
-  module.organization-iam[0].google_org_policy_policy.default["custom.networkDisableTargetHTTPProxy"]:
-    dry_run_spec: []
-    name: organizations/1234567890/policies/custom.networkDisableTargetHTTPProxy
-    parent: organizations/1234567890
-    spec:
-    - inherit_from_parent: null
-      reset: null
-      rules:
-      - allow_all: null
-        condition: []
-        deny_all: null
-        enforce: 'TRUE'
-        parameters: null
-        values: []
-    timeouts: null
   module.organization-iam[0].google_org_policy_policy.default["custom.networkDisableWeakSSLPolicy"]:
     dry_run_spec: []
     name: organizations/1234567890/policies/custom.networkDisableWeakSSLPolicy
@@ -7351,21 +5857,6 @@ values:
   module.organization-iam[0].google_org_policy_policy.default["custom.networkRequireCustomModeVpc"]:
     dry_run_spec: []
     name: organizations/1234567890/policies/custom.networkRequireCustomModeVpc
-    parent: organizations/1234567890
-    spec:
-    - inherit_from_parent: null
-      reset: null
-      rules:
-      - allow_all: null
-        condition: []
-        deny_all: null
-        enforce: 'TRUE'
-        parameters: null
-        values: []
-    timeouts: null
-  module.organization-iam[0].google_org_policy_policy.default["custom.storageRequireRetentionOrSoftDelete"]:
-    dry_run_spec: []
-    name: organizations/1234567890/policies/custom.storageRequireRetentionOrSoftDelete
     parent: organizations/1234567890
     spec:
     - inherit_from_parent: null
@@ -7438,39 +5929,9 @@ values:
         parameters: null
         values: []
     timeouts: null
-  module.organization-iam[0].google_org_policy_policy.default["custom.vertexaiWorkbenchRequireAutoUpgrade"]:
-    dry_run_spec: []
-    name: organizations/1234567890/policies/custom.vertexaiWorkbenchRequireAutoUpgrade
-    parent: organizations/1234567890
-    spec:
-    - inherit_from_parent: null
-      reset: null
-      rules:
-      - allow_all: null
-        condition: []
-        deny_all: null
-        enforce: 'TRUE'
-        parameters: null
-        values: []
-    timeouts: null
   module.organization-iam[0].google_org_policy_policy.default["custom.vertexaiWorkbenchRequireDeleteToTrash"]:
     dry_run_spec: []
     name: organizations/1234567890/policies/custom.vertexaiWorkbenchRequireDeleteToTrash
-    parent: organizations/1234567890
-    spec:
-    - inherit_from_parent: null
-      reset: null
-      rules:
-      - allow_all: null
-        condition: []
-        deny_all: null
-        enforce: 'TRUE'
-        parameters: null
-        values: []
-    timeouts: null
-  module.organization-iam[0].google_org_policy_policy.default["custom.vertexaiWorkbenchRequireIntegrityMonitoring"]:
-    dry_run_spec: []
-    name: organizations/1234567890/policies/custom.vertexaiWorkbenchRequireIntegrityMonitoring
     parent: organizations/1234567890
     spec:
     - inherit_from_parent: null
@@ -7498,9 +5959,9 @@ values:
         parameters: null
         values: []
     timeouts: null
-  module.organization-iam[0].google_org_policy_policy.default["custom.vertexaiWorkbenchRequireVtpm"]:
+  module.organization-iam[0].google_org_policy_policy.default["discoveryengine.managed.allowedDataSources"]:
     dry_run_spec: []
-    name: organizations/1234567890/policies/custom.vertexaiWorkbenchRequireVtpm
+    name: organizations/1234567890/policies/discoveryengine.managed.allowedDataSources
     parent: organizations/1234567890
     spec:
     - inherit_from_parent: null
@@ -7528,9 +5989,9 @@ values:
         parameters: null
         values: []
     timeouts: null
-  module.organization-iam[0].google_org_policy_policy.default["essentialcontacts.allowedContactDomains"]:
+  module.organization-iam[0].google_org_policy_policy.default["essentialcontacts.managed.allowedContactDomains"]:
     dry_run_spec: []
-    name: organizations/1234567890/policies/essentialcontacts.allowedContactDomains
+    name: organizations/1234567890/policies/essentialcontacts.managed.allowedContactDomains
     parent: organizations/1234567890
     spec:
     - inherit_from_parent: null
@@ -7539,29 +6000,20 @@ values:
       - allow_all: null
         condition:
         - description: null
-          expression: '!resource.matchTag(''1234567890/org-policies'', ''allowed-essential-contacts-domains-all'')
-
-            '
-          location: null
-          title: Restrict essential contacts domains
-        deny_all: null
-        enforce: null
-        parameters: null
-        values:
-        - allowed_values:
-          - '@example.org'
-          denied_values: null
-      - allow_all: 'TRUE'
-        condition:
-        - description: null
           expression: 'resource.matchTag(''1234567890/org-policies'', ''allowed-essential-contacts-domains-all'')
 
             '
           location: null
           title: Allow essential contacts from any domain
         deny_all: null
-        enforce: null
+        enforce: 'FALSE'
         parameters: null
+        values: []
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: '{"allowedDomains":["@example.org"]}'
         values: []
     timeouts: null
   module.organization-iam[0].google_org_policy_policy.default["firestore.managed.disableEnhancedTextSearch"]:
@@ -7798,42 +6250,6 @@ values:
           - TLS_VERSION_1
           - TLS_VERSION_1_1
     timeouts: null
-  module.organization-iam[0].google_org_policy_policy.default["iam.allowedPolicyMemberDomains"]:
-    dry_run_spec: []
-    name: organizations/1234567890/policies/iam.allowedPolicyMemberDomains
-    parent: organizations/1234567890
-    spec:
-    - inherit_from_parent: null
-      reset: null
-      rules:
-      - allow_all: null
-        condition:
-        - description: null
-          expression: '!resource.matchTag(''1234567890/org-policies'', ''allowed-policy-member-domains-all'')
-
-            '
-          location: null
-          title: Restrict member domains
-        deny_all: null
-        enforce: null
-        parameters: null
-        values:
-        - allowed_values:
-          - is:abcd123456
-          denied_values: null
-      - allow_all: 'TRUE'
-        condition:
-        - description: null
-          expression: 'resource.matchTag(''1234567890/org-policies'', ''allowed-policy-member-domains-all'')
-
-            '
-          location: null
-          title: Allow any member domain
-        deny_all: null
-        enforce: null
-        parameters: null
-        values: []
-    timeouts: null
   module.organization-iam[0].google_org_policy_policy.default["iam.automaticIamGrantsForDefaultServiceAccounts"]:
     dry_run_spec: []
     name: organizations/1234567890/policies/iam.automaticIamGrantsForDefaultServiceAccounts
@@ -7864,34 +6280,31 @@ values:
         parameters: null
         values: []
     timeouts: null
-  module.organization-iam[0].google_org_policy_policy.default["iam.disableServiceAccountKeyCreation"]:
+  module.organization-iam[0].google_org_policy_policy.default["iam.managed.allowedPolicyMembers"]:
     dry_run_spec: []
-    name: organizations/1234567890/policies/iam.disableServiceAccountKeyCreation
+    name: organizations/1234567890/policies/iam.managed.allowedPolicyMembers
     parent: organizations/1234567890
     spec:
     - inherit_from_parent: null
       reset: null
       rules:
       - allow_all: null
-        condition: []
+        condition:
+        - description: null
+          expression: 'resource.matchTag(''1234567890/org-policies'', ''allowed-policy-member-domains-all'')
+
+            '
+          location: null
+          title: Allow any member domain
         deny_all: null
-        enforce: 'TRUE'
+        enforce: 'FALSE'
         parameters: null
         values: []
-    timeouts: null
-  module.organization-iam[0].google_org_policy_policy.default["iam.disableServiceAccountKeyUpload"]:
-    dry_run_spec: []
-    name: organizations/1234567890/policies/iam.disableServiceAccountKeyUpload
-    parent: organizations/1234567890
-    spec:
-    - inherit_from_parent: null
-      reset: null
-      rules:
       - allow_all: null
         condition: []
         deny_all: null
         enforce: 'TRUE'
-        parameters: null
+        parameters: '{"allowedMemberSubjects":["group:fabric-fast-owners@google.com"],"allowedPrincipalSets":["//cloudresourcemanager.googleapis.com/organizations/1234567890"]}'
         values: []
     timeouts: null
   module.organization-iam[0].google_org_policy_policy.default["iam.managed.disableServiceAccountApiKeyCreation"]:
@@ -7909,9 +6322,54 @@ values:
         parameters: null
         values: []
     timeouts: null
+  module.organization-iam[0].google_org_policy_policy.default["iam.managed.disableServiceAccountKeyCreation"]:
+    dry_run_spec: []
+    name: organizations/1234567890/policies/iam.managed.disableServiceAccountKeyCreation
+    parent: organizations/1234567890
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+    timeouts: null
+  module.organization-iam[0].google_org_policy_policy.default["iam.managed.disableServiceAccountKeyUpload"]:
+    dry_run_spec: []
+    name: organizations/1234567890/policies/iam.managed.disableServiceAccountKeyUpload
+    parent: organizations/1234567890
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+    timeouts: null
   ? module.organization-iam[0].google_org_policy_policy.default["iam.managed.preventPrivilegedBasicRolesForDefaultServiceAccounts"]
   : dry_run_spec: []
     name: organizations/1234567890/policies/iam.managed.preventPrivilegedBasicRolesForDefaultServiceAccounts
+    parent: organizations/1234567890
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+    timeouts: null
+  module.organization-iam[0].google_org_policy_policy.default["iam.managed.workloadIdentityPoolProviders"]:
+    dry_run_spec: []
+    name: organizations/1234567890/policies/iam.managed.workloadIdentityPoolProviders
     parent: organizations/1234567890
     spec:
     - inherit_from_parent: null
@@ -7954,51 +6412,6 @@ values:
         condition: []
         deny_all: 'TRUE'
         enforce: null
-        parameters: null
-        values: []
-    timeouts: null
-  module.organization-iam[0].google_org_policy_policy.default["iam.workloadIdentityPoolProviders"]:
-    dry_run_spec: []
-    name: organizations/1234567890/policies/iam.workloadIdentityPoolProviders
-    parent: organizations/1234567890
-    spec:
-    - inherit_from_parent: null
-      reset: null
-      rules:
-      - allow_all: null
-        condition: []
-        deny_all: 'TRUE'
-        enforce: null
-        parameters: null
-        values: []
-    timeouts: null
-  module.organization-iam[0].google_org_policy_policy.default["pubsub.managed.disableSubscriptionMessageTransforms"]:
-    dry_run_spec: []
-    name: organizations/1234567890/policies/pubsub.managed.disableSubscriptionMessageTransforms
-    parent: organizations/1234567890
-    spec:
-    - inherit_from_parent: null
-      reset: null
-      rules:
-      - allow_all: null
-        condition: []
-        deny_all: null
-        enforce: 'TRUE'
-        parameters: null
-        values: []
-    timeouts: null
-  module.organization-iam[0].google_org_policy_policy.default["pubsub.managed.disableTopicMessageTransforms"]:
-    dry_run_spec: []
-    name: organizations/1234567890/policies/pubsub.managed.disableTopicMessageTransforms
-    parent: organizations/1234567890
-    spec:
-    - inherit_from_parent: null
-      reset: null
-      rules:
-      - allow_all: null
-        condition: []
-        deny_all: null
-        enforce: 'TRUE'
         parameters: null
         values: []
     timeouts: null
@@ -8131,9 +6544,9 @@ values:
         parameters: null
         values: []
     timeouts: null
-  module.organization-iam[0].google_org_policy_policy.default["sql.restrictAuthorizedNetworks"]:
+  module.organization-iam[0].google_org_policy_policy.default["sql.managed.restrictAuthorizedNetworks"]:
     dry_run_spec: []
-    name: organizations/1234567890/policies/sql.restrictAuthorizedNetworks
+    name: organizations/1234567890/policies/sql.managed.restrictAuthorizedNetworks
     parent: organizations/1234567890
     spec:
     - inherit_from_parent: null
@@ -8146,9 +6559,9 @@ values:
         parameters: null
         values: []
     timeouts: null
-  module.organization-iam[0].google_org_policy_policy.default["sql.restrictPublicIp"]:
+  module.organization-iam[0].google_org_policy_policy.default["sql.managed.restrictPublicIp"]:
     dry_run_spec: []
-    name: organizations/1234567890/policies/sql.restrictPublicIp
+    name: organizations/1234567890/policies/sql.managed.restrictPublicIp
     parent: organizations/1234567890
     spec:
     - inherit_from_parent: null
@@ -8159,6 +6572,21 @@ values:
         deny_all: null
         enforce: 'TRUE'
         parameters: null
+        values: []
+    timeouts: null
+  module.organization-iam[0].google_org_policy_policy.default["storage.managed.softDeletePolicySeconds"]:
+    dry_run_spec: []
+    name: organizations/1234567890/policies/storage.managed.softDeletePolicySeconds
+    parent: organizations/1234567890
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: '{"allowedRetentionDurationSeconds":["604800","2592000","5184000","7776000"]}'
         values: []
     timeouts: null
   module.organization-iam[0].google_org_policy_policy.default["storage.publicAccessPrevention"]:
@@ -8902,67 +7330,6 @@ values:
     role_id: tagViewer
     stage: GA
     title: Custom role tagViewer
-  ? module.organization[0].google_scc_management_organization_security_health_analytics_custom_module.scc_organization_custom_module["artifactregistryRequireCMEK"]
-  : custom_config:
-    - custom_output: []
-      description: Detect if Artifact Registry repositories are not encrypted using
-        CMEK
-      predicate:
-      - description: null
-        expression: (!has(resource.kmsKeyName))
-        location: null
-        title: null
-      recommendation: Ensure the Artifact Registry repositoriesa are encrypted using
-        CMEK
-      resource_selector:
-      - resource_types:
-        - artifactregistry.googleapis.com/Repository
-      severity: HIGH
-    display_name: artifactregistryRequireCMEK
-    enablement_state: ENABLED
-    location: global
-    organization: '1234567890'
-    timeouts: null
-  ? module.organization[0].google_scc_management_organization_security_health_analytics_custom_module.scc_organization_custom_module["cloudfunctionsV1RequireIngressInternalAndLoadBalancer"]
-  : custom_config:
-    - custom_output: []
-      description: Detect if Gen1 Cloud Functions are not configured to allow only
-        internal traffic and traffic from load balancer
-      predicate:
-      - description: null
-        expression: (!resource.ingressSettings.matches("ALLOW_INTERNAL_AND_GCLB"))
-        location: null
-        title: null
-      recommendation: Ensure Gen1 Cloud Functions are configured to allow only internal
-        traffic and traffic from load balancer
-      resource_selector:
-      - resource_types:
-        - cloudfunctions.googleapis.com/CloudFunction
-      severity: MEDIUM
-    display_name: cloudfunctionsV1RequireIngressInternalAndLoadBalancer
-    enablement_state: ENABLED
-    location: global
-    organization: '1234567890'
-    timeouts: null
-  ? module.organization[0].google_scc_management_organization_security_health_analytics_custom_module.scc_organization_custom_module["cloudfunctionsV1RequireVPCConnector"]
-  : custom_config:
-    - custom_output: []
-      description: Detect if Gen1 Cloud Functions are configured without any VPC Connector
-      predicate:
-      - description: null
-        expression: (!has(resource.vpcConnector))
-        location: null
-        title: null
-      recommendation: Ensure Gen1 Cloud Functions are configured with VPC Connector
-      resource_selector:
-      - resource_types:
-        - cloudfunctions.googleapis.com/CloudFunction
-      severity: MEDIUM
-    display_name: cloudfunctionsV1RequireVPCConnector
-    enablement_state: ENABLED
-    location: global
-    organization: '1234567890'
-    timeouts: null
   ? module.organization[0].google_scc_management_organization_security_health_analytics_custom_module.scc_organization_custom_module["cloudkmsAllowedAlgorithms"]
   : custom_config:
     - custom_output: []
@@ -8980,27 +7347,6 @@ values:
         - cloudkms.googleapis.com/CryptoKeyVersion
       severity: MEDIUM
     display_name: cloudkmsAllowedAlgorithms
-    enablement_state: ENABLED
-    location: global
-    organization: '1234567890'
-    timeouts: null
-  ? module.organization[0].google_scc_management_organization_security_health_analytics_custom_module.scc_organization_custom_module["cloudkmsAllowedProtectionLevel"]
-  : custom_config:
-    - custom_output: []
-      description: Detect if the protection level for Cloud KMS keys is not configured
-        correctly
-      predicate:
-      - description: null
-        expression: resource.primary.protectionLevel in ["SOFTWARE"] == false
-        location: null
-        title: null
-      recommendation: Ensure the protection level for Cloud KMS keys is configured
-        correctly
-      resource_selector:
-      - resource_types:
-        - cloudkms.googleapis.com/CryptoKey
-      severity: MEDIUM
-    display_name: cloudkmsAllowedProtectionLevel
     enablement_state: ENABLED
     location: global
     organization: '1234567890'
@@ -9045,74 +7391,6 @@ values:
     location: global
     organization: '1234567890'
     timeouts: null
-  ? module.organization[0].google_scc_management_organization_security_health_analytics_custom_module.scc_organization_custom_module["cloudrunRequireBinaryAuthorization"]
-  : custom_config:
-    - custom_output: []
-      description: Detect if Cloud Run services are configured without Binary Authorization
-        enabled
-      predicate:
-      - description: null
-        expression: (!resource.metadata.annotations.exists(data, data == 'run.googleapis.com/binary-authorization'))
-        location: null
-        title: null
-      recommendation: Ensure that Binary Authorization is enabled for all Cloud Run
-        services and that the project's default Binary Authorization policy requires
-        attestation
-      resource_selector:
-      - resource_types:
-        - run.googleapis.com/Job
-        - run.googleapis.com/Service
-      severity: HIGH
-    display_name: cloudrunRequireBinaryAuthorization
-    enablement_state: ENABLED
-    location: global
-    organization: '1234567890'
-    timeouts: null
-  ? module.organization[0].google_scc_management_organization_security_health_analytics_custom_module.scc_organization_custom_module["cloudrunRequireEgressAllTraffic"]
-  : custom_config:
-    - custom_output: []
-      description: Detect if Cloud Run services and jobs are not configured to route
-        all egress traffic through the VPC network
-      predicate:
-      - description: null
-        expression: "(\n  !resource.spec.template.metadata.annotations['run.googleapis.com/vpc-access-egress'].matches('all-traffic')\n\
-          )"
-        location: null
-        title: null
-      recommendation: Ensure Cloud Run services and jobs are configured to route all
-        egress traffic through the VPC network
-      resource_selector:
-      - resource_types:
-        - run.googleapis.com/Service
-        - run.googleapis.com/Job
-      severity: HIGH
-    display_name: cloudrunRequireEgressAllTraffic
-    enablement_state: ENABLED
-    location: global
-    organization: '1234567890'
-    timeouts: null
-  ? module.organization[0].google_scc_management_organization_security_health_analytics_custom_module.scc_organization_custom_module["cloudrunRequireIngressInternalAndLoadBalancer"]
-  : custom_config:
-    - custom_output: []
-      description: Detect if Cloud Run services are not configured to allow only internal
-        traffic and traffic from load balancer
-      predicate:
-      - description: null
-        expression: "(\n  !resource.metadata.annotations['run.googleapis.com/ingress'].matches('internal-and-cloud-load-balancing')\n\
-          )"
-        location: null
-        title: null
-      recommendation: Ensure Cloud Run services are configured to allow only internal
-        traffic and traffic from load balancer
-      resource_selector:
-      - resource_types:
-        - run.googleapis.com/Service
-      severity: HIGH
-    display_name: cloudrunRequireIngressInternalAndLoadBalancer
-    enablement_state: ENABLED
-    location: global
-    organization: '1234567890'
-    timeouts: null
   ? module.organization[0].google_scc_management_organization_security_health_analytics_custom_module.scc_organization_custom_module["cloudsqlRequireHighAvailability"]
   : custom_config:
     - custom_output: []
@@ -9151,67 +7429,6 @@ values:
         - sqladmin.googleapis.com/Instance
       severity: HIGH
     display_name: cloudsqlRequirePointInTimeRecovery
-    enablement_state: ENABLED
-    location: global
-    organization: '1234567890'
-    timeouts: null
-  ? module.organization[0].google_scc_management_organization_security_health_analytics_custom_module.scc_organization_custom_module["computeDisableNestedVirtualization"]
-  : custom_config:
-    - custom_output: []
-      description: Detect Compute Instances with nested virtualization enabled
-      predicate:
-      - description: null
-        expression: resource.advancedMachineFeatures.enableNestedVirtualization
-        location: null
-        title: null
-      recommendation: Ensure Compute Instance does not have nested virtualization
-        enabled
-      resource_selector:
-      - resource_types:
-        - compute.googleapis.com/Instance
-      severity: MEDIUM
-    display_name: computeDisableNestedVirtualization
-    enablement_state: ENABLED
-    location: global
-    organization: '1234567890'
-    timeouts: null
-  ? module.organization[0].google_scc_management_organization_security_health_analytics_custom_module.scc_organization_custom_module["gkeDisableClientCertificateAuth"]
-  : custom_config:
-    - custom_output: []
-      description: Detect if any GKE clusters uses client certificate authentication
-      predicate:
-      - description: null
-        expression: resource.masterAuth.clientCertificateConfig.issueClientCertificate
-          == true
-        location: null
-        title: null
-      recommendation: Ensure that control plane does not use client certificate authentication
-      resource_selector:
-      - resource_types:
-        - container.googleapis.com/Cluster
-      severity: CRITICAL
-    display_name: gkeDisableClientCertificateAuth
-    enablement_state: ENABLED
-    location: global
-    organization: '1234567890'
-    timeouts: null
-  ? module.organization[0].google_scc_management_organization_security_health_analytics_custom_module.scc_organization_custom_module["gkeRequireConfidentialNodes"]
-  : custom_config:
-    - custom_output: []
-      description: Detect if any GKE clusters are running without Confidential GKE
-        nodes
-      predicate:
-      - description: null
-        expression: (resource.confidentialNodes.enabled == false)
-        location: null
-        title: null
-      recommendation: Ensure GKE clusters are running with Confidential GKE nodes
-        enabled
-      resource_selector:
-      - resource_types:
-        - container.googleapis.com/Cluster
-      severity: MEDIUM
-    display_name: gkeRequireConfidentialNodes
     enablement_state: ENABLED
     location: global
     organization: '1234567890'
@@ -10230,8 +8447,8 @@ counts:
   google_logging_project_bucket_config: 6
   google_logging_project_settings: 3
   google_monitoring_alert_policy: 10
-  google_org_policy_custom_constraint: 135
-  google_org_policy_policy: 206
+  google_org_policy_custom_constraint: 86
+  google_org_policy_policy: 161
   google_organization_iam_audit_config: 1
   google_organization_iam_binding: 43
   google_organization_iam_custom_role: 16
@@ -10240,7 +8457,7 @@ counts:
   google_project_iam_member: 17
   google_project_service: 37
   google_project_service_identity: 11
-  google_scc_management_organization_security_health_analytics_custom_module: 18
+  google_scc_management_organization_security_health_analytics_custom_module: 8
   google_service_account: 12
   google_service_account_iam_binding: 2
   google_service_account_iam_member: 4
@@ -10256,7 +8473,7 @@ counts:
   google_tags_tag_value_iam_binding: 4
   local_file: 9
   modules: 54
-  resources: 761
+  resources: 657
   terraform_data: 4
 
 outputs:

@@ -40,23 +40,11 @@ cloudfunctions.requireVPCConnector:
 #         values:
 #           - "2ndGen"
 
-custom.cloudrunDisableEnvironmentVariablePattern:
-  rules:
-    - enforce: true
-
 custom.cloudrunJobDisableDefaultServiceAccount:
   rules:
     - enforce: true
 
-custom.cloudrunJobRequireBinaryAuthorization:
-  rules:
-    - enforce: true
-
 custom.cloudrunServiceDisableDefaultServiceAccount:
-  rules:
-    - enforce: true
-
-custom.cloudrunServiceRequireBinaryAuthorization:
   rules:
     - enforce: true
 
