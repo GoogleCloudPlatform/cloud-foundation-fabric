@@ -79,12 +79,22 @@ values:
     region: us-central1
     subnetwork: projects/prj-host/regions/us-central1/subnetworks/sub-1
     target: projects/prj-tenant/regions/us-central1/serviceAttachments/http-psc
+  module.addresses.google_network_connectivity_regional_endpoint.default["storage"]:
+    access_type: REGIONAL
+    address: 10.0.16.10
+    location: us-central1
+    name: storage
+    network: projects/prj-host/global/networks/shared-vpc
+    project: my-project-1
+    subnetwork: projects/prj-host/regions/us-central1/subnetworks/sub-1
+    target_google_api: storage.us-central1.rep.googleapis.com
 
 counts:
   google_compute_address: 3
   google_compute_forwarding_rule: 1
   google_compute_global_address: 1
+  google_network_connectivity_regional_endpoint: 1
   modules: 1
-  resources: 5
+  resources: 6
 
 outputs: {}

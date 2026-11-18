@@ -17,6 +17,7 @@
 variable "context" {
   description = "Context-specific interpolations."
   type = object({
+    addresses           = optional(map(string), {})
     locations           = optional(map(string), {})
     networks            = optional(map(string), {})
     project_ids         = optional(map(string), {})
@@ -187,5 +188,39 @@ variable "psc_addresses" {
       ]
     )
     error_message = "Do not provide network and subnet_self_link at the same time"
+  }
+}
+
+variable "regional_endpoints" {
+  description = "Regional and multi-regional PSC endpoints for Google APIs (`*.rep.googleapis.com`), keyed by name."
+  type = map(object({
+    region            = string
+    target_google_api = string
+    address           = optional(string)
+    deletion_policy   = optional(string)
+    description       = optional(string, "Terraform managed.")
+    global_access     = optional(bool, false)
+    labels            = optional(map(string))
+    name              = optional(string)
+    network           = optional(string)
+    subnetwork        = optional(string)
+  }))
+  default  = {}
+  nullable = false
+  validation {
+    condition = alltrue([
+      for k, v in var.regional_endpoints :
+      v.deletion_policy == null
+      ? true
+      : contains(["ABANDON", "DELETE", "PREVENT"], v.deletion_policy)
+    ])
+    error_message = "Deletion policy must be one of ABANDON, DELETE, PREVENT."
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.regional_endpoints :
+      endswith(v.target_google_api, ".rep.googleapis.com")
+    ])
+    error_message = "Target Google API must be a regional or multi-regional endpoint in the `<api>.<location>.rep.googleapis.com` format."
   }
 }

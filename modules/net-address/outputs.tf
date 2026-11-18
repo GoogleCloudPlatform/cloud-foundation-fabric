@@ -111,3 +111,11 @@ output "psc_addresses" {
     }
   )
 }
+
+output "regional_endpoints" {
+  description = "Regional PSC endpoints for Google APIs."
+  value = {
+    for k, v in google_network_connectivity_regional_endpoint.default :
+    k => v
+  }
+}
