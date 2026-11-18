@@ -99,7 +99,7 @@ resource "google_sql_database_instance" "primary" {
     tier                        = var.tier
     edition                     = var.edition
     deletion_protection_enabled = var.gcp_deletion_protection
-    disk_autoresize             = var.disk_size == null
+    disk_autoresize             = var.disk_autoresize
     disk_autoresize_limit       = var.disk_autoresize_limit
     disk_size                   = var.disk_size
     disk_type                   = var.disk_type
@@ -313,7 +313,7 @@ resource "google_sql_database_instance" "replicas" {
     tier                        = coalesce(each.value.tier, var.tier)
     edition                     = var.edition
     deletion_protection_enabled = var.gcp_deletion_protection
-    disk_autoresize             = var.disk_size == null
+    disk_autoresize             = var.disk_autoresize
     disk_autoresize_limit       = var.disk_autoresize_limit
     disk_size                   = var.disk_size
     disk_type                   = var.disk_type
