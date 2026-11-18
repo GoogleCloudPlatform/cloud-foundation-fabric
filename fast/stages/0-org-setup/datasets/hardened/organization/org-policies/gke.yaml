@@ -130,10 +130,6 @@ custom.gkeRequireNodePoolAutoUpgrade:
 #   rules:
 #     - enforce: true
 
-custom.gkeRequireNodePoolSandbox:
-  rules:
-    - enforce: true
-
 custom.gkeRequirePrivateEndpoint:
   rules:
     - enforce: true
