@@ -40,10 +40,6 @@ cloudfunctions.requireVPCConnector:
 #         values:
 #           - "2ndGen"
 
-custom.cloudrunDisableEnvironmentVariablePattern:
-  rules:
-    - enforce: true
-
 custom.cloudrunJobDisableDefaultServiceAccount:
   rules:
     - enforce: true
