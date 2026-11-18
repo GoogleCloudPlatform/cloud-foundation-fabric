@@ -24,12 +24,11 @@ locals {
     })
   ]
   # addresses usable in DNS records: static ones from context, plus addresses
-  # created by the addresses factory (internal, PSC, regional endpoints)
+  # created by the addresses factory (internal, PSC endpoints)
   ctx_dns_addresses = merge(
     local.ctx.addresses,
     local.ctx_addresses.internal,
-    local.ctx_addresses.psc,
-    local.ctx_addresses.regional_endpoints
+    local.ctx_addresses.psc
   )
   dns_zones = {
     for zone_config in local._dns_preprocess : zone_config.key => merge(

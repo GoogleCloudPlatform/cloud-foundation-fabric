@@ -17,7 +17,6 @@
 variable "context" {
   description = "Context-specific interpolations."
   type = object({
-    addresses           = optional(map(string), {})
     locations           = optional(map(string), {})
     networks            = optional(map(string), {})
     project_ids         = optional(map(string), {})
@@ -123,8 +122,8 @@ variable "psa_addresses" {
   default = {}
 }
 
-variable "psc_addresses" {
-  description = "Map of internal addresses used for Private Service Connect."
+variable "psc_endpoints" {
+  description = "Map of PSC endpoints, keyed by name. Regional endpoints for Google APIs are configured via regional_endpoint."
   type = map(object({
     address          = optional(string)
     description      = optional(string, "Terraform managed.")
@@ -132,6 +131,13 @@ variable "psc_addresses" {
     network          = optional(string)
     region           = optional(string)
     subnet_self_link = optional(string)
+    # regional or multi-regional Google APIs (*.rep.googleapis.com)
+    regional_endpoint = optional(object({
+      target_google_api = string
+      deletion_policy   = optional(string)
+      global_access     = optional(bool)
+      labels            = optional(map(string))
+    }))
     # so we can safely check if service_attachemnt != null in for_each
     service_attachment = optional(object({
       psc_service_attachment_link = string
@@ -146,7 +152,7 @@ variable "psc_addresses" {
   validation {
     condition = alltrue(
       [
-        for key, value in var.psc_addresses
+        for key, value in var.psc_endpoints
         : (
           value.address != null
           || (value.address == null && value.subnet_self_link != null)
@@ -158,7 +164,7 @@ variable "psc_addresses" {
   validation {
     condition = alltrue(
       [
-        for key, value in var.psc_addresses
+        for key, value in var.psc_endpoints
         : (
           value.region != null
           || (value.region == null && value.network != null
@@ -171,7 +177,7 @@ variable "psc_addresses" {
   validation {
     condition = alltrue(
       [
-        for key, value in var.psc_addresses
+        for key, value in var.psc_endpoints
         : (
           value.region == null
           || (value.region != null && value.subnet_self_link != null)
@@ -183,44 +189,64 @@ variable "psc_addresses" {
   validation {
     condition = alltrue(
       [
-        for key, value in var.psc_addresses
-        : !(value.subnet_self_link != null && value.network != null)
+        for key, value in var.psc_endpoints
+        : (
+          value.regional_endpoint != null
+          || !(value.subnet_self_link != null && value.network != null)
+        )
       ]
     )
-    error_message = "Do not provide network and subnet_self_link at the same time"
+    error_message = "Do not provide network and subnet_self_link at the same time, unless creating regional endpoints for Google APIs."
   }
-}
-
-variable "regional_endpoints" {
-  description = "Regional and multi-regional PSC endpoints for Google APIs (`*.rep.googleapis.com`), keyed by name."
-  type = map(object({
-    region            = string
-    target_google_api = string
-    address           = optional(string)
-    deletion_policy   = optional(string)
-    description       = optional(string)
-    global_access     = optional(bool)
-    labels            = optional(map(string))
-    name              = optional(string)
-    network           = optional(string)
-    subnetwork        = optional(string)
-  }))
-  default  = {}
-  nullable = false
   validation {
     condition = alltrue([
-      for k, v in var.regional_endpoints :
-      v.deletion_policy == null
-      ? true
-      : contains(["ABANDON", "DELETE", "PREVENT"], v.deletion_policy)
+      for k, v in var.psc_endpoints :
+      !(v.regional_endpoint != null && v.service_attachment != null)
     ])
-    error_message = "Deletion policy must be one of ABANDON, DELETE, PREVENT."
+    error_message = "Do not provide regional_endpoint and service_attachment at the same time."
   }
   validation {
     condition = alltrue([
-      for k, v in var.regional_endpoints :
-      endswith(v.target_google_api, ".rep.googleapis.com")
+      for k, v in var.psc_endpoints :
+      v.regional_endpoint == null
+      ? true
+      : (
+        v.network != null
+        && v.region != null
+        && v.subnet_self_link != null
+      )
+    ])
+    error_message = "Provide network, region and subnet_self_link if creating regional endpoints for Google APIs."
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.psc_endpoints :
+      v.regional_endpoint == null
+      ? true
+      : endswith(v.regional_endpoint.target_google_api, ".rep.googleapis.com")
     ])
     error_message = "Target Google API must be a regional or multi-regional endpoint in the `<api>.<location>.rep.googleapis.com` format."
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.psc_endpoints :
+      try(v.regional_endpoint.deletion_policy, null) == null
+      ? true
+      : contains(
+        ["ABANDON", "DELETE", "PREVENT"], v.regional_endpoint.deletion_policy
+      )
+    ])
+    error_message = "Regional endpoint deletion policy must be one of ABANDON, DELETE, PREVENT."
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.psc_endpoints :
+      v.regional_endpoint == null
+      ? true
+      : can(regex(
+        "^[-a-z0-9](?:[-a-z0-9]{0,44})[a-z0-9]$", coalesce(v.name, k)
+      ))
+    ])
+    error_message = "Regional endpoint names must be 2-46 characters long, and only contain lowercase letters, numbers and hyphens."
   }
 }

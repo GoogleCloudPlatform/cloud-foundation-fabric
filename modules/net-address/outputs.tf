@@ -93,6 +93,11 @@ output "psc" {
           name              = try(google_compute_forwarding_rule.psc_consumer[k].name, null)
           psc_connection_id = try(google_compute_forwarding_rule.psc_consumer[k].psc_connection_id, null)
         }
+        regional_endpoint = {
+          id                  = try(google_network_connectivity_regional_endpoint.psc[k].id, null)
+          name                = try(google_network_connectivity_regional_endpoint.psc[k].name, null)
+          psc_forwarding_rule = try(google_network_connectivity_regional_endpoint.psc[k].psc_forwarding_rule, null)
+        }
       }
     }
   )
@@ -110,12 +115,4 @@ output "psc_addresses" {
       address.name => address
     }
   )
-}
-
-output "regional_endpoints" {
-  description = "Regional PSC endpoints for Google APIs."
-  value = {
-    for k, v in google_network_connectivity_regional_endpoint.default :
-    k => v
-  }
 }

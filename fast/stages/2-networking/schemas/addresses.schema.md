@@ -18,7 +18,5 @@
   <br>*additional properties: object*
 - **network_attachments**: *object*
   <br>*additional properties: object*
-- **regional_endpoints**: *object*
-  <br>*additional properties: object*
 
 ## Definitions

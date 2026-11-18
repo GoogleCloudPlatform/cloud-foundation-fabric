@@ -30,12 +30,6 @@ locals {
         "${vpc_key}/${addr_key}" => addr.address.address
       }
     ]...)
-    regional_endpoints = merge([
-      for vpc_key, mod in module.vpc-addresses : {
-        for ep_key, ep in mod.regional_endpoints :
-        "${vpc_key}/${ep_key}" => ep.address
-      }
-    ]...)
   }
 }
 
@@ -49,12 +43,10 @@ module "vpc-addresses" {
   global_addresses    = try(each.value.addresses.global, {})
   internal_addresses  = try(each.value.addresses.internal, {})
   psa_addresses       = try(each.value.addresses.psa, {})
-  psc_addresses       = try(each.value.addresses.psc, {})
+  psc_endpoints       = try(each.value.addresses.psc, {})
   network_attachments = try(each.value.addresses.network_attachments, {})
-  regional_endpoints  = try(each.value.addresses.regional_endpoints, {})
 
   context = {
-    addresses           = local.ctx.addresses
     locations           = local.ctx.locations
     networks            = local.ctx_vpcs.self_links
     project_ids         = local.ctx_projects.project_ids

@@ -35,10 +35,10 @@ locals {
     })
   }
   regional_psc = {
-    for name, psc in var.psc_addresses : name => psc if psc.region != null
+    for name, psc in var.psc_endpoints : name => psc if psc.region != null
   }
   global_psc = {
-    for name, psc in var.psc_addresses : name => psc if psc.region == null
+    for name, psc in var.psc_endpoints : name => psc if psc.region == null
   }
 }
 
@@ -135,7 +135,8 @@ resource "google_compute_address" "psc" {
   region = lookup(
     local.ctx.locations, each.value.region, each.value.region
   )
-  network = try(lookup(
+  # addresses use the subnet, network is only needed by regional endpoints
+  network = each.value.subnet_self_link != null ? null : try(lookup(
     local.ctx.networks,
     each.value.network,
     each.value.network
@@ -172,6 +173,45 @@ resource "google_compute_forwarding_rule" "psc_consumer" {
   subnetwork = lookup(
     local.ctx.subnets,
     each.value.subnet_self_link,
+    each.value.subnet_self_link
+  )
+}
+
+# regional PSC endpoints for Google APIs
+resource "google_network_connectivity_regional_endpoint" "psc" {
+  for_each = {
+    for name, psc in local.regional_psc
+    : name => psc if psc.regional_endpoint != null
+  }
+  project     = local.project_id
+  name        = coalesce(each.value.name, each.key)
+  description = each.value.description
+  location = lookup(
+    local.ctx.locations, each.value.region, each.value.region
+  )
+  target_google_api = each.value.regional_endpoint.target_google_api
+  # access_type is required by the provider, so null means regional access
+  access_type = (
+    each.value.regional_endpoint.global_access == true
+    ? "GLOBAL"
+    : "REGIONAL"
+  )
+  address         = google_compute_address.psc[each.key].id
+  deletion_policy = each.value.regional_endpoint.deletion_policy
+  labels          = each.value.regional_endpoint.labels
+  # the API returns relative names and both fields force replacement
+  network = try(
+    regex("projects/.*", lookup(
+      local.ctx.networks, each.value.network, each.value.network
+    )),
+    each.value.network
+  )
+  subnetwork = try(
+    regex("projects/.*", lookup(
+      local.ctx.subnets,
+      each.value.subnet_self_link,
+      each.value.subnet_self_link
+    )),
     each.value.subnet_self_link
   )
 }

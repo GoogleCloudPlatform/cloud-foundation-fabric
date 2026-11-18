@@ -13,12 +13,26 @@
 # limitations under the License.
 
 values:
-  module.addresses.google_network_connectivity_regional_endpoint.default["aiplatform-eu"]:
-    access_type: REGIONAL
-    deletion_policy: DELETE
+  module.addresses.google_compute_address.psc["aiplatform-eu"]:
+    address_type: INTERNAL
     description: Terraform managed.
-    effective_labels:
-      goog-terraform-provisioned: 'true'
+    name: aiplatform-eu
+    network: null
+    project: project-id
+    region: europe-west8
+    subnetwork: https://www.googleapis.com/compute/v1/projects/my-project/regions/europe-west8/subnetworks/primary
+  module.addresses.google_compute_address.psc["storage"]:
+    address: 10.0.16.10
+    address_type: INTERNAL
+    description: Terraform managed.
+    name: storage
+    network: null
+    project: project-id
+    region: europe-west8
+    subnetwork: https://www.googleapis.com/compute/v1/projects/my-project/regions/europe-west8/subnetworks/primary
+  module.addresses.google_network_connectivity_regional_endpoint.psc["aiplatform-eu"]:
+    access_type: REGIONAL
+    description: Terraform managed.
     labels: null
     location: europe-west8
     name: aiplatform-eu
@@ -26,16 +40,9 @@ values:
     project: project-id
     subnetwork: projects/my-project/regions/europe-west8/subnetworks/primary
     target_google_api: aiplatform.eu.rep.googleapis.com
-    terraform_labels:
-      goog-terraform-provisioned: 'true'
-    timeouts: null
-  module.addresses.google_network_connectivity_regional_endpoint.default["storage"]:
+  module.addresses.google_network_connectivity_regional_endpoint.psc["storage"]:
     access_type: GLOBAL
-    address: 10.0.16.10
-    deletion_policy: DELETE
     description: Terraform managed.
-    effective_labels:
-      goog-terraform-provisioned: 'true'
     labels: null
     location: europe-west8
     name: storage
@@ -43,13 +50,11 @@ values:
     project: project-id
     subnetwork: projects/my-project/regions/europe-west8/subnetworks/primary
     target_google_api: storage.europe-west8.rep.googleapis.com
-    terraform_labels:
-      goog-terraform-provisioned: 'true'
-    timeouts: null
 
 counts:
+  google_compute_address: 2
   google_network_connectivity_regional_endpoint: 2
   modules: 1
-  resources: 2
+  resources: 4
 
 outputs: {}

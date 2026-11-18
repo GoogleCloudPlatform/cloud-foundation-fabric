@@ -856,7 +856,7 @@ let plan tell you: it errors loudly and safely on a wrong ID.
   engagement (see `cai-blind-spots.md`).
 - **Global PSC addresses** (`addressType: INTERNAL`,
   `purpose: PRIVATE_SERVICE_CONNECT`, `global/` in the self link):
-  - Variable: `psc_addresses` with `region = null` (routes the entry
+  - Variable: `psc_endpoints` with `region = null` (routes the entry
     through `local.global_psc`). The paired consumer forwarding rule is
     created only when `service_attachment != null`; an address-only
     entry is legitimate.
@@ -866,7 +866,7 @@ let plan tell you: it errors loudly and safely on a wrong ID.
     destroy/create, which on an import is always a mapping error.
   - Address: `module.<instance>.google_compute_global_address.psc["<key>"]`;
     import ID `projects/<project_id>/global/addresses/<name>`.
-  - **ForceNew trap — empty live description**: `psc_addresses.*.
+  - **ForceNew trap — empty live description**: `psc_endpoints.*.
     description` defaults to `"Terraform managed."`, and `description`
     is ForceNew on `google_compute_global_address`. A live address with
     an empty description must set `description = ""` explicitly or the

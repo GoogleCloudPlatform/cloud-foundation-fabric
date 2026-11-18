@@ -8,8 +8,8 @@ This module allows reserving Compute Engine external, global, and internal addre
   - [Internal addresses](#internal-addresses)
   - [IPv6 addresses](#ipv6-addresses)
   - [PSA addresses](#psa-addresses)
-  - [PSC addresses](#psc-addresses)
-  - [Regional PSC endpoints for Google APIs](#regional-psc-endpoints-for-google-apis)
+  - [PSC endpoints](#psc-endpoints)
+    - [Regional endpoints for Google APIs](#regional-endpoints-for-google-apis)
   - [IPSec Interconnect addresses](#ipsec-interconnect-addresses)
   - [PSC Network Attachments](#psc-network-attachments)
   - [Use contexts](#use-contexts)
@@ -108,13 +108,13 @@ module "addresses" {
 # tftest modules=1 resources=1 inventory=psa.yaml e2e
 ```
 
-### PSC addresses
+### PSC endpoints
 
 ```hcl
 module "addresses" {
   source     = "./fabric/modules/net-address"
   project_id = var.project_id
-  psc_addresses = {
+  psc_endpoints = {
     one = {
       address = "10.0.0.32"
       network = var.vpc.self_link
@@ -124,13 +124,13 @@ module "addresses" {
 # tftest modules=1 resources=1 inventory=psc.yaml e2e
 ```
 
-To create PSC address targeting a service regional provider use the `service_attachment` property.
+To create a PSC endpoint targeting a service regional provider use the `service_attachment` property.
 
 ```hcl
 module "addresses" {
   source     = "./fabric/modules/net-address"
   project_id = var.project_id
-  psc_addresses = {
+  psc_endpoints = {
     cloudsql-one = {
       address          = "10.0.16.32"
       subnet_self_link = var.subnet.self_link
@@ -150,7 +150,7 @@ Specify `vpc-sc` or `all-apis` in `psc_service_attachment_link` to target Google
 module "addresses" {
   source     = "./fabric/modules/net-address"
   project_id = var.project_id
-  psc_addresses = {
+  psc_endpoints = {
     googleapis = {
       address = "10.0.32.32"
       network = var.vpc.self_link
@@ -166,13 +166,53 @@ module "addresses" {
 # tftest modules=1 resources=2 inventory=psc-service-attachment-all-apis.yaml e2e
 ```
 
+#### Regional endpoints for Google APIs
+
+[Regional endpoints](https://cloud.google.com/vpc/docs/access-regional-google-apis-endpoints) give private access to regional and multi-regional Google APIs (`<api>.<location>.rep.googleapis.com`), which the global `all-apis` and `vpc-sc` PSC endpoints and Private Google Access do not serve. Use the `regional_endpoint` attribute instead of `service_attachment`: the module reserves the regional address and uses it for the endpoint. Multi-regional APIs like `aiplatform.eu.rep.googleapis.com` still need a region and a subnet, and the API requires the VPC network in addition to the subnet.
+
+Some notes on regional endpoints:
+
+- the `networkconnectivity.googleapis.com` API needs to be enabled in the project
+- in Shared VPC, the Network Connectivity service agent of the service project needs `roles/compute.networkUser` on the host project
+- regional endpoints have their own quota, separate from PSC forwarding rules
+- the access type (`global_access`) cannot be changed in place, the endpoint is recreated
+- use the `psc` output to create DNS records for the API hostname, for example in a private zone created via the [`dns`](../dns/) module or in a [`dns-response-policy`](../dns-response-policy/)
+
+```hcl
+module "addresses" {
+  source     = "./fabric/modules/net-address"
+  project_id = var.project_id
+  psc_endpoints = {
+    aiplatform-eu = {
+      network          = var.vpc.self_link
+      region           = var.region
+      subnet_self_link = var.subnets.primary.self_link
+      regional_endpoint = {
+        target_google_api = "aiplatform.eu.rep.googleapis.com"
+      }
+    }
+    storage = {
+      address          = "10.0.16.10"
+      network          = var.vpc.self_link
+      region           = var.region
+      subnet_self_link = var.subnets.primary.self_link
+      regional_endpoint = {
+        target_google_api = "storage.${var.region}.rep.googleapis.com"
+        global_access     = true
+      }
+    }
+  }
+}
+# tftest modules=1 resources=4 inventory=psc-regional-endpoints.yaml
+```
+
 Set `global_access` to true to enable global access for regional addresses used by a service attachment.
 
 ```hcl
 module "addresses" {
   source     = "./fabric/modules/net-address"
   project_id = var.project_id
-  psc_addresses = {
+  psc_endpoints = {
     cloudsql-one = {
       address          = "10.0.16.32"
       subnet_self_link = var.subnet.self_link
@@ -185,36 +225,6 @@ module "addresses" {
   }
 }
 # tftest modules=2 resources=3 fixtures=fixtures/cloudsql-instance.tf inventory=psc-global.yaml e2e
-```
-
-### Regional PSC endpoints for Google APIs
-
-[Regional endpoints](https://cloud.google.com/vpc/docs/access-regional-google-apis-endpoints) give private access to regional and multi-regional Google APIs (`<api>.<location>.rep.googleapis.com`), which the global `all-apis` and `vpc-sc` PSC endpoints and Private Google Access do not serve. Multi-regional APIs like `aiplatform.eu.rep.googleapis.com` still need a region and a subnet for the endpoint address.
-
-When no address is set, one is allocated from the subnet: use the `regional_endpoints` output to create DNS records for the API hostname, for example in a private zone created via the [`dns`](../dns/) module or in a [`dns-response-policy`](../dns-response-policy/). The `networkconnectivity.googleapis.com` API needs to be enabled in the project.
-
-```hcl
-module "addresses" {
-  source     = "./fabric/modules/net-address"
-  project_id = var.project_id
-  regional_endpoints = {
-    aiplatform-eu = {
-      region            = var.region
-      target_google_api = "aiplatform.eu.rep.googleapis.com"
-      network           = var.vpc.self_link
-      subnetwork        = var.subnets.primary.self_link
-    }
-    storage = {
-      address           = "10.0.16.10"
-      region            = var.region
-      target_google_api = "storage.${var.region}.rep.googleapis.com"
-      global_access     = true
-      network           = var.vpc.self_link
-      subnetwork        = var.subnets.primary.self_link
-    }
-  }
-}
-# tftest modules=1 resources=2 inventory=regional-endpoints.yaml
 ```
 
 ### IPSec Interconnect addresses
@@ -271,9 +281,6 @@ module "addresses" {
   source     = "./fabric/modules/net-address"
   project_id = "$project_ids:my-prj"
   context = {
-    addresses = {
-      rep-storage = "10.0.16.10"
-    }
     locations = {
       primary-region   = "us-central1"
       secondary-region = "europe-west1"
@@ -304,7 +311,7 @@ module "addresses" {
       subnetwork = "$subnets:subnet-secondary"
     }
   }
-  psc_addresses = {
+  psc_endpoints = {
     one = {
       address = "10.0.0.32"
       network = "$networks:shared-vpc"
@@ -318,33 +325,23 @@ module "addresses" {
       }
     }
   }
-  regional_endpoints = {
-    storage = {
-      address           = "$addresses:rep-storage"
-      region            = "$locations:primary-region"
-      target_google_api = "storage.us-central1.rep.googleapis.com"
-      network           = "$networks:shared-vpc"
-      subnetwork        = "$subnets:subnet-primary"
-    }
-  }
 }
-# tftest modules=1 resources=6 inventory=context.yaml
+# tftest modules=1 resources=5 inventory=context.yaml
 ```
 <!-- BEGIN TFDOC -->
 ## Variables
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [project_id](variables.tf#L109) | Project where the addresses will be created. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L108) | Project where the addresses will be created. | <code>string</code> | ✓ |  |
 | [context](variables.tf#L17) | Context-specific interpolations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [external_addresses](variables.tf#L31) | Map of external addresses, keyed by name. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [global_addresses](variables.tf#L58) | List of global addresses to create. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [internal_addresses](variables.tf#L68) | Map of internal addresses to create, keyed by name. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [ipsec_interconnect_addresses](variables.tf#L83) | Map of internal addresses used for HPA VPN over Cloud Interconnect. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [network_attachments](variables.tf#L96) | PSC network attachments, names as keys. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [psa_addresses](variables.tf#L114) | Map of internal addresses used for Private Service Access. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [psc_addresses](variables.tf#L126) | Map of internal addresses used for Private Service Connect. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [regional_endpoints](variables.tf#L194) | Regional and multi-regional PSC endpoints for Google APIs (`*.rep.googleapis.com`), keyed by name. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [external_addresses](variables.tf#L30) | Map of external addresses, keyed by name. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [global_addresses](variables.tf#L57) | List of global addresses to create. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [internal_addresses](variables.tf#L67) | Map of internal addresses to create, keyed by name. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [ipsec_interconnect_addresses](variables.tf#L82) | Map of internal addresses used for HPA VPN over Cloud Interconnect. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [network_attachments](variables.tf#L95) | PSC network attachments, names as keys. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [psa_addresses](variables.tf#L113) | Map of internal addresses used for Private Service Access. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [psc_endpoints](variables.tf#L125) | Map of PSC endpoints, keyed by name. Regional endpoints for Google APIs are configured via regional_endpoint. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
 
@@ -357,8 +354,7 @@ module "addresses" {
 | [network_attachment_ids](outputs.tf#L49) | IDs of network attachments. |  |
 | [psa_addresses](outputs.tf#L57) | Allocated internal addresses for PSA endpoints. |  |
 | [psc](outputs.tf#L65) | Allocated resources for PSC endpoints. |  |
-| [psc_addresses](outputs.tf#L101) | Allocated internal addresses for PSC endpoints. |  |
-| [regional_endpoints](outputs.tf#L115) | Regional PSC endpoints for Google APIs. |  |
+| [psc_addresses](outputs.tf#L106) | Allocated internal addresses for PSC endpoints. |  |
 
 ## Fixtures
 

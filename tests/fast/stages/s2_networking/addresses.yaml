@@ -35,14 +35,14 @@ values:
     managed_zone: aiplatform-eu-rep
     name: aiplatform.eu.rep.googleapis.com.
     type: A
-  module.vpc-addresses["core"].google_network_connectivity_regional_endpoint.default["aiplatform-eu"]:
+  module.vpc-addresses["core"].google_network_connectivity_regional_endpoint.psc["aiplatform-eu"]:
     access_type: REGIONAL
     location: europe-west1
     name: aiplatform-eu
     target_google_api: aiplatform.eu.rep.googleapis.com
 
 counts:
-  google_compute_address: 4
+  google_compute_address: 5
   google_compute_forwarding_rule: 1
   google_compute_global_address: 3
   google_compute_global_forwarding_rule: 1
@@ -57,5 +57,5 @@ counts:
   google_network_connectivity_regional_endpoint: 1
   google_storage_bucket_object: 2
   modules: 7
-  resources: 26
+  resources: 27
   terraform_data: 2

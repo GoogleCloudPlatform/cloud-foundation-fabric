@@ -40,7 +40,7 @@ locals {
 module "addresses" {
   source     = "../../../modules/net-address"
   project_id = var.project_id
-  psc_addresses = {
+  psc_endpoints = {
     (local.psc_endpoint_key) = {
       # Avoid the network base address; GCP reserves early host addresses.
       address          = cidrhost(var.vpc_config.psc_cidr_block, 4)

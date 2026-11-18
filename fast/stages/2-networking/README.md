@@ -203,7 +203,7 @@ Note that the stage doesn't force you to create projects; factories also allow y
 
 The VPC factory allows for the definition of an arbitrary number of VPCs, along with their subnets, routes, firewall rules, and connectivity settings, all through YAML files.
 
-VPCs are defined in `.config.yaml` files within the `vpcs/[vpc-name]` directory of a dataset. This file contains the VPC's main configuration. Subnets, firewall rules, VPNs, and VLAN attachments are defined in subdirectories within each VPC's folder. An optional `addresses.yaml` file can be placed in the VPC directory to define arbitrary addresses (external, internal, global, PSC), and regional PSC endpoints for Google APIs (`regional_endpoints`, for `<api>.<location>.rep.googleapis.com`, which need `networkconnectivity.googleapis.com` enabled in the project). Since Cloud DNS peering does not export response policies, use a private zone for regional endpoint names that need to resolve from peered networks (for example from Vertex AI over PSC interfaces).
+VPCs are defined in `.config.yaml` files within the `vpcs/[vpc-name]` directory of a dataset. This file contains the VPC's main configuration. Subnets, firewall rules, VPNs, and VLAN attachments are defined in subdirectories within each VPC's folder. An optional `addresses.yaml` file can be placed in the VPC directory to define arbitrary addresses (external, internal, global) and PSC endpoints. Regional PSC endpoints for Google APIs (`<api>.<location>.rep.googleapis.com`) are configured as `psc` entries with a `regional_endpoint` block, which also need `region`, `subnet_self_link` and `network`; they require `networkconnectivity.googleapis.com` enabled in the project and, in Shared VPC, the Network Connectivity service agent needs `roles/compute.networkUser` on the host project. Since Cloud DNS peering does not export response policies, use a private zone for regional endpoint names that need to resolve from peered networks (for example from Vertex AI over PSC interfaces).
 
 ### DNS
 
@@ -619,7 +619,7 @@ Context variables are accessed by keys that match the YAML file name for resourc
 Assuming keys of the form `my_folder`, `my_project`, `my_vpc`, etc. this is an example of referencing the actual IDs via interpolation in YAML files.
 
 - `$addresses:my_vpc/my_address`
-- `$addresses:my_vpc/my_endpoint` (address of a PSC endpoint or regional endpoint created in `addresses.yaml`, also usable in DNS zone records and response policy rules)
+- `$addresses:my_vpc/my_endpoint` (address of a PSC endpoint, including regional endpoints for Google APIs, created in `addresses.yaml`, also usable in DNS zone records and response policy rules)
 - `$folder_ids:my_folder`
 - `$locations:my_region`
 - `$ncc_groups:my_hub/my_group`

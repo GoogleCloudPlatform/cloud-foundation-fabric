@@ -37,7 +37,7 @@ module "ws-addresses" {
   source     = "../../../modules/net-address"
   count      = var.network_config.psc_endpoint_address != null ? 1 : 0
   project_id = var.project_id
-  psc_addresses = {
+  psc_endpoints = {
     ws-cluster-0 = {
       address          = var.network_config.psc_endpoint_address
       subnet_self_link = var.network_config.subnetwork
