@@ -198,8 +198,8 @@ variable "regional_endpoints" {
     target_google_api = string
     address           = optional(string)
     deletion_policy   = optional(string)
-    description       = optional(string, "Terraform managed.")
-    global_access     = optional(bool, false)
+    description       = optional(string)
+    global_access     = optional(bool)
     labels            = optional(map(string))
     name              = optional(string)
     network           = optional(string)

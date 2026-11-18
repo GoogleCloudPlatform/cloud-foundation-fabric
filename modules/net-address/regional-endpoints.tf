@@ -66,11 +66,12 @@ resource "google_network_connectivity_regional_endpoint" "default" {
   name              = coalesce(each.value.name, each.key)
   location          = each.value.region
   target_google_api = each.value.target_google_api
-  access_type       = each.value.global_access ? "GLOBAL" : "REGIONAL"
-  address           = each.value.address
-  deletion_policy   = each.value.deletion_policy
-  description       = each.value.description
-  labels            = each.value.labels
-  network           = each.value.network
-  subnetwork        = each.value.subnetwork
+  # access_type is required by the provider, so null means regional access
+  access_type     = each.value.global_access == true ? "GLOBAL" : "REGIONAL"
+  address         = each.value.address
+  deletion_policy = each.value.deletion_policy
+  description     = coalesce(each.value.description, "Terraform managed.")
+  labels          = each.value.labels
+  network         = each.value.network
+  subnetwork      = each.value.subnetwork
 }
