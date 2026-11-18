@@ -57,3 +57,11 @@ network_attachments:
   # 5. PSC Network Attachment (Producer side)
   test-na:
     subnet_self_link: projects/test-project/regions/europe-west1/subnetworks/core-default
+
+regional_endpoints:
+  # 6. Multi-regional PSC endpoint for Google APIs, address from the subnet
+  aiplatform-eu:
+    region: $locations:primary
+    target_google_api: aiplatform.eu.rep.googleapis.com
+    network: $networks:core
+    subnetwork: $subnets:core/europe-west1/core-default

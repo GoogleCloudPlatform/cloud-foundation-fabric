@@ -137,6 +137,41 @@
           "producer_reject_lists": { "type": "array", "items": { "type": "string" } }
         }
       }
+    },
+    "regional_endpoints": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["region", "target_google_api"],
+        "properties": {
+          "region": { "type": "string" },
+          "target_google_api": {
+            "type": "string",
+            "pattern": "\\.rep\\.googleapis\\.com$"
+          },
+          "address": { "type": "string" },
+          "deletion_policy": {
+            "type": "string",
+            "enum": ["ABANDON", "DELETE", "PREVENT"]
+          },
+          "description": { "type": "string" },
+          "global_access": { "type": "boolean" },
+          "labels": {
+            "type": "object",
+            "additionalProperties": false,
+            "patternProperties": {
+              "^[a-z][a-z0-9_-]{0,62}$": {
+                "type": "string",
+                "pattern": "^[a-z0-9_-]{0,63}$"
+              }
+            }
+          },
+          "name": { "type": "string" },
+          "network": { "type": "string" },
+          "subnetwork": { "type": "string" }
+        }
+      }
     }
   }
 }
