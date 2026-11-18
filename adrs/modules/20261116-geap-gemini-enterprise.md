@@ -13,12 +13,12 @@ Google exposes three distinct logical products under the `discoveryengine.google
 
 1. **Vertex AI Search**: standalone search and recommendation engines backed by public websites, GCS documents, BigQuery tables, or structured schemas (`app_type` unset, `SOLUTION_TYPE_SEARCH` / `SOLUTION_TYPE_RECOMMENDATION`).
 2. **Conversational Agents (Dialogflow CX)**: chat engines (`SOLUTION_TYPE_CHAT`) paired with `google_dialogflow_cx_agent` and Cloud DLP inspection/de-identification templates.
-3. **Gemini Enterprise**: intranet employee applications (`app_type = "APP_TYPE_INTRANET"`) combining search and `default_assistant`, hosted web app and Workforce Identity login (`default_search_widget_config`), location-level identity provider (`aclConfig`) and seat licensing (`default_user_store`), first-party and third-party SaaS and Custom MCP `data_connector`s, app-level `agentspaceUser` IAM, and Egress Agent Gateway governance.
+3. **Gemini Enterprise**: intranet employee applications (`app_type = "APP_TYPE_INTRANET"`) combining search and `default_assistant`, hosted web app and Workforce Identity login (`default_search_widget_config`), location-level identity provider (`aclConfig`) and seat licensing (`default_user_store` and per-user `userLicenses`), first-party and third-party SaaS and Custom MCP `data_connector`s, app-level `agentspaceUser` IAM, and Egress Agent Gateway governance.
 
 [`modules/ai-applications`](../../modules/ai-applications) currently combines (1) and (2) around a single `count`-based engine (`var.name`), native data stores, and location CMEK configurations. Extending `modules/ai-applications` to also cover Gemini Enterprise, as proposed in [#4335](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4335), conflicts with Fabric's core module design principles:
 
 - **API namespace vs. logical entity**: over half of `modules/ai-applications/variables.tf` configures Dialogflow CX agents and Cloud DLP templates (`chat_agent_security_configs`) that never apply to Gemini Enterprise, while website crawling (`sitemap`, `target_site`) and classic search validations (`length(data_store_ids) > 0`) conflict with intranet apps that routinely start with zero data stores or attach SaaS connectors dynamically.
-- **Location-tenant vs. single-engine cardinality mismatch**: in Discovery Engine, a multi-region/location (`global`, `us`, `eu`) is the actual Gemini Enterprise tenant boundary. `aclConfig`, `default_user_store`, `cmekConfig`, and `dataConnector` collections are location-scoped singletons or shared resources, while multiple intranet apps (`engines`) coexist in that location and share the same IdP, license pool, CMEK config, and SaaS connectors. Putting location singletons inside a module that manages at most one engine (`count = 0 | 1`) breaks self-contained composition as soon as two or more Gemini Enterprise apps are deployed in the same location.
+- **Location-tenant vs. single-engine cardinality mismatch**: in Discovery Engine, a multi-region/location (`global`, `us`, `eu`) is the actual Gemini Enterprise tenant boundary. `aclConfig`, `default_user_store` (and its `userLicenses`), `cmekConfig`, and `dataConnector` collections are location-scoped singletons or shared resources, while multiple intranet apps (`engines`) coexist in that location and share the same IdP, license pool and user seat assignments, CMEK config, and SaaS connectors. Putting location singletons inside a module that manages at most one engine (`count = 0 | 1`) breaks self-contained composition as soon as two or more Gemini Enterprise apps are deployed in the same location.
 - **Alignment with `geap-*` modules and `genai-factory`**: Fabric already encapsulates Gemini Enterprise Agent Platform components in dedicated `geap-*` modules ([`modules/geap-agent-gateway`](../../modules/geap-agent-gateway), [`modules/geap-agent-runtime`](../../modules/geap-agent-runtime), [`modules/geap-workbench`](../../modules/geap-workbench)), and [`genai-factory/ge-agent-platform`](https://github.com/GoogleCloudPlatform/genai-factory/tree/main/ge-agent-platform) already validates a location-scoped, multi-app Gemini Enterprise design in end-to-end deployments.
 
 ## Decision
@@ -40,13 +40,14 @@ One invocation of `modules/geap-gemini-enterprise` manages one `(project_id, loc
 | Scope | Managed inside `modules/geap-gemini-enterprise` |
 |---|---|
 | **Location singletons** (auto-ordered via `depends_on` before stores, connectors, and apps) | `google_discovery_engine_acl_config` (`idp_config`: `GSUITE` or `THIRD_PARTY` Workforce Pool), `google_discovery_engine_user_store` (`user_store_config`: `default_user_store` license pool and auto-register/auto-update flags), `google_discovery_engine_cmek_config` (`encryption_config`: `kms_key` and `single_region_keys`). |
+| **Location user seat licenses** | `google_discovery_engine_user_license` (`user_licenses`: explicit per-user seat assignments in `default_user_store`, ordered after `google_discovery_engine_user_store` when configured; landed upstream in [`magic-modules#19823`](https://github.com/GoogleCloudPlatform/magic-modules/pull/19823) for `hashicorp/google >= 8.13.0`). |
 | **Shared data sources in location** | Native `google_discovery_engine_data_store` + `google_discovery_engine_schema` (`data_stores`), first-party/third-party SaaS `google_discovery_engine_data_connector` (`data_connectors`), and Custom MCP `google_discovery_engine_data_connector` (`mcp_connectors` with OAuth 2.0 support), linked to one or more apps via `app_ids`. |
 | **Applications (`apps` map, keyed by `engine_id`)** | Optional `google_discovery_engine_search_engine` (`app_type = "APP_TYPE_INTRANET"` when `engine != null`; skipped when adopting a Console-created app), `google_discovery_engine_assistant` (`default_assistant`), `google_discovery_engine_widget_config` (`default_search_widget_config`), Egress Agent Gateway binding (`agentGatewaySetting`), and app-level IAM (`google_discovery_engine_search_engine_iam_binding` / `_member`). |
 
 **Explicitly out of scope:**
 
 - **Project-level IAM bindings**: the module only sets IAM on Gemini Enterprise apps (`google_discovery_engine_search_engine_iam_*`). Project-level companion roles—such as `roles/discoveryengine.agentspaceRestrictedUser` (required for app users to reach apps and connectors) or custom Antigravity (`businessaicode.*`) roles—are out of scope and belong in [`modules/project`](../../modules/project) or higher-level blueprints. To simplify caller wiring, the module exposes a deduplicated `app_iam_principals` output containing all project-eligible principals granted roles on any app.
-- **Cross-service platform resources**: Model Armor templates, Egress Agent Gateways, Agent Registry services, and Secret Manager secrets stay in their respective modules and are referenced directly or via `var.context`.
+- **Cross-service and billing/procurement resources**: billing/procurement-managed `LicenseConfig` subscriptions (project-level `google_discovery_engine_license_config` creation is deprecated for Gemini Enterprise), Model Armor templates, Egress Agent Gateways, Agent Registry services, and Secret Manager secrets stay outside the module and are referenced directly or via `var.context`.
 
 ### 3. Variable Interface (Adapted from `genai-factory` to Fabric Standards)
 
@@ -93,6 +94,7 @@ variable "context" {
     custom_roles          = optional(map(string), {})
     iam_principals        = optional(map(string), {})
     kms_keys              = optional(map(string), {})
+    license_configs       = optional(map(string), {})
     locations             = optional(map(string), {})
     model_armor_templates = optional(map(string), {})
     project_ids           = optional(map(string), {})
@@ -119,6 +121,18 @@ variable "user_store_config" {
     enable_license_auto_register       = optional(bool)
   })
   default = null
+}
+
+variable "user_licenses" {
+  description = "Per-user license assignments in default_user_store, keyed by user principal (or logical key when user_principal is set)."
+  type = map(object({
+    delete_unassigned_user_licenses = optional(bool, true)
+    license_config                  = optional(string)
+    user_principal                  = optional(string)
+    user_profile                    = optional(string)
+  }))
+  default  = {}
+  nullable = false
 }
 
 variable "encryption_config" {
@@ -213,7 +227,7 @@ variable "apps" {
 
 ### 4. Discovery Engine API and Provider Lifecycle Workarounds
 
-Verification against `hashicorp/google` (`v8.10.0`–`v8.11.0`) confirms that several Discovery Engine API and provider limitations encountered in `genai-factory/ge-agent-platform` remain unresolved upstream. `modules/geap-gemini-enterprise` adopts the `genai-factory` handling for each of them:
+Verification against `hashicorp/google` (`v8.10.0`–`v8.12.0`) confirms that while per-user seat licensing now has native provider coverage (`google_discovery_engine_user_license`, merged in [`magic-modules#19823`](https://github.com/GoogleCloudPlatform/magic-modules/pull/19823) for `v8.13.0+`), several other Discovery Engine API and provider limitations encountered in `genai-factory/ge-agent-platform` remain unresolved upstream. `modules/geap-gemini-enterprise` adopts the `genai-factory` handling for each of them:
 
 1. **Decoupled `data_store_ids`, companion `NO_CONTENT` store, and connector detach on destroy**:
    - *Upstream constraints*:
