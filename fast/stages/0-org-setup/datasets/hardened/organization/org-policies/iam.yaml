@@ -47,53 +47,49 @@ custom.iamDisableRedisAdminRoles:
 #   rules:
 #     - enforce: true
 
-iam.allowedPolicyMemberDomains:
+iam.automaticIamGrantsForDefaultServiceAccounts:
   rules:
-    - allow:
-        values:
-          - is:${organization.customer_id}
-      condition:
-        title: Restrict member domains
-        expression: |
-          !resource.matchTag('${organization.id}/org-policies', 'allowed-policy-member-domains-all')
-    - allow:
-        all: true
-      condition:
-        title: Allow any member domain
-        expression: |
-          resource.matchTag('${organization.id}/org-policies', 'allowed-policy-member-domains-all')
-
-# For Workforce identity use-cases:
-# Switch from the above iam.allowedPolicyMemberDomains to the below iam.managed.allowedPolicyMembers configuration
-# To allow principalSet://iam.googleapis.com/locations/global/workforcePools/WORKFORCE_POOL_ID IAM assignments
-
-#iam.managed.allowedPolicyMembers:
-#  rules:
-#    - enforce: false
-#      condition:
-#        title: Allow any member domain
-#        expression: |
-#          resource.matchTag('${organization.id}/org-policies', 'allowed-policy-member-domains-all')
-#    - parameters: '{"allowedMemberSubjects": ["is:${organization.customer_id}"], "allowedPrincipalSets": ["//cloudresourcemanager.googleapis.com/organizations/${organization.id}"]}'
-#      enforce: true
+    - enforce: true
 
 iam.disableAuditLoggingExemption:
   rules:
     - enforce: true
 
-iam.disableServiceAccountKeyCreation:
+iam.managed.allowedPolicyMembers:
   rules:
+    - enforce: false
+      condition:
+        title: Allow any member domain
+        expression: |
+          resource.matchTag('${organization.id}/org-policies', 'allowed-policy-member-domains-all')
     - enforce: true
-
-iam.disableServiceAccountKeyUpload:
-  rules:
-    - enforce: true
+      parameters: |
+        {
+          "allowedMemberSubjects": [
+            "${iam_principals.gcp-organization-admins}"
+          ],
+          "allowedPrincipalSets": [
+            "//cloudresourcemanager.googleapis.com/organizations/${organization.id}"
+          ]
+        }
 
 iam.managed.disableServiceAccountApiKeyCreation:
   rules:
     - enforce: true
 
+iam.managed.disableServiceAccountKeyCreation:
+  rules:
+    - enforce: true
+
+iam.managed.disableServiceAccountKeyUpload:
+  rules:
+    - enforce: true
+
 iam.managed.preventPrivilegedBasicRolesForDefaultServiceAccounts:
+  rules:
+    - enforce: true
+
+iam.managed.workloadIdentityPoolProviders:
   rules:
     - enforce: true
 
@@ -104,11 +100,6 @@ iam.serviceAccountKeyExposureResponse:
           - "is:DISABLE_KEY"
 
 iam.workloadIdentityPoolAwsAccounts:
-  rules:
-    - deny:
-        all: true
-
-iam.workloadIdentityPoolProviders:
   rules:
     - deny:
         all: true

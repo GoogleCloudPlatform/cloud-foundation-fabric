@@ -48,15 +48,7 @@ custom.cloudrunJobDisableDefaultServiceAccount:
   rules:
     - enforce: true
 
-custom.cloudrunJobRequireBinaryAuthorization:
-  rules:
-    - enforce: true
-
 custom.cloudrunServiceDisableDefaultServiceAccount:
-  rules:
-    - enforce: true
-
-custom.cloudrunServiceRequireBinaryAuthorization:
   rules:
     - enforce: true
 
