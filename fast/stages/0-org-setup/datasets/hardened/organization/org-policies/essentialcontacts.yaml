@@ -18,18 +18,17 @@
 
 # yaml-language-server: $schema=../../../../schemas/org-policies.schema.json
 
-essentialcontacts.allowedContactDomains:
+essentialcontacts.managed.allowedContactDomains:
   rules:
-    - allow:
-        values:
-          - "@${organization.domain}"
-      condition:
-        title: Restrict essential contacts domains
-        expression: |
-          !resource.matchTag('${organization.id}/org-policies', 'allowed-essential-contacts-domains-all')
-    - allow:
-        all: true
+    - enforce: false
       condition:
         title: Allow essential contacts from any domain
         expression: |
           resource.matchTag('${organization.id}/org-policies', 'allowed-essential-contacts-domains-all')
+    - enforce: true
+      parameters: |
+        {
+          "allowedDomains": [
+            "@${organization.domain}"
+          ]
+        }

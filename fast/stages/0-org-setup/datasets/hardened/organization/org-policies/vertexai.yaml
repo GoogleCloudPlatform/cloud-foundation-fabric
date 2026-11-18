@@ -56,10 +56,6 @@ ainotebooks.restrictVpcNetworks:
         values:
           - "under:organizations/${organization.id}"
 
-custom.discoveryengineDisableNonGcpDataStores:
-  rules:
-    - enforce: true
-
 custom.vertexaiRuntimeTemplateDisableInternetAccess:
   rules:
     - enforce: true
@@ -76,29 +72,13 @@ custom.vertexaiWorkbenchDisableDefaultServiceAccount:
   rules:
     - enforce: true
 
-custom.vertexaiWorkbenchRequireAutoUpgrade:
-  rules:
-    - enforce: true
-
 custom.vertexaiWorkbenchRequireDeleteToTrash:
-  rules:
-    - enforce: true
-
-custom.vertexaiWorkbenchRequireIntegrityMonitoring:
   rules:
     - enforce: true
 
 custom.vertexaiWorkbenchRequireSecureBoot:
   rules:
     - enforce: true
-
-custom.vertexaiWorkbenchRequireVtpm:
-  rules:
-    - enforce: true
-
-# vertexai.allowOnlyAllCompliantAPIs:
-#   rules:
-#     - enforce: true
 
 # vertexai.allowOnlyIL5CompliantAPIs:
 #   rules:

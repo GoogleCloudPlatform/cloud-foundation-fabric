@@ -74,10 +74,6 @@ container.managed.enableWorkloadIdentityFederation:
   rules:
     - enforce: true
 
-# container.restrictNoncompliantDiagnosticDataAccess:
-#   rules:
-#     - enforce: true
-
 custom.gkeAllowedNodePoolImages:
   rules:
     - enforce: true
@@ -94,31 +90,15 @@ custom.gkeDisableKubernetesDashboard:
   rules:
     - enforce: true
 
-custom.gkeDisableLegacyAbac:
-  rules:
-    - enforce: true
-
 custom.gkeDisableLegacyMetadataEndpoints:
   rules:
     - enforce: true
-
-# custom.gkeRequireConfidentialNodes:
-#   rules:
-#     - enforce: true
 
 custom.gkeRequireCOSImage:
   rules:
     - enforce: true
 
 custom.gkeRequireDataplaneV2:
-  rules:
-    - enforce: true
-
-custom.gkeRequireGKEMetadataServer:
-  rules:
-    - enforce: true
-
-custom.gkeRequireIntegrityMonitoring:
   rules:
     - enforce: true
 
@@ -149,10 +129,6 @@ custom.gkeRequireNodePoolAutoUpgrade:
 # custom.gkeRequireNodePoolAutoscaling:
 #   rules:
 #     - enforce: true
-
-custom.gkeRequireNodePoolCMEKEncryption:
-  rules:
-    - enforce: true
 
 custom.gkeRequireNodePoolSandbox:
   rules:

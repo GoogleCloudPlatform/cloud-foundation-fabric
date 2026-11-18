@@ -34,3 +34,16 @@
 #           - "in:global-storage-endpoints"
 #           - "in:global-bigquery-endpoints"
 #           - "in:global-logging-endpoints"
+
+gcp.restrictTLSCipherSuites:
+  rules:
+    - allow:
+        values:
+          - "in:NIST-800-52-recommended-ciphers"
+
+gcp.restrictTLSVersion:
+  rules:
+    - deny:
+        values:
+          - "TLS_VERSION_1"
+          - "TLS_VERSION_1_1"

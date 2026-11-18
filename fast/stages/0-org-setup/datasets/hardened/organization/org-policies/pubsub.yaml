@@ -21,11 +21,3 @@
 # pubsub.enforceInTransitRegions:
 #   rules:
 #     - enforce: true
-
-pubsub.managed.disableSubscriptionMessageTransforms:
-  rules:
-    - enforce: true
-
-pubsub.managed.disableTopicMessageTransforms:
-  rules:
-    - enforce: true

@@ -34,10 +34,6 @@ custom.cloudsqlDisablePostgreSQLLogStatementStatsFlag:
   rules:
     - enforce: true
 
-custom.cloudsqlDisablePublicAuthorizedNetworks:
-  rules:
-    - enforce: true
-
 custom.cloudsqlEnforcePasswordComplexity:
   rules:
     - enforce: true
@@ -90,18 +86,10 @@ custom.cloudsqlRequireSSLConnection:
   rules:
     - enforce: true
 
-sql.restrictAuthorizedNetworks:
+sql.managed.restrictAuthorizedNetworks:
   rules:
     - enforce: true
 
-# sql.restrictNoncompliantDiagnosticDataAccess:
-#   rules:
-#     - enforce: true
-
-# sql.restrictNoncompliantResourceCreation:
-#   rules:
-#     - enforce: true
-
-sql.restrictPublicIp:
+sql.managed.restrictPublicIp:
   rules:
     - enforce: true
