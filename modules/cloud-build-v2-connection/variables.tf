@@ -24,7 +24,6 @@ variable "connection_config" {
   description = "Connection configuration."
   type = object({
     bitbucket_cloud = optional(object({
-      app_installation_id                       = optional(string)
       authorizer_credential_secret_version      = string
       read_authorizer_credential_secret_version = string
       webhook_secret_secret_version             = string
@@ -85,11 +84,13 @@ variable "connection_create" {
 variable "context" {
   description = "Context-specific interpolations."
   type = object({
-    condition_vars = optional(map(map(string)), {})
-    custom_roles   = optional(map(string), {})
-    iam_principals = optional(map(string), {})
-    locations      = optional(map(string), {})
-    project_ids    = optional(map(string), {})
+    condition_vars      = optional(map(map(string)), {})
+    custom_roles        = optional(map(string), {})
+    iam_principals      = optional(map(string), {})
+    locations           = optional(map(string), {})
+    project_ids         = optional(map(string), {})
+    secrets             = optional(map(string), {})
+    service_account_ids = optional(map(string), {})
   })
   default  = {}
   nullable = false
@@ -155,12 +156,21 @@ variable "repositories" {
   }
 
   validation {
-    condition = alltrue([for k1, v1 in var.repositories :
-      alltrue([for k2, v2 in v1.triggers :
-        contains(["COMMENTS_DISABLED",
-          "COMMENTS_ENABLED", "COMMENTS_ENABLED_FOR_EXTERNAL_CONTRIBUTORS_ONLY"],
-    try(v2.push.comment_control, "COMMENTS_DISABLED"))])])
-    error_message = "Possible values for include_build_logs are: COMMENTS_DISABLED, COMMENTS_ENABLED, COMMENTS_ENABLED_FOR_EXTERNAL_CONTRIBUTORS_ONLY."
+    condition = alltrue([
+      for k1, v1 in var.repositories : alltrue([
+        for k2, v2 in v1.triggers : contains(
+          [
+            "COMMENTS_DISABLED",
+            "COMMENTS_ENABLED",
+            "COMMENTS_ENABLED_FOR_EXTERNAL_CONTRIBUTORS_ONLY"
+          ],
+          coalesce(
+            try(v2.pull_request.comment_control, null), "COMMENTS_DISABLED"
+          )
+        )
+      ])
+    ])
+    error_message = "Possible values for comment_control are: COMMENTS_DISABLED, COMMENTS_ENABLED, COMMENTS_ENABLED_FOR_EXTERNAL_CONTRIBUTORS_ONLY."
   }
 
   validation {

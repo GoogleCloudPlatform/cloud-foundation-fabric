@@ -50,7 +50,7 @@ values:
     deletion_policy: DELETE
     disabled: false
     github_config:
-    - app_installation_id: null
+    - app_installation_id: 1234567
       authorizer_credential:
       - {}
     github_enterprise_config: []

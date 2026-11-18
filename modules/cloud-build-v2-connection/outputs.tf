@@ -24,24 +24,51 @@ output "id" {
       local.project_id, local.location, local.name
     )
   )
+  depends_on = [
+    google_cloudbuildv2_connection_iam_binding.authoritative,
+    google_cloudbuildv2_connection_iam_binding.bindings,
+    google_cloudbuildv2_connection_iam_member.bindings,
+  ]
 }
 
 output "repositories" {
   description = "Repositories."
   value       = google_cloudbuildv2_repository.repositories
+  depends_on = [
+    google_cloudbuildv2_connection_iam_binding.authoritative,
+    google_cloudbuildv2_connection_iam_binding.bindings,
+    google_cloudbuildv2_connection_iam_member.bindings,
+  ]
 }
 
 output "repository_ids" {
   description = "Repository ids."
-  value       = { for k, v in google_cloudbuildv2_repository.repositories : k => v.id }
+  value = {
+    for k, v in google_cloudbuildv2_repository.repositories : k => v.id
+  }
+  depends_on = [
+    google_cloudbuildv2_connection_iam_binding.authoritative,
+    google_cloudbuildv2_connection_iam_binding.bindings,
+    google_cloudbuildv2_connection_iam_member.bindings,
+  ]
 }
 
 output "trigger_ids" {
   description = "Trigger ids."
   value       = { for k, v in google_cloudbuild_trigger.triggers : k => v.id }
+  depends_on = [
+    google_cloudbuildv2_connection_iam_binding.authoritative,
+    google_cloudbuildv2_connection_iam_binding.bindings,
+    google_cloudbuildv2_connection_iam_member.bindings,
+  ]
 }
 
 output "triggers" {
   description = "Triggers."
   value       = google_cloudbuild_trigger.triggers
+  depends_on = [
+    google_cloudbuildv2_connection_iam_binding.authoritative,
+    google_cloudbuildv2_connection_iam_binding.bindings,
+    google_cloudbuildv2_connection_iam_member.bindings,
+  ]
 }

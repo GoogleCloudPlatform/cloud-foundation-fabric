@@ -36,6 +36,68 @@ values:
       - branch: ^main$
         invert_regex: null
         tag: null
+    service_account: projects/test-cb-prj/serviceAccounts/cb@test-cb-prj.iam.gserviceaccount.com
+    source_to_build: []
+    substitutions: null
+    tags: []
+    timeouts: null
+    trigger_template: []
+    webhook_config: []
+  google_cloudbuild_trigger.triggers["my-repo-pr-check"]:
+    approval_config:
+    - approval_required: true
+    bitbucket_server_trigger_config: []
+    build: []
+    deletion_policy: DELETE
+    description: null
+    developer_connect_event_config: []
+    disabled: false
+    filter: null
+    git_file_source: []
+    github: []
+    ignored_files: null
+    include_build_logs: null
+    included_files: null
+    location: europe-west8
+    name: my-repo-pr-check
+    project: test-cb-prj
+    pubsub_config: []
+    repository_event_config:
+    - pull_request:
+      - branch: ^main$
+        comment_control: COMMENTS_ENABLED
+        invert_regex: null
+      push: []
+    service_account: null
+    source_to_build: []
+    substitutions: null
+    tags: []
+    timeouts: null
+    trigger_template: []
+    webhook_config: []
+  google_cloudbuild_trigger.triggers["my-repo-pr-default"]:
+    bitbucket_server_trigger_config: []
+    build: []
+    deletion_policy: DELETE
+    description: null
+    developer_connect_event_config: []
+    disabled: false
+    filter: null
+    git_file_source: []
+    github: []
+    ignored_files: null
+    include_build_logs: null
+    included_files: null
+    location: europe-west8
+    name: my-repo-pr-default
+    project: test-cb-prj
+    pubsub_config: []
+    repository_event_config:
+    - pull_request:
+      - branch: ^release$
+        comment_control: null
+        invert_regex: null
+      push: []
     service_account: null
     source_to_build: []
     substitutions: null
@@ -107,13 +169,13 @@ values:
     timeouts: null
 
 counts:
-  google_cloudbuild_trigger: 1
+  google_cloudbuild_trigger: 3
   google_cloudbuildv2_connection: 1
   google_cloudbuildv2_connection_iam_binding: 3
   google_cloudbuildv2_connection_iam_member: 1
   google_cloudbuildv2_repository: 1
   modules: 0
-  resources: 7
+  resources: 9
 
 outputs:
   id: __missing__

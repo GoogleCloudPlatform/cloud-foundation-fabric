@@ -17,6 +17,12 @@ context = {
   project_ids = {
     main = "test-cb-prj"
   }
+  secrets = {
+    github_pat = "projects/prj/secrets/pat/versions/1"
+  }
+  service_account_ids = {
+    cb = "projects/test-cb-prj/serviceAccounts/cb@test-cb-prj.iam.gserviceaccount.com"
+  }
 }
 
 project_id = "$project_ids:main"
@@ -26,7 +32,7 @@ name       = "my-connection"
 connection_config = {
   github = {
     app_installation_id                  = 123456
-    authorizer_credential_secret_version = "projects/prj/secrets/pat/versions/1"
+    authorizer_credential_secret_version = "$secrets:github_pat"
   }
 }
 
@@ -35,9 +41,24 @@ repositories = {
     remote_uri = "https://github.com/my-org/my-repo.git"
     triggers = {
       main-push = {
-        filename = "cloudbuild.yaml"
+        filename        = "cloudbuild.yaml"
+        service_account = "$service_account_ids:cb"
         push = {
           branch = "^main$"
+        }
+      }
+      pr-check = {
+        approval_required = true
+        filename          = "cloudbuild.yaml"
+        pull_request = {
+          branch          = "^main$"
+          comment_control = "COMMENTS_ENABLED"
+        }
+      }
+      pr-default = {
+        filename = "cloudbuild.yaml"
+        pull_request = {
+          branch = "^release$"
         }
       }
     }
