@@ -189,7 +189,6 @@ In that case, the controls placed in the `organization/scc-sha-custom-modules` f
 | `cloudkmsAllowedAlgorithms` | Ensure the algorithm used for Cloud KMS keys is configured correctly. |  |
 | `cloudkmsAllowedPurpose` | Ensure Cloud KMS crypto keys are created with an approved purpose (ENCRYPT_DECRYPT, ASYMMETRIC_SIGN, or ASYMMETRIC_DECRYPT). | **CIS Controls 8.0** |
 | `cloudkmsAllowedRotationPeriod` | Ensure Cloud KMS keys have the correct rotation period configured. | **CIS for GCP 3.0**: 1.10<br>**CIS Controls 8.0**: 3.11<br>**PCI-DSS 4.0**: 3.1.1, 3.3.2, 3.3.3, 3.5.1, 3.5.1.2, 3.5.1.3, 8.3.2<br>**NIST 800-53 R4**: SC-12<br>**NIST 800-53 R5**: IA-5, SC-28<br>**ISO-2700-1 v2013**: A.10.1.2<br>**ISO-2700-1 v2022**: A.5.33<br>**SOC2 v2017**: CC6.1.10, CC6.1.3<br>**HIPAA**: 164.312(a)(2)(iv), 164.312(e)(2)(ii)<br>**Cloud Controls Matrix 4**: CEK-03 |
-| `cloudrunDisableEnvironmentVariablePattern` | Prevent secrets from being stored in Cloud Run environment variables. | **CIS for GCP 3.0**: 1.17 |
 | `cloudrunJobDisableDefaultServiceAccount` | Ensure all Cloud Run jobs use a non-default service account. |  |
 | `cloudrunServiceDisableDefaultServiceAccount` | Ensure all Cloud Run services use a non-default service account. |  |
 | `cloudsqlDisablePostgreSQLLogHostnameFlag` | Ensure Cloud SQL for PostgreSQL instances do not enable the `log_hostname` database flag. | **CIS Controls 8.0**<br>**Cloud Controls Matrix 4**<br>**ISO-2700-1 v2022**<br>**NIST 800-53 R5**<br>**NIST Cybersecurity Framework 1.0**<br>**PCI-DSS 4.0**<br>**SOC2 v2017** |
@@ -219,31 +218,6 @@ In that case, the controls placed in the `organization/scc-sha-custom-modules` f
 | `dnsRequirePolicyLogging` | Enforce the enablement of Cloud DNS logging for all VPC networks. | **CIS for GCP 3.0**: 2.12<br>**PCI-DSS 4.0**: 10.4.1, 10.4.1.1, 10.4.2, 10.4.3<br>**NIST 800-53 R5**: AU-6, AU-7<br>**NIST Cybersecurity Framework 1.0**: DE-AE-2, PR-PT-1, RS-AN-1<br>**ISO-2700-1 v2022**: A.5.25<br>**SOC2 v2017**: CC4.1.1, CC4.1.2, CC4.1.3, CC4.1.4, CC4.1.5, CC4.1.6, CC4.1.7, CC4.1.8, CC7.3.1, CC7.3.2, CC7.3.3, CC7.3.4, CC7.3.5<br>**HIPAA**: 164.308(a)(1)(ii), 164.312(b)<br>**Cloud Controls Matrix 4**: LOG-05 |
 | `firewallEnforcePolicyRuleLogging` | Enforce logging for Firewall Policy rules | **NIST 800-53 R4**: SI-4<br>**ISO-2700-1 v2013**: A.13.1.1 |
 | `firewallEnforceRuleLogging` | Enforce logging for VPC firewall rules | **NIST 800-53 R4**: SI-4<br>**ISO-2700-1 v2013**: A.13.1.1 |
-| `firewallRequireDescription` | Enforce a description for VPC firewall rules. |  |
-| `firewallRestrictCacheSearchDatabasesPolicyRule` | Prevent Cassandra port access from the internet via firewall policies. | **CIS Controls 8.0**: 4.4, 4.5<br>**PCI-DSS 4.0**: 1.2.1, 1.4.1<br>**NIST 800-53 R4**: SC-7<br>**NIST 800-53 R5**: CA-9, SC-7<br>**ISO-2700-1 v2013**: A.13.1.1<br>**SOC2 v2017**: CC6.6.1, CC6.6.4 |
-| `firewallRestrictCacheSearchDatabasesRule` | Prevent Cassandra port access from the internet via VPC firewall rules. | **CIS Controls 8.0**: 4.4, 4.5<br>**PCI-DSS 4.0**: 1.2.1, 1.4.1<br>**NIST 800-53 R4**: SC-7<br>**NIST 800-53 R5**: CA-9, SC-7<br>**ISO-2700-1 v2013**: A.13.1.1<br>**SOC2 v2017**: CC6.6.1, CC6.6.4 |
-| `firewallRestrictDirectoryServicesPolicyRule` | Prevent directory services port access from the internet via firewall policies. | **CIS Controls 8.0**: 4.4, 4.5<br>**PCI-DSS 4.0**: 1.2.1, 1.4.1<br>**NIST 800-53 R4**: SC-7<br>**NIST 800-53 R5**: CA-9, SC-7<br>**ISO-2700-1 v2013**: A.13.1.1<br>**SOC2 v2017**: CC6.6.1, CC6.6.4 |
-| `firewallRestrictDirectoryServicesRule` | Prevent directory services port access from the internet via VPC firewall rules. | **CIS Controls 8.0**: 4.4, 4.5<br>**PCI-DSS 4.0**: 1.2.1, 1.4.1<br>**NIST 800-53 R4**: SC-7<br>**NIST 800-53 R5**: CA-9, SC-7<br>**ISO-2700-1 v2013**: A.13.1.1<br>**SOC2 v2017**: CC6.6.1, CC6.6.4 |
-| `firewallRestrictExplicitAllPortsPolicyRule` | Prevent rules that explicitly specify all TCP/UDP ports using ranges like 0-65535 or 1-65535 via firewall policies. |  |
-| `firewallRestrictExplicitAllPortsRule` | Prevent rules that explicitly specify all TCP/UDP ports using ranges like 0-65535 or 1-65535 via VPC firewall rules or any ports. |  |
-| `firewallRestrictInsecureProtocolsPolicyRule` | Prevent FTP port access from the internet via firewall policies. | **CIS Controls 8.0**: 4.4, 4.5<br>**PCI-DSS 4.0**: 1.2.1, 1.4.1<br>**NIST 800-53 R4**: SC-7<br>**NIST 800-53 R5**: CA-9, SC-7<br>**ISO-2700-1 v2013**: A.13.1.1<br>**SOC2 v2017**: CC6.6.1, CC6.6.4 |
-| `firewallRestrictInsecureProtocolsRule` | Prevent FTP port access from the internet via VPC firewall rules. | **CIS Controls 8.0**: 4.4, 4.5<br>**PCI-DSS 4.0**: 1.2.1, 1.4.1<br>**NIST 800-53 R4**: SC-7<br>**NIST 800-53 R5**: CA-9, SC-7<br>**ISO-2700-1 v2013**: A.13.1.1<br>**SOC2 v2017**: CC6.6.1, CC6.6.4 |
-| `firewallRestrictMailProtocolsPolicyRule` | Prevent POP3 port access from the internet via firewall policies. | **CIS Controls 8.0**: 4.4, 4.5<br>**PCI-DSS 4.0**: 1.2.1, 1.4.1<br>**NIST 800-53 R4**: SC-7<br>**NIST 800-53 R5**: CA-9, SC-7<br>**ISO-2700-1 v2013**: A.13.1.1<br>**SOC2 v2017**: CC6.6.1, CC6.6.4 |
-| `firewallRestrictMailProtocolsRule` | Prevent POP3 port access from the internet via VPC firewall rules. | **CIS Controls 8.0**: 4.4, 4.5<br>**PCI-DSS 4.0**: 1.2.1, 1.4.1<br>**NIST 800-53 R4**: SC-7<br>**NIST 800-53 R5**: CA-9, SC-7<br>**ISO-2700-1 v2013**: A.13.1.1<br>**SOC2 v2017**: CC6.6.1, CC6.6.4 |
-| `firewallRestrictManagementPortsPolicyRule` | Prevent Cisco Secure WebSM port access from the internet via firewall policies. | **CIS Controls 8.0**: 4.4, 4.5<br>**PCI-DSS 4.0**: 1.2.1, 1.4.1<br>**NIST 800-53 R4**: SC-7<br>**NIST 800-53 R5**: CA-9, SC-7<br>**ISO-2700-1 v2013**: A.13.1.1<br>**SOC2 v2017**: CC6.6.1, CC6.6.4 |
-| `firewallRestrictManagementPortsRule` | Prevent Cisco Secure WebSM port access from the internet via VPC firewall rules. | **CIS Controls 8.0**: 4.4, 4.5<br>**PCI-DSS 4.0**: 1.2.1, 1.4.1<br>**NIST 800-53 R4**: SC-7<br>**NIST 800-53 R5**: CA-9, SC-7<br>**ISO-2700-1 v2013**: A.13.1.1<br>**SOC2 v2017**: CC6.6.1, CC6.6.4 |
-| `firewallRestrictNetworkServicesPolicyRule` | Prevent DNS port access from the internet via firewall policies. | **CIS Controls 8.0**: 4.4, 4.5<br>**PCI-DSS 4.0**: 1.2.1, 1.4.1<br>**NIST 800-53 R4**: SC-7<br>**NIST 800-53 R5**: CA-9, SC-7<br>**ISO-2700-1 v2013**: A.13.1.1<br>**SOC2 v2017**: CC6.6.1, CC6.6.4 |
-| `firewallRestrictNetworkServicesRule` | Prevent DNS port access from the internet via VPC firewall rules. | **CIS Controls 8.0**: 4.4, 4.5<br>**PCI-DSS 4.0**: 1.2.1, 1.4.1<br>**NIST 800-53 R4**: SC-7<br>**NIST 800-53 R5**: CA-9, SC-7<br>**ISO-2700-1 v2013**: A.13.1.1<br>**SOC2 v2017**: CC6.6.1, CC6.6.4 |
-| `firewallRestrictNoSQLDatabasesPolicyRule` | Prevent Elasticsearch port access from the internet via firewall policies. | **CIS Controls 8.0**: 4.4, 4.5<br>**PCI-DSS 4.0**: 1.2.1, 1.4.1<br>**NIST 800-53 R4**: SC-7<br>**NIST 800-53 R5**: CA-9, SC-7<br>**ISO-2700-1 v2013**: A.13.1.1<br>**SOC2 v2017**: CC6.6.1, CC6.6.4 |
-| `firewallRestrictNoSQLDatabasesRule` | Prevent Elasticsearch port access from the internet via VPC firewall rules. | **CIS Controls 8.0**: 4.4, 4.5<br>**PCI-DSS 4.0**: 1.2.1, 1.4.1<br>**NIST 800-53 R4**: SC-7<br>**NIST 800-53 R5**: CA-9, SC-7<br>**ISO-2700-1 v2013**: A.13.1.1<br>**SOC2 v2017**: CC6.6.1, CC6.6.4 |
-| `firewallRestrictPublicAccessPolicyRule` | Prevent open to public access  via firewall policies. |  |
-| `firewallRestrictPublicAccessRule` | Prevent open to public access  via VPC firewall rules. |  |
-| `firewallRestrictRdpPolicyRule` | Prevent RDP access from the internet via firewall policies. | **CIS for GCP 3.0**: 3.7<br>**CIS Controls 8.0**: 4.4, 4.5<br>**PCI-DSS 4.0**: 1.2.1, 1.4.1<br>**NIST 800-53 R4**: SC-7<br>**NIST 800-53 R5**: CA-9, SC-7<br>**ISO-2700-1 v2013**: A.13.1.1<br>**SOC2 v2017**: CC6.6.1, CC6.6.4 |
-| `firewallRestrictRdpRule` | Prevent RDP access from the internet via VPC firewall rules. | **CIS for GCP 3.0**: 3.7<br>**CIS Controls 8.0**: 4.4, 4.5<br>**PCI-DSS 4.0**: 1.2.1, 1.4.1<br>**NIST 800-53 R4**: SC-7<br>**NIST 800-53 R5**: CA-9, SC-7<br>**ISO-2700-1 v2013**: A.13.1.1<br>**SOC2 v2017**: CC6.6.1, CC6.6.4 |
-| `firewallRestrictSQLDatabasesPolicyRule` | Prevent MySQL port access from the internet via firewall policies. | **CIS Controls 8.0**: 4.4, 4.5<br>**PCI-DSS 4.0**: 1.2.1, 1.4.1<br>**NIST 800-53 R4**: SC-7<br>**NIST 800-53 R5**: CA-9, SC-7<br>**ISO-2700-1 v2013**: A.13.1.1<br>**SOC2 v2017**: CC6.6.1, CC6.6.4 |
-| `firewallRestrictSQLDatabasesRule` | Prevent MySQL port access from the internet via VPC firewall rules. | **CIS Controls 8.0**: 4.4, 4.5<br>**PCI-DSS 4.0**: 1.2.1, 1.4.1<br>**NIST 800-53 R4**: SC-7<br>**NIST 800-53 R5**: CA-9, SC-7<br>**ISO-2700-1 v2013**: A.13.1.1<br>**SOC2 v2017**: CC6.6.1, CC6.6.4 |
-| `firewallRestrictSshPolicyRule` | Prevent SSH access from the internet via firewall policies. | **CIS for GCP 3.0**: 3.6<br>**CIS Controls 8.0**: 4.4, 4.5<br>**PCI-DSS 4.0**: 1.2.1, 1.4.1<br>**NIST 800-53 R4**: SC-7<br>**NIST 800-53 R5**: CA-9, SC-7<br>**ISO-2700-1 v2013**: A.13.1.1<br>**SOC2 v2017**: CC6.6.1, CC6.6.4 |
-| `firewallRestrictSshRule` | Prevent SSH access from the internet via VPC firewall rules. | **CIS for GCP 3.0**: 3.6<br>**CIS Controls 8.0**: 4.4, 4.5<br>**PCI-DSS 4.0**: 1.2.1, 1.4.1<br>**NIST 800-53 R4**: SC-7<br>**NIST 800-53 R5**: CA-9, SC-7<br>**ISO-2700-1 v2013**: A.13.1.1<br>**SOC2 v2017**: CC6.6.1, CC6.6.4 |
 | `gkeAllowedNodePoolImages` | Enforce that GKE nodes are using authorized node images | **CIS for GKE 1.5**: 5.5.1<br>**PCI-DSS 4.0**: 2.2.6, 5.2, 6.2.1 |
 | `gkeAllowedReleaseChannels` | Enforce that GKE cluster are using authorized release channels | **CIS for GKE 1.5**: 5.5.4 |
 | `gkeDisableAlphaCluster` | Prevent the use of alpha features for GKE clusters in production workloads. | **CIS for GKE 1.5**: 5.10.2 |
@@ -258,20 +232,16 @@ In that case, the controls placed in the `organization/scc-sha-custom-modules` f
 | `gkeRequireNodePoolAutoRepair` | Enforce that GKE clusters are configured with node auto-repair enabled | **CIS for GKE 1.5**: 5.5.2<br>**PCI-DSS 4.0**: 2.2.6 |
 | `gkeRequireNodePoolAutoUpgrade` | Enforce that GKE clusters are configured with node auto-upgrade enabled  | **CIS for GKE 1.5**: 5.5.3<br>**PCI-DSS 4.0**: 2.2.6 |
 | `gkeRequireNodePoolAutoscaling` | Ensure GKE standard cluster node pools have cluster autoscaler enabled. | **FedRAMP 20x** |
-| `gkeRequireNodePoolSandbox` | Enforce that the GKE clusters nodes are isolated using GKE sandbox | **CIS for GKE 1.5**: 5.10.3<br>**PCI-DSS 4.0**: 6.2.1 |
 | `gkeRequirePrivateEndpoint` | Enforce that GKE clusters are created as private clusters with public endpoint disabled | **CIS for GKE 1.5**: 5.6.4<br>**PCI-DSS 4.0**: 1.3.1 |
 | `gkeRequireRegionalClusters` | Enforce the creation of regional GKE clusters |  |
 | `gkeRequireSecureBoot` | Enforce that GKE nodes are configured with secure boot enabled | **CIS for GKE 1.5**: 5.5.7 |
 | `gkeRequireSecurityPosture` | Ensure GKE clusters have Security Posture mode set to `BASIC` or `ENTERPRISE`. | **CIS for GKE 1.7**<br>**PCI-DSS 4.0**<br>**SOC2 v2017** |
 | `gkeRequireVPCNativeCluster` | Enforce that GKE clusters are created with VPC-native  | **CIS for GKE 1.5**: 5.6.2<br>**PCI-DSS 4.0**: 1.4.3 |
-| `iamDisableAdminServiceAccount` | Ensure no use of the legacy basic roles (owner and editor), basic roles (admin, writer) and usage of admin roles for service account. |  |
-| `iamDisableBasicRoles` | Ensure no use of the legacy basic roles (viewer, editor and owner) and basic roles (reader, writer and admin). |  |
+| `iamDisableBasicRoles` | Ensure no use of the legacy privileged basic roles (editor and owner) and privileged basic roles (writer and admin). |  |
 | `iamDisableProjectServiceAccountImpersonationRoles` | Ensure that IAM Users are not assigned the service account user or service account token creator roles. |  |
-| `iamDisableRedisAdminRoles` | Ensure no use of the basic roles (viewer, editor and owner). |  |
 | `iamLimitKmsCryptoKeyUsers` | Ensure IAM policy updates for Cloud KMS crypto key roles do not grant more than 3 principals in a single binding change | **DORA** |
 | `iamRestrictFirestoreServiceAccountAccess` | Ensure IAM roles containing `firestore` or `datastore` are not granted to service accounts other than the Firestore service agent. | **DORA** |
 | `loggingRequireLogBucketRetention90Days` | Ensure Cloud Logging log buckets are configured with a retention period of at least 90 days. | **CIS Controls 8.0**<br>**Cloud Controls Matrix 4**<br>**ISO-2700-1 v2022**<br>**NIST 800-53 R5**<br>**NIST Cybersecurity Framework 1.0**<br>**PCI-DSS 4.0** |
-| `networkDisableTargetHTTPProxy` | Prevent the use of weak SSL policies on HTTPS and SSL Proxy load balancers. | **CIS for GCP 3.0**: 3.9 |
 | `networkDisableWeakSSLPolicy` | Prevent the use of weak SSL policies on HTTPS and SSL Proxy load balancers. | **CIS for GCP 3.0**: 3.9 |
 | `networkRequireBackendServiceLogging` | Enforce the enablement of logging for all HTTP(S) load balancers. | **CIS for GCP 3.0**: 2.16<br>**CIS Controls 8.0**: 8.2<br>**PCI-DSS 4.0**: 10.2.1, 10.2.1.1, 10.2.1.2, 10.2.1.3, 10.2.1.4, 10.2.1.5, 10.2.1.6, 10.2.1.7, 10.2.2, 5.3.4, 6.4.1, 6.4.2<br>**NIST 800-53 R5**: AU-12, AU-2, AU-7<br>**NIST Cybersecurity Framework 1.0**: DE-AE-3, PR-PT-1<br>**ISO-2700-1 v2022**: A.8.15, A.8.20<br>**HIPAA**: 164.312(b) |
 | `networkRequireCustomModeVpc` | Ensure That the Default Network Does Not Exist in a Project | **CIS for GCP 3.0**: 3.1<br>**CIS Controls 8.0**: 4.2<br>**PCI-DSS 4.0**: 1.1.1, 1.2.1, 1.2.6, 1.2.7, 1.4.2, 1.5.1, 2.1.1, 2.2.1<br>**NIST 800-53 R5**: AC-18, CM-2, CM-6, CM-7, CM-9<br>**NIST Cybersecurity Framework 1.0**: PR-IP-1<br>**ISO-2700-1 v2022**: A.8.9<br>**SOC2 v2017**: CC5.2.2<br>**Cloud Controls Matrix 4**: ISV-04 |
@@ -365,6 +335,8 @@ ingress_rules:
           ports: ["22", "80", "443"]
 ```
 
+* Internet ingress restrictions (including CIS for GCP 3.0 controls 3.6 and 3.7 for SSH and RDP) are enforced by active edge organization policies (`compute.managed.vmExternalIpAccess`, `compute.restrictLoadBalancerCreationForTypes`, `compute.managed.restrictProtocolForwardingCreationForTypes`, and `compute.disableInternetNetworkEndpointGroup`) and Stage 2 hierarchical firewall policies, and audited by built-in SCC Security Health Analytics detectors (`OPEN_SSH_PORT`, `OPEN_RDP_PORT`, and `OPEN_FIREWALL`).
+
 * The `compute.restrictVpcPeering` policy is enabled by default in the hardened datasets with all VPC peerings restricted to networks **within** your organization (as defined by `under:organizations/${organization.id}`). This policy will block connections from Google-managed services (e.g., Cloud SQL, Cloud Memorystore, Cloud Build) that use **Private Service Access**, as they peer from an external Google-owned network. To allow these essential services to peer, you must explicitly add Google's `servicenetworking` network to the policy's `allow` list.
 
 Here is the required policy configuration:
@@ -427,7 +399,6 @@ Retrieve the custom constraint part of Terraform state
 ```bash
 $ terraform state list | grep google_org_policy_custom_constraint
 module.organization[0].google_org_policy_custom_constraint.constraint["custom.accesscontextmanagerDisableBridgePerimeters"]
-module.organization[0].google_org_policy_custom_constraint.constraint["custom.cloudrunDisableEnvironmentVariablePattern"]
 module.organization[0].google_org_policy_custom_constraint.constraint["custom.cloudrunJobDisableDefaultServiceAccount"]
 module.organization[0].google_org_policy_custom_constraint.constraint["custom.cloudrunServiceDisableDefaultServiceAccount"]
 ...
