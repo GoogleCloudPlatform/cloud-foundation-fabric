@@ -50,7 +50,7 @@ values:
     deletion_policy: DELETE
     disabled: false
     github_config:
-    - app_installation_id: null
+    - app_installation_id: 1234567
       authorizer_credential:
       - {}
     github_enterprise_config: []
@@ -67,6 +67,17 @@ values:
     name: my-connection
     project: test-my-project
     role: roles/cloudbuild.connectionViewer
+  module.cb_connection.google_cloudbuildv2_connection_iam_binding.bindings["connection_admin"]:
+    condition:
+    - description: null
+      expression: resource.name.endsWith('/my-connection')
+      title: connection-name
+    location: europe-west8
+    members:
+    - group:organization-admins@example.org
+    name: my-connection
+    project: test-my-project
+    role: roles/cloudbuild.connectionAdmin
   module.cb_connection.google_cloudbuildv2_repository.repositories["my-repository"]:
     annotations: null
     deletion_policy: DELETE
@@ -170,7 +181,7 @@ values:
 counts:
   google_cloudbuild_trigger: 1
   google_cloudbuildv2_connection: 1
-  google_cloudbuildv2_connection_iam_binding: 1
+  google_cloudbuildv2_connection_iam_binding: 2
   google_cloudbuildv2_repository: 1
   google_project: 1
   google_project_iam_binding: 1
@@ -182,6 +193,6 @@ counts:
   google_secret_manager_secret_version: 1
   google_service_account: 1
   modules: 4
-  resources: 15
+  resources: 16
 
 outputs: {}

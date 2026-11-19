@@ -134,6 +134,10 @@ module "automation-bucket" {
   retention_policy      = each.value.retention_policy
   soft_delete_retention = each.value.soft_delete_retention
   logging_config        = each.value.logging_config
+  # a CMEK key needs the service agent grants made in projects-iam
+  depends_on = [
+    module.projects-iam
+  ]
 }
 
 module "automation-service-accounts" {
