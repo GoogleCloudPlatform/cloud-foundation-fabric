@@ -64,6 +64,11 @@ module "cb_connection" {
   name       = "my-connection"
   location   = var.region
   context = {
+    condition_vars = {
+      conn = {
+        name = "my-connection"
+      }
+    }
     iam_principals = {
       mygroup = "group:${var.group_email}"
     }
@@ -71,7 +76,7 @@ module "cb_connection" {
   connection_config = {
     github = {
       authorizer_credential_secret_version = module.secret_manager.version_ids["authorizer-credential/v1"]
-      app_instalation_id                   = 1234567
+      app_installation_id                  = 1234567
     }
   }
   repositories = {
@@ -90,8 +95,18 @@ module "cb_connection" {
   iam = {
     "roles/cloudbuild.connectionViewer" = ["$iam_principals:mygroup"]
   }
+  iam_bindings = {
+    connection_admin = {
+      role    = "roles/cloudbuild.connectionAdmin"
+      members = ["$iam_principals:mygroup"]
+      condition = {
+        title      = "connection-name"
+        expression = "resource.name.endsWith('/$${conn.name}')"
+      }
+    }
+  }
 }
-# tftest modules=4 resources=15 inventory=github.yaml skip-tofu
+# tftest modules=4 resources=16 inventory=github.yaml skip-tofu
 ```
 
 ## Github Enterprise
@@ -281,7 +296,6 @@ module "cb_connection" {
       webhook_secret_secret_version             = module.secret_manager.version_ids["webhook-secret/v1"]
       authorizer_credential_secret_version      = module.secret_manager.version_ids["authorizer-credential/v1"]
       read_authorizer_credential_secret_version = module.secret_manager.version_ids["read-authorizer-credential/v1"]
-      app_instalation_id                        = 1234567
     }
   }
   repositories = {
@@ -392,7 +406,6 @@ module "cb_connection" {
       webhook_secret_secret_version             = module.secret_manager.version_ids["webhook-secret/v1"]
       authorizer_credential_secret_version      = module.secret_manager.version_ids["authorizer-credential/v1"]
       read_authorizer_credential_secret_version = module.secret_manager.version_ids["read-authorizer-credential/v1"]
-      app_instalation_id                        = 1234567
     }
   }
   repositories = {
@@ -528,27 +541,27 @@ module "cb_connection" {
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [location](variables.tf#L103) | Location. | <code>string</code> | ✓ |  |
-| [name](variables.tf#L108) | Name. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L113) | Project ID. | <code>string</code> | ✓ |  |
+| [location](variables.tf#L105) | Location. | <code>string</code> | ✓ |  |
+| [name](variables.tf#L110) | Name. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L115) | Project ID. | <code>string</code> | ✓ |  |
 | [annotations](variables.tf#L17) | Annotations. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 | [connection_config](variables.tf#L23) | Connection configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [connection_create](variables.tf#L78) | Create connection. | <code>bool</code> |  | <code>true</code> |
-| [context](variables.tf#L85) | Context-specific interpolations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [disabled](variables.tf#L97) | Flag indicating whether the connection is disabled or not. | <code>bool</code> |  | <code>false</code> |
+| [connection_create](variables.tf#L77) | Create connection. | <code>bool</code> |  | <code>true</code> |
+| [context](variables.tf#L84) | Context-specific interpolations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [disabled](variables.tf#L99) | Flag indicating whether the connection is disabled or not. | <code>bool</code> |  | <code>false</code> |
 | [iam](variables-iam.tf#L17) | IAM bindings in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam_bindings](variables-iam.tf#L23) | Authoritative IAM bindings in {KEY => {role = ROLE, members = [], condition = {}}}. Keys are arbitrary. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam_bindings_additive](variables-iam.tf#L38) | Individual additive IAM bindings. Keys are arbitrary. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam_by_principals](variables-iam.tf#L53) | Authoritative IAM binding in {PRINCIPAL => [ROLES]} format. Principals need to be statically defined to avoid cycle errors. Merged internally with the `iam` variable. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [repositories](variables.tf#L118) | Repositories. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [repositories](variables.tf#L120) | Repositories. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
 
 | name | description | sensitive |
 |---|---|:---:|
 | [id](outputs.tf#L17) | Connection id. |  |
-| [repositories](outputs.tf#L24) | Repositories. |  |
-| [repository_ids](outputs.tf#L29) | Repository ids. |  |
-| [trigger_ids](outputs.tf#L34) | Trigger ids. |  |
-| [triggers](outputs.tf#L39) | Triggers. |  |
+| [repositories](outputs.tf#L34) | Repositories. |  |
+| [repository_ids](outputs.tf#L44) | Repository ids. |  |
+| [trigger_ids](outputs.tf#L56) | Trigger ids. |  |
+| [triggers](outputs.tf#L66) | Triggers. |  |
 <!-- END TFDOC -->
