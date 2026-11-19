@@ -17,6 +17,16 @@
 # tfdoc:file:description PSC endpoints factory.
 
 locals {
+  ctx_all_addresses = merge(
+    local.ctx_psc_and_vpc_addresses,
+    local.ctx_nva.ilb_addresses
+  )
+  ctx_psc_and_vpc_addresses = merge(
+    local.ctx.addresses,
+    local.ctx_addresses.internal,
+    local.ctx_addresses.psc,
+    local.ctx_psc_endpoints
+  )
   ctx_psc_endpoints = merge([
     for vpc_key, mod in module.vpc-psc-endpoints : merge(
       {
@@ -38,7 +48,7 @@ locals {
 module "vpc-psc-endpoints" {
   source = "../../../modules/net-psc-endpoint"
   for_each = {
-    for k, v in local.vpcs : k => v if try(length(v.psc_endpoints) > 0, false)
+    for k, v in local.vpcs : k => v if length(v.psc_endpoints) > 0
   }
 
   project_id         = each.value.project_id

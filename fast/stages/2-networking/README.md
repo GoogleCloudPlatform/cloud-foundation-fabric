@@ -207,6 +207,36 @@ The VPC factory allows for the definition of an arbitrary number of VPCs, along 
 
 VPCs are defined in `.config.yaml` files within the `vpcs/[vpc-name]` directory of a dataset. This file contains the VPC's main configuration. Subnets, firewall rules, VPNs, and VLAN attachments are defined in subdirectories within each VPC's folder. An optional `addresses.yaml` file can be placed in the VPC directory to define arbitrary addresses (`external`, `internal`, `global`, `psa`, and bare global `psc` `PRIVATE_SERVICE_CONNECT` addresses). An optional `psc-endpoints.yaml` file can also be placed in the VPC directory to provision Private Service Connect consumer endpoints (`global_apis`, `published_services`, `regional_apis`) via [`net-psc-endpoint`](../../../modules/net-psc-endpoint/). Using `regional_apis` requires enabling `networkconnectivity.googleapis.com` on the project (and granting `roles/compute.networkUser` to the Network Connectivity service agent on Shared VPC host projects when targeting shared subnets).
 
+```yaml
+# vpcs/hub/psc-endpoints.yaml
+published_services:
+  ssm-http:
+    region: $locations:primary
+    subnetwork: $subnets:hub/europe-west1/hub-default
+    target: $service_attachments:ssm-http
+    global_access: true
+
+regional_apis:
+  aiplatform-eu:
+    network: $networks:hub
+    region: $locations:primary
+    subnetwork: $subnets:hub/europe-west1/hub-default
+    target: aiplatform.eu.rep.googleapis.com
+```
+
+```yaml
+# dns/zones/aiplatform-eu-rep.yaml
+project_id: $project_ids:net-core-0
+domain: aiplatform.eu.rep.googleapis.com.
+private:
+  client_networks:
+    - $networks:hub
+recordsets:
+  "A ":
+    records:
+      - $addresses:hub/regional_apis/aiplatform-eu
+```
+
 ### DNS
 
 The DNS factory manages Cloud DNS zones and Response Policy Rules. DNS zones are by default defined within the `dns/zones` directory of your chosen dataset. The factory supports public, private, peering, and forwarding zones.

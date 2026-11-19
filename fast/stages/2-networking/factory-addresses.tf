@@ -36,7 +36,7 @@ locals {
 module "vpc-addresses" {
   source = "../../../modules/net-address"
   for_each = {
-    for k, v in local.vpcs : k => v if try(length(v.addresses) > 0, false)
+    for k, v in local.vpcs : k => v if length(v.addresses) > 0
   }
 
   project_id = each.value.project_id

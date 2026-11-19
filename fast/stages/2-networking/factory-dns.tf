@@ -23,12 +23,6 @@ locals {
       key = replace(f, ".yaml", "")
     })
   ]
-  ctx_dns_addresses = merge(
-    local.ctx.addresses,
-    local.ctx_addresses.internal,
-    local.ctx_addresses.psc,
-    local.ctx_psc_endpoints
-  )
   dns_zones = {
     for zone_config in local._dns_preprocess : zone_config.key => merge(
       zone_config,
@@ -139,7 +133,7 @@ module "dns-zones" {
   zone_config   = each.value.zone_config
   recordsets    = each.value.recordsets
   context = {
-    addresses    = local.ctx_dns_addresses
+    addresses    = local.ctx_all_addresses
     custom_roles = local.ctx.custom_roles
     project_ids  = local.ctx_projects.project_ids
     networks     = local.ctx_vpcs.self_links
@@ -154,7 +148,7 @@ module "dns-delegations" {
   name       = replace(each.key, "/", "-")
   recordsets = each.value
   context = {
-    addresses    = local.ctx_dns_addresses
+    addresses    = local.ctx_all_addresses
     custom_roles = local.ctx.custom_roles
     project_ids  = local.ctx_projects.project_ids
     networks     = local.ctx_vpcs.self_links
@@ -170,7 +164,7 @@ module "dns-response-policies" {
   networks   = { for n in each.value.networks : n => n }
   rules      = each.value.rules
   context = {
-    addresses   = local.ctx_dns_addresses
+    addresses   = local.ctx_all_addresses
     project_ids = local.ctx_projects.project_ids
     networks    = local.ctx_vpcs.self_links
   }

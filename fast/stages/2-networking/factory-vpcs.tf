@@ -27,8 +27,14 @@ locals {
       {
         factory_dirname  = dirname(f)
         factory_basepath = "${local.paths.vpcs}/${dirname(f)}"
-        addresses        = try(yamldecode(file("${local.paths.vpcs}/${dirname(f)}/addresses.yaml")), {})
-        psc_endpoints    = try(yamldecode(file("${local.paths.vpcs}/${dirname(f)}/psc-endpoints.yaml")), {})
+        addresses = try(
+          merge(yamldecode(file("${local.paths.vpcs}/${dirname(f)}/addresses.yaml"))),
+          {}
+        )
+        psc_endpoints = try(
+          merge(yamldecode(file("${local.paths.vpcs}/${dirname(f)}/psc-endpoints.yaml"))),
+          {}
+        )
       }
     )
   ]
@@ -145,11 +151,7 @@ module "vpc-routes" {
   policy_based_routes = try(each.value.policy_based_routes, {})
   routes              = try(each.value.routes, {})
   context = {
-    addresses = merge(
-      local.ctx.addresses,
-      local.ctx_addresses.internal,
-      local.ctx_nva.ilb_addresses
-    )
+    addresses   = local.ctx_all_addresses
     cidr_ranges = local.ctx.cidr_ranges
     locations   = local.ctx.locations
     project_ids = local.ctx_projects.project_ids
