@@ -28,6 +28,7 @@ locals {
         factory_dirname  = dirname(f)
         factory_basepath = "${local.paths.vpcs}/${dirname(f)}"
         addresses        = try(yamldecode(file("${local.paths.vpcs}/${dirname(f)}/addresses.yaml")), {})
+        psc_endpoints    = try(yamldecode(file("${local.paths.vpcs}/${dirname(f)}/psc-endpoints.yaml")), {})
       }
     )
   ]

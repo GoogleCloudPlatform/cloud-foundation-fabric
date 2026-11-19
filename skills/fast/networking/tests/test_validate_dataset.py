@@ -230,6 +230,119 @@ def test_addresses_and_vpn_gateway_tokens(tmp_path: pathlib.Path) -> None:
   assert "unresolved token '$vpn_gateways:hub/custom-vpn-gw-name'" not in messages
 
 
+def test_psc_endpoint_tokens_and_guardrails(tmp_path: pathlib.Path) -> None:
+  ds_copy = tmp_path / "psc-tokens-check"
+  shutil.copytree(DATASETS_DIR / "hub-and-spokes-peerings", ds_copy)
+
+  def_path = ds_copy / "defaults.yaml"
+  def_doc = yaml.safe_load(def_path.read_text(encoding="utf-8"))
+  def_doc.setdefault("context", {})["service_attachments"] = {
+      "my-sa":
+          "projects/producer-project/regions/europe-west1/serviceAttachments/my-sa"
+  }
+  def_path.write_text(yaml.safe_dump(def_doc), encoding="utf-8")
+
+  (ds_copy / "vpcs" / "hub" / "addresses.yaml").write_text(
+      yaml.safe_dump({
+          "psc": {
+              "psc-global": {
+                  "network": "$networks:hub",
+                  "address": "10.0.0.32",
+              },
+              "psc-custom": {
+                  "network": "$networks:hub",
+                  "address": "10.0.0.35",
+                  "name": "psc-custom-name",
+              },
+          }
+      }),
+      encoding="utf-8",
+  )
+
+  (ds_copy / "vpcs" / "hub" / "psc-endpoints.yaml").write_text(
+      yaml.safe_dump({
+          "global_apis": {
+              "pscallapis": {
+                  "network": "$networks:hub",
+                  "address": "10.0.0.33",
+                  "target": "all-apis",
+              },
+              "bad-fr-name": {
+                  "network": "$networks:hub",
+                  "address": "10.0.0.34",
+                  "target": "all-apis",
+              },
+          },
+          "published_services": {
+              "psc-reg-fr": {
+                  "region": "$locations:primary",
+                  "subnetwork": "$subnets:hub/europe-west8/hub-default",
+                  "target": "$service_attachments:my-sa",
+              }
+          },
+          "regional_apis": {
+              "aiplatform-eu": {
+                  "network": "$networks:hub",
+                  "region": "$locations:primary",
+                  "subnetwork": "$subnets:hub/europe-west8/hub-default",
+                  "target": "aiplatform.eu.rep.googleapis.com",
+              }
+          },
+      }),
+      encoding="utf-8",
+  )
+
+  (ds_copy / "dns" / "zones" / "net-core-0" / "aiplatform-rep.yaml").write_text(
+      yaml.safe_dump({
+          "project_id": "$project_ids:net-core-0",
+          "domain": "aiplatform.eu.rep.googleapis.com.",
+          "private": {
+              "client_networks": ["$networks:hub"],
+          },
+          "recordsets": {
+              "A ": {
+                  "records": ["$addresses:hub/regional_apis/aiplatform-eu"],
+              },
+              "A unbranched": {
+                  "records": ["$addresses:hub/aiplatform-eu"],
+              },
+          },
+      }),
+      encoding="utf-8",
+  )
+
+  rpz_path = ds_copy / "dns" / "response-policies" / "net-core-0.yaml"
+  rpz_doc = yaml.safe_load(rpz_path.read_text(encoding="utf-8"))
+  rpz_doc["rules"]["psc-global-rule"] = {
+      "dns_name": "psc.googleapis.com.",
+      "local_data": {
+          "A": {
+              "rrdatas": [
+                  "$addresses:hub/psc/psc-global",
+                  "$addresses:hub/psc/psc-custom-name",
+                  "$addresses:hub/global_apis/pscallapis",
+                  "$addresses:hub/published_services/psc-reg-fr",
+              ]
+          }
+      },
+  }
+  rpz_path.write_text(yaml.safe_dump(rpz_doc), encoding="utf-8")
+
+  issues, _ = validate_dataset.validate_dataset_files(ds_copy, STAGE_DIR)
+  errors = "\n".join(i.message for i in issues if i.level == "error")
+  warnings = "\n".join(i.message for i in issues if i.level == "warn")
+
+  assert "unresolved token '$addresses:hub/aiplatform-eu'" in errors
+  assert "global_apis.bad-fr-name forwarding rule name 'bad-fr-name'" in errors
+  assert "unresolved token '$addresses:hub/psc/psc-global'" not in errors
+  assert "unresolved token '$addresses:hub/psc/psc-custom-name'" not in errors
+  assert "unresolved token '$addresses:hub/regional_apis/aiplatform-eu'" not in errors
+  assert "unresolved token '$addresses:hub/global_apis/pscallapis'" not in errors
+  assert "unresolved token '$addresses:hub/published_services/psc-reg-fr'" not in errors
+  assert "service_attachments" not in warnings
+  assert "service_attachments" not in errors
+
+
 def test_negative_control_nva_advertise_and_same_vpc_ilb_ncc_collision(
     tmp_path: pathlib.Path) -> None:
   ds_copy = tmp_path / "broken-nva-ncc"

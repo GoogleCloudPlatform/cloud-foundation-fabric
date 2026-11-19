@@ -303,7 +303,7 @@ One load balancer pair in the instance project serves its own VPC and every VPC 
 
 When clients live directly inside a VPC (or once the Cloud Build worker pool uses a Private Service Connect network attachment), each consumer VPC can connect to the instance through 2 Private Service Connect endpoints managed by `2-networking`. An endpoint is a subnet-IP forwarding rule pointing directly at a service attachment across all ports, so HTTP and SSH require separate IP addresses: `api`, `git_http`, and `html` resolve to the HTTP endpoint, and `git_ssh` resolves to the SSH endpoint.
 
-In `2-networking`, copy the `service_attachments` output from this template into `defaults.yaml` after creating the instance, and add 2 `addresses.psc` entries in each consumer VPC's `.config.yaml`:
+In `2-networking`, copy the `service_attachments` output from this template into `defaults.yaml` after creating the instance, and add 2 `published_services` entries in each consumer VPC's `psc-endpoints.yaml`:
 
 ```yaml
 # 2-networking defaults.yaml
@@ -314,21 +314,18 @@ context:
 ```
 
 ```yaml
-# 2-networking vpcs/dev/.config.yaml
-addresses:
-  psc:
-    ssm-http:
-      region: $locations:ssm
-      subnet_self_link: $subnets:dev/europe-west4/gce
-      service_attachment:
-        psc_service_attachment_link: $service_attachments:ssm-http
-        global_access: true
-    ssm-ssh:
-      region: $locations:ssm
-      subnet_self_link: $subnets:dev/europe-west4/gce
-      service_attachment:
-        psc_service_attachment_link: $service_attachments:ssm-ssh
-        global_access: true
+# 2-networking vpcs/dev/psc-endpoints.yaml
+published_services:
+  ssm-http:
+    region: $locations:ssm
+    subnetwork: $subnets:dev/europe-west4/gce
+    target: $service_attachments:ssm-http
+    global_access: true
+  ssm-ssh:
+    region: $locations:ssm
+    subnetwork: $subnets:dev/europe-west4/gce
+    target: $service_attachments:ssm-ssh
+    global_access: true
 ```
 
 Setting `global_access: true` lets clients in other regions of the same VPC reach the endpoint, which is often needed because Secure Source Manager is available in 11 regions (2 of them in Europe). Private Service Connect endpoints also work from on-premises networks over Cloud VPN or Cloud Interconnect, and across Network Connectivity Center spokes through propagated PSC connections. Hub-and-spoke topologies built on VPC peering use the internal load balancer pair in the hub instead.

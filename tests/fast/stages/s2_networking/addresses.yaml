@@ -13,9 +13,36 @@
 # limitations under the License.
 
 values:
-  module.vpc-addresses["core"].google_compute_forwarding_rule.psc_consumer["psc-reg-fr"]:
+  module.vpc-psc-endpoints["core"].google_compute_forwarding_rule.published_services["psc-reg-fr"]:
     region: europe-west1
     target: projects/producer-project/regions/europe-west1/serviceAttachments/my-sa
+  module.vpc-psc-endpoints["core"].google_compute_global_forwarding_rule.global_apis["pscallapis"]:
+    name: pscallapis
+    target: all-apis
+  module.dns-response-policies["core"].google_dns_response_policy_rule.default["aiplatform-eu-rep"]:
+    dns_name: aiplatform.eu.rep.googleapis.com.
+    response_policy: core
+    rule_name: aiplatform-eu-rep
+  module.dns-response-policies["core"].google_dns_response_policy_rule.default["googleapis-psc"]:
+    dns_name: '*.googleapis.com.'
+    local_data:
+    - local_datas:
+      - name: '*.googleapis.com.'
+        rrdatas:
+        - 10.0.0.32
+        ttl: null
+        type: A
+    response_policy: core
+    rule_name: googleapis-psc
+  module.dns-zones["aiplatform-eu-rep"].google_dns_record_set.dns_record_set["A "]:
+    managed_zone: aiplatform-eu-rep
+    name: aiplatform.eu.rep.googleapis.com.
+    type: A
+  module.vpc-psc-endpoints["core"].google_network_connectivity_regional_endpoint.regional_apis["aiplatform-eu"]:
+    access_type: REGIONAL
+    location: europe-west1
+    name: aiplatform-eu
+    target_google_api: aiplatform.eu.rep.googleapis.com
 
 counts:
   google_compute_address: 4
@@ -26,7 +53,12 @@ counts:
   google_compute_network_attachment: 1
   google_compute_route: 4
   google_compute_subnetwork: 1
+  google_dns_managed_zone: 1
+  google_dns_record_set: 1
+  google_dns_response_policy: 1
+  google_dns_response_policy_rule: 2
+  google_network_connectivity_regional_endpoint: 1
   google_storage_bucket_object: 2
-  modules: 5
-  resources: 20
+  modules: 8
+  resources: 26
   terraform_data: 2

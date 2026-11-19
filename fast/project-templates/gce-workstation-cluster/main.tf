@@ -34,17 +34,15 @@ module "cluster" {
 }
 
 module "ws-addresses" {
-  source     = "../../../modules/net-address"
+  source     = "../../../modules/net-psc-endpoint"
   count      = var.network_config.psc_endpoint_address != null ? 1 : 0
   project_id = var.project_id
-  psc_addresses = {
+  published_services = {
     ws-cluster-0 = {
-      address          = var.network_config.psc_endpoint_address
-      subnet_self_link = var.network_config.subnetwork
-      region           = local.location
-      service_attachment = {
-        psc_service_attachment_link = module.cluster.service_attachment_uri
-      }
+      address    = var.network_config.psc_endpoint_address
+      region     = local.location
+      subnetwork = var.network_config.subnetwork
+      target     = module.cluster.service_attachment_uri
     }
   }
 }

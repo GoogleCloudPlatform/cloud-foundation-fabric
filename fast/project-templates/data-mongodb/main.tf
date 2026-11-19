@@ -38,20 +38,18 @@ locals {
 }
 
 module "addresses" {
-  source     = "../../../modules/net-address"
+  source     = "../../../modules/net-psc-endpoint"
   project_id = var.project_id
-  psc_addresses = {
+  published_services = {
     (local.psc_endpoint_key) = {
       # Avoid the network base address; GCP reserves early host addresses.
-      address          = cidrhost(var.vpc_config.psc_cidr_block, 4)
-      region           = local.region
-      subnet_self_link = var.vpc_config.subnetwork_id
-      service_attachment = {
-        psc_service_attachment_link = (
-          mongodbatlas_privatelink_endpoint.default.service_attachment_names[0]
-        )
-        global_access = true
-      }
+      address       = cidrhost(var.vpc_config.psc_cidr_block, 4)
+      global_access = true
+      region        = local.region
+      subnetwork    = var.vpc_config.subnetwork_id
+      target = (
+        mongodbatlas_privatelink_endpoint.default.service_attachment_names[0]
+      )
     }
   }
 }
@@ -93,12 +91,16 @@ resource "mongodbatlas_privatelink_endpoint" "default" {
 }
 
 resource "mongodbatlas_privatelink_endpoint_service" "default" {
-  project_id                  = mongodbatlas_privatelink_endpoint.default.project_id
-  private_link_id             = mongodbatlas_privatelink_endpoint.default.private_link_id
-  provider_name               = "GCP"
-  endpoint_service_id         = module.addresses.psc[local.psc_endpoint_key].forwarding_rule.name
-  private_endpoint_ip_address = module.addresses.psc[local.psc_endpoint_key].address.address
-  gcp_project_id              = var.project_id
+  project_id      = mongodbatlas_privatelink_endpoint.default.project_id
+  private_link_id = mongodbatlas_privatelink_endpoint.default.private_link_id
+  provider_name   = "GCP"
+  endpoint_service_id = (
+    module.addresses.published_services[local.psc_endpoint_key].forwarding_rule.name
+  )
+  private_endpoint_ip_address = (
+    module.addresses.addresses.published_services[local.psc_endpoint_key]
+  )
+  gcp_project_id = var.project_id
 }
 
 resource "mongodbatlas_database_user" "database_user" {
