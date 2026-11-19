@@ -31,14 +31,6 @@ custom.iamDisableProjectServiceAccountImpersonationRoles:
           resource.matchTag('${organization.id}/org-policies', 'allowed-sa-impersonation')
     - enforce: true
 
-# custom.iamLimitKmsCryptoKeyUsers:
-#   rules:
-#     - enforce: true
-
-# custom.iamRestrictFirestoreServiceAccountAccess:
-#   rules:
-#     - enforce: true
-
 iam.automaticIamGrantsForDefaultServiceAccounts:
   rules:
     - enforce: true

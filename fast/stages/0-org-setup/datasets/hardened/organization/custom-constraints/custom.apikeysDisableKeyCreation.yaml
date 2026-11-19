@@ -17,7 +17,7 @@
 custom.apikeysDisableKeyCreation:
   action_type: DENY
   condition: |-
-    true == true
+    true
   description: Ensure API keys cannot be created or updated
   display_name: Deny creation and update of API keys
   method_types:

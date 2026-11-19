@@ -2720,11 +2720,8 @@ values:
     timeouts: null
   module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.alloydbRequireAutomatedBackup"]:
     action_type: DENY
-    condition: '!has(resource.secondaryConfig) &&
-
-      has(resource.automatedBackupPolicy) &&
-
-      resource.automatedBackupPolicy.enabled == false'
+    condition: "!has(resource.secondaryConfig) && (\n  !has(resource.automatedBackupPolicy)\
+      \ ||\n  resource.automatedBackupPolicy.enabled == false\n)"
     description: Ensure that AlloyDB clusters have automated backups enabled
     display_name: Require AlloyDB clusters to have automated backups enabled
     method_types:
@@ -2737,11 +2734,8 @@ values:
     timeouts: null
   module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.alloydbRequireContinuousBackup"]:
     action_type: DENY
-    condition: '!has(resource.secondaryConfig) &&
-
-      has(resource.continuousBackupConfig) &&
-
-      resource.continuousBackupConfig.enabled == false'
+    condition: "!has(resource.secondaryConfig) && (\n  !has(resource.continuousBackupConfig)\
+      \ ||\n  resource.continuousBackupConfig.enabled == false\n)"
     description: Ensure that AlloyDB clusters have continuous backup and recovery
       enabled
     display_name: Require AlloyDB clusters to have continuous backup enabled
@@ -2775,11 +2769,9 @@ values:
     timeouts: null
   module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.alloydbRequireSSLConnection"]:
     action_type: DENY
-    condition: 'has(resource.clientConnectionConfig) &&
+    condition: '!has(resource.clientConnectionConfig) ||
 
-      has(resource.clientConnectionConfig.sslConfig) &&
-
-      has(resource.clientConnectionConfig.sslConfig.sslMode) &&
+      !has(resource.clientConnectionConfig.sslConfig) ||
 
       resource.clientConnectionConfig.sslConfig.sslMode != ''ENCRYPTED_ONLY'''
     description: Ensure that AlloyDB instances are configured to allow only connections
@@ -2796,7 +2788,7 @@ values:
     timeouts: null
   module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.apikeysDisableKeyCreation"]:
     action_type: DENY
-    condition: true == true
+    condition: 'true'
     description: Ensure API keys cannot be created or updated
     display_name: Deny creation and update of API keys
     method_types:
@@ -2912,10 +2904,15 @@ values:
     timeouts: null
   module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.cloudkmsAllowedAlgorithms"]:
     action_type: DENY
-    condition: "has(resource.versionTemplate.algorithm) && resource.versionTemplate.algorithm\
-      \ in [\n  'GOOGLE_SYMMETRIC_ENCRYPTION',\n  'RSA_SIGN_PSS_2048_SHA256',\n  'RSA_SIGN_PSS_3072_SHA256',\n\
-      \  'RSA_SIGN_PSS_4096_SHA256',\n  'RSA_DECRYPT_OAEP_2048_SHA256',\n  'RSA_DECRYPT_OAEP_4096_SHA256',\n\
-      \  'RSA_DECRYPT_OAEP_2048_SHA1',\n  'RSA_DECRYPT_OAEP_4096_SHA1'\n] == false"
+    condition: "has(resource.versionTemplate) &&\nhas(resource.versionTemplate.algorithm)\
+      \ &&\n!(resource.versionTemplate.algorithm in [\n  'GOOGLE_SYMMETRIC_ENCRYPTION',\n\
+      \  'EXTERNAL_SYMMETRIC_ENCRYPTION',\n  'RSA_SIGN_PSS_2048_SHA256',\n  'RSA_SIGN_PSS_3072_SHA256',\n\
+      \  'RSA_SIGN_PSS_4096_SHA256',\n  'RSA_SIGN_PSS_4096_SHA512',\n  'RSA_SIGN_PKCS1_2048_SHA256',\n\
+      \  'RSA_SIGN_PKCS1_3072_SHA256',\n  'RSA_SIGN_PKCS1_4096_SHA256',\n  'RSA_SIGN_PKCS1_4096_SHA512',\n\
+      \  'RSA_DECRYPT_OAEP_2048_SHA256',\n  'RSA_DECRYPT_OAEP_3072_SHA256',\n  'RSA_DECRYPT_OAEP_4096_SHA256',\n\
+      \  'RSA_DECRYPT_OAEP_4096_SHA512',\n  'EC_SIGN_P256_SHA256',\n  'EC_SIGN_P384_SHA384',\n\
+      \  'EC_SIGN_SECP256K1_SHA256',\n  'HMAC_SHA256',\n  'HMAC_SHA384',\n  'HMAC_SHA512'\n\
+      ])"
     description: Ensure the algorithm for Cloud KMS keys is configured correctly
     display_name: Require Cloud KMS keys algorithm to be configured correctly
     method_types:
@@ -2943,7 +2940,9 @@ values:
     timeouts: null
   module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.cloudkmsAllowedRotationPeriod"]:
     action_type: DENY
-    condition: has(resource.rotationPeriod) && resource.rotationPeriod > duration("7776000s")
+    condition: "(!has(resource.purpose) || resource.purpose == 'ENCRYPT_DECRYPT')\
+      \ && (\n  !has(resource.rotationPeriod) ||\n  resource.rotationPeriod > duration('7776000s')\n\
+      )"
     description: Ensure the rotation period for Cloud KMS keys is configured correctly
     display_name: Require Cloud KMS keys to have rotation period configured correctly
     method_types:
@@ -2982,78 +2981,20 @@ values:
     resource_types:
     - run.googleapis.com/Service
     timeouts: null
-  ? module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.cloudsqlDisablePostgreSQLLogHostnameFlag"]
-  : action_type: DENY
-    condition: 'resource.databaseVersion.startsWith(''POSTGRES'') &&
-
-      resource.settings.databaseFlags.exists(f, f.name == ''log_hostname'' && f.value
-      != ''off'')'
-    description: Ensure Cloud SQL for PostgreSQL instances do not enable the log_hostname
-      database flag
-    display_name: Disable log_hostname flag for Cloud SQL PostgreSQL instances
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.cloudsqlDisablePostgreSQLLogHostnameFlag
-    parent: organizations/1234567890
-    resource_types:
-    - sqladmin.googleapis.com/Instance
-    timeouts: null
-  ? module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.cloudsqlDisablePostgreSQLLogParserStatsFlag"]
-  : action_type: DENY
-    condition: 'resource.databaseVersion.startsWith(''POSTGRES'') &&
-
-      resource.settings.databaseFlags.exists(f, f.name == ''log_parser_stats'' &&
-      f.value != ''off'')'
-    description: Ensure Cloud SQL for PostgreSQL instances do not enable the log_parser_stats
-      database flag
-    display_name: Disable log_parser_stats flag for Cloud SQL PostgreSQL instances
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.cloudsqlDisablePostgreSQLLogParserStatsFlag
-    parent: organizations/1234567890
-    resource_types:
-    - sqladmin.googleapis.com/Instance
-    timeouts: null
-  ? module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.cloudsqlDisablePostgreSQLLogPlannerStatsFlag"]
-  : action_type: DENY
-    condition: 'resource.databaseVersion.startsWith(''POSTGRES'') &&
-
-      resource.settings.databaseFlags.exists(f, f.name == ''log_planner_stats'' &&
-      f.value != ''off'')'
-    description: Ensure Cloud SQL for PostgreSQL instances do not enable the log_planner_stats
-      database flag
-    display_name: Disable log_planner_stats flag for Cloud SQL PostgreSQL instances
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.cloudsqlDisablePostgreSQLLogPlannerStatsFlag
-    parent: organizations/1234567890
-    resource_types:
-    - sqladmin.googleapis.com/Instance
-    timeouts: null
-  ? module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.cloudsqlDisablePostgreSQLLogStatementStatsFlag"]
-  : action_type: DENY
-    condition: 'resource.databaseVersion.startsWith(''POSTGRES'') &&
-
-      resource.settings.databaseFlags.exists(f, f.name == ''log_statement_stats''
-      && f.value != ''off'')'
-    description: Ensure Cloud SQL for PostgreSQL instances do not enable the log_statement_stats
-      database flag
-    display_name: Disable log_statement_stats flag for Cloud SQL PostgreSQL instances
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.cloudsqlDisablePostgreSQLLogStatementStatsFlag
-    parent: organizations/1234567890
-    resource_types:
-    - sqladmin.googleapis.com/Instance
-    timeouts: null
   module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.cloudsqlEnforcePasswordComplexity"]:
     action_type: DENY
-    condition: 'resource.settings.passwordValidationPolicy.complexity != ''COMPLEXITY_DEFAULT''
+    condition: '!has(resource.settings) ||
+
+      !has(resource.settings.passwordValidationPolicy) ||
+
+      !has(resource.settings.passwordValidationPolicy.enablePasswordPolicy) ||
+
+      !resource.settings.passwordValidationPolicy.enablePasswordPolicy ||
+
+      resource.settings.passwordValidationPolicy.complexity != ''COMPLEXITY_DEFAULT''
       ||
+
+      !has(resource.settings.passwordValidationPolicy.minLength) ||
 
       resource.settings.passwordValidationPolicy.minLength < 12'
     description: Ensure that Cloud SQL instance is configured with a password complexity
@@ -3147,36 +3088,19 @@ values:
     resource_types:
     - sqladmin.googleapis.com/Instance
     timeouts: null
-  ? module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.cloudsqlRequirePostgreSQLDatabaseAdditionalFlags"]
-  : action_type: DENY
-    condition: "resource.databaseVersion.startsWith('POSTGRES') && (\n  !resource.settings.databaseFlags.exists(flag,\
-      \ flag.name == 'log_checkpoints' && flag.value == 'on') ||\n  !resource.settings.databaseFlags.exists(flag,\
-      \ flag.name == 'log_executor_stats' && flag.value == 'off') ||\n  !resource.settings.databaseFlags.exists(flag,\
-      \ flag.name == 'log_lock_waits' && flag.value == 'on')\n)"
-    description: Ensure Cloud SQL for PostgreSQL instance database flags are set correctly
-      (e.g log_checkpoints, log_executor_stats, log_lock_waits)
-    display_name: Require Cloud SQL for PostgreSQL instance database flags to be configured
-      correctly (e.g log_checkpoints, log_executor_stats, log_lock_waits)
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.cloudsqlRequirePostgreSQLDatabaseAdditionalFlags
-    parent: organizations/1234567890
-    resource_types:
-    - sqladmin.googleapis.com/Instance
-    timeouts: null
   module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.cloudsqlRequirePostgreSQLDatabaseFlags"]:
     action_type: DENY
     condition: "resource.databaseVersion.startsWith('POSTGRES') && (\n  !resource.settings.databaseFlags.exists(f,\
-      \ f.name == 'log_connections' && f.value == 'on') ||\n  !resource.settings.databaseFlags.exists(f,\
-      \ f.name == 'log_disconnections' && f.value == 'on') ||\n  !resource.settings.databaseFlags.exists(f,\
-      \ f.name == 'log_min_duration_statement' && f.value == '-1') ||\n  !resource.settings.databaseFlags.exists(f,\
-      \ f.name == 'cloudsql.enable_pgaudit' && f.value == 'on') ||\n  resource.settings.databaseFlags.exists(f,\
-      \ f.name == 'log_error_verbosity' && f.value == 'terse') ||\n  resource.settings.databaseFlags.exists(f,\
-      \ f.name == 'log_statement' && f.value == 'none') ||\n  resource.settings.databaseFlags.exists(f,\n\
-      \    f.name == 'log_min_messages' && f.value in ['error' , 'log', 'fatal', 'panic']\n\
-      \  ) ||\n  resource.settings.databaseFlags.exists(f,\n    f.name == 'log_min_error_statement'\
-      \ && f.value in ['log', 'fatal', 'panic']\n  )\n)"
+      \ f.name=='log_connections' && f.value=='on') ||\n  !resource.settings.databaseFlags.exists(f,\
+      \ f.name=='log_disconnections' && f.value=='on') ||\n  !resource.settings.databaseFlags.exists(f,\
+      \ f.name=='log_min_duration_statement' && f.value=='-1') ||\n  !resource.settings.databaseFlags.exists(f,\
+      \ f.name=='log_temp_files' && f.value=='0') ||\n  !resource.settings.databaseFlags.exists(f,\
+      \ f.name=='cloudsql.enable_pgaudit' && f.value=='on') ||\n  resource.settings.databaseFlags.exists(f,\n\
+      \    f.name=='log_error_verbosity' && f.value=='terse' ||\n    f.name=='log_statement'\
+      \ && f.value=='none' ||\n    f.name=='log_min_messages' && f.value in ['error','log','fatal','panic']\
+      \ ||\n    f.name=='log_min_error_statement' && f.value in ['log','fatal','panic']\
+      \ ||\n    f.name in ['log_hostname','log_parser_stats','log_planner_stats','log_statement_stats']\
+      \ && f.value!='off'\n  )\n)"
     description: Ensure Cloud SQL for PostgreSQL instance database flags are set correctly
       (e.g log_connections)
     display_name: Require Cloud SQL for PostgreSQL instance database flags to be configured
@@ -3185,53 +3109,6 @@ values:
     - CREATE
     - UPDATE
     name: custom.cloudsqlRequirePostgreSQLDatabaseFlags
-    parent: organizations/1234567890
-    resource_types:
-    - sqladmin.googleapis.com/Instance
-    timeouts: null
-  ? module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.cloudsqlRequirePostgreSQLLogDurationFlag"]
-  : action_type: DENY
-    condition: 'resource.databaseVersion.startsWith(''POSTGRES'') &&
-
-      !resource.settings.databaseFlags.exists(f, f.name == ''log_duration'' && f.value
-      == ''on'')'
-    description: Ensure Cloud SQL for PostgreSQL instances have the log_duration database
-      flag set to on
-    display_name: Require log_duration flag set to on for Cloud SQL PostgreSQL instances
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.cloudsqlRequirePostgreSQLLogDurationFlag
-    parent: organizations/1234567890
-    resource_types:
-    - sqladmin.googleapis.com/Instance
-    timeouts: null
-  ? module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.cloudsqlRequirePostgreSQLLogTempFilesFlag"]
-  : action_type: DENY
-    condition: 'resource.databaseVersion.startsWith(''POSTGRES'') &&
-
-      !resource.settings.databaseFlags.exists(f, f.name == ''log_temp_files'' && f.value
-      == ''0'')'
-    description: Ensure Cloud SQL for PostgreSQL instances have the log_temp_files
-      database flag set to 0
-    display_name: Require log_temp_files flag set to 0 for Cloud SQL PostgreSQL instances
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.cloudsqlRequirePostgreSQLLogTempFilesFlag
-    parent: organizations/1234567890
-    resource_types:
-    - sqladmin.googleapis.com/Instance
-    timeouts: null
-  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.cloudsqlRequireRootPassword"]:
-    action_type: DENY
-    condition: resource.settings.passwordValidationPolicy.minLength == 0
-    description: Ensure that Cloud SQL instance is configured to use a root password
-    display_name: Require Cloud SQL instances to configure root password
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.cloudsqlRequireRootPassword
     parent: organizations/1234567890
     resource_types:
     - sqladmin.googleapis.com/Instance
@@ -3357,8 +3234,9 @@ values:
   module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.dnsAllowedSigningAlgorithms"]:
     action_type: DENY
     condition: "resource.visibility == 'PUBLIC' &&\nresource.dnssecConfig.state ==\
-      \ 'ON' &&\nresource.dnssecConfig.defaultKeySpecs.exists(spec,\n  spec.algorithm\
-      \ in [\"ECDSAP256SHA256\"] == false\n)"
+      \ 'ON' &&\nresource.dnssecConfig.defaultKeySpecs.exists(spec,\n  !(spec.algorithm\
+      \ in [\n    'RSASHA256',\n    'RSASHA512',\n    'ECDSAP256SHA256',\n    'ECDSAP384SHA384'\n\
+      \  ])\n)"
     description: Ensure that allowed signing algorithms are used for the Key-Signing
       key and Zone-Signing key in Cloud DNS DNSSEC
     display_name: Require Cloud DNS DNSSEC configured to use only allowed algorithms
@@ -3416,11 +3294,18 @@ values:
     timeouts: null
   module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.firewallEnforceRuleLogging"]:
     action_type: DENY
-    condition: "(\n  (has(resource.logConfig) == false || resource.logConfig.enable\
-      \ == false) &&\n  !resource.name.startsWith(\"gke-\") &&\n  !resource.name.startsWith(\"\
-      k8s-\") &&\n  !resource.name.endsWith(\"-hc\") &&\n  !resource.name.startsWith(\"\
-      k8s2-\") &&\n  !resource.name.startsWith(\"gkegw1-l7-\") &&\n  !resource.name.startsWith(\"\
-      gkemcg1-l7-\")\n)"
+    condition: '(has(resource.logConfig) == false || resource.logConfig.enable ==
+      false) &&
+
+      !resource.name.startsWith(''gke-'') &&
+
+      !resource.name.startsWith(''k8s-'') &&
+
+      !resource.name.startsWith(''k8s2-'') &&
+
+      !resource.name.startsWith(''gkegw1-l7-'') &&
+
+      !resource.name.startsWith(''gkemcg1-l7-'')'
     description: Ensure that VPC Firewall rules have logging enabled
     display_name: Require VPC Firewall rules to have logging enabled
     method_types:
@@ -3470,49 +3355,6 @@ values:
     parent: organizations/1234567890
     resource_types:
     - container.googleapis.com/Cluster
-    timeouts: null
-  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.gkeDisableKubernetesDashboard"]:
-    action_type: DENY
-    condition: resource.addonsConfig.kubernetesDashboard.disabled == false
-    description: Enforce that GKE clusters does not have Web UI dashboard enabled
-    display_name: Disable Web UI dashboard
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.gkeDisableKubernetesDashboard
-    parent: organizations/1234567890
-    resource_types:
-    - container.googleapis.com/Cluster
-    timeouts: null
-  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.gkeDisableLegacyMetadataEndpoints"]:
-    action_type: DENY
-    condition: '(''disable-legacy-endpoints'' in resource.config.metadata &&
-
-      resource.config.metadata[''disable-legacy-endpoints''] == ''false'')'
-    description: Enforce that GKE clusters are created with legacy metadata endpoints
-      disabled
-    display_name: Disable legacy metadata endpoints
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.gkeDisableLegacyMetadataEndpoints
-    parent: organizations/1234567890
-    resource_types:
-    - container.googleapis.com/NodePool
-    timeouts: null
-  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.gkeRequireCOSImage"]:
-    action_type: DENY
-    condition: resource.config.imageType != "COS_CONTAINERD"
-    description: Enforce the nodes pool are using Container-Optimized OS for running
-      containers
-    display_name: Require Container-Optimized OS on node pools
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.gkeRequireCOSImage
-    parent: organizations/1234567890
-    resource_types:
-    - container.googleapis.com/NodePool
     timeouts: null
   module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.gkeRequireDataplaneV2"]:
     action_type: DENY
@@ -3572,7 +3414,10 @@ values:
     timeouts: null
   module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.gkeRequireMonitoring"]:
     action_type: DENY
-    condition: resource.monitoringService != 'monitoring.googleapis.com/kubernetes'
+    condition: "!(\n  (has(resource.monitoringConfig) &&\n    has(resource.monitoringConfig.componentConfig)\
+      \ &&\n    'SYSTEM_COMPONENTS' in resource.monitoringConfig.componentConfig.enableComponents)\
+      \ ||\n  resource.monitoringService == 'monitoring.googleapis.com/kubernetes'\n\
+      )"
     description: Enforce that GKE clusters monitoring is enabled
     display_name: Enable monitoring
     method_types:
@@ -3635,19 +3480,6 @@ values:
     - CREATE
     - UPDATE
     name: custom.gkeRequirePrivateEndpoint
-    parent: organizations/1234567890
-    resource_types:
-    - container.googleapis.com/Cluster
-    timeouts: null
-  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.gkeRequireRegionalClusters"]:
-    action_type: DENY
-    condition: resource.location.matches("^[a-z]+(-[a-z, 1-9]+)$") == false
-    description: Enforce the creation of regional GKE clusters
-    display_name: Require regional GKE cluster
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.gkeRequireRegionalClusters
     parent: organizations/1234567890
     resource_types:
     - container.googleapis.com/Cluster
@@ -3715,7 +3547,7 @@ values:
   ? module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.iamDisableProjectServiceAccountImpersonationRoles"]
   : action_type: DENY
     condition: "resource.bindings.exists(binding,\n  binding.members.exists(member,\n\
-      \    MemberSubjectStartsWith(member, ['user:', 'group:']) &&\n    !MemberSubjectStartsWith(member,\
+      \    MemberSubjectStartsWith(member, ['user:', 'group:']) &&\n    !MemberSubjectMatches(member,\
       \ ['group:fabric-fast-owners@google.com'])\n  ) &&\n  (\n    RoleNameMatches(binding.role,\
       \ ['roles/iam.serviceAccountUser']) ||\n    RoleNameMatches(binding.role, ['roles/iam.serviceAccountTokenCreator'])\n\
       \  )\n)"
@@ -3728,42 +3560,6 @@ values:
     - CREATE
     - UPDATE
     name: custom.iamDisableProjectServiceAccountImpersonationRoles
-    parent: organizations/1234567890
-    resource_types:
-    - iam.googleapis.com/AllowPolicy
-    timeouts: null
-  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.iamLimitKmsCryptoKeyUsers"]:
-    action_type: DENY
-    condition: "resource.bindings.exists(binding,\n  RoleNameMatches(binding.role,\
-      \ [\n    'roles/cloudkms.cryptoKeyEncrypterDecrypter',\n    'roles/cloudkms.cryptoKeyEncrypter',\n\
-      \    'roles/cloudkms.cryptoKeyDecrypter',\n    'roles/cloudkms.signer',\n  \
-      \  'roles/cloudkms.signerVerifier'\n  ]) &&\n  binding.members.size() > 3\n)"
-    description: Ensure IAM policy updates for Cloud KMS crypto key roles do not grant
-      more than 3 principals in a single binding change
-    display_name: Limit Cloud KMS crypto key role bindings to at most 3 principals
-      per policy change
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.iamLimitKmsCryptoKeyUsers
-    parent: organizations/1234567890
-    resource_types:
-    - iam.googleapis.com/AllowPolicy
-    timeouts: null
-  ? module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.iamRestrictFirestoreServiceAccountAccess"]
-  : action_type: DENY
-    condition: "resource.bindings.exists(binding,\n  RoleNameContains(binding.role,\
-      \ ['firestore', 'datastore']) &&\n  binding.members.exists(member,\n    MemberSubjectStartsWith(member,\
-      \ ['serviceAccount:']) &&\n    !MemberSubjectEndsWith(member, ['@gcp-sa-firestore.iam.gserviceaccount.com'])\n\
-      \  )\n)"
-    description: Ensure IAM roles containing firestore or datastore are not granted
-      to service accounts other than the Firestore service agent
-    display_name: Restrict Firestore and Datastore roles on service accounts to the
-      Firestore service agent
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.iamRestrictFirestoreServiceAccountAccess
     parent: organizations/1234567890
     resource_types:
     - iam.googleapis.com/AllowPolicy
@@ -3805,7 +3601,11 @@ values:
     timeouts: null
   module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.networkRequireBackendServiceLogging"]:
     action_type: DENY
-    condition: has(resource.logConfig) == false || resource.logConfig.enable == false
+    condition: "(\n  resource.protocol in ['HTTP', 'HTTPS', 'HTTP2', 'H2C', 'GRPC']\
+      \ ||\n  (resource.protocol == '' &&\n    resource.loadBalancingScheme in [\n\
+      \      'EXTERNAL',\n      'EXTERNAL_MANAGED',\n      'INTERNAL_MANAGED',\n \
+      \     'INTERNAL_SELF_MANAGED'\n    ])\n) && (\n  !has(resource.logConfig) ||\n\
+      \  resource.logConfig.enable == false\n)"
     description: Enforce that Backend Services have logging enabled
     display_name: Require logging to be enabled on Backend Services
     method_types:
@@ -4440,21 +4240,6 @@ values:
         parameters: null
         values: []
     timeouts: null
-  module.organization-iam[0].google_org_policy_policy.default["compute.managed.disableSerialPortLogging"]:
-    dry_run_spec: []
-    name: organizations/1234567890/policies/compute.managed.disableSerialPortLogging
-    parent: organizations/1234567890
-    spec:
-    - inherit_from_parent: null
-      reset: null
-      rules:
-      - allow_all: null
-        condition: []
-        deny_all: null
-        enforce: 'TRUE'
-        parameters: null
-        values: []
-    timeouts: null
   module.organization-iam[0].google_org_policy_policy.default["compute.managed.requireOsConfig"]:
     dry_run_spec: []
     name: organizations/1234567890/policies/compute.managed.requireOsConfig
@@ -4555,13 +4340,10 @@ values:
       rules:
       - allow_all: null
         condition: []
-        deny_all: null
+        deny_all: 'TRUE'
         enforce: null
         parameters: null
-        values:
-        - allowed_values:
-          - under:organizations/1234567890
-          denied_values: null
+        values: []
     timeouts: null
   module.organization-iam[0].google_org_policy_policy.default["compute.requireVpcFlowLogs"]:
     dry_run_spec: []
@@ -5152,66 +4934,6 @@ values:
         parameters: null
         values: []
     timeouts: null
-  module.organization-iam[0].google_org_policy_policy.default["custom.cloudsqlDisablePostgreSQLLogHostnameFlag"]:
-    dry_run_spec: []
-    name: organizations/1234567890/policies/custom.cloudsqlDisablePostgreSQLLogHostnameFlag
-    parent: organizations/1234567890
-    spec:
-    - inherit_from_parent: null
-      reset: null
-      rules:
-      - allow_all: null
-        condition: []
-        deny_all: null
-        enforce: 'TRUE'
-        parameters: null
-        values: []
-    timeouts: null
-  module.organization-iam[0].google_org_policy_policy.default["custom.cloudsqlDisablePostgreSQLLogParserStatsFlag"]:
-    dry_run_spec: []
-    name: organizations/1234567890/policies/custom.cloudsqlDisablePostgreSQLLogParserStatsFlag
-    parent: organizations/1234567890
-    spec:
-    - inherit_from_parent: null
-      reset: null
-      rules:
-      - allow_all: null
-        condition: []
-        deny_all: null
-        enforce: 'TRUE'
-        parameters: null
-        values: []
-    timeouts: null
-  module.organization-iam[0].google_org_policy_policy.default["custom.cloudsqlDisablePostgreSQLLogPlannerStatsFlag"]:
-    dry_run_spec: []
-    name: organizations/1234567890/policies/custom.cloudsqlDisablePostgreSQLLogPlannerStatsFlag
-    parent: organizations/1234567890
-    spec:
-    - inherit_from_parent: null
-      reset: null
-      rules:
-      - allow_all: null
-        condition: []
-        deny_all: null
-        enforce: 'TRUE'
-        parameters: null
-        values: []
-    timeouts: null
-  module.organization-iam[0].google_org_policy_policy.default["custom.cloudsqlDisablePostgreSQLLogStatementStatsFlag"]:
-    dry_run_spec: []
-    name: organizations/1234567890/policies/custom.cloudsqlDisablePostgreSQLLogStatementStatsFlag
-    parent: organizations/1234567890
-    spec:
-    - inherit_from_parent: null
-      reset: null
-      rules:
-      - allow_all: null
-        condition: []
-        deny_all: null
-        enforce: 'TRUE'
-        parameters: null
-        values: []
-    timeouts: null
   module.organization-iam[0].google_org_policy_policy.default["custom.cloudsqlEnforcePasswordComplexity"]:
     dry_run_spec: []
     name: organizations/1234567890/policies/custom.cloudsqlEnforcePasswordComplexity
@@ -5287,69 +5009,9 @@ values:
         parameters: null
         values: []
     timeouts: null
-  module.organization-iam[0].google_org_policy_policy.default["custom.cloudsqlRequirePostgreSQLDatabaseAdditionalFlags"]:
-    dry_run_spec: []
-    name: organizations/1234567890/policies/custom.cloudsqlRequirePostgreSQLDatabaseAdditionalFlags
-    parent: organizations/1234567890
-    spec:
-    - inherit_from_parent: null
-      reset: null
-      rules:
-      - allow_all: null
-        condition: []
-        deny_all: null
-        enforce: 'FALSE'
-        parameters: null
-        values: []
-    timeouts: null
   module.organization-iam[0].google_org_policy_policy.default["custom.cloudsqlRequirePostgreSQLDatabaseFlags"]:
     dry_run_spec: []
     name: organizations/1234567890/policies/custom.cloudsqlRequirePostgreSQLDatabaseFlags
-    parent: organizations/1234567890
-    spec:
-    - inherit_from_parent: null
-      reset: null
-      rules:
-      - allow_all: null
-        condition: []
-        deny_all: null
-        enforce: 'TRUE'
-        parameters: null
-        values: []
-    timeouts: null
-  module.organization-iam[0].google_org_policy_policy.default["custom.cloudsqlRequirePostgreSQLLogDurationFlag"]:
-    dry_run_spec: []
-    name: organizations/1234567890/policies/custom.cloudsqlRequirePostgreSQLLogDurationFlag
-    parent: organizations/1234567890
-    spec:
-    - inherit_from_parent: null
-      reset: null
-      rules:
-      - allow_all: null
-        condition: []
-        deny_all: null
-        enforce: 'TRUE'
-        parameters: null
-        values: []
-    timeouts: null
-  module.organization-iam[0].google_org_policy_policy.default["custom.cloudsqlRequirePostgreSQLLogTempFilesFlag"]:
-    dry_run_spec: []
-    name: organizations/1234567890/policies/custom.cloudsqlRequirePostgreSQLLogTempFilesFlag
-    parent: organizations/1234567890
-    spec:
-    - inherit_from_parent: null
-      reset: null
-      rules:
-      - allow_all: null
-        condition: []
-        deny_all: null
-        enforce: 'TRUE'
-        parameters: null
-        values: []
-    timeouts: null
-  module.organization-iam[0].google_org_policy_policy.default["custom.cloudsqlRequireRootPassword"]:
-    dry_run_spec: []
-    name: organizations/1234567890/policies/custom.cloudsqlRequireRootPassword
     parent: organizations/1234567890
     spec:
     - inherit_from_parent: null
@@ -5572,51 +5234,6 @@ values:
         parameters: null
         values: []
     timeouts: null
-  module.organization-iam[0].google_org_policy_policy.default["custom.gkeDisableKubernetesDashboard"]:
-    dry_run_spec: []
-    name: organizations/1234567890/policies/custom.gkeDisableKubernetesDashboard
-    parent: organizations/1234567890
-    spec:
-    - inherit_from_parent: null
-      reset: null
-      rules:
-      - allow_all: null
-        condition: []
-        deny_all: null
-        enforce: 'TRUE'
-        parameters: null
-        values: []
-    timeouts: null
-  module.organization-iam[0].google_org_policy_policy.default["custom.gkeDisableLegacyMetadataEndpoints"]:
-    dry_run_spec: []
-    name: organizations/1234567890/policies/custom.gkeDisableLegacyMetadataEndpoints
-    parent: organizations/1234567890
-    spec:
-    - inherit_from_parent: null
-      reset: null
-      rules:
-      - allow_all: null
-        condition: []
-        deny_all: null
-        enforce: 'TRUE'
-        parameters: null
-        values: []
-    timeouts: null
-  module.organization-iam[0].google_org_policy_policy.default["custom.gkeRequireCOSImage"]:
-    dry_run_spec: []
-    name: organizations/1234567890/policies/custom.gkeRequireCOSImage
-    parent: organizations/1234567890
-    spec:
-    - inherit_from_parent: null
-      reset: null
-      rules:
-      - allow_all: null
-        condition: []
-        deny_all: null
-        enforce: 'TRUE'
-        parameters: null
-        values: []
-    timeouts: null
   module.organization-iam[0].google_org_policy_policy.default["custom.gkeRequireDataplaneV2"]:
     dry_run_spec: []
     name: organizations/1234567890/policies/custom.gkeRequireDataplaneV2
@@ -5710,21 +5327,6 @@ values:
   module.organization-iam[0].google_org_policy_policy.default["custom.gkeRequirePrivateEndpoint"]:
     dry_run_spec: []
     name: organizations/1234567890/policies/custom.gkeRequirePrivateEndpoint
-    parent: organizations/1234567890
-    spec:
-    - inherit_from_parent: null
-      reset: null
-      rules:
-      - allow_all: null
-        condition: []
-        deny_all: null
-        enforce: 'TRUE'
-        parameters: null
-        values: []
-    timeouts: null
-  module.organization-iam[0].google_org_policy_policy.default["custom.gkeRequireRegionalClusters"]:
-    dry_run_spec: []
-    name: organizations/1234567890/policies/custom.gkeRequireRegionalClusters
     parent: organizations/1234567890
     spec:
     - inherit_from_parent: null
@@ -6133,6 +5735,8 @@ values:
         values:
         - allowed_values:
           - accesscontextmanager.googleapis.com
+          - aiplatform.googleapis.com
+          - alloydb.googleapis.com
           - analyticshub.googleapis.com
           - anthos.googleapis.com
           - anthosconfigmanagement.googleapis.com
@@ -6147,12 +5751,14 @@ values:
           - bigqueryreservation.googleapis.com
           - bigquerystorage.googleapis.com
           - billingbudgets.googleapis.com
+          - binaryauthorization.googleapis.com
           - certificatemanager.googleapis.com
           - cloudaicompanion.googleapis.com
           - cloudapis.googleapis.com
           - cloudasset.googleapis.com
           - cloudbilling.googleapis.com
           - cloudbuild.googleapis.com
+          - cloudfunctions.googleapis.com
           - cloudkms.googleapis.com
           - cloudquotas.googleapis.com
           - cloudresourcemanager.googleapis.com
@@ -6162,17 +5768,18 @@ values:
           - compute.googleapis.com
           - container.googleapis.com
           - containerfilesystem.googleapis.com
-          - containerregistry.googleapis.com
           - containersecurity.googleapis.com
           - containerthreatdetection.googleapis.com
           - datacatalog.googleapis.com
           - dataform.googleapis.com
           - datalineage.googleapis.com
           - dataplex.googleapis.com
+          - dataproc.googleapis.com
           - datastore.googleapis.com
-          - deploymentmanager.googleapis.com
+          - discoveryengine.googleapis.com
           - dns.googleapis.com
           - essentialcontacts.googleapis.com
+          - firestore.googleapis.com
           - geminicloudassist.googleapis.com
           - gkebackup.googleapis.com
           - gkeconnect.googleapis.com
@@ -6188,12 +5795,15 @@ values:
           - networkconnectivity.googleapis.com
           - networkmanagement.googleapis.com
           - networksecurity.googleapis.com
+          - notebooks.googleapis.com
           - notebooksecurityscanner.googleapis.com
           - orgpolicy.googleapis.com
           - oslogin.googleapis.com
           - privateca.googleapis.com
           - pubsub.googleapis.com
           - recommender.googleapis.com
+          - redis.googleapis.com
+          - run.googleapis.com
           - secretmanager.googleapis.com
           - securitycenter.googleapis.com
           - securitycentermanagement.googleapis.com
@@ -6201,6 +5811,7 @@ values:
           - servicemanagement.googleapis.com
           - servicenetworking.googleapis.com
           - serviceusage.googleapis.com
+          - spanner.googleapis.com
           - sql-component.googleapis.com
           - sqladmin.googleapis.com
           - stackdriver.googleapis.com
@@ -7330,67 +6941,6 @@ values:
     role_id: tagViewer
     stage: GA
     title: Custom role tagViewer
-  ? module.organization[0].google_scc_management_organization_security_health_analytics_custom_module.scc_organization_custom_module["cloudkmsAllowedAlgorithms"]
-  : custom_config:
-    - custom_output: []
-      description: Detect if the the algorithm for Cloud KMS keys is not configured
-        correctly
-      predicate:
-      - description: null
-        expression: resource.algorithm in ["GOOGLE_SYMMETRIC_ENCRYPTION", "EXTERNAL_SYMMETRIC_ENCRYPTION"]
-          == false
-        location: null
-        title: null
-      recommendation: Ensure the algorithm for Cloud KMS keys is configured correctly
-      resource_selector:
-      - resource_types:
-        - cloudkms.googleapis.com/CryptoKeyVersion
-      severity: MEDIUM
-    display_name: cloudkmsAllowedAlgorithms
-    enablement_state: ENABLED
-    location: global
-    organization: '1234567890'
-    timeouts: null
-  ? module.organization[0].google_scc_management_organization_security_health_analytics_custom_module.scc_organization_custom_module["cloudrunDisableJobDefaultServiceAccount"]
-  : custom_config:
-    - custom_output: []
-      description: Detect if default service accounts are used by Cloud Run jobs
-      predicate:
-      - description: null
-        expression: resource.spec.template.spec.template.spec.serviceAccountName.endsWith("@developer.gserviceaccount.com")
-        location: null
-        title: null
-      recommendation: Ensure only authorized non-default service accounts are used
-        by Cloud Run jobs
-      resource_selector:
-      - resource_types:
-        - run.googleapis.com/Job
-      severity: HIGH
-    display_name: cloudrunDisableJobDefaultServiceAccount
-    enablement_state: ENABLED
-    location: global
-    organization: '1234567890'
-    timeouts: null
-  ? module.organization[0].google_scc_management_organization_security_health_analytics_custom_module.scc_organization_custom_module["cloudrunDisableServiceDefaultServiceAccount"]
-  : custom_config:
-    - custom_output: []
-      description: Detect if default service accounts are used by Cloud Run services
-      predicate:
-      - description: null
-        expression: resource.spec.template.spec.serviceAccountName.endsWith("@developer.gserviceaccount.com")
-        location: null
-        title: null
-      recommendation: Ensure only authorized non-default service accounts are used
-        by Cloud Run services
-      resource_selector:
-      - resource_types:
-        - run.googleapis.com/Service
-      severity: HIGH
-    display_name: cloudrunDisableServiceDefaultServiceAccount
-    enablement_state: ENABLED
-    location: global
-    organization: '1234567890'
-    timeouts: null
   ? module.organization[0].google_scc_management_organization_security_health_analytics_custom_module.scc_organization_custom_module["cloudsqlRequireHighAvailability"]
   : custom_config:
     - custom_output: []
@@ -7418,8 +6968,11 @@ values:
       description: Detect if the CloudSQL instances have point in time recovery disabled
       predicate:
       - description: null
-        expression: "(\n  !resource.settings.backupConfiguration.binaryLogEnabled\
-          \ &&\n  !resource.settings.backupConfiguration.pointInTimeRecoveryEnabled\n\
+        expression: "!has(resource.settings) ||\n!has(resource.settings.backupConfiguration)\
+          \ || (\n  (!has(resource.settings.backupConfiguration.binaryLogEnabled)\
+          \ ||\n    !resource.settings.backupConfiguration.binaryLogEnabled) &&\n\
+          \  (!has(resource.settings.backupConfiguration.pointInTimeRecoveryEnabled)\
+          \ ||\n    !resource.settings.backupConfiguration.pointInTimeRecoveryEnabled)\n\
           )"
         location: null
         title: null
@@ -7433,33 +6986,13 @@ values:
     location: global
     organization: '1234567890'
     timeouts: null
-  ? module.organization[0].google_scc_management_organization_security_health_analytics_custom_module.scc_organization_custom_module["gkeRequireDataplaneV2"]
-  : custom_config:
-    - custom_output: []
-      description: Detect if GKE clusters are configured with a version different
-        than Dataplane V2
-      predicate:
-      - description: null
-        expression: resource.networkConfig.datapathProvider != 'ADVANCED_DATAPATH'
-        location: null
-        title: null
-      recommendation: Ensure only GKE Dataplane V2 are configured
-      resource_selector:
-      - resource_types:
-        - container.googleapis.com/Cluster
-      severity: MEDIUM
-    display_name: gkeRequireDataplaneV2
-    enablement_state: ENABLED
-    location: global
-    organization: '1234567890'
-    timeouts: null
   ? module.organization[0].google_scc_management_organization_security_health_analytics_custom_module.scc_organization_custom_module["gkeRequireRegionalCluster"]
   : custom_config:
     - custom_output: []
       description: Detect if any non regional GKE clusters are used
       predicate:
       - description: null
-        expression: (!resource.location.matches("^[a-z]+(-[a-z, 1-9]+)$"))
+        expression: (!resource.location.matches('^[a-z]+-[a-z]+[0-9]+$'))
         location: null
         title: null
       recommendation: Ensure GKE clusters are configured to be regional
@@ -8447,8 +7980,8 @@ counts:
   google_logging_project_bucket_config: 6
   google_logging_project_settings: 3
   google_monitoring_alert_policy: 10
-  google_org_policy_custom_constraint: 86
-  google_org_policy_policy: 161
+  google_org_policy_custom_constraint: 72
+  google_org_policy_policy: 148
   google_organization_iam_audit_config: 1
   google_organization_iam_binding: 43
   google_organization_iam_custom_role: 16
@@ -8457,7 +7990,7 @@ counts:
   google_project_iam_member: 17
   google_project_service: 37
   google_project_service_identity: 11
-  google_scc_management_organization_security_health_analytics_custom_module: 8
+  google_scc_management_organization_security_health_analytics_custom_module: 4
   google_service_account: 12
   google_service_account_iam_binding: 2
   google_service_account_iam_member: 4
@@ -8473,7 +8006,7 @@ counts:
   google_tags_tag_value_iam_binding: 4
   local_file: 9
   modules: 54
-  resources: 657
+  resources: 626
   terraform_data: 4
 
 outputs:

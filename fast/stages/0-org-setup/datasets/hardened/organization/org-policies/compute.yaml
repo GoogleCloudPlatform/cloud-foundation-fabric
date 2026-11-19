@@ -62,9 +62,10 @@ compute.managed.disableSerialPortAccess:
   rules:
     - enforce: true
 
-compute.managed.disableSerialPortLogging:
-  rules:
-    - enforce: true
+# Commented out by default: breaks GKE node pools unless exempted via tags (issue #4414)
+# compute.managed.disableSerialPortLogging:
+#   rules:
+#     - enforce: true
 
 compute.managed.requireOsConfig:
   rules:
@@ -102,9 +103,8 @@ compute.requireShieldedVm:
 
 compute.requireSslPolicy:
   rules:
-    - allow:
-        values:
-          - "under:organizations/${organization.id}"
+    - deny:
+        all: true
 
 compute.restrictLoadBalancerCreationForTypes:
   rules:

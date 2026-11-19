@@ -17,9 +17,10 @@
 custom.alloydbRequireContinuousBackup:
   action_type: DENY
   condition: |-
-    !has(resource.secondaryConfig) &&
-    has(resource.continuousBackupConfig) &&
-    resource.continuousBackupConfig.enabled == false
+    !has(resource.secondaryConfig) && (
+      !has(resource.continuousBackupConfig) ||
+      resource.continuousBackupConfig.enabled == false
+    )
   description: Ensure that AlloyDB clusters have continuous backup and recovery enabled
   display_name: Require AlloyDB clusters to have continuous backup enabled
   method_types:

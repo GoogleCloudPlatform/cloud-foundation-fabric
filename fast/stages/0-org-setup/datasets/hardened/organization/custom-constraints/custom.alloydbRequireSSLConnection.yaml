@@ -17,9 +17,8 @@
 custom.alloydbRequireSSLConnection:
   action_type: DENY
   condition: |-
-    has(resource.clientConnectionConfig) &&
-    has(resource.clientConnectionConfig.sslConfig) &&
-    has(resource.clientConnectionConfig.sslConfig.sslMode) &&
+    !has(resource.clientConnectionConfig) ||
+    !has(resource.clientConnectionConfig.sslConfig) ||
     resource.clientConnectionConfig.sslConfig.sslMode != 'ENCRYPTED_ONLY'
   description: Ensure that AlloyDB instances are configured to allow only connections
     that are encrypted with SSL/TLS

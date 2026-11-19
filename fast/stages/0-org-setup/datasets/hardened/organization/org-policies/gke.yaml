@@ -86,18 +86,6 @@ custom.gkeDisableAlphaCluster:
   rules:
     - enforce: true
 
-custom.gkeDisableKubernetesDashboard:
-  rules:
-    - enforce: true
-
-custom.gkeDisableLegacyMetadataEndpoints:
-  rules:
-    - enforce: true
-
-custom.gkeRequireCOSImage:
-  rules:
-    - enforce: true
-
 custom.gkeRequireDataplaneV2:
   rules:
     - enforce: true
@@ -131,10 +119,6 @@ custom.gkeRequireNodePoolAutoUpgrade:
 #     - enforce: true
 
 custom.gkeRequirePrivateEndpoint:
-  rules:
-    - enforce: true
-
-custom.gkeRequireRegionalClusters:
   rules:
     - enforce: true
 

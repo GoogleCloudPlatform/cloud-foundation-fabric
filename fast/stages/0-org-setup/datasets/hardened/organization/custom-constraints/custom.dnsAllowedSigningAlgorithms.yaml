@@ -20,7 +20,12 @@ custom.dnsAllowedSigningAlgorithms:
     resource.visibility == 'PUBLIC' &&
     resource.dnssecConfig.state == 'ON' &&
     resource.dnssecConfig.defaultKeySpecs.exists(spec,
-      spec.algorithm in ["ECDSAP256SHA256"] == false
+      !(spec.algorithm in [
+        'RSASHA256',
+        'RSASHA512',
+        'ECDSAP256SHA256',
+        'ECDSAP384SHA384'
+      ])
     )
   description: Ensure that allowed signing algorithms are used for the Key-Signing
     key and Zone-Signing key in Cloud DNS DNSSEC

@@ -17,9 +17,10 @@
 custom.alloydbRequireAutomatedBackup:
   action_type: DENY
   condition: |-
-    !has(resource.secondaryConfig) &&
-    has(resource.automatedBackupPolicy) &&
-    resource.automatedBackupPolicy.enabled == false
+    !has(resource.secondaryConfig) && (
+      !has(resource.automatedBackupPolicy) ||
+      resource.automatedBackupPolicy.enabled == false
+    )
   description: Ensure that AlloyDB clusters have automated backups enabled
   display_name: Require AlloyDB clusters to have automated backups enabled
   method_types:

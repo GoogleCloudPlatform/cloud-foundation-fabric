@@ -59,13 +59,15 @@ compute.restrictVpcPeering:
     - allow:
         values:
           - "under:organizations/${organization.id}"
+          # Add your Google producer project when using Private Service Access:
+          # - "projects/<google-producer-project>/global/networks/servicenetworking"
 
 # compute.restrictVpnPeerIPs:
 #   rules:
 #     - allow:
 #         values:
-#           - "1.1.1.1"
-#           - "2.2.2.2"
+#           - "198.51.100.1"
+#           - "203.0.113.1"
 
 custom.networkDisableWeakSSLPolicy:
   rules:
