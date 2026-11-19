@@ -1,6 +1,11 @@
+context = {
+  locations = {
+    eu = "eu"
+  }
+}
 model_armor_templates = {
   full = {
-    location = "eu"
+    location = "$locations:eu"
     labels = {
       env = "test"
     }

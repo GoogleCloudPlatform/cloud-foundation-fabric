@@ -42,6 +42,13 @@ locals {
       : local._model_armor_sdp
     )
   )
+  model_armor_services = {
+    for k in ["ai_platform", "google_mcp_server"] :
+    k => var.model_armor_floor_setting.integrated_services[k]
+    if try(
+      var.model_armor_floor_setting.integrated_services[k], null
+    ) != null
+  }
   model_armor_templates = {
     for k, v in var.model_armor_templates : k => merge(v, {
       rai_filters = [
@@ -61,13 +68,6 @@ locals {
         )
       )
     })
-  }
-  model_armor_services = {
-    for k in ["ai_platform", "google_mcp_server"] :
-    k => var.model_armor_floor_setting.integrated_services[k]
-    if try(
-      var.model_armor_floor_setting.integrated_services[k], null
-    ) != null
   }
 }
 
@@ -183,9 +183,11 @@ resource "google_model_armor_floorsetting" "default" {
 }
 
 resource "google_model_armor_template" "default" {
-  for_each    = local.model_armor_templates
-  project     = local.project.project_id
-  location    = each.value.location
+  for_each = local.model_armor_templates
+  project  = local.project.project_id
+  location = lookup(
+    local.ctx.locations, each.value.location, each.value.location
+  )
   template_id = each.key
   labels      = each.value.labels
   filter_config {
@@ -274,6 +276,13 @@ resource "google_model_armor_template" "default" {
   }
   depends_on = [
     # modelarmor.googleapis.com needs to be enabled via var.services
-    google_project_service.project_services
+    google_project_service.project_services,
+    # in case Model Armor or DLP roles are granted in the same module call
+    google_project_iam_binding.authoritative,
+    google_project_iam_binding.bindings,
+    google_project_iam_member.bindings,
+    google_project_iam_member.service_agents,
+    # templates are validated against the effective floor setting on create
+    google_model_armor_floorsetting.default
   ]
 }

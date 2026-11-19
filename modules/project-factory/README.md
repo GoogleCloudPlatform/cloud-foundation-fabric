@@ -489,7 +489,7 @@ Folders and projects support the `model_armor_floor_setting` attribute, which is
 
 The floor setting is a singleton: removing the attribute does not reset it in GCP. The identity running the factory needs the Model Armor floor settings admin role (`roles/modelarmor.floorSettingsAdmin`) on the folder or project.
 
-Projects also support the `model_armor_templates` attribute, which is passed through to the `model_armor_templates` variable of the [project](../project/) module.
+Projects also support the `model_armor_templates` attribute, which is passed through to the `model_armor_templates` variable of the [project](../project/) module. The identity running the factory needs the Model Armor admin role (`roles/modelarmor.admin`) on the project to manage templates. Template ids are returned by the `model_armor_templates` output, keyed by `<project>/<template>`.
 
 ```hcl
 module "project-factory" {
@@ -1127,22 +1127,23 @@ compute.disableSerialPortAccess:
 
 | name | description | sensitive |
 |---|---|:---:|
-| [bigquery_datasets](outputs.tf#L121) | BigQuery dataset ids. |  |
-| [custom_roles](outputs.tf#L128) | Custom role ids. |  |
-| [folder_ids](outputs.tf#L135) | Folder ids. |  |
-| [iam_principals](outputs.tf#L140) | IAM principals mappings. |  |
-| [kms_keys](outputs.tf#L145) | KMS key ids. |  |
-| [log_buckets](outputs.tf#L150) | Log bucket ids. |  |
-| [project_ids](outputs.tf#L157) | Project ids. |  |
-| [project_numbers](outputs.tf#L162) | Project numbers. |  |
-| [projects](outputs.tf#L169) | Project attributes. |  |
-| [pubsub_topics](outputs.tf#L174) | PubSub topic ids. |  |
-| [service_account_emails](outputs.tf#L181) | Service account emails. |  |
-| [service_account_iam_emails](outputs.tf#L188) | Service account IAM-format emails. |  |
-| [service_account_ids](outputs.tf#L195) | Service account IDs. |  |
-| [service_accounts](outputs.tf#L202) | Service account emails. |  |
-| [service_agents](outputs.tf#L207) | Service agent emails. |  |
-| [storage_buckets](outputs.tf#L218) | Bucket names. |  |
+| [bigquery_datasets](outputs.tf#L125) | BigQuery dataset ids. |  |
+| [custom_roles](outputs.tf#L132) | Custom role ids. |  |
+| [folder_ids](outputs.tf#L139) | Folder ids. |  |
+| [iam_principals](outputs.tf#L144) | IAM principals mappings. |  |
+| [kms_keys](outputs.tf#L149) | KMS key ids. |  |
+| [log_buckets](outputs.tf#L154) | Log bucket ids. |  |
+| [model_armor_templates](outputs.tf#L161) | Model Armor template ids. |  |
+| [project_ids](outputs.tf#L168) | Project ids. |  |
+| [project_numbers](outputs.tf#L173) | Project numbers. |  |
+| [projects](outputs.tf#L178) | Project attributes. |  |
+| [pubsub_topics](outputs.tf#L183) | PubSub topic ids. |  |
+| [service_account_emails](outputs.tf#L190) | Service account emails. |  |
+| [service_account_iam_emails](outputs.tf#L197) | Service account IAM-format emails. |  |
+| [service_account_ids](outputs.tf#L204) | Service account IDs. |  |
+| [service_accounts](outputs.tf#L211) | Service account emails. |  |
+| [service_agents](outputs.tf#L216) | Service agent emails. |  |
+| [storage_buckets](outputs.tf#L227) | Bucket names. |  |
 <!-- END TFDOC -->
 ## Tests
 

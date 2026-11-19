@@ -51,7 +51,11 @@ variable "model_armor_templates" {
   nullable = false
   validation {
     condition = alltrue([
-      for k, v in var.model_armor_templates : lower(v.location) != "global"
+      for k, v in var.model_armor_templates : !contains(["", "global"], try(
+        lower(trimspace(
+          lookup(local.ctx.locations, v.location, v.location)
+        )), ""
+      ))
     ])
     error_message = "Templates need a regional or multi-regional location."
   }
@@ -67,9 +71,14 @@ variable "model_armor_templates" {
   validation {
     condition = alltrue(flatten([
       for k, v in var.model_armor_templates : [
-        for kk, vv in v.filters.rai : contains(
-          ["DANGEROUS", "HARASSMENT", "HATE_SPEECH", "SEXUALLY_EXPLICIT"], kk
-        ) && contains(["LOW_AND_ABOVE", "MEDIUM_AND_ABOVE", "HIGH"], vv)
+        for kk, vv in v.filters.rai : (
+          contains(
+            ["DANGEROUS", "HARASSMENT", "HATE_SPEECH", "SEXUALLY_EXPLICIT"], kk
+          ) &&
+          try(contains(
+            ["LOW_AND_ABOVE", "MEDIUM_AND_ABOVE", "HIGH"], vv
+          ), false)
+        )
       ]
     ]))
     error_message = "Invalid rai filter type or confidence level."
