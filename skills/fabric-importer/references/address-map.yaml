@@ -531,7 +531,7 @@ entries:
     import_id: 'projects/<project_id>/global/addresses/<name>'
     asset_type: compute.googleapis.com/Address
     verified: r19
-    disambiguation: 'addressType INTERNAL with purpose PRIVATE_SERVICE_CONNECT'
+    disambiguation: 'bare global INTERNAL address with purpose PRIVATE_SERVICE_CONNECT (no forwarding rule)'
 
   address-global-psa:
     resource: Compute address (global PSA)
@@ -549,7 +549,36 @@ entries:
     import_id: 'projects/<project_id>/regions/<region>/addresses/<name>'
     asset_type: compute.googleapis.com/Address
     verified: r19
-    disambiguation: 'purpose GCE_ENDPOINT or SHARED_LOADBALANCER_VIP'
+    disambiguation: 'purpose GCE_ENDPOINT (general internal) or SHARED_LOADBALANCER_VIP'
+
+  # --- PSC consumer endpoints ---------------------------------------
+
+  psc-endpoint-global-apis-address:
+    resource: Compute address (global PSC Google APIs)
+    module: modules/net-psc-endpoint
+    address: 'module.<instance>.google_compute_global_address.global_apis["<key>"]'
+    import_id: 'projects/<project_id>/global/addresses/<name>'
+    asset_type: compute.googleapis.com/Address
+    verified: false
+    disambiguation: 'global INTERNAL address with purpose PRIVATE_SERVICE_CONNECT paired with a global Google APIs forwarding rule'
+
+  psc-endpoint-published-services-address:
+    resource: Compute address (regional PSC published service)
+    module: modules/net-psc-endpoint
+    address: 'module.<instance>.google_compute_address.published_services["<key>"]'
+    import_id: 'projects/<project_id>/regions/<region>/addresses/<name>'
+    asset_type: compute.googleapis.com/Address
+    verified: false
+    disambiguation: 'purpose GCE_ENDPOINT paired with a regional PSC consumer forwarding rule'
+
+  psc-endpoint-regional-apis-address:
+    resource: Compute address (regional PSC Google APIs)
+    module: modules/net-psc-endpoint
+    address: 'module.<instance>.google_compute_address.regional_apis["<key>"]'
+    import_id: 'projects/<project_id>/regions/<region>/addresses/<name>'
+    asset_type: compute.googleapis.com/Address
+    verified: false
+    disambiguation: 'purpose GCE_ENDPOINT paired with a Network Connectivity regional endpoint'
 
   # --- routers, NAT, VPN, interconnect ------------------------------
 

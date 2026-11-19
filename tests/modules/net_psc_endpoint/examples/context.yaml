@@ -1,0 +1,68 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.psc_endpoints.google_compute_address.regional_apis["storage"]:
+    address_type: INTERNAL
+    description: Terraform managed.
+    name: storage
+    project: my-project-1
+    region: us-central1
+    subnetwork: projects/prj-host/regions/us-central1/subnetworks/sub-1
+  module.psc_endpoints.google_compute_forwarding_rule.published_services["ssm-http"]:
+    allow_psc_global_access: true
+    description: null
+    ip_address: projects/my-project-1/regions/us-central1/addresses/existing-psc
+    load_balancing_scheme: ''
+    name: ssm-http
+    project: my-project-1
+    recreate_closed_psc: true
+    region: us-central1
+    subnetwork: projects/prj-host/regions/us-central1/subnetworks/sub-1
+    target: projects/prj-tenant/regions/us-central1/serviceAttachments/http-psc
+  module.psc_endpoints.google_compute_global_address.global_apis["googleapis"]:
+    address: 10.0.0.32
+    address_type: INTERNAL
+    description: Terraform managed.
+    name: googleapis
+    network: projects/prj-host/global/networks/shared-vpc
+    project: my-project-1
+    purpose: PRIVATE_SERVICE_CONNECT
+  module.psc_endpoints.google_compute_global_forwarding_rule.global_apis["googleapis"]:
+    description: null
+    load_balancing_scheme: ''
+    name: googleapis
+    network: projects/prj-host/global/networks/shared-vpc
+    project: my-project-1
+    service_directory_registrations:
+    - service_directory_region: us-central1
+    target: all-apis
+  module.psc_endpoints.google_network_connectivity_regional_endpoint.regional_apis["storage"]:
+    access_type: REGIONAL
+    description: Terraform managed.
+    location: us-central1
+    name: storage
+    network: projects/prj-host/global/networks/shared-vpc
+    project: my-project-1
+    subnetwork: projects/prj-host/regions/us-central1/subnetworks/sub-1
+    target_google_api: storage.us-central1.rep.googleapis.com
+
+counts:
+  google_compute_address: 1
+  google_compute_forwarding_rule: 1
+  google_compute_global_address: 1
+  google_compute_global_forwarding_rule: 1
+  google_network_connectivity_regional_endpoint: 1
+  modules: 1
+  resources: 5

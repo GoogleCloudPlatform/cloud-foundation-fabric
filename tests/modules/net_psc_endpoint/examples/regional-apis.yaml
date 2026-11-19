@@ -1,0 +1,58 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.psc_endpoints.google_compute_address.regional_apis["aiplatform-eu"]:
+    address_type: INTERNAL
+    description: Terraform managed.
+    name: aiplatform-eu
+    network: null
+    project: project-id
+    region: europe-west8
+    subnetwork: https://www.googleapis.com/compute/v1/projects/my-project/regions/europe-west8/subnetworks/primary
+  module.psc_endpoints.google_compute_address.regional_apis["storage"]:
+    address: 10.0.16.10
+    address_type: INTERNAL
+    description: Terraform managed.
+    name: storage
+    network: null
+    project: project-id
+    region: europe-west8
+    subnetwork: https://www.googleapis.com/compute/v1/projects/my-project/regions/europe-west8/subnetworks/primary
+  module.psc_endpoints.google_network_connectivity_regional_endpoint.regional_apis["aiplatform-eu"]:
+    access_type: REGIONAL
+    description: Terraform managed.
+    labels: null
+    location: europe-west8
+    name: aiplatform-eu
+    network: projects/xxx/global/networks/aaa
+    project: project-id
+    subnetwork: projects/my-project/regions/europe-west8/subnetworks/primary
+    target_google_api: aiplatform.eu.rep.googleapis.com
+  module.psc_endpoints.google_network_connectivity_regional_endpoint.regional_apis["storage"]:
+    access_type: GLOBAL
+    description: Terraform managed.
+    labels: null
+    location: europe-west8
+    name: storage
+    network: projects/xxx/global/networks/aaa
+    project: project-id
+    subnetwork: projects/my-project/regions/europe-west8/subnetworks/primary
+    target_google_api: storage.europe-west8.rep.googleapis.com
+
+counts:
+  google_compute_address: 2
+  google_network_connectivity_regional_endpoint: 2
+  modules: 1
+  resources: 4
