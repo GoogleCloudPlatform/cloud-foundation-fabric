@@ -1,0 +1,97 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.agent-registry.google_agent_registry_service.default["aiplatform"]:
+    agent_spec: []
+    deletion_policy: PREVENT
+    description: null
+    display_name: Vertex AI
+    endpoint_spec:
+    - type: NO_SPEC
+    interfaces:
+    - protocol_binding: HTTP_JSON
+      url: https://aiplatform.googleapis.com
+    location: europe-west8
+    mcp_server_spec: []
+    project: project-id
+    service_id: aiplatform
+    timeouts: null
+  module.agent-registry.google_agent_registry_service.default["aiplatform-mtls"]:
+    agent_spec: []
+    deletion_policy: PREVENT
+    description: null
+    display_name: Vertex AI (mTLS)
+    endpoint_spec:
+    - type: NO_SPEC
+    interfaces:
+    - protocol_binding: HTTP_JSON
+      url: https://aiplatform.mtls.googleapis.com
+    location: europe-west8
+    mcp_server_spec: []
+    project: project-id
+    service_id: aiplatform-mtls
+    timeouts: null
+  module.agent-registry.google_agent_registry_service.default["logging"]:
+    agent_spec: []
+    deletion_policy: PREVENT
+    description: null
+    display_name: null
+    endpoint_spec:
+    - type: NO_SPEC
+    interfaces:
+    - protocol_binding: HTTP_JSON
+      url: https://logging.googleapis.com
+    location: global
+    mcp_server_spec: []
+    project: project-id
+    service_id: logging
+    timeouts: null
+  module.agent-registry.google_agent_registry_service.default["weather-agent"]:
+    agent_spec:
+    - content: '{"name":"weather-agent","url":"https://weather-agent-123456789.europe-west8.run.app","version":"1.0.0"}'
+      type: A2A_AGENT_CARD
+    deletion_policy: PREVENT
+    description: null
+    display_name: Weather agent
+    endpoint_spec: []
+    interfaces: []
+    location: europe-west8
+    mcp_server_spec: []
+    project: project-id
+    service_id: weather-agent
+    timeouts: null
+  module.agent-registry.google_agent_registry_service.default["weather-mcp"]:
+    agent_spec: []
+    deletion_policy: PREVENT
+    description: Weather tools.
+    display_name: Weather MCP server
+    endpoint_spec: []
+    interfaces:
+    - protocol_binding: JSONRPC
+      url: https://weather-mcp-123456789.europe-west8.run.app/mcp
+    location: europe-west8
+    mcp_server_spec:
+    - content: '{"tools":[]}'
+      type: TOOL_SPEC
+    project: project-id
+    service_id: weather-mcp
+    timeouts: null
+
+counts:
+  google_agent_registry_service: 5
+  modules: 1
+  resources: 5
+
+outputs: {}
