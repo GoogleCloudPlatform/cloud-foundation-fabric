@@ -254,9 +254,9 @@ outputs:
   acl_config: __missing__
   acl_config_id: __missing__
   app_iam_principals:
-  - group:employees@example.com
   - group:analysts@example.com
   - group:contractors@example.com
+  - group:employees@example.com
   assistant_ids: __missing__
   assistants: __missing__
   cmek_config: __missing__

@@ -81,11 +81,11 @@ locals {
       }
     }
   ]...)
-  app_iam_principals = [
+  app_iam_principals = toset([
     for p in local._app_all_resolved_principals : p
     if !contains(["allUsers", "allAuthenticatedUsers"], p)
     && !startswith(p, "deleted:")
-  ]
+  ])
 }
 
 resource "google_discovery_engine_search_engine_iam_binding" "authoritative" {
