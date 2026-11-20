@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-# tfdoc:file:description Model Armor floor setting.
+# tfdoc:file:description Model Armor floor setting and templates.
 
 locals {
   _model_armor_rai = coalesce(
@@ -48,6 +48,26 @@ locals {
     if try(
       var.model_armor_floor_setting.integrated_services[k], null
     ) != null
+  }
+  model_armor_templates = {
+    for k, v in var.model_armor_templates : k => merge(v, {
+      rai_filters = [
+        for t in local._model_armor_rai_types : {
+          confidence_level = v.filters.rai[t]
+          filter_type      = t
+        } if lookup(v.filters.rai, t, null) != null
+      ]
+      # empty sdp settings are dropped by the API and cause a permanent diff
+      sdp = (
+        try(v.filters.sdp, null) == null
+        ? null
+        : (
+          alltrue([for vv in values(v.filters.sdp) : vv == null])
+          ? null
+          : v.filters.sdp
+        )
+      )
+    })
   }
 }
 
@@ -159,5 +179,110 @@ resource "google_model_armor_floorsetting" "default" {
     google_project_iam_binding.authoritative,
     google_project_iam_binding.bindings,
     google_project_iam_member.bindings
+  ]
+}
+
+resource "google_model_armor_template" "default" {
+  for_each = local.model_armor_templates
+  project  = local.project.project_id
+  location = lookup(
+    local.ctx.locations, each.value.location, each.value.location
+  )
+  template_id = each.key
+  labels      = each.value.labels
+  filter_config {
+    dynamic "malicious_uri_filter_settings" {
+      for_each = each.value.filters.malicious_uris == null ? [] : [""]
+      content {
+        filter_enforcement = (
+          each.value.filters.malicious_uris ? "ENABLED" : "DISABLED"
+        )
+      }
+    }
+    dynamic "pi_and_jailbreak_filter_settings" {
+      for_each = each.value.filters.pi_and_jailbreak == null ? [] : [""]
+      content {
+        filter_enforcement = "ENABLED"
+        confidence_level = (
+          each.value.filters.pi_and_jailbreak.confidence_level
+        )
+      }
+    }
+    dynamic "rai_settings" {
+      for_each = length(each.value.rai_filters) == 0 ? [] : [""]
+      content {
+        dynamic "rai_filters" {
+          for_each = each.value.rai_filters
+          content {
+            filter_type      = rai_filters.value.filter_type
+            confidence_level = rai_filters.value.confidence_level
+          }
+        }
+      }
+    }
+    dynamic "sdp_settings" {
+      for_each = each.value.sdp == null ? [] : [each.value.sdp]
+      iterator = sdp
+      content {
+        dynamic "basic_config" {
+          for_each = sdp.value.basic == null ? [] : [""]
+          content {
+            filter_enforcement = sdp.value.basic ? "ENABLED" : "DISABLED"
+          }
+        }
+        dynamic "advanced_config" {
+          for_each = sdp.value.inspect_template == null ? [] : [""]
+          content {
+            inspect_template    = sdp.value.inspect_template
+            deidentify_template = sdp.value.deidentify_template
+          }
+        }
+      }
+    }
+  }
+  dynamic "template_metadata" {
+    for_each = each.value.metadata == null ? [] : [each.value.metadata]
+    iterator = metadata
+    content {
+      custom_llm_response_safety_error_code = try(
+        metadata.value.custom_llm_response_safety_error.code, null
+      )
+      custom_llm_response_safety_error_message = try(
+        metadata.value.custom_llm_response_safety_error.message, null
+      )
+      custom_prompt_safety_error_code = try(
+        metadata.value.custom_prompt_safety_error.code, null
+      )
+      custom_prompt_safety_error_message = try(
+        metadata.value.custom_prompt_safety_error.message, null
+      )
+      enforcement_type = metadata.value.enforcement_type
+      ignore_partial_invocation_failures = (
+        metadata.value.ignore_partial_invocation_failures
+      )
+      log_sanitize_operations = metadata.value.log_sanitize_operations
+      log_template_operations = metadata.value.log_template_operations
+      dynamic "multi_language_detection" {
+        for_each = (
+          metadata.value.multi_language_detection == null ? [] : [""]
+        )
+        content {
+          enable_multi_language_detection = (
+            metadata.value.multi_language_detection
+          )
+        }
+      }
+    }
+  }
+  depends_on = [
+    # modelarmor.googleapis.com needs to be enabled via var.services
+    google_project_service.project_services,
+    # in case Model Armor or DLP roles are granted in the same module call
+    google_project_iam_binding.authoritative,
+    google_project_iam_binding.bindings,
+    google_project_iam_member.bindings,
+    google_project_iam_member.service_agents,
+    # templates are validated against the effective floor setting on create
+    google_model_armor_floorsetting.default
   ]
 }
