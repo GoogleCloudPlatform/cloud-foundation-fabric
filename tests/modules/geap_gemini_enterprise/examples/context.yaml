@@ -1,0 +1,198 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.gemini-enterprise.google_discovery_engine_acl_config.default[0]:
+    idp_config:
+    - external_idp_config:
+      - workforce_pool_name: locations/global/workforcePools/corp-pool
+      idp_type: THIRD_PARTY
+    location: eu
+    project: actual-prj
+    timeouts: null
+  module.gemini-enterprise.google_discovery_engine_assistant.default["intranet"]:
+    assistant_id: default_assistant
+    collection_id: default_collection
+    customer_policy:
+    - banned_phrases: []
+      model_armor_config:
+      - failure_mode: FAIL_CLOSED
+        response_template: projects/actual-prj/locations/eu/templates/response
+        user_prompt_template: projects/actual-prj/locations/eu/templates/prompt
+    default_web_grounding_toggle_off: null
+    deletion_policy: ABANDON
+    description: null
+    display_name: Default Assistant
+    engine_id: intranet
+    generation_config: []
+    location: eu
+    project: actual-prj
+    timeouts: null
+    web_grounding_type: null
+  module.gemini-enterprise.google_discovery_engine_cmek_config.default[0]:
+    cmek_config_id: default_cmek_config
+    deletion_policy: DELETE
+    kms_key: projects/kms-prj/locations/eu/keyRings/ring/cryptoKeys/eu-key
+    location: eu
+    project: actual-prj
+    set_default: true
+    single_region_keys:
+    - kms_key: projects/kms-prj/locations/europe-west1/keyRings/ring/cryptoKeys/ew1-key
+    timeouts: null
+  module.gemini-enterprise.google_discovery_engine_data_connector.mcp["tools"]:
+    action_config:
+    - action_params:
+        auth_type: NO_AUTH
+        instance_uri: https://mcp.internal.example.com/mcp
+        mcp_server_source: BYO_MCP
+      create_bap_connection: true
+    auto_run_disabled: null
+    bap_config: []
+    collection_display_name: tools
+    collection_id: tools
+    connector_modes:
+    - FEDERATED
+    data_source: custom_mcp
+    deletion_policy: DELETE
+    destination_configs: []
+    entities:
+    - entity_name: mcp_data
+      params: null
+    incremental_refresh_interval: null
+    incremental_sync_disabled: null
+    json_params: null
+    kms_key_name: null
+    location: eu
+    params:
+      oauth_access_token: none
+    project: actual-prj
+    refresh_interval: 86400s
+    static_ip_enabled: false
+    sync_mode: null
+    tag: tools
+    timeouts: null
+  module.gemini-enterprise.google_discovery_engine_data_store.companion["intranet"]:
+    acl_enabled: null
+    content_config: NO_CONTENT
+    create_advanced_site_search: false
+    data_store_id: intranet-companion
+    deletion_policy: DELETE
+    display_name: Intranet-companion
+    document_processing_config: []
+    industry_vertical: GENERIC
+    kms_key_name: null
+    location: eu
+    project: actual-prj
+    skip_default_schema_creation: false
+    solution_types:
+    - SOLUTION_TYPE_SEARCH
+    timeouts: null
+  module.gemini-enterprise.google_discovery_engine_search_engine.default["intranet"]:
+    app_type: APP_TYPE_INTRANET
+    collection_id: default_collection
+    common_config: []
+    data_store_ids: []
+    deletion_policy: DELETE
+    disable_analytics: null
+    display_name: Intranet
+    engine_id: intranet
+    industry_vertical: GENERIC
+    kms_key_name: projects/kms-prj/locations/eu/keyRings/ring/cryptoKeys/eu-key
+    location: eu
+    procurement_contact_emails: null
+    project: actual-prj
+    search_engine_config:
+    - search_add_ons:
+      - SEARCH_ADD_ON_LLM
+      search_tier: SEARCH_TIER_ENTERPRISE
+    timeouts: null
+  ? module.gemini-enterprise.google_discovery_engine_search_engine_iam_binding.authoritative["intranet/$custom_roles:ge_viewer"]
+  : collection_id: default_collection
+    condition: []
+    engine_id: intranet
+    location: eu
+    members:
+    - group:employees@example.com
+    project: actual-prj
+    role: projects/actual-prj/roles/geViewer
+  module.gemini-enterprise.google_discovery_engine_search_engine_iam_member.bindings["intranet/contractor-user"]:
+    collection_id: default_collection
+    condition: []
+    engine_id: intranet
+    location: eu
+    member: group:contractors@example.com
+    project: actual-prj
+    role: roles/discoveryengine.agentspaceUser
+  module.gemini-enterprise.google_discovery_engine_user_store.default[0]:
+    default_license_config: projects/actual-prj/locations/global/licenseConfigs/ent-lic
+    enable_expired_license_auto_update: null
+    enable_license_auto_register: true
+    location: eu
+    project: actual-prj
+    timeouts: null
+    user_store_id: default_user_store
+  module.gemini-enterprise.google_discovery_engine_widget_config.default["intranet"]:
+    access_settings:
+    - allow_public_access: null
+      allowlisted_domains: null
+      enable_web_app: true
+      language_code: null
+      workforce_identity_pool_provider: locations/global/workforcePools/corp-pool/providers/oidc
+    collection_id: default_collection
+    engine_id: intranet
+    homepage_setting: []
+    location: eu
+    project: actual-prj
+    timeouts: null
+    ui_branding: []
+    widget_config_id: default_search_widget_config
+  module.gemini-enterprise.terraform_data.app_agent_gateway_patch["intranet"]:
+    input: null
+    output: null
+    triggers_replace:
+      agent_gateway: projects/actual-prj/locations/europe-west1/agentGateways/egress
+      collection_id: default_collection
+      engine_config: c067a407925a932a29dc9c7a57de406d971e8b8399e9403be65d51a09c1c2ca2
+      engine_id: intranet
+  module.gemini-enterprise.terraform_data.app_data_stores["intranet"]:
+    input: null
+    output: null
+    triggers_replace:
+      collection_id: default_collection
+      connectors: '[]'
+      data_store_ids: '["intranet-companion","tools_mcp_data"]'
+      engine_id: intranet
+      native_stores: '[]'
+  module.gemini-enterprise.terraform_data.mcp_action_config["tools"]:
+    input: null
+    output: null
+    triggers_replace:
+      patch_body: de9433ba9ac9d80c20b106aa7568cd5278f7a6cc7e2c7e546a610149d481f4f9
+
+counts:
+  google_discovery_engine_acl_config: 1
+  google_discovery_engine_assistant: 1
+  google_discovery_engine_cmek_config: 1
+  google_discovery_engine_data_connector: 1
+  google_discovery_engine_data_store: 1
+  google_discovery_engine_search_engine: 1
+  google_discovery_engine_search_engine_iam_binding: 1
+  google_discovery_engine_search_engine_iam_member: 1
+  google_discovery_engine_user_store: 1
+  google_discovery_engine_widget_config: 1
+  modules: 1
+  resources: 13
+  terraform_data: 3
+
+outputs: {}
