@@ -27,14 +27,14 @@ locals {
       {
         factory_dirname  = dirname(f)
         factory_basepath = "${local.paths.vpcs}/${dirname(f)}"
-        addresses = try(
-          merge(yamldecode(file("${local.paths.vpcs}/${dirname(f)}/addresses.yaml"))),
-          {}
-        )
-        psc_endpoints = try(
-          merge(yamldecode(file("${local.paths.vpcs}/${dirname(f)}/psc-endpoints.yaml"))),
-          {}
-        )
+        addresses = merge([
+          for a in fileset("${local.paths.vpcs}/${dirname(f)}", "addresses.yaml") :
+          yamldecode(file("${local.paths.vpcs}/${dirname(f)}/${a}"))
+        ]...)
+        psc_endpoints = merge([
+          for p in fileset("${local.paths.vpcs}/${dirname(f)}", "psc-endpoints.yaml") :
+          yamldecode(file("${local.paths.vpcs}/${dirname(f)}/${p}"))
+        ]...)
       }
     )
   ]

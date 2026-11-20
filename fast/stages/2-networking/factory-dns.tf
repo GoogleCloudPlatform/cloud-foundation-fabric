@@ -20,13 +20,13 @@ locals {
   _dns_files = try(fileset(local.paths.dns, "**/*.yaml"), [])
   _dns_decoded = {
     for f in local._dns_files :
-    f => try(merge(yamldecode(file("${coalesce(local.paths.dns, "-")}/${f}"))), {})
+    f => yamldecode(file("${coalesce(local.paths.dns, "-")}/${f}"))
   }
   _dns_preprocess = [
     for f, v in local._dns_decoded : merge(v, {
       key = replace(f, ".yaml", "")
     })
-    if length(v) > 0
+    if v != null
   ]
   dns_zones = {
     for zone_config in local._dns_preprocess : zone_config.key => merge(
@@ -110,16 +110,13 @@ locals {
   )
   _dns_response_policies_decoded = {
     for f in local._dns_response_policies_files :
-    f => try(
-      merge(yamldecode(file("${coalesce(local.paths.dns_response_policies, "-")}/${f}"))),
-      {}
-    )
+    f => yamldecode(file("${coalesce(local.paths.dns_response_policies, "-")}/${f}"))
   }
   _dns_response_policies_preprocess = [
     for f, v in local._dns_response_policies_decoded : merge(v, {
       key = replace(f, ".yaml", "")
     })
-    if length(v) > 0
+    if v != null
   ]
   dns_response_policies = {
     for policy_config in local._dns_response_policies_preprocess : policy_config.key => {
