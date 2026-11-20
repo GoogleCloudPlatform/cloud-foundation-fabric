@@ -249,6 +249,50 @@
       - **mode**: *string*
         <br>*enum: ['inspect_only', 'inspect_and_block']*
       - **cloud_logging**: *boolean*
+- **model_armor_templates**: *object*
+  <br>*additional properties: false*
+  - **`^[a-zA-Z0-9_-]+$`**: *object*
+    <br>*additional properties: false*
+    - ⁺**location**: *string*
+    - **labels**: *reference([labels](#refs-labels))*
+    - **filters**: *object*
+      <br>*additional properties: false*
+      - **malicious_uris**: *boolean*
+      - **pi_and_jailbreak**: *object*
+        <br>*additional properties: false*
+        - **confidence_level**: *string*
+          <br>*enum: ['LOW_AND_ABOVE', 'MEDIUM_AND_ABOVE', 'HIGH']*
+      - **rai**: *object*
+        <br>*additional properties: false*
+        - **DANGEROUS**: *string*
+          <br>*enum: ['LOW_AND_ABOVE', 'MEDIUM_AND_ABOVE', 'HIGH']*
+        - **HARASSMENT**: *string*
+          <br>*enum: ['LOW_AND_ABOVE', 'MEDIUM_AND_ABOVE', 'HIGH']*
+        - **HATE_SPEECH**: *string*
+          <br>*enum: ['LOW_AND_ABOVE', 'MEDIUM_AND_ABOVE', 'HIGH']*
+        - **SEXUALLY_EXPLICIT**: *string*
+          <br>*enum: ['LOW_AND_ABOVE', 'MEDIUM_AND_ABOVE', 'HIGH']*
+      - **sdp**: *object*
+        <br>*additional properties: false*
+        - **basic**: *boolean*
+        - **inspect_template**: *string*
+        - **deidentify_template**: *string*
+    - **metadata**: *object*
+      <br>*additional properties: false*
+      - **enforcement_type**: *string*
+        <br>*enum: ['INSPECT_ONLY', 'INSPECT_AND_BLOCK']*
+      - **ignore_partial_invocation_failures**: *boolean*
+      - **log_sanitize_operations**: *boolean*
+      - **log_template_operations**: *boolean*
+      - **multi_language_detection**: *boolean*
+      - **custom_llm_response_safety_error**: *object*
+        <br>*additional properties: false*
+        - **code**: *integer*
+        - **message**: *string*
+      - **custom_prompt_safety_error**: *object*
+        <br>*additional properties: false*
+        - **code**: *integer*
+        - **message**: *string*
 - **name**: *string*
 - **descriptive_name**: *string*
 - **dns_threat_detector**: *object*

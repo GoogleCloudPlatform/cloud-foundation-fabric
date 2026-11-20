@@ -106,6 +106,7 @@ module "vpn-ha" {
     }
   }
   context = {
+    addresses    = local.ctx_psc_and_vpc_addresses
     locations    = local.ctx.locations
     networks     = local.ctx_vpcs.names
     project_ids  = local.ctx_projects.project_ids

@@ -518,6 +518,9 @@ an honest gap, not an implied guarantee.
 | Hierarchical Firewall Policy | `modules/net-firewall-policy` | `module.<instance>.google_compute_firewall_policy.hierarchical[0]` | `locations/global/firewallPolicies/<id>` | r7 |
 | Global Network Firewall Policy | `modules/net-firewall-policy` | `module.<instance>.google_compute_network_firewall_policy.net_global[0]` | `projects/<project_id>/global/firewallPolicies/<name>` | r7 |
 | Regional Network Firewall Policy | `modules/net-firewall-policy` | `module.<instance>.google_compute_region_network_firewall_policy.net_regional[0]` | `projects/<project_id>/regions/<region>/firewallPolicies/<name>` | r7 |
+| Compute address (global PSC Google APIs) | `modules/net-psc-endpoint` | `module.<instance>.google_compute_global_address.global_apis["<key>"]` | `projects/<project_id>/global/addresses/<name>` | — |
+| Compute address (regional PSC published service) | `modules/net-psc-endpoint` | `module.<instance>.google_compute_address.published_services["<key>"]` | `projects/<project_id>/regions/<region>/addresses/<name>` | — |
+| Compute address (regional PSC Google APIs) | `modules/net-psc-endpoint` | `module.<instance>.google_compute_address.regional_apis["<key>"]` | `projects/<project_id>/regions/<region>/addresses/<name>` | — |
 | Interconnect Attachment | `modules/net-vlan-attachment` | `module.<instance>.google_compute_interconnect_attachment.default["<key>"]` | `projects/<project_id>/regions/<region>/interconnectAttachments/<name>` | — |
 | VPC network | `modules/net-vpc` | `module.net_vpc_<key>.google_compute_network.network[0]` | `projects/<project_id>/global/networks/<name>` | r3 |
 | VPC route (gateway) | `modules/net-vpc` | `module.net_vpc_<key>.google_compute_route.gateway["<key>"]` | `projects/<project_id>/global/routes/<net>-<key>` | r9 |
@@ -855,22 +858,23 @@ let plan tell you: it errors loudly and safely on a wrong ID.
   its own type. Run `--verify-search-parity` at least once per
   engagement (see `cai-blind-spots.md`).
 - **Global PSC addresses** (`addressType: INTERNAL`,
-  `purpose: PRIVATE_SERVICE_CONNECT`, `global/` in the self link):
-  - Variable: `psc_addresses` with `region = null` (routes the entry
-    through `local.global_psc`). The paired consumer forwarding rule is
-    created only when `service_attachment != null`; an address-only
-    entry is legitimate.
+  `purpose: PRIVATE_SERVICE_CONNECT`, `global/` in the self link) when
+  reserved standalone without a forwarding rule:
+  - Variable: `psc_addresses` (with `address` and `network` mirrored to
+    live values). If the address is paired with a global Google APIs
+    consumer forwarding rule (`"all-apis"` or `"vpc-sc"`), map the pair
+    through `modules/net-psc-endpoint` (`global_apis`) instead.
   - **Trap**: do NOT use `global_addresses` — it sets only
     name/description/ip_version and cannot express `address_type`,
     `purpose`, `network` or `address`, all ForceNew: the plan shows a
     destroy/create, which on an import is always a mapping error.
   - Address: `module.<instance>.google_compute_global_address.psc["<key>"]`;
     import ID `projects/<project_id>/global/addresses/<name>`.
-  - **ForceNew trap — empty live description**: `psc_addresses.*.
-    description` defaults to `"Terraform managed."`, and `description`
-    is ForceNew on `google_compute_global_address`. A live address with
-    an empty description must set `description = ""` explicitly or the
-    plan shows a replacement.
+  - **ForceNew trap — empty live description**:
+    `psc_addresses.*.description` defaults to `"Terraform managed."`,
+    and `description` is ForceNew on `google_compute_global_address`. A
+    live address with an empty description must set `description = ""`
+    explicitly or the plan shows a replacement.
 - **Global PSA addresses** (`purpose: VPC_PEERING`):
   - Variable: `psa_addresses` with `address`, `network` and
     `prefix_length` mirrored to live values.
@@ -886,6 +890,30 @@ let plan tell you: it errors loudly and safely on a wrong ID.
   unverified (not exercised by the validation runs).
 - **Reference rule**: `project_id = module.project_<key>.project_id`;
   networks via `module.net_vpc_<key>.self_link`.
+- Lives in `project-<key>.tf`.
+
+### PSC consumer endpoints (`modules/net-psc-endpoint`) — unverified
+
+- Global Google APIs (`global_apis` targeting `"all-apis"` or
+  `"vpc-sc"`): creates `google_compute_global_address.global_apis["<key>"]`
+  (when `address_create = true`, the default) and
+  `google_compute_global_forwarding_rule.global_apis["<key>"]`.
+- Published services (`published_services`): creates
+  `google_compute_address.published_services["<key>"]` (when
+  `address_create = true`) and
+  `google_compute_forwarding_rule.published_services["<key>"]`.
+- Regional and multi-regional Google APIs (`regional_apis` targeting
+  `*.rep.googleapis.com`): creates
+  `google_compute_address.regional_apis["<key>"]` (when
+  `address_create = true`) and
+  `google_network_connectivity_regional_endpoint.regional_apis["<key>"]`.
+- Set `address_create = false` when the endpoint consumes an IP address
+  reserved separately (for example via `modules/net-address`).
+- **ForceNew trap — empty live description**: the module defaults
+  `description` to `"Terraform managed."` on all three address
+  resources (`coalesce(each.value.description, "Terraform managed.")`),
+  which is ForceNew on `google_compute_global_address` and
+  `google_compute_address`.
 - Lives in `project-<key>.tf`.
 
 ### Network Connectivity Center — hub, and spokes as a capability gap (r12)

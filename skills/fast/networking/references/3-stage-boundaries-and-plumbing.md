@@ -22,7 +22,7 @@ The table below shows representative examples of how common capabilities split a
 | **Internal Passthrough NLBs** *(Application-Tier L4 ILBs)* | • Workload subnets (`vpcs/<vpc>/subnets/<region>/*.yaml`).<br/>• Static internal VIP reservations in `vpcs/<vpc>/addresses.yaml` (`internal:`).<br/>• Health-check allow rules (`35.191.0.0/16`, `130.211.0.0/22`). | • Application-tier `modules/net-lb-int` resources (deployed in **workload stages**). *(Note: NVA transit ILBs ARE managed directly by `2-networking` via `nvas/*.yaml` `ilb_config`).* |
 | **GKE Clusters** *(Standard & Autopilot)* | • Shared VPC host enablement (`shared_vpc_host_config.enabled: true`) and `container.googleapis.com` API in `projects/net-*.yaml`.<br/>• Primary node subnets with `secondary_ip_ranges` (`pods` and `services`) in `vpcs/<vpc>/subnets/<region>/*.yaml`.<br/>• Optional firewall rules for private control-plane webhooks/master CIDRs. | • Service project creation and Shared VPC subnet-level IAM attachment (`roles/compute.networkUser`, `roles/container.hostServiceAgentUser` in **`2-project-factory`**).<br/>• GKE cluster & nodepool provisioning (`modules/gke-*` in **workload stages**). |
 | **Private Service Connect (PSC) — Producer** *(Publishing Services Across VPCs/Orgs)* | • Dedicated PSC NAT subnets (`vpcs/<vpc>/subnets/<region>/<name>.yaml` with `psc: true`, `/24` recommended per service attachment).<br/>• Regional `proxy_only: true` subnet if the published producer LB is an Internal Regional ALB. | • Producer load balancer and `google_compute_service_attachment` (`modules/net-lb-*` in **producer workload stages**). |
-| **Private Service Connect (PSC) — Consumer** *(Consuming SaaS, Managed DBs, or Google APIs)* | • Consumer PSC endpoint IPs in `vpcs/<vpc>/addresses.yaml` under `psc:` (`subnet_self_link` + `service_attachment: { psc_service_attachment_link: ... }` for service attachments, or `global: true` + `target: all-apis\|vpc-sc` for Google API bundles).<br/>• Private Cloud DNS zones/records in `dns/zones/` or RPZ rules in `dns/response-policies/`.<br/>• `export_psc: true` on `ncc-hubs/*.yaml` to propagate consumer endpoints across NCC spokes. | • Producer-side project allowlisting (`consumer_accept_lists`) if the producer is external. |
+| **Private Service Connect (PSC) — Consumer** *(Consuming SaaS, Managed DBs, or Google APIs)* | • Consumer PSC endpoints in `vpcs/<vpc>/psc-endpoints.yaml` (`published_services` with `subnetwork` + `target` for service attachments, `global_apis` with `network` + `address` + `target: all-apis\|vpc-sc` for global Google API bundles, or `regional_apis` with `network` + `region` + `subnetwork` + `target: <service>.<loc>.rep.googleapis.com` for regional/multi-regional Google APIs), and optional bare global `PRIVATE_SERVICE_CONNECT` addresses under `psc:` in `vpcs/<vpc>/addresses.yaml`.<br/>• Private Cloud DNS zones/records in `dns/zones/` or RPZ rules in `dns/response-policies/` (referencing `$addresses:<vpc>/<branch>/<key>` or `$addresses:<vpc>/psc/<key>`).<br/>• `export_psc: true` on `ncc-hubs/*.yaml` to propagate consumer endpoints across NCC spokes. | • Producer-side project allowlisting (`consumer_accept_lists`) if the producer is external. |
 | **Private Services Access (PSA)** *(Cloud SQL, AlloyDB, Memorystore, NetApp Volumes)* | • `servicenetworking.googleapis.com` API in `projects/net-*.yaml`.<br/>• `psa_configs` in `vpcs/<vpc>/.config.yaml` (allocating `/24`–`/16` internal CIDR ranges, `export_routes: true`, `import_routes: true`).<br/>• Cloud Router `custom_advertise.ip_ranges` if on-premises networks need to reach the PSA ranges.<br/>• Note: If multiple NCC spokes need transitive access to a PSA peering (`servicenetworking-googleapis-com` or `sn-netapp-prod`), document attaching an **NCC Producer VPC Spoke** (`linked_producer_vpc_network`) or using PSC endpoints instead. | • Managed database or storage instances (`modules/cloudsql-*`, `alloydb`, `netapp-volumes` in **workload stages**). |
 | **Serverless & Vertex AI Runtimes** *(Cloud Run Direct VPC Egress, Vertex AI Agent Engine PSC-I)* | • Dedicated subnets (`>= /26`, `/24` recommended to account for `2x` rollout IP reservation) in `vpcs/<vpc>/subnets/<region>/*.yaml`.<br/>• `network_attachments` in `vpcs/<vpc>/.config.yaml` for PSC Interfaces (`PSC-I`, referencing `<resolved-region>/<subnet-name>` and `automatic_connection`).<br/>• Cloud DNS RPZ bypass (`*.rep.googleapis.com.` `bypassResponsePolicy`) and ensuring `googleapis.com.` is **not** in `dns/zones/` as a DNS Peering zone on VPCs using `PSC-I`. | • Service project attachment in **`2-project-factory`**.<br/>• Cloud Run services, Vertex AI endpoints, and Agent Engine deployments in **workload stages**. |
 | **VPC Service Controls (VPC-SC)** *(Data Exfiltration Perimeters)* | • Plumbing for `restricted.googleapis.com` (`199.36.153.4/30`) routes and DNS response policies (`dns/response-policies/*.yaml`).<br/>• Optional `$vpc_sc_perimeters:` mapping on networking host projects (`var.perimeters`). | • Access Context Manager policies, access levels, and regular/bridge service perimeters (managed in **`1-vpcsc`**). |
@@ -92,7 +92,7 @@ network_attachments:
       - my-ai-workload-prod-0
 ```
 
-### 2.4 Reserved VIPs & PSC Consumer Endpoints (`vpcs/<vpc>/addresses.yaml`)
+### 2.4 Reserved VIPs (`vpcs/<vpc>/addresses.yaml`) & PSC Consumer Endpoints (`vpcs/<vpc>/psc-endpoints.yaml`)
 ```yaml
 # vpcs/prod/addresses.yaml
 # yaml-language-server: $schema=../../../schemas/addresses.schema.json
@@ -105,12 +105,34 @@ internal:
     address: 10.100.1.10
 
 psc:
+  # Bare global PRIVATE_SERVICE_CONNECT IP; referenced as $addresses:prod/psc/psc-global
+  psc-global:
+    network: $networks:prod
+    address: 10.100.255.2
+```
+
+```yaml
+# vpcs/prod/psc-endpoints.yaml
+# yaml-language-server: $schema=../../../schemas/psc-endpoints.schema.json
+
+# Referenced in DNS zones / response policies as $addresses:prod/<branch>/<key>
+published_services:
   alloydb-psc-ew1:
     region: $locations:ew1
-    subnet_self_link: $subnets:prod/europe-west1/prod-default-ew1
+    subnetwork: $subnets:prod/europe-west1/prod-default-ew1
     address: 10.100.1.50
-    service_attachment:
-      psc_service_attachment_link: projects/producer-prj/regions/europe-west1/serviceAttachments/alloydb-sa
+    target: projects/producer-prj/regions/europe-west1/serviceAttachments/alloydb-sa
+global_apis:
+  pscallapis:
+    network: $networks:prod
+    address: 10.100.255.1
+    target: all-apis
+regional_apis:
+  aiplatform-eu:
+    network: $networks:prod
+    region: $locations:ew1
+    subnetwork: $subnets:prod/europe-west1/prod-default-ew1
+    target: aiplatform.eu.rep.googleapis.com
 ```
 
 ### 2.5 Cloud NGFW Enterprise Rule in `firewall-policies/*.yaml`

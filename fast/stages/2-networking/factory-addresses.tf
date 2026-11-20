@@ -24,27 +24,34 @@ locals {
         "${vpc_key}/${addr_key}" => addr.address
       }
     ]...)
+    psc = merge([
+      for vpc_key, mod in module.vpc-addresses : {
+        for addr_key, addr in mod.psc_addresses :
+        "${vpc_key}/psc/${addr_key}" => addr.address
+      }
+    ]...)
   }
 }
 
 module "vpc-addresses" {
-  source   = "../../../modules/net-address"
-  for_each = { for k, v in local.vpcs : k => v if length(v.addresses) > 0 }
+  source = "../../../modules/net-address"
+  for_each = {
+    for k, v in local.vpcs : k => v if length(v.addresses) > 0
+  }
 
   project_id = each.value.project_id
 
   external_addresses  = try(each.value.addresses.external, {})
   global_addresses    = try(each.value.addresses.global, {})
   internal_addresses  = try(each.value.addresses.internal, {})
+  network_attachments = try(each.value.addresses.network_attachments, {})
   psa_addresses       = try(each.value.addresses.psa, {})
   psc_addresses       = try(each.value.addresses.psc, {})
-  network_attachments = try(each.value.addresses.network_attachments, {})
 
   context = {
-    locations           = local.ctx.locations
-    networks            = local.ctx_vpcs.self_links
-    project_ids         = local.ctx_projects.project_ids
-    service_attachments = local.ctx.service_attachments
-    subnets             = local.ctx_vpcs.subnets_by_vpc
+    locations   = local.ctx.locations
+    networks    = local.ctx_vpcs.self_links
+    project_ids = local.ctx_projects.project_ids
+    subnets     = local.ctx_vpcs.subnets_by_vpc
   }
 }

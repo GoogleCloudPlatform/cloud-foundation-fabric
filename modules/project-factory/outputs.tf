@@ -64,6 +64,10 @@ locals {
           module.log-buckets["${k}/${sk}"].id
         )
       }
+      model_armor_templates = {
+        for sk, sv in module.projects-iam[k].model_armor_template_ids :
+        "${k}/${sk}" => sv
+      }
       project_id = module.projects[k].project_id
       pubsub_topics = {
         for sk, sv in lookup(v, "pubsub_topics", {}) :
@@ -154,6 +158,13 @@ output "log_buckets" {
   ]...)
 }
 
+output "model_armor_templates" {
+  description = "Model Armor template ids."
+  value = merge([
+    for k, v in local.outputs_projects : v.model_armor_templates
+  ]...)
+}
+
 output "project_ids" {
   description = "Project ids."
   value       = local.project_ids
@@ -161,9 +172,7 @@ output "project_ids" {
 
 output "project_numbers" {
   description = "Project numbers."
-  value = {
-    for k, v in local.outputs_projects : k => v.number
-  }
+  value       = local.project_numbers
 }
 
 output "projects" {

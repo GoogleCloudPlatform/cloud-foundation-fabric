@@ -34,12 +34,6 @@ locals {
       )
     })
   }
-  regional_psc = {
-    for name, psc in var.psc_addresses : name => psc if psc.region != null
-  }
-  global_psc = {
-    for name, psc in var.psc_addresses : name => psc if psc.region == null
-  }
 }
 
 resource "google_compute_network_attachment" "default" {
@@ -65,113 +59,16 @@ resource "google_compute_network_attachment" "default" {
   )
 }
 
-# global PSC services
 resource "google_compute_global_address" "psc" {
-  for_each     = local.global_psc
+  for_each     = var.psc_addresses
   project      = local.project_id
   name         = coalesce(each.value.name, each.key)
-  description  = each.value.description
-  address      = try(each.value.address, null)
+  description  = coalesce(each.value.description, "Terraform managed.")
+  address      = each.value.address
   address_type = "INTERNAL"
+  labels       = each.value.labels
   purpose      = "PRIVATE_SERVICE_CONNECT"
-  network = try(lookup(
-    local.ctx.networks,
-    each.value.network,
-    each.value.network
-  ), null)
-}
-
-resource "google_compute_global_forwarding_rule" "psc_consumer" {
-  provider = google-beta
-  for_each = {
-    for name, psc in local.global_psc
-    : name => psc if psc.service_attachment != null
-  }
-  name    = coalesce(each.value.name, each.key)
-  project = local.project_id
   network = lookup(
     local.ctx.networks, each.value.network, each.value.network
-  )
-  ip_address            = google_compute_global_address.psc[each.key].self_link
-  load_balancing_scheme = ""
-  target = lookup(
-    local.ctx.service_attachments,
-    each.value.service_attachment.psc_service_attachment_link,
-    each.value.service_attachment.psc_service_attachment_link
-  )
-  # allow_psc_global_access is not currently supported for global
-  # forwarding rules. This parameter is included for potential future
-  # compatibility.
-  allow_psc_global_access = each.value.service_attachment.global_access
-  dynamic "service_directory_registrations" {
-    for_each = (
-      each.value.service_attachment.service_directory_registration == null
-      ? []
-      : [each.value.service_attachment.service_directory_registration]
-    )
-    content {
-      namespace = service_directory_registrations.value.namespace
-      service_directory_region = (
-        service_directory_registrations.value.region == null
-        ? null
-        : lookup(
-          local.ctx.locations,
-          service_directory_registrations.value.region,
-          service_directory_registrations.value.region
-        )
-      )
-    }
-  }
-}
-
-# regional PSC services
-resource "google_compute_address" "psc" {
-  for_each     = local.regional_psc
-  project      = local.project_id
-  name         = coalesce(each.value.name, each.key)
-  address      = try(each.value.address, null)
-  address_type = "INTERNAL"
-  description  = each.value.description
-  region = lookup(
-    local.ctx.locations, each.value.region, each.value.region
-  )
-  network = try(lookup(
-    local.ctx.networks,
-    each.value.network,
-    each.value.network
-  ), null)
-  subnetwork = lookup(
-    local.ctx.subnets,
-    each.value.subnet_self_link,
-    each.value.subnet_self_link
-  )
-}
-
-resource "google_compute_forwarding_rule" "psc_consumer" {
-  provider = google-beta
-  for_each = {
-    for name, psc in local.regional_psc
-    : name => psc if psc.service_attachment != null
-  }
-  name                  = coalesce(each.value.name, each.key)
-  project               = local.project_id
-  ip_address            = google_compute_address.psc[each.key].self_link
-  load_balancing_scheme = ""
-  recreate_closed_psc   = true
-  target = lookup(
-    local.ctx.service_attachments,
-    each.value.service_attachment.psc_service_attachment_link,
-    each.value.service_attachment.psc_service_attachment_link
-  )
-  allow_psc_global_access = each.value.service_attachment.global_access
-  region = lookup(
-    local.ctx.locations,
-    each.value.region,
-    each.value.region
-  )
-  subnetwork = lookup(
-    local.ctx.subnets,
-    each.value.subnet_self_link,
-    each.value.subnet_self_link
   )
 }

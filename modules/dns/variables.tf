@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 variable "context" {
   description = "Context-specific interpolations."
   type = object({
+    addresses      = optional(map(string), {})
     custom_roles   = optional(map(string), {})
     iam_principals = optional(map(string), {})
     networks       = optional(map(string), {})

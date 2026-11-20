@@ -67,6 +67,7 @@ PATH_SCHEMAS: tuple[tuple[re.Pattern[str], str], ...] = (
      "dns-response-policy-rules.schema.json"),
     (re.compile(r"^vpcs/.+/\.config\.yaml$"), "vpc.schema.json"),
     (re.compile(r"^vpcs/.+/addresses\.yaml$"), "addresses.schema.json"),
+    (re.compile(r"^vpcs/.+/psc-endpoints\.yaml$"), "psc-endpoints.schema.json"),
     (re.compile(r"^vpcs/.+/firewall-rules/.+\.yaml$"),
      "firewall-rules.schema.json"),
     (re.compile(r"^vpcs/.+/subnets/.+\.yaml$"), "subnet.schema.json"),
@@ -300,7 +301,7 @@ def validate_dataset_files(
       continue
 
     if doc is None:
-      doc = {}
+      continue
     docs[rel] = doc
 
     validator = get_validator(expected_schema)
@@ -353,6 +354,8 @@ def validate_dataset_files(
           set((ctx_doc.get("project_ids") or {}).keys()),
       "security_profile_groups":
           set((ctx_doc.get("security_profile_groups") or {}).keys()),
+      "service_attachments":
+          set((ctx_doc.get("service_attachments") or {}).keys()),
       "storage_buckets":
           set((ctx_doc.get("storage_buckets") or {}).keys()),
       "tag_keys":
@@ -529,6 +532,11 @@ def validate_dataset_files(
     if vpc_addr:
       for ak in (doc.get("internal") or {}):
         known["addresses"].add(f"{vpc_addr}/{ak}")
+      for ak, acfg in ((doc.get("psc") or {}).items() if isinstance(
+          doc.get("psc"), dict) else ()):
+        addr_name = (str(acfg.get("name") or ak)
+                     if isinstance(acfg, dict) else str(ak))
+        known["addresses"].add(f"{vpc_addr}/psc/{addr_name}")
       for ak, acfg in ((doc.get("psa") or {}).items() if isinstance(
           doc.get("psa"), dict) else ()):
         if isinstance(acfg,
@@ -538,6 +546,22 @@ def validate_dataset_files(
           if pnet is not None:
             vpc_subnets.setdefault(vpc_addr, []).append(
                 (f"addresses.psa:{ak}", "psa", pnet, rel))
+
+    vpc_psc = _vpc_key_from_subpath(rel, r"psc-endpoints\.yaml")
+    if vpc_psc:
+      for branch in ("global_apis", "published_services", "regional_apis"):
+        branch_map = doc.get(branch) or {}
+        if isinstance(branch_map, dict):
+          for pk, pcfg in branch_map.items():
+            known["addresses"].add(f"{vpc_psc}/{branch}/{pk}")
+            if branch == "global_apis" and isinstance(pcfg, dict):
+              fr_name = str(pcfg.get("name") or pk)
+              if not re.match(r"^[a-z][a-z0-9]{0,19}$", fr_name):
+                issues.append(
+                    Issue(
+                        "error", rel,
+                        f"global_apis.{pk} forwarding rule name '{fr_name}' must be 1-20 lowercase letters and digits starting with a letter (no hyphens)"
+                    ))
 
     m_vpn = re.match(r"^vpcs/(.+)/vpns/(.+)\.yaml$", rel)
     if m_vpn:

@@ -1,0 +1,80 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  google_compute_address.published_services["svc-one"]:
+    address_type: INTERNAL
+    description: Terraform managed.
+    name: svc-one
+    project: foo-test-0
+    region: europe-west8
+    subnetwork: https://www.googleapis.com/compute/v1/projects/foo-dev-net-spoke-0/regions/europe-west8/subnetworks/gce
+  google_compute_forwarding_rule.published_services["svc-existing"]:
+    allow_psc_global_access: null
+    description: null
+    ip_address: https://www.googleapis.com/compute/v1/projects/foo-test-0/regions/europe-west8/addresses/existing-psc
+    load_balancing_scheme: ''
+    name: svc-existing
+    project: foo-test-0
+    recreate_closed_psc: true
+    region: europe-west8
+    subnetwork: https://www.googleapis.com/compute/v1/projects/foo-dev-net-spoke-0/regions/europe-west8/subnetworks/gce
+    target: projects/foo-producer/regions/europe-west8/serviceAttachments/svc-0
+  google_compute_forwarding_rule.published_services["svc-one"]:
+    allow_psc_global_access: true
+    description: null
+    load_balancing_scheme: ''
+    name: svc-one
+    project: foo-test-0
+    recreate_closed_psc: true
+    region: europe-west8
+    subnetwork: https://www.googleapis.com/compute/v1/projects/foo-dev-net-spoke-0/regions/europe-west8/subnetworks/gce
+    target: projects/foo-producer/regions/europe-west8/serviceAttachments/svc-0
+  google_compute_global_address.global_apis["googleapis"]:
+    address: 10.0.32.32
+    address_type: INTERNAL
+    description: Terraform managed.
+    name: googleapis
+    network: https://www.googleapis.com/compute/v1/projects/foo-dev-net-spoke-0/global/networks/dev-spoke-0
+    project: foo-test-0
+    purpose: PRIVATE_SERVICE_CONNECT
+  google_compute_global_forwarding_rule.global_apis["googleapis"]:
+    description: null
+    load_balancing_scheme: ''
+    name: googleapis
+    network: https://www.googleapis.com/compute/v1/projects/foo-dev-net-spoke-0/global/networks/dev-spoke-0
+    project: foo-test-0
+    service_directory_registrations:
+    - namespace: psc-ns
+      service_directory_region: europe-west8
+    target: all-apis
+  google_network_connectivity_regional_endpoint.regional_apis["storage"]:
+    access_type: GLOBAL
+    address: projects/foo-test-0/regions/europe-west8/addresses/existing-psc
+    description: Terraform managed.
+    location: europe-west8
+    name: storage
+    network: projects/foo-dev-net-spoke-0/global/networks/dev-spoke-0
+    project: foo-test-0
+    subnetwork: projects/foo-dev-net-spoke-0/regions/europe-west8/subnetworks/gce
+    target_google_api: storage.europe-west8.rep.googleapis.com
+
+counts:
+  google_compute_address: 1
+  google_compute_forwarding_rule: 2
+  google_compute_global_address: 1
+  google_compute_global_forwarding_rule: 1
+  google_network_connectivity_regional_endpoint: 1
+  modules: 0
+  resources: 6

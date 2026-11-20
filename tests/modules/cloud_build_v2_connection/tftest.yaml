@@ -12,18 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-values:
-  module.addresses.google_compute_forwarding_rule.psc_consumer["cloudsql-one"]:
-    load_balancing_scheme: ''
-    name: cloudsql-one
-    project: project-id
-    recreate_closed_psc: true
-    region: europe-west8
-    subnetwork: subnet_self_link
-  module.addresses.google_compute_address.psc["cloudsql-one"]:
-    address: 10.0.16.32
-    address_type: INTERNAL
-    description: Terraform managed.
-    name: cloudsql-one
-    project: project-id
-    subnetwork: subnet_self_link
+module: modules/cloud-build-v2-connection
+
+tests:
+  context:
