@@ -28,6 +28,7 @@
 - composer.googleapis.com
 - compute.googleapis.com
 - connectgateway.googleapis.com
+- contactcenteraiplatform.googleapis.com
 - contactcenterinsights.googleapis.com
 - container.googleapis.com
 - containeranalysis.googleapis.com
@@ -45,6 +46,7 @@
 - documentai.googleapis.com
 - eventarc.googleapis.com
 - file.googleapis.com
+- firebasevertexai.googleapis.com
 - gameservices.googleapis.com
 - geminidataanalytics.googleapis.com
 - gkeconnect.googleapis.com
