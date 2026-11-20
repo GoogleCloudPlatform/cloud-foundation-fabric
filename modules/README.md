@@ -59,6 +59,7 @@ These modules are used in the examples included in this repository. If you are u
 - [Internal Passthrough Network Load Balancer](./net-lb-int)
 - [Internal Proxy Network Load Balancer](./net-lb-proxy-int)
 - [NAT](./net-cloudnat)
+- [Private Service Connect endpoint](./net-psc-endpoint)
 - [Service Directory](./service-directory)
 - [VPC](./net-vpc)
 - [VPC firewall](./net-vpc-firewall)

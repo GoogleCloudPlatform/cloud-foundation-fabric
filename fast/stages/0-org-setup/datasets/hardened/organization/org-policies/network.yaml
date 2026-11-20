@@ -67,10 +67,6 @@ compute.restrictVpcPeering:
 #           - "1.1.1.1"
 #           - "2.2.2.2"
 
-custom.networkDisableTargetHTTPProxy:
-  rules:
-    - enforce: true
-
 custom.networkDisableWeakSSLPolicy:
   rules:
     - enforce: true

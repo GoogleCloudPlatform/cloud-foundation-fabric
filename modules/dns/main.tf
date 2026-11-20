@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,6 +40,11 @@ locals {
   recordsets = {
     for key, attrs in local._recordsets_0 :
     key => merge(attrs, {
+      records = (
+        attrs.records == null
+        ? null
+        : [for r in attrs.records : lookup(local.ctx.addresses, r, r)]
+      )
       resource_name = (
         attrs.name == ""
         ? local.managed_zone.dns_name
@@ -197,7 +202,14 @@ resource "google_dns_record_set" "dns_record_set" {
         for_each = coalesce(each.value.geo_routing, [])
         content {
           location = geo.value.location
-          rrdatas  = geo.value.records
+          rrdatas = (
+            geo.value.records == null
+            ? null
+            : [
+              for r in geo.value.records :
+              lookup(local.ctx.addresses, r, r)
+            ]
+          )
           dynamic "health_checked_targets" {
             for_each = try(geo.value.health_checked_targets, null) == null ? [] : [""]
             content {
@@ -220,8 +232,15 @@ resource "google_dns_record_set" "dns_record_set" {
       dynamic "wrr" {
         for_each = coalesce(each.value.wrr_routing, [])
         content {
-          weight  = wrr.value.weight
-          rrdatas = wrr.value.records
+          weight = wrr.value.weight
+          rrdatas = (
+            wrr.value.records == null
+            ? null
+            : [
+              for r in wrr.value.records :
+              lookup(local.ctx.addresses, r, r)
+            ]
+          )
         }
       }
     }

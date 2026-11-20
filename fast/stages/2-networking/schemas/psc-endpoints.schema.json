@@ -1,0 +1,121 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "PSC Endpoints",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "global_apis": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["address", "network", "target"],
+        "properties": {
+          "address": { "type": "string" },
+          "network": { "type": "string" },
+          "target": {
+            "type": "string",
+            "enum": ["all-apis", "vpc-sc"]
+          },
+          "address_create": { "type": "boolean", "default": true },
+          "deletion_policy": {
+            "type": "string",
+            "enum": ["ABANDON", "DELETE", "PREVENT"]
+          },
+          "description": { "type": "string" },
+          "labels": {
+            "type": "object",
+            "additionalProperties": false,
+            "patternProperties": {
+              "^[a-z][a-z0-9_-]{0,62}$": {
+                "type": "string",
+                "pattern": "^[a-z0-9_-]{0,63}$"
+              }
+            }
+          },
+          "name": { "type": "string" },
+          "no_automate_dns_zone": { "type": "boolean" },
+          "service_directory_registration": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "namespace": { "type": "string" },
+              "region": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "published_services": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["region", "subnetwork", "target"],
+        "properties": {
+          "region": { "type": "string" },
+          "subnetwork": { "type": "string" },
+          "target": { "type": "string" },
+          "address": { "type": "string" },
+          "address_create": { "type": "boolean", "default": true },
+          "deletion_policy": {
+            "type": "string",
+            "enum": ["ABANDON", "DELETE", "PREVENT"]
+          },
+          "description": { "type": "string" },
+          "global_access": { "type": "boolean" },
+          "labels": {
+            "type": "object",
+            "additionalProperties": false,
+            "patternProperties": {
+              "^[a-z][a-z0-9_-]{0,62}$": {
+                "type": "string",
+                "pattern": "^[a-z0-9_-]{0,63}$"
+              }
+            }
+          },
+          "name": { "type": "string" },
+          "no_automate_dns_zone": { "type": "boolean" },
+          "recreate_closed_psc": { "type": "boolean" },
+          "service_directory_namespace": { "type": "string" }
+        }
+      }
+    },
+    "regional_apis": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["network", "region", "subnetwork", "target"],
+        "properties": {
+          "network": { "type": "string" },
+          "region": { "type": "string" },
+          "subnetwork": { "type": "string" },
+          "target": {
+            "type": "string",
+            "pattern": "\\.rep\\.googleapis\\.com$"
+          },
+          "address": { "type": "string" },
+          "address_create": { "type": "boolean", "default": true },
+          "deletion_policy": {
+            "type": "string",
+            "enum": ["ABANDON", "DELETE", "PREVENT"]
+          },
+          "description": { "type": "string" },
+          "global_access": { "type": "boolean" },
+          "labels": {
+            "type": "object",
+            "additionalProperties": false,
+            "patternProperties": {
+              "^[a-z][a-z0-9_-]{0,62}$": {
+                "type": "string",
+                "pattern": "^[a-z0-9_-]{0,63}$"
+              }
+            }
+          },
+          "name": { "type": "string" }
+        }
+      }
+    }
+  }
+}

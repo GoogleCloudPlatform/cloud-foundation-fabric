@@ -109,6 +109,8 @@ module "addresses" {
 
 ### PSC addresses
 
+Reserve bare global internal addresses with `purpose = "PRIVATE_SERVICE_CONNECT"`. To create PSC consumer endpoints (published services, global Google APIs, and regional `*.rep.googleapis.com` APIs), use the [`net-psc-endpoint`](../net-psc-endpoint/) module.
+
 ```hcl
 module "addresses" {
   source     = "./fabric/modules/net-address"
@@ -121,69 +123,6 @@ module "addresses" {
   }
 }
 # tftest modules=1 resources=1 inventory=psc.yaml e2e
-```
-
-To create PSC address targeting a service regional provider use the `service_attachment` property.
-
-```hcl
-module "addresses" {
-  source     = "./fabric/modules/net-address"
-  project_id = var.project_id
-  psc_addresses = {
-    cloudsql-one = {
-      address          = "10.0.16.32"
-      subnet_self_link = var.subnet.self_link
-      region           = var.region
-      service_attachment = {
-        psc_service_attachment_link = module.cloudsql-instance.psc_service_attachment_link
-      }
-    }
-  }
-}
-# tftest modules=2 resources=3 fixtures=fixtures/cloudsql-instance.tf inventory=psc-service-attachment.yaml e2e
-```
-
-Specify `vpc-sc` or `all-apis` in `psc_service_attachment_link` to target Google APIs, and optionally configure `service_directory_registration`.
-
-```hcl
-module "addresses" {
-  source     = "./fabric/modules/net-address"
-  project_id = var.project_id
-  psc_addresses = {
-    googleapis = {
-      address = "10.0.32.32"
-      network = var.vpc.self_link
-      service_attachment = {
-        psc_service_attachment_link = "all-apis"
-        service_directory_registration = {
-          region = var.region
-        }
-      }
-    }
-  }
-}
-# tftest modules=1 resources=2 inventory=psc-service-attachment-all-apis.yaml e2e
-```
-
-Set `global_access` to true to enable global access for regional addresses used by a service attachment.
-
-```hcl
-module "addresses" {
-  source     = "./fabric/modules/net-address"
-  project_id = var.project_id
-  psc_addresses = {
-    cloudsql-one = {
-      address          = "10.0.16.32"
-      subnet_self_link = var.subnet.self_link
-      region           = var.region
-      service_attachment = {
-        psc_service_attachment_link = module.cloudsql-instance.psc_service_attachment_link
-        global_access               = true
-      }
-    }
-  }
-}
-# tftest modules=2 resources=3 fixtures=fixtures/cloudsql-instance.tf inventory=psc-global.yaml e2e
 ```
 
 ### IPSec Interconnect addresses
@@ -250,9 +189,6 @@ module "addresses" {
     project_ids = {
       my-prj = "my-project-1"
     }
-    service_attachments = {
-      ssm-http = "projects/prj-tenant/regions/us-central1/serviceAttachments/http-psc"
-    }
     subnets = {
       subnet-primary   = "projects/prj-host/regions/us-central1/subnetworks/sub-1"
       subnet-secondary = "projects/prj-host/regions/europe-west1/subnetworks/sub-2"
@@ -275,32 +211,24 @@ module "addresses" {
       address = "10.0.0.32"
       network = "$networks:shared-vpc"
     }
-    ssm-http = {
-      region           = "$locations:primary-region"
-      subnet_self_link = "$subnets:subnet-primary"
-      service_attachment = {
-        psc_service_attachment_link = "$service_attachments:ssm-http"
-        global_access               = true
-      }
-    }
   }
 }
-# tftest modules=1 resources=5 inventory=context.yaml
+# tftest modules=1 resources=3 inventory=context.yaml
 ```
 <!-- BEGIN TFDOC -->
 ## Variables
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [project_id](variables.tf#L108) | Project where the addresses will be created. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L107) | Project where the addresses will be created. | <code>string</code> | ✓ |  |
 | [context](variables.tf#L17) | Context-specific interpolations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [external_addresses](variables.tf#L30) | Map of external addresses, keyed by name. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [global_addresses](variables.tf#L57) | List of global addresses to create. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [internal_addresses](variables.tf#L67) | Map of internal addresses to create, keyed by name. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [ipsec_interconnect_addresses](variables.tf#L82) | Map of internal addresses used for HPA VPN over Cloud Interconnect. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [network_attachments](variables.tf#L95) | PSC network attachments, names as keys. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [psa_addresses](variables.tf#L113) | Map of internal addresses used for Private Service Access. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [psc_addresses](variables.tf#L125) | Map of internal addresses used for Private Service Connect. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [external_addresses](variables.tf#L29) | Map of external addresses, keyed by name. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [global_addresses](variables.tf#L56) | List of global addresses to create. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [internal_addresses](variables.tf#L66) | Map of internal addresses to create, keyed by name. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [ipsec_interconnect_addresses](variables.tf#L81) | Map of internal addresses used for HPA VPN over Cloud Interconnect. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [network_attachments](variables.tf#L94) | PSC network attachments, names as keys. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [psa_addresses](variables.tf#L112) | Map of internal addresses used for Private Service Access. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [psc_addresses](variables.tf#L124) | Map of global internal addresses used for Private Service Connect. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
 
@@ -312,11 +240,9 @@ module "addresses" {
 | [ipsec_interconnect_addresses](outputs.tf#L41) | Allocated internal addresses for HA VPN over Cloud Interconnect. |  |
 | [network_attachment_ids](outputs.tf#L49) | IDs of network attachments. |  |
 | [psa_addresses](outputs.tf#L57) | Allocated internal addresses for PSA endpoints. |  |
-| [psc](outputs.tf#L65) | Allocated resources for PSC endpoints. |  |
-| [psc_addresses](outputs.tf#L101) | Allocated internal addresses for PSC endpoints. |  |
+| [psc_addresses](outputs.tf#L65) | Allocated internal addresses for PSC endpoints. |  |
 
 ## Fixtures
 
-- [cloudsql-instance.tf](../../tests/fixtures/cloudsql-instance.tf)
 - [net-vpc-ipv6.tf](../../tests/fixtures/net-vpc-ipv6.tf)
 <!-- END TFDOC -->

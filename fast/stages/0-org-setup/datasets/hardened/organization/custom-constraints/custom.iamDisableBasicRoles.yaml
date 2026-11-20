@@ -18,19 +18,23 @@ custom.iamDisableBasicRoles:
   action_type: DENY
   condition: |-
     resource.bindings.exists(binding,
+      RoleNameMatches(binding.role, [
+        'roles/owner',
+        'roles/editor',
+        'roles/admin',
+        'roles/writer'
+      ]) &&
       binding.members.exists(member,
-        MemberSubjectStartsWith(member, ['user:', 'group:']) &&
-        !MemberSubjectStartsWith(member, ['${iam_principals.gcp-organization-admins}']) &&
-        (
-          RoleNameMatches(binding.role, ['roles/owner', 'roles/admin']) ||
-          RoleNameMatches(binding.role, ['roles/editor', 'roles/writer']) ||
-          RoleNameContains(binding.role, ['roles/viewer', 'roles/reader'])
+        !MemberSubjectMatches(member, ['${iam_principals.gcp-organization-admins}']) &&
+        !(
+          MemberSubjectStartsWith(member, ['serviceAccount:']) &&
+          MemberSubjectEndsWith(member, ['@cloudservices.gserviceaccount.com'])
         )
       )
     )
-  description: Ensure no use of the legacy basic roles (viewer, editor and owner) and
-    basic roles (reader, writer and admin)
-  display_name: Deny use of the basic roles
+  description: Ensure no use of the legacy privileged basic roles (editor and owner)
+    and privileged basic roles (writer and admin)
+  display_name: Deny use of the privileged basic roles
   method_types:
   - CREATE
   - UPDATE

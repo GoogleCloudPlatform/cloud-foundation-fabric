@@ -86,6 +86,7 @@ The following table details how FAST stages implement factory patterns.
 | **2-networking** | `dns` (Zones) | Stage-Implemented (Module) | `dns` |
 | **2-networking** | `dns_response_policies` | Stage-Implemented (Module) | `dns-response-policy` |
 | **2-networking** | `firewall_policies` | Stage-Implemented (Module) | `net-firewall-policy` |
+| **2-networking** | `psc-endpoints` (VPC PSC Endpoints) | Stage-Implemented (Module) | `net-psc-endpoint` |
 | **2-networking** | `vpns` | Stage-Implemented (Module) | `net-vpn-ha` |
 | **2-networking** | `vlan_attachments` | Stage-Implemented (Module) | `net-vlan-attachment` |
 | **2-networking** | `ncc_hubs` | Stage-Implemented (Resource) | `google_network_connectivity_hub` |

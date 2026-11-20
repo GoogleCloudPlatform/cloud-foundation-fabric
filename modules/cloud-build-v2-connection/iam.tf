@@ -36,7 +36,7 @@ locals {
 resource "google_cloudbuildv2_connection_iam_binding" "authoritative" {
   for_each = local.iam
   project  = local.project_id
-  location = var.location
+  location = local.location
   name     = local.name
   role     = lookup(local.ctx.custom_roles, each.key, each.key)
   members = [
@@ -47,21 +47,41 @@ resource "google_cloudbuildv2_connection_iam_binding" "authoritative" {
 resource "google_cloudbuildv2_connection_iam_binding" "bindings" {
   for_each = var.iam_bindings
   project  = local.project_id
-  location = var.location
+  location = local.location
   name     = local.name
   role     = lookup(local.ctx.custom_roles, each.value.role, each.value.role)
   members = [
     for v in each.value.members : lookup(local.ctx.iam_principals, v, v)
   ]
+  dynamic "condition" {
+    for_each = each.value.condition == null ? [] : [""]
+    content {
+      expression = templatestring(
+        each.value.condition.expression, var.context.condition_vars
+      )
+      title       = each.value.condition.title
+      description = each.value.condition.description
+    }
+  }
 }
 
 resource "google_cloudbuildv2_connection_iam_member" "bindings" {
   for_each = var.iam_bindings_additive
   project  = local.project_id
-  location = var.location
+  location = local.location
   name     = local.name
   role     = lookup(local.ctx.custom_roles, each.value.role, each.value.role)
   member = lookup(
     local.ctx.iam_principals, each.value.member, each.value.member
   )
+  dynamic "condition" {
+    for_each = each.value.condition == null ? [] : [""]
+    content {
+      expression = templatestring(
+        each.value.condition.expression, var.context.condition_vars
+      )
+      title       = each.value.condition.title
+      description = each.value.condition.description
+    }
+  }
 }

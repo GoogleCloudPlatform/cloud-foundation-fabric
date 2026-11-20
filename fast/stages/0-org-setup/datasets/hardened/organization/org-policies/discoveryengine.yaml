@@ -18,6 +18,14 @@
 
 # yaml-language-server: $schema=../../../../schemas/org-policies.schema.json
 
+custom.discoveryengineDisableNonGcpDataStores:
+  rules:
+    - enforce: true
+
+discoveryengine.managed.allowedDataSources:
+  rules:
+    - enforce: true
+
 discoveryengine.managed.disableCustomMcpServerConnector:
   rules:
     - enforce: true

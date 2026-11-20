@@ -519,6 +519,37 @@ variable "projects" {
         }))
       }))
     }))
+    model_armor_templates = optional(map(object({
+      location = string
+      labels   = optional(map(string))
+      filters = optional(object({
+        malicious_uris = optional(bool)
+        pi_and_jailbreak = optional(object({
+          confidence_level = optional(string)
+        }))
+        rai = optional(map(string))
+        sdp = optional(object({
+          basic               = optional(bool)
+          inspect_template    = optional(string)
+          deidentify_template = optional(string)
+        }))
+      }))
+      metadata = optional(object({
+        enforcement_type                   = optional(string)
+        ignore_partial_invocation_failures = optional(bool)
+        log_sanitize_operations            = optional(bool)
+        log_template_operations            = optional(bool)
+        multi_language_detection           = optional(bool)
+        custom_llm_response_safety_error = optional(object({
+          code    = optional(number)
+          message = optional(string)
+        }))
+        custom_prompt_safety_error = optional(object({
+          code    = optional(number)
+          message = optional(string)
+        }))
+      }))
+    })))
     pam_entitlements = optional(map(object({
       max_request_duration = string
       eligible_users       = list(string)

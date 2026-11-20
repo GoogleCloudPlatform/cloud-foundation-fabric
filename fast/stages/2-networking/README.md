@@ -185,7 +185,9 @@ The following diagram shows the canonical paths for the different factory config
 └── vpcs
     └── [vpc-name]           # Each subfolder represents a VPC.
         ├── .config.yaml     # Main VPC configuration, peerings, NAT.
+        ├── addresses.yaml   # Arbitrary address reservations.
         ├── firewall-rules   # VPC-level firewall rules.
+        ├── psc-endpoints.yaml # Private Service Connect consumer endpoints.
         ├── subnets          # Subnet definitions.
         ├── vlan-attachments # VLAN attachment configurations.
         └── vpns             # VPN configurations.
@@ -203,7 +205,43 @@ Note that the stage doesn't force you to create projects; factories also allow y
 
 The VPC factory allows for the definition of an arbitrary number of VPCs, along with their subnets, routes, firewall rules, and connectivity settings, all through YAML files.
 
-VPCs are defined in `.config.yaml` files within the `vpcs/[vpc-name]` directory of a dataset. This file contains the VPC's main configuration. Subnets, firewall rules, VPNs, and VLAN attachments are defined in subdirectories within each VPC's folder. An optional `addresses.yaml` file can be placed in the VPC directory to define arbitrary addresses (external, internal, global, PSC).
+VPCs are defined in `.config.yaml` files within the `vpcs/[vpc-name]` directory of a dataset. This file contains the VPC's main configuration. Subnets, firewall rules, VPNs, and VLAN attachments are defined in subdirectories within each VPC's folder. An optional `addresses.yaml` file can be placed in the VPC directory to define arbitrary addresses (`external`, `internal`, `global`, `psa`, and bare global `psc` `PRIVATE_SERVICE_CONNECT` addresses). An optional `psc-endpoints.yaml` file can also be placed in the VPC directory to provision Private Service Connect consumer endpoints (`global_apis`, `published_services`, `regional_apis`) via [`net-psc-endpoint`](../../../modules/net-psc-endpoint/). Using `regional_apis` requires enabling `networkconnectivity.googleapis.com` on the project (and granting `roles/compute.networkUser` to the Network Connectivity service agent on Shared VPC host projects when targeting shared subnets).
+
+```yaml
+# vpcs/hub/psc-endpoints.yaml
+global_apis:
+  pscallapis:
+    address: 10.0.250.1
+    network: $networks:hub
+    target: all-apis
+
+published_services:
+  ssm-http:
+    region: $locations:primary
+    subnetwork: $subnets:hub/europe-west1/hub-default
+    target: $service_attachments:ssm-http
+    global_access: true
+
+regional_apis:
+  aiplatform-eu:
+    network: $networks:hub
+    region: $locations:primary
+    subnetwork: $subnets:hub/europe-west1/hub-default
+    target: aiplatform.eu.rep.googleapis.com
+```
+
+```yaml
+# dns/zones/net-core-0/pvt-aiplatform-eu-rep.yaml
+project_id: $project_ids:net-core-0
+domain: aiplatform.eu.rep.googleapis.com.
+private:
+  client_networks:
+    - $networks:hub
+recordsets:
+  "A ":
+    records:
+      - $addresses:hub/regional_apis/aiplatform-eu
+```
 
 ### DNS
 
@@ -619,6 +657,8 @@ Context variables are accessed by keys that match the YAML file name for resourc
 Assuming keys of the form `my_folder`, `my_project`, `my_vpc`, etc. this is an example of referencing the actual IDs via interpolation in YAML files.
 
 - `$addresses:my_vpc/my_address`
+- `$addresses:my_vpc/psc/my_address` (bare global `PRIVATE_SERVICE_CONNECT` address from `addresses.yaml`)
+- `$addresses:my_vpc/global_apis/my_endpoint` (also `published_services` and `regional_apis` from `psc-endpoints.yaml`)
 - `$folder_ids:my_folder`
 - `$locations:my_region`
 - `$ncc_groups:my_hub/my_group`
@@ -628,7 +668,7 @@ Assuming keys of the form `my_folder`, `my_project`, `my_vpc`, etc. this is an e
 - `$nva_instances:my_nva-b-0` (NVA instance self link)
 - `$project_ids:my_project`
 - `$routers:my_vpc/my_vpn`
-- `$service_attachments:my_service` (PSC service attachment for `addresses.psc`, defined under `context` in `defaults.yaml`)
+- `$service_attachments:my_service` (PSC service attachment for `published_services` in `psc-endpoints.yaml`, defined under `context` in `defaults.yaml`)
 - `$vpn_gateways:my_vpc/my_gateway`
 
 Internally created resources are mapped to context namespaces, and use specific prefixes to express the relationship with their container.
@@ -647,6 +687,7 @@ Internally created resources are mapped to context namespaces, and use specific 
 | [factory-nva.tf](./factory-nva.tf) | NVA factory | <code>compute-vm</code> · <code>net-lb-int</code> | <code>google_compute_health_check</code> · <code>google_compute_instance_group</code> · <code>google_network_connectivity_spoke</code> · <code>terraform_data</code> |
 | [factory-peering.tf](./factory-peering.tf) | VPC Peering factory. |  | <code>google_compute_network_peering</code> |
 | [factory-projects.tf](./factory-projects.tf) | Projects factory. | <code>project-factory</code> |  |
+| [factory-psc.tf](./factory-psc.tf) | PSC endpoints factory. | <code>net-psc-endpoint</code> |  |
 | [factory-routers.tf](./factory-routers.tf) | Routers factory. |  | <code>google_compute_router</code> · <code>google_compute_router_interface</code> · <code>google_compute_router_peer</code> · <code>google_compute_router_route_policy</code> · <code>terraform_data</code> |
 | [factory-security-policies.tf](./factory-security-policies.tf) | Security policies factory. | <code>net-cloud-armor</code> |  |
 | [factory-vlan-attachments.tf](./factory-vlan-attachments.tf) | VLAN attachments factory. | <code>net-vlan-attachment</code> | <code>google_compute_interconnect_attachment_group</code> |

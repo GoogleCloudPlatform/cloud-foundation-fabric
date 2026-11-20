@@ -1,0 +1,185 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  google_cloudbuild_trigger.triggers["my-repo-main-push"]:
+    bitbucket_server_trigger_config: []
+    build: []
+    deletion_policy: DELETE
+    description: null
+    developer_connect_event_config: []
+    disabled: false
+    filter: null
+    git_file_source: []
+    github: []
+    ignored_files: null
+    include_build_logs: null
+    included_files: null
+    location: europe-west8
+    name: my-repo-main-push
+    project: test-cb-prj
+    pubsub_config: []
+    repository_event_config:
+    - pull_request: []
+      push:
+      - branch: ^main$
+        invert_regex: null
+        tag: null
+    service_account: projects/test-cb-prj/serviceAccounts/cb@test-cb-prj.iam.gserviceaccount.com
+    source_to_build: []
+    substitutions: null
+    tags: []
+    timeouts: null
+    trigger_template: []
+    webhook_config: []
+  google_cloudbuild_trigger.triggers["my-repo-pr-check"]:
+    approval_config:
+    - approval_required: true
+    bitbucket_server_trigger_config: []
+    build: []
+    deletion_policy: DELETE
+    description: null
+    developer_connect_event_config: []
+    disabled: false
+    filter: null
+    git_file_source: []
+    github: []
+    ignored_files: null
+    include_build_logs: null
+    included_files: null
+    location: europe-west8
+    name: my-repo-pr-check
+    project: test-cb-prj
+    pubsub_config: []
+    repository_event_config:
+    - pull_request:
+      - branch: ^main$
+        comment_control: COMMENTS_ENABLED
+        invert_regex: null
+      push: []
+    service_account: null
+    source_to_build: []
+    substitutions: null
+    tags: []
+    timeouts: null
+    trigger_template: []
+    webhook_config: []
+  google_cloudbuild_trigger.triggers["my-repo-pr-default"]:
+    bitbucket_server_trigger_config: []
+    build: []
+    deletion_policy: DELETE
+    description: null
+    developer_connect_event_config: []
+    disabled: false
+    filter: null
+    git_file_source: []
+    github: []
+    ignored_files: null
+    include_build_logs: null
+    included_files: null
+    location: europe-west8
+    name: my-repo-pr-default
+    project: test-cb-prj
+    pubsub_config: []
+    repository_event_config:
+    - pull_request:
+      - branch: ^release$
+        comment_control: null
+        invert_regex: null
+      push: []
+    service_account: null
+    source_to_build: []
+    substitutions: null
+    tags: []
+    timeouts: null
+    trigger_template: []
+    webhook_config: []
+  google_cloudbuildv2_connection.connection[0]:
+    annotations: null
+    bitbucket_cloud_config: []
+    bitbucket_data_center_config: []
+    deletion_policy: DELETE
+    disabled: false
+    github_config:
+    - app_installation_id: 123456
+      authorizer_credential:
+      - oauth_token_secret_version: projects/prj/secrets/pat/versions/1
+    github_enterprise_config: []
+    gitlab_config: []
+    location: europe-west8
+    name: my-connection
+    project: test-cb-prj
+    timeouts: null
+  google_cloudbuildv2_connection_iam_binding.authoritative["$custom_roles:myrole"]:
+    condition: []
+    location: europe-west8
+    members:
+    - user:user1@example.com
+    name: my-connection
+    project: test-cb-prj
+    role: organizations/366118655033/roles/myRoleOne
+  google_cloudbuildv2_connection_iam_binding.authoritative["roles/cloudbuild.connectionViewer"]:
+    condition: []
+    location: europe-west8
+    members:
+    - group:group1@example.com
+    name: my-connection
+    project: test-cb-prj
+    role: roles/cloudbuild.connectionViewer
+  google_cloudbuildv2_connection_iam_binding.bindings["connection-admin"]:
+    condition:
+    - description: null
+      expression: resource.name.endsWith('/my-connection')
+      title: connection-name
+    location: europe-west8
+    members:
+    - group:group1@example.com
+    name: my-connection
+    project: test-cb-prj
+    role: roles/cloudbuild.connectionAdmin
+  google_cloudbuildv2_connection_iam_member.bindings["connection-custom"]:
+    condition:
+    - description: null
+      expression: resource.name.endsWith('/my-connection')
+      title: connection-custom-name
+    location: europe-west8
+    member: user:user1@example.com
+    name: my-connection
+    project: test-cb-prj
+    role: organizations/366118655033/roles/myRoleOne
+  google_cloudbuildv2_repository.repositories["my-repo"]:
+    annotations: null
+    deletion_policy: DELETE
+    location: europe-west8
+    name: my-repo
+    parent_connection: my-connection
+    project: test-cb-prj
+    remote_uri: https://github.com/my-org/my-repo.git
+    timeouts: null
+
+counts:
+  google_cloudbuild_trigger: 3
+  google_cloudbuildv2_connection: 1
+  google_cloudbuildv2_connection_iam_binding: 3
+  google_cloudbuildv2_connection_iam_member: 1
+  google_cloudbuildv2_repository: 1
+  modules: 0
+  resources: 9
+
+outputs:
+  id: __missing__
+  repositories: __missing__
+  repository_ids: __missing__
+  trigger_ids: __missing__
+  triggers: __missing__

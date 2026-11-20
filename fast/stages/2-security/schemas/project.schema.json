@@ -819,6 +819,152 @@
         }
       }
     },
+    "model_armor_templates": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[a-zA-Z0-9_-]+$": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "location"
+          ],
+          "properties": {
+            "location": {
+              "type": "string"
+            },
+            "labels": {
+              "$ref": "#/$defs/labels"
+            },
+            "filters": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "malicious_uris": {
+                  "type": "boolean"
+                },
+                "pi_and_jailbreak": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "confidence_level": {
+                      "type": "string",
+                      "enum": [
+                        "LOW_AND_ABOVE",
+                        "MEDIUM_AND_ABOVE",
+                        "HIGH"
+                      ]
+                    }
+                  }
+                },
+                "rai": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "DANGEROUS": {
+                      "type": "string",
+                      "enum": [
+                        "LOW_AND_ABOVE",
+                        "MEDIUM_AND_ABOVE",
+                        "HIGH"
+                      ]
+                    },
+                    "HARASSMENT": {
+                      "type": "string",
+                      "enum": [
+                        "LOW_AND_ABOVE",
+                        "MEDIUM_AND_ABOVE",
+                        "HIGH"
+                      ]
+                    },
+                    "HATE_SPEECH": {
+                      "type": "string",
+                      "enum": [
+                        "LOW_AND_ABOVE",
+                        "MEDIUM_AND_ABOVE",
+                        "HIGH"
+                      ]
+                    },
+                    "SEXUALLY_EXPLICIT": {
+                      "type": "string",
+                      "enum": [
+                        "LOW_AND_ABOVE",
+                        "MEDIUM_AND_ABOVE",
+                        "HIGH"
+                      ]
+                    }
+                  }
+                },
+                "sdp": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "basic": {
+                      "type": "boolean"
+                    },
+                    "inspect_template": {
+                      "type": "string"
+                    },
+                    "deidentify_template": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            },
+            "metadata": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "enforcement_type": {
+                  "type": "string",
+                  "enum": [
+                    "INSPECT_ONLY",
+                    "INSPECT_AND_BLOCK"
+                  ]
+                },
+                "ignore_partial_invocation_failures": {
+                  "type": "boolean"
+                },
+                "log_sanitize_operations": {
+                  "type": "boolean"
+                },
+                "log_template_operations": {
+                  "type": "boolean"
+                },
+                "multi_language_detection": {
+                  "type": "boolean"
+                },
+                "custom_llm_response_safety_error": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "code": {
+                      "type": "integer"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "custom_prompt_safety_error": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "code": {
+                      "type": "integer"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "name": {
       "type": "string"
     },

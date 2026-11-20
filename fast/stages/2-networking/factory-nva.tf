@@ -379,6 +379,7 @@ module "nva-instance" {
   shielded_config      = each.value.shielded_config
   confidential_compute = each.value.confidential_compute
   context = {
+    addresses   = local.ctx_psc_and_vpc_addresses
     kms_keys    = local.ctx.kms_keys
     locations   = local.ctx.locations
     networks    = local.ctx_vpcs.self_links
@@ -515,6 +516,7 @@ module "ilb" {
   health_check        = google_compute_health_check.nva[each.value.nva_config].id
   health_check_config = null
   context = {
+    addresses   = local.ctx_psc_and_vpc_addresses
     project_ids = local.ctx_projects.project_ids
     networks    = local.ctx_vpcs.self_links
     subnets     = local.ctx_vpcs.subnets_by_vpc

@@ -96,30 +96,22 @@
       "additionalProperties": {
         "type": "object",
         "additionalProperties": false,
+        "required": ["address", "network"],
         "properties": {
           "address": { "type": "string" },
-          "description": { "type": "string" },
-          "name": { "type": "string" },
           "network": { "type": "string" },
-          "region": { "type": "string" },
-          "subnet_self_link": { "type": "string" },
-          "service_attachment": {
+          "description": { "type": "string" },
+          "labels": {
             "type": "object",
             "additionalProperties": false,
-            "required": ["psc_service_attachment_link"],
-            "properties": {
-              "psc_service_attachment_link": { "type": "string" },
-              "global_access": { "type": "boolean" },
-              "service_directory_registration": {
-                "type": "object",
-                "additionalProperties": false,
-                "properties": {
-                  "namespace": { "type": "string" },
-                  "region": { "type": "string" }
-                }
+            "patternProperties": {
+              "^[a-z][a-z0-9_-]{0,62}$": {
+                "type": "string",
+                "pattern": "^[a-z0-9_-]{0,63}$"
               }
             }
-          }
+          },
+          "name": { "type": "string" }
         }
       }
     },
