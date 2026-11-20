@@ -26,8 +26,7 @@ locals {
         v.use_agent_gateway_egress,
         anytrue([
           for app_id in v.app_ids :
-          try(var.apps[app_id].egress_agent_gateway, null) != null
-          || var.egress_agent_gateway != null
+          try(local.apps[app_id].has_egress_gateway, var.egress_agent_gateway != null)
         ])
       ) && length(v.app_ids) > 1
       ? [
@@ -37,17 +36,17 @@ locals {
           app_ids       = [app_id]
           primary_app   = app_id
           config        = v
-          use_gateway   = true
-          collection_id = coalesce(
-            v.collection_id,
-            trimsuffix(
-              substr(
-                "${local.prefix}${k}-${replace(try(local.apps[app_id].engine_id, app_id), "_", "-")}",
-                0,
-                54
-              ),
-              "-"
-            )
+          use_gateway = coalesce(
+            v.use_agent_gateway_egress,
+            try(local.apps[app_id].has_egress_gateway, var.egress_agent_gateway != null)
+          )
+          collection_id = trimsuffix(
+            substr(
+              "${coalesce(v.collection_id, "${local.prefix}${k}")}-${replace(try(local.apps[app_id].engine_id, app_id), "_", "-")}",
+              0,
+              54
+            ),
+            "-"
           )
         }
       ]
@@ -60,9 +59,9 @@ locals {
           config        = v
           use_gateway = coalesce(
             v.use_agent_gateway_egress,
-            length(v.app_ids) == 1 && (
-              try(var.apps[v.app_ids[0]].egress_agent_gateway, null) != null
-              || var.egress_agent_gateway != null
+            length(v.app_ids) == 1 && try(
+              local.apps[v.app_ids[0]].has_egress_gateway,
+              var.egress_agent_gateway != null
             )
           )
           collection_id = coalesce(
