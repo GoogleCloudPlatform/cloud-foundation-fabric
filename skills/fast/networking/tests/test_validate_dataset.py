@@ -230,6 +230,119 @@ def test_addresses_and_vpn_gateway_tokens(tmp_path: pathlib.Path) -> None:
   assert "unresolved token '$vpn_gateways:hub/custom-vpn-gw-name'" not in messages
 
 
+def test_psc_endpoint_tokens_and_guardrails(tmp_path: pathlib.Path) -> None:
+  ds_copy = tmp_path / "psc-tokens-check"
+  shutil.copytree(DATASETS_DIR / "hub-and-spokes-peerings", ds_copy)
+
+  def_path = ds_copy / "defaults.yaml"
+  def_doc = yaml.safe_load(def_path.read_text(encoding="utf-8"))
+  def_doc.setdefault("context", {})["service_attachments"] = {
+      "my-sa":
+          "projects/producer-project/regions/europe-west1/serviceAttachments/my-sa"
+  }
+  def_path.write_text(yaml.safe_dump(def_doc), encoding="utf-8")
+
+  (ds_copy / "vpcs" / "hub" / "addresses.yaml").write_text(
+      yaml.safe_dump({
+          "psc": {
+              "psc-global": {
+                  "network": "$networks:hub",
+                  "address": "10.0.0.32",
+              },
+              "psc-custom": {
+                  "network": "$networks:hub",
+                  "address": "10.0.0.35",
+                  "name": "psc-custom-name",
+              },
+          }
+      }),
+      encoding="utf-8",
+  )
+
+  (ds_copy / "vpcs" / "hub" / "psc-endpoints.yaml").write_text(
+      yaml.safe_dump({
+          "global_apis": {
+              "pscallapis": {
+                  "network": "$networks:hub",
+                  "address": "10.0.0.33",
+                  "target": "all-apis",
+              },
+              "bad-fr-name": {
+                  "network": "$networks:hub",
+                  "address": "10.0.0.34",
+                  "target": "all-apis",
+              },
+          },
+          "published_services": {
+              "psc-reg-fr": {
+                  "region": "$locations:primary",
+                  "subnetwork": "$subnets:hub/europe-west8/hub-default",
+                  "target": "$service_attachments:my-sa",
+              }
+          },
+          "regional_apis": {
+              "aiplatform-eu": {
+                  "network": "$networks:hub",
+                  "region": "$locations:primary",
+                  "subnetwork": "$subnets:hub/europe-west8/hub-default",
+                  "target": "aiplatform.eu.rep.googleapis.com",
+              }
+          },
+      }),
+      encoding="utf-8",
+  )
+
+  (ds_copy / "dns" / "zones" / "net-core-0" / "aiplatform-rep.yaml").write_text(
+      yaml.safe_dump({
+          "project_id": "$project_ids:net-core-0",
+          "domain": "aiplatform.eu.rep.googleapis.com.",
+          "private": {
+              "client_networks": ["$networks:hub"],
+          },
+          "recordsets": {
+              "A ": {
+                  "records": ["$addresses:hub/regional_apis/aiplatform-eu"],
+              },
+              "A unbranched": {
+                  "records": ["$addresses:hub/aiplatform-eu"],
+              },
+          },
+      }),
+      encoding="utf-8",
+  )
+
+  rpz_path = ds_copy / "dns" / "response-policies" / "net-core-0.yaml"
+  rpz_doc = yaml.safe_load(rpz_path.read_text(encoding="utf-8"))
+  rpz_doc["rules"]["psc-global-rule"] = {
+      "dns_name": "psc.googleapis.com.",
+      "local_data": {
+          "A": {
+              "rrdatas": [
+                  "$addresses:hub/psc/psc-global",
+                  "$addresses:hub/psc/psc-custom-name",
+                  "$addresses:hub/global_apis/pscallapis",
+                  "$addresses:hub/published_services/psc-reg-fr",
+              ]
+          }
+      },
+  }
+  rpz_path.write_text(yaml.safe_dump(rpz_doc), encoding="utf-8")
+
+  issues, _ = validate_dataset.validate_dataset_files(ds_copy, STAGE_DIR)
+  errors = "\n".join(i.message for i in issues if i.level == "error")
+  warnings = "\n".join(i.message for i in issues if i.level == "warn")
+
+  assert "unresolved token '$addresses:hub/aiplatform-eu'" in errors
+  assert "global_apis.bad-fr-name forwarding rule name 'bad-fr-name'" in errors
+  assert "unresolved token '$addresses:hub/psc/psc-global'" not in errors
+  assert "unresolved token '$addresses:hub/psc/psc-custom-name'" not in errors
+  assert "unresolved token '$addresses:hub/regional_apis/aiplatform-eu'" not in errors
+  assert "unresolved token '$addresses:hub/global_apis/pscallapis'" not in errors
+  assert "unresolved token '$addresses:hub/published_services/psc-reg-fr'" not in errors
+  assert "service_attachments" not in warnings
+  assert "service_attachments" not in errors
+
+
 def test_negative_control_nva_advertise_and_same_vpc_ilb_ncc_collision(
     tmp_path: pathlib.Path) -> None:
   ds_copy = tmp_path / "broken-nva-ncc"
@@ -308,6 +421,56 @@ def test_discover_stage_dir_from_vendored_extension(
 
   resolved = validate_dataset.discover_stage_dir()
   assert resolved == vendored_stage.resolve()
+
+
+@pytest.mark.parametrize("dataset_name", ("classic", *REFERENCE_DATASETS))
+def test_commented_psc_and_mrep_examples_pass_when_uncommented(
+    dataset_name: str, tmp_path: pathlib.Path) -> None:
+  ds_copy = tmp_path / dataset_name
+  shutil.copytree(DATASETS_DIR / dataset_name, ds_copy)
+
+  def _uncomment_body(path: pathlib.Path) -> None:
+    lines = path.read_text(encoding="utf-8").splitlines()
+    out: list[str] = []
+    uncommenting = False
+    for line in lines:
+      if uncommenting:
+        if line.startswith("# "):
+          out.append(line[2:])
+        elif line == "#":
+          out.append("")
+        else:
+          out.append(line)
+      else:
+        out.append(line)
+        if line.startswith("# yaml-language-server:"):
+          uncommenting = True
+    path.write_text("\n".join(out) + "\n", encoding="utf-8")
+
+  psc_files = list(ds_copy.glob("vpcs/*/psc-endpoints.yaml"))
+  mrep_files = list(ds_copy.glob("dns/zones/**/pvt-aiplatform-eu-rep.yaml"))
+  assert len(psc_files) == 1, f"Expected 1 psc-endpoints.yaml in {dataset_name}"
+  assert len(mrep_files
+            ) == 1, f"Expected 1 pvt-aiplatform-eu-rep.yaml in {dataset_name}"
+
+  for f in (*psc_files, *mrep_files):
+    assert yaml.safe_load(f.read_text(encoding="utf-8")) is None
+    _uncomment_body(f)
+    assert isinstance(yaml.safe_load(f.read_text(encoding="utf-8")), dict)
+
+  def_path = ds_copy / "defaults.yaml"
+  def_doc = yaml.safe_load(def_path.read_text(encoding="utf-8"))
+  def_doc.setdefault("context", {})["service_attachments"] = {
+      "ssm-http":
+          "projects/prod-0/regions/europe-west1/serviceAttachments/ssm-http"
+  }
+  def_path.write_text(yaml.safe_dump(def_doc), encoding="utf-8")
+
+  issues, _ = validate_dataset.validate_dataset_files(ds_copy, STAGE_DIR)
+  errors = [i for i in issues if i.level == "error"]
+  warnings = [i for i in issues if i.level == "warn"]
+  assert not errors, f"Unexpected errors in uncommented {dataset_name}: {errors}"
+  assert not warnings, f"Unexpected warnings in uncommented {dataset_name}: {warnings}"
 
 
 def test_agents_cli_extension_manifest_is_valid() -> None:

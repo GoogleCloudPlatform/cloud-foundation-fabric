@@ -13,35 +13,44 @@
 # limitations under the License.
 
 values:
-  module.addresses.google_compute_address.psc["cloudsql-one"]:
+  module.psc_endpoints.google_compute_address.published_services["cloudsql-global"]:
+    address: 10.0.16.33
+    address_type: INTERNAL
+    description: Terraform managed.
+    name: cloudsql-global
+    project: project-id
+    region: europe-west8
+    subnetwork: subnet_self_link
+  module.psc_endpoints.google_compute_address.published_services["cloudsql-one"]:
     address: 10.0.16.32
     address_type: INTERNAL
     description: Terraform managed.
-    ip_version: null
-    ipv6_endpoint_type: null
-    labels: null
     name: cloudsql-one
-    network: null
     project: project-id
     region: europe-west8
     subnetwork: subnet_self_link
-    timeouts: null
-  module.addresses.google_compute_forwarding_rule.psc_consumer["cloudsql-one"]:
-    all_ports: null
-    allow_global_access: null
+  module.psc_endpoints.google_compute_forwarding_rule.published_services["cloudsql-global"]:
     allow_psc_global_access: true
-    backend_service: null
     description: null
-    is_mirroring_collector: null
-    labels: null
     load_balancing_scheme: ''
-    name: cloudsql-one
-    no_automate_dns_zone: null
-    ports: null
+    name: cloudsql-global
     project: project-id
     recreate_closed_psc: true
     region: europe-west8
-    service_label: null
-    source_ip_ranges: null
     subnetwork: subnet_self_link
-    timeouts: null
+  module.psc_endpoints.google_compute_forwarding_rule.published_services["cloudsql-one"]:
+    allow_psc_global_access: null
+    description: null
+    load_balancing_scheme: ''
+    name: cloudsql-one
+    project: project-id
+    recreate_closed_psc: true
+    region: europe-west8
+    subnetwork: subnet_self_link
+
+counts:
+  google_compute_address: 2
+  google_compute_forwarding_rule: 2
+  google_sql_database_instance: 1
+  modules: 2
+  resources: 5

@@ -18,10 +18,15 @@
 
 locals {
   _dns_files = try(fileset(local.paths.dns, "**/*.yaml"), [])
+  _dns_decoded = {
+    for f in local._dns_files :
+    f => yamldecode(file("${coalesce(local.paths.dns, "-")}/${f}"))
+  }
   _dns_preprocess = [
-    for f in local._dns_files : merge(yamldecode(file("${coalesce(local.paths.dns, "-")}/${f}")), {
+    for f, v in local._dns_decoded : merge(v, {
       key = replace(f, ".yaml", "")
     })
+    if v != null
   ]
   dns_zones = {
     for zone_config in local._dns_preprocess : zone_config.key => merge(
@@ -103,14 +108,15 @@ locals {
   _dns_response_policies_files = try(
     fileset(local.paths.dns_response_policies, "**/*.yaml"), []
   )
-  _dns_response_policies_preprocess = [
+  _dns_response_policies_decoded = {
     for f in local._dns_response_policies_files :
-    merge(
-      yamldecode(file("${coalesce(local.paths.dns_response_policies, "-")}/${f}")),
-      {
-        key = replace(f, ".yaml", "")
-      }
-    )
+    f => yamldecode(file("${coalesce(local.paths.dns_response_policies, "-")}/${f}"))
+  }
+  _dns_response_policies_preprocess = [
+    for f, v in local._dns_response_policies_decoded : merge(v, {
+      key = replace(f, ".yaml", "")
+    })
+    if v != null
   ]
   dns_response_policies = {
     for policy_config in local._dns_response_policies_preprocess : policy_config.key => {
@@ -133,6 +139,7 @@ module "dns-zones" {
   zone_config   = each.value.zone_config
   recordsets    = each.value.recordsets
   context = {
+    addresses    = local.ctx_all_addresses
     custom_roles = local.ctx.custom_roles
     project_ids  = local.ctx_projects.project_ids
     networks     = local.ctx_vpcs.self_links
@@ -147,6 +154,7 @@ module "dns-delegations" {
   name       = replace(each.key, "/", "-")
   recordsets = each.value
   context = {
+    addresses    = local.ctx_all_addresses
     custom_roles = local.ctx.custom_roles
     project_ids  = local.ctx_projects.project_ids
     networks     = local.ctx_vpcs.self_links
@@ -162,6 +170,7 @@ module "dns-response-policies" {
   networks   = { for n in each.value.networks : n => n }
   rules      = each.value.rules
   context = {
+    addresses   = local.ctx_all_addresses
     project_ids = local.ctx_projects.project_ids
     networks    = local.ctx_vpcs.self_links
   }

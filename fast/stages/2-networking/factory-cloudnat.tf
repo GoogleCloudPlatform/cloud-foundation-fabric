@@ -75,6 +75,7 @@ module "nat" {
   rules                     = each.value.rules
   type                      = each.value.type
   context = merge(local.ctx, {
+    addresses   = local.ctx_psc_and_vpc_addresses
     project_ids = local.ctx_projects.project_ids
     networks    = local.ctx_vpcs.self_links
     locations   = local.ctx.locations

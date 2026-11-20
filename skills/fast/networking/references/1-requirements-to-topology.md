@@ -84,7 +84,7 @@ When the user selects **Option A (Single Shared VPC)** in Turn 1:
   2. **Hybrid Connectivity:** Do you need **HA VPN**, **Cloud Interconnect (VLAN attachments)**, both, or **None (Cloud-only)** terminating in this VPC? *(If Cloud Interconnect is selected, note that Phase 2 will confirm Dedicated vs. Partner mode, peer ASN, and interconnect/VLAN attachment parameters).*
   3. **Internet Egress:** Should the VPC egress via **Cloud NAT** (`nat_config`), or have **no internet egress** (Air-gapped / Private Google Access only)?
   4. **Firewall & Inspection Posture:** Are **Cloud-Native L4 Firewalls** (Hierarchical + VPC Firewall Policies) sufficient, or do you also want **Cloud NGFW Enterprise** (L7 IPS / TLS inspection rules via `$security_profile_groups`—or intra-VPC 3rd-party NVA hairpinning via Policy-Based Routing)?
-  5. **Workload & Managed Service Plumbing:** Which platforms will run in this VPC so Stage 2 can pre-provision their subnets/ranges? *(Include an explicit **"None (standard VM subnets only)"** option alongside **GKE Clusters** (`pods`/`services` secondary ranges), **Application Load Balancers** (`/23` `proxy_only: true` subnet), **Private Services Access / PSA** (`psa_configs` for Cloud SQL/AlloyDB/Memorystore/NetApp), **Private Service Connect / PSC** (`psc: true` NAT subnets or `psc:` consumer endpoints in `addresses.yaml`), and **Serverless / Vertex AI** (`/24` Direct VPC Egress / `network_attachments`))*.
+  5. **Workload & Managed Service Plumbing:** Which platforms will run in this VPC so Stage 2 can pre-provision their subnets/ranges? *(Include an explicit **"None (standard VM subnets only)"** option alongside **GKE Clusters** (`pods`/`services` secondary ranges), **Application Load Balancers** (`/23` `proxy_only: true` subnet), **Private Services Access / PSA** (`psa_configs` for Cloud SQL/AlloyDB/Memorystore/NetApp), **Private Service Connect / PSC** (`psc: true` NAT subnets or consumer endpoints in `psc-endpoints.yaml`), and **Serverless / Vertex AI** (`/24` Direct VPC Egress / `network_attachments`))*.
 
 ---
 
@@ -107,7 +107,7 @@ Once the Multi-VPC pattern is selected in Turn 2B, ask the remaining plumbing qu
    - *(Note: On NCC hybrid spokes, `site_to_site_data_transfer` defaults to `true` in `2-networking`; ask whether external sites need site-to-site transit through GCP (`true`, default) or only communicate with GCP VPCs (`false`, which also avoids errors in regions where S2S is unsupported). If Cloud Interconnect is selected, gather or propose Dedicated vs. Partner mode and `peer_asn`).*
 2. **Internet Egress Model:** Per-VPC **Cloud NAT** (`nat_config`), centralized egress through the NVA/DMZ VPC, or **no internet egress** (Air-gapped / PGA only)?
 3. **Cloud NGFW Enterprise (if Cloud-Native routing was selected in Turn 2B):** Standard L4 Firewall Policies (`goto_next`), or add **Cloud NGFW Enterprise** (`$security_profile_groups` L7 IPS rules)?
-4. **Workload & Managed Service Plumbing:** **None (standard subnets only)**, **GKE** (`pods`/`services` secondaries), **L7 ALB** (`/23` `proxy_only: true`), **PSA** (`psa_configs`), **PSC** (`psc: true` NAT subnets / `psc:` consumer endpoints in `addresses.yaml`), and/or **Serverless / Vertex AI**?
+4. **Workload & Managed Service Plumbing:** **None (standard subnets only)**, **GKE** (`pods`/`services` secondaries), **L7 ALB** (`/23` `proxy_only: true`), **PSA** (`psa_configs`), **PSC** (`psc: true` NAT subnets / consumer endpoints in `psc-endpoints.yaml`), and/or **Serverless / Vertex AI**?
 
 ---
 

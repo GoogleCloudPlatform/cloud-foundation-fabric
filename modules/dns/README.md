@@ -190,15 +190,15 @@ module "public-dns" {
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [name](variables.tf#L53) | Zone name, must be unique within the project. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L58) | Project id for the zone. | <code>string</code> | ✓ |  |
+| [name](variables.tf#L54) | Zone name, must be unique within the project. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L59) | Project id for the zone. | <code>string</code> | ✓ |  |
 | [context](variables.tf#L17) | Context-specific interpolations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [description](variables.tf#L29) | Domain description. | <code>string</code> |  | <code>&#34;Terraform managed.&#34;</code> |
-| [force_destroy](variables.tf#L35) | Set this to true to delete all records in the zone upon zone destruction. | <code>bool</code> |  | <code>null</code> |
-| [iam](variables.tf#L41) | IAM bindings in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>null</code> |
-| [labels](variables.tf#L47) | Labels to be assigned to the zone. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [recordsets](variables.tf#L63) | Map of DNS recordsets in \"type name\" => {ttl, [records]} format. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [zone_config](variables.tf#L122) | DNS zone configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [description](variables.tf#L30) | Domain description. | <code>string</code> |  | <code>&#34;Terraform managed.&#34;</code> |
+| [force_destroy](variables.tf#L36) | Set this to true to delete all records in the zone upon zone destruction. | <code>bool</code> |  | <code>null</code> |
+| [iam](variables.tf#L42) | IAM bindings in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>null</code> |
+| [labels](variables.tf#L48) | Labels to be assigned to the zone. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [recordsets](variables.tf#L64) | Map of DNS recordsets in \"type name\" => {ttl, [records]} format. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [zone_config](variables.tf#L123) | DNS zone configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 
 ## Outputs
 

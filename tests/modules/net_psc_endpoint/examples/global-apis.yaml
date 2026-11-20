@@ -13,7 +13,7 @@
 # limitations under the License.
 
 values:
-  module.addresses.google_compute_global_address.psc["googleapis"]:
+  module.psc_endpoints.google_compute_global_address.global_apis["googleapis"]:
     address: 10.0.32.32
     address_type: INTERNAL
     description: Terraform managed.
@@ -21,16 +21,14 @@ values:
     network: https://www.googleapis.com/compute/v1/projects/xxx/global/networks/aaa
     project: project-id
     purpose: PRIVATE_SERVICE_CONNECT
-  module.addresses.google_compute_global_forwarding_rule.psc_consumer["googleapis"]:
+  module.psc_endpoints.google_compute_global_forwarding_rule.global_apis["googleapis"]:
+    description: null
     load_balancing_scheme: ''
-    metadata_filters: []
     name: googleapis
     network: https://www.googleapis.com/compute/v1/projects/xxx/global/networks/aaa
-    port_range: null
     project: project-id
     service_directory_registrations:
     - service_directory_region: europe-west8
-    source_ip_ranges: null
     target: all-apis
 
 counts:
