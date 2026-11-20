@@ -88,13 +88,11 @@ module "psc_endpoints" {
 
 [Regional endpoints](https://cloud.google.com/vpc/docs/access-regional-google-apis-endpoints) give private access to regional and multi-regional Google APIs (`<api>.<location>.rep.googleapis.com`), which the global `all-apis` and `vpc-sc` PSC endpoints and Private Google Access do not serve. Configure `regional_apis`: the module reserves the regional internal address (unless `address_create = false`) and creates the regional endpoint. Multi-regional APIs like `aiplatform.eu.rep.googleapis.com` still need a region and a subnet, and the API requires the VPC network in addition to the subnet.
 
-Some notes on regional endpoints:
+Watchpoints for regional endpoints:
 
 - the `networkconnectivity.googleapis.com` API needs to be enabled in the project
 - in Shared VPC, the Network Connectivity service agent of the service project needs `roles/compute.networkUser` on the host project
-- regional endpoints have their own quota, separate from PSC forwarding rules
 - the access type (`global_access`) cannot be changed in place, the endpoint is recreated
-- use the `addresses` or `regional_apis` outputs to create DNS records for the API hostname, for example in a private zone created via the [`dns`](../dns/) module or in a [`dns-response-policy`](../dns-response-policy/)
 
 ```hcl
 module "psc_endpoints" {
@@ -122,7 +120,7 @@ module "psc_endpoints" {
 
 ### Migrating from net-address
 
-Existing PSC endpoints managed by [`modules/net-address`](../net-address/) can be moved into `modules/net-psc-endpoint` without resource replacement using `moved` blocks:
+Existing PSC endpoints managed by older version of [`modules/net-address`](../net-address/) can be moved into `modules/net-psc-endpoint` without resource replacement using `moved` blocks:
 
 ```hcl
 moved {
