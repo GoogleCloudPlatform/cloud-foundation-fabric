@@ -18,7 +18,7 @@ In order to use this module you first need to enable the `agentregistry.googleap
 
 ## Registering agents, endpoints and MCP servers
 
-Services are keyed by service ID, and `type` defaults to `endpoint`. Agents and MCP servers take their spec in `content`, as a JSON string or the path to a file containing it, which sets the spec type to `A2A_AGENT_CARD` or `TOOL_SPEC`. Endpoints have no spec content. Agents registered with an agent card have no interface, while the other services have one interface built from `url` and `protocol`, which defaults to `HTTP_JSON`.
+Services are keyed by service ID, and `type` defaults to `endpoint`. Agents and MCP servers take their spec in `content`, as a JSON string or the path to a file containing it, which sets the spec type to `A2A_AGENT_CARD` or `TOOL_SPEC`. Endpoints have no spec content. Agents registered with an agent card have no interface, while the other services have one interface built from `url` and `protocol`, which defaults to `JSONRPC` for MCP servers and to `HTTP_JSON` for endpoints.
 
 Services are created in the module `location` unless they set their own, and `deletion_policy` applies to all of them.
 
@@ -33,9 +33,20 @@ module "agent-registry" {
       display_name = "Weather agent"
       type         = "agent"
       content = jsonencode({
-        name    = "weather-agent"
-        version = "1.0.0"
-        url     = "https://weather-agent-123456789.europe-west8.run.app"
+        name               = "weather-agent"
+        description        = "Answers questions about the weather."
+        url                = "https://weather-agent-123456789.europe-west8.run.app"
+        version            = "1.0.0"
+        protocolVersion    = "0.3.0"
+        capabilities       = {}
+        defaultInputModes  = ["text/plain"]
+        defaultOutputModes = ["text/plain"]
+        skills = [{
+          id          = "forecast"
+          name        = "Forecast"
+          description = "Gives the weather forecast for a location."
+          tags        = ["weather"]
+        }]
       })
     }
     weather-mcp = {
@@ -44,7 +55,6 @@ module "agent-registry" {
       type         = "mcp_server"
       content      = jsonencode({ tools = [] })
       url          = "https://weather-mcp-123456789.europe-west8.run.app/mcp"
-      protocol     = "JSONRPC"
     }
     aiplatform = {
       display_name = "Vertex AI"
@@ -171,7 +181,7 @@ module "agent-registry" {
 | [project_id](variables.tf#L49) | The ID of the project where the Agent Registry services are created. | <code>string</code> | ✓ |  |
 | [context](variables.tf#L17) | Context-specific interpolations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [deletion_policy](variables.tf#L27) | Deletion policy applied to the registered services: 'DELETE', 'PREVENT' or 'ABANDON'. Uses the provider default when null. | <code>string</code> |  | <code>null</code> |
-| [services](variables.tf#L55) | Agent Registry services, keyed by service ID. Spec content is a JSON string or the path to a file containing it: the spec type is 'NO_SPEC' when content is null, otherwise 'A2A_AGENT_CARD' for agents and 'TOOL_SPEC' for MCP servers. Agents with an agent card have no interface, so their 'url' and 'protocol' are ignored. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [services](variables.tf#L55) | Agent Registry services, keyed by service ID. Spec content is a JSON string or the path to a file containing it: the spec type is 'NO_SPEC' when content is null, otherwise 'A2A_AGENT_CARD' for agents and 'TOOL_SPEC' for MCP servers. Agents with an agent card have no interface, so their 'url' and 'protocol' are ignored. The protocol defaults to 'JSONRPC' for MCP servers and to 'HTTP_JSON' otherwise. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
 

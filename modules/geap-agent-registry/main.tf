@@ -52,6 +52,9 @@ locals {
         ? local.location
         : lookup(local.ctx.locations, v.location, v.location)
       )
+      protocol = coalesce(
+        v.protocol, v.type == "mcp_server" ? "JSONRPC" : "HTTP_JSON"
+      )
       spec_type = (
         v.content == null ? "NO_SPEC" : local._spec_types[v.type]
       )

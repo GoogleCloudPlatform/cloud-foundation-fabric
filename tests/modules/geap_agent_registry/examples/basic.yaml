@@ -60,7 +60,9 @@ values:
     timeouts: null
   module.agent-registry.google_agent_registry_service.default["weather-agent"]:
     agent_spec:
-    - content: '{"name":"weather-agent","url":"https://weather-agent-123456789.europe-west8.run.app","version":"1.0.0"}'
+    - content: '{"capabilities":{},"defaultInputModes":["text/plain"],"defaultOutputModes":["text/plain"],"description":"Answers
+        questions about the weather.","name":"weather-agent","protocolVersion":"0.3.0","skills":[{"description":"Gives
+        the weather forecast for a location.","id":"forecast","name":"Forecast","tags":["weather"]}],"url":"https://weather-agent-123456789.europe-west8.run.app","version":"1.0.0"}'
       type: A2A_AGENT_CARD
     deletion_policy: PREVENT
     description: null

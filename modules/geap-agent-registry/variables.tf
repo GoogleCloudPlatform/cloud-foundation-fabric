@@ -53,13 +53,13 @@ variable "project_id" {
 }
 
 variable "services" {
-  description = "Agent Registry services, keyed by service ID. Spec content is a JSON string or the path to a file containing it: the spec type is 'NO_SPEC' when content is null, otherwise 'A2A_AGENT_CARD' for agents and 'TOOL_SPEC' for MCP servers. Agents with an agent card have no interface, so their 'url' and 'protocol' are ignored."
+  description = "Agent Registry services, keyed by service ID. Spec content is a JSON string or the path to a file containing it: the spec type is 'NO_SPEC' when content is null, otherwise 'A2A_AGENT_CARD' for agents and 'TOOL_SPEC' for MCP servers. Agents with an agent card have no interface, so their 'url' and 'protocol' are ignored. The protocol defaults to 'JSONRPC' for MCP servers and to 'HTTP_JSON' otherwise."
   type = map(object({
     content      = optional(string)
     description  = optional(string)
     display_name = optional(string)
     location     = optional(string)
-    protocol     = optional(string, "HTTP_JSON")
+    protocol     = optional(string)
     type         = optional(string, "endpoint")
     url          = optional(string)
   }))
@@ -85,10 +85,19 @@ variable "services" {
   validation {
     condition = alltrue([
       for k, v in var.services : contains(
-        ["GRPC", "HTTP_JSON", "JSONRPC"], try(v.protocol, "")
-      )
+        ["GRPC", "HTTP_JSON", "JSONRPC"], v.protocol
+      ) if try(v.protocol, null) != null
     ])
     error_message = "The protocol must be one of 'GRPC', 'HTTP_JSON', 'JSONRPC'."
+  }
+
+  validation {
+    condition = alltrue([
+      for k, v in var.services :
+      try(v.protocol, null) == null || v.protocol == "JSONRPC"
+      if try(v.type, null) == "mcp_server"
+    ])
+    error_message = "The protocol must be 'JSONRPC' when 'type' is 'mcp_server'."
   }
 
   validation {
