@@ -84,6 +84,7 @@ values:
         - allowed_values: null
           denied_values:
           - in:EXTERNAL
+          - ${literal}
     timeouts: null
   google_org_policy_policy.default["compute.vmExternalIpAccess"]:
     name: organizations/1234567890/policies/compute.vmExternalIpAccess
@@ -113,6 +114,7 @@ values:
         - allowed_values:
           - C0xxxxxxx
           - C0yyyyyyy
+          - ${literal}
           denied_values: null
     timeouts: null
   google_org_policy_custom_constraint.constraint["custom.dataprocNoMoreThan10Workers"]:
