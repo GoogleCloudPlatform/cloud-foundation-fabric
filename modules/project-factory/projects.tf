@@ -260,6 +260,9 @@ module "projects-iam" {
   model_armor_floor_setting = lookup(
     each.value, "model_armor_floor_setting", null
   )
+  model_armor_templates = lookup(
+    each.value, "model_armor_templates", {}
+  )
   pam_entitlements = try(each.value.pam_entitlements, {})
   # The second pass handles the authoritative cloudservices editor binding.
   # We disable primary agents creation and default roles here because they

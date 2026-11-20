@@ -79,6 +79,13 @@ output "kms_autokeys" {
   }
 }
 
+output "model_armor_template_ids" {
+  description = "Model Armor template ids."
+  value = {
+    for k, v in google_model_armor_template.default : k => v.id
+  }
+}
+
 output "name" {
   description = "Project name."
   value       = local.project.name

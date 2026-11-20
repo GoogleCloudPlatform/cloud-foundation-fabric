@@ -52,7 +52,7 @@ module "billing-budgets" {
     project_ids = local.ctx_project_ids
     project_sets = {
       for v in local.budget_project_sets :
-      v.budget => "projects/${local.outputs_projects[v.project].number}"...
+      v.budget => "projects/${local.project_numbers[v.project]}"...
     }
     project_numbers = local.ctx_project_numbers
   })

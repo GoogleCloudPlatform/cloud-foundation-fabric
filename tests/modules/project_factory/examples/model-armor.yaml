@@ -68,6 +68,21 @@ values:
     location: global
     parent: projects/foo-ai-app-0
     timeouts: null
+  module.project-factory.module.projects-iam["ai-app-0"].google_model_armor_template.default["default"]:
+    filter_config:
+    - filter_rule_settings: []
+      malicious_uri_filter_settings:
+      - filter_enforcement: ENABLED
+      pi_and_jailbreak_filter_settings:
+      - confidence_level: MEDIUM_AND_ABOVE
+        filter_enforcement: ENABLED
+      rai_settings: []
+      sdp_settings: []
+    location: europe-west4
+    project: foo-ai-app-0
+    template_id: default
+    template_metadata:
+    - enforcement_type: INSPECT_AND_BLOCK
   module.project-factory.module.projects["ai-app-0"].google_project.project[0]:
     auto_create_network: false
     billing_account: 012345-67890A-ABCDEF
@@ -109,12 +124,13 @@ values:
 counts:
   google_folder: 1
   google_model_armor_floorsetting: 2
+  google_model_armor_template: 1
   google_project: 1
   google_project_iam_member: 1
   google_project_service: 1
   google_project_service_identity: 1
   modules: 5
-  resources: 9
+  resources: 10
   terraform_data: 2
 
 outputs: {}
