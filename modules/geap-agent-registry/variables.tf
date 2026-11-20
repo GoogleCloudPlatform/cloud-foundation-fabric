@@ -41,7 +41,7 @@ variable "deletion_policy" {
 }
 
 variable "location" {
-  description = "Default Agent Registry location for services, either 'global' or a region."
+  description = "Default Agent Registry location for services: 'global', a multi-region ('us', 'eu') or a region."
   type        = string
   nullable    = false
 }
@@ -53,7 +53,7 @@ variable "project_id" {
 }
 
 variable "services" {
-  description = "Agent Registry services, keyed by service ID. Spec content is passed inline as a JSON string: the spec type is 'NO_SPEC' when content is null, otherwise 'A2A_AGENT_CARD' for agents and 'TOOL_SPEC' for MCP servers. Agents with an agent card have no interface, so their 'url' and 'protocol' are ignored."
+  description = "Agent Registry services, keyed by service ID. Spec content is a JSON string or the path to a file containing it: the spec type is 'NO_SPEC' when content is null, otherwise 'A2A_AGENT_CARD' for agents and 'TOOL_SPEC' for MCP servers. Agents with an agent card have no interface, so their 'url' and 'protocol' are ignored."
   type = map(object({
     content      = optional(string)
     description  = optional(string)
@@ -105,6 +105,17 @@ variable "services" {
       try(v.content, null) == null if try(v.type, null) == "endpoint"
     ])
     error_message = "The 'content' must not be set when 'type' is 'endpoint'."
+  }
+
+  validation {
+    condition = alltrue([
+      for k, v in var.services : (
+        try(v.content, null) == null
+        || try(fileexists(pathexpand(v.content)), false)
+        || can(jsondecode(v.content))
+      )
+    ])
+    error_message = "The 'content' must be a JSON string or the path to an existing file."
   }
 
   validation {

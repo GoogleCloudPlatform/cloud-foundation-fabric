@@ -36,6 +36,17 @@ locals {
   )
   services = {
     for k, v in var.services : k => merge(v, {
+      # try() treats strings that cannot be a path, such as long inline
+      # JSON, as inline content instead of failing on stat.
+      content = (
+        v.content == null
+        ? null
+        : (
+          try(fileexists(pathexpand(v.content)), false)
+          ? file(pathexpand(v.content))
+          : v.content
+        )
+      )
       location = (
         v.location == null
         ? local.location

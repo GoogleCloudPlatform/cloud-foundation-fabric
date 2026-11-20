@@ -15,7 +15,7 @@
 # Fabric release: v60.0.0
 
 terraform {
-  required_version = ">= 1.11.0"
+  required_version = ">= 1.12.2"
   required_providers {
     google = {
       source  = "hashicorp/google"
@@ -27,9 +27,9 @@ terraform {
     }
   }
   provider_meta "google" {
-    module_name = "google-pso-tool/cloud-foundation-fabric/modules/agent-registry:v60.0.0-tofu"
+    module_name = "google-pso-tool/cloud-foundation-fabric/modules/geap-agent-registry:v60.0.0-tf"
   }
   provider_meta "google-beta" {
-    module_name = "google-pso-tool/cloud-foundation-fabric/modules/agent-registry:v60.0.0-tofu"
+    module_name = "google-pso-tool/cloud-foundation-fabric/modules/geap-agent-registry:v60.0.0-tf"
   }
 }
