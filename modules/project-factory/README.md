@@ -453,7 +453,7 @@ vpc_sc:
 
 ### IAM condition variables
 
-IAM conditions in project-level IAM and PAM entitlements are rendered via `templatestring`, using the variables passed in `context.condition_vars` merged with these factory-managed maps:
+Conditions in folder- and project-level IAM, PAM entitlements, and organization policies (including `allow.values`, `deny.values`, `condition.*`, and `parameters`) are rendered via `templatestring`, using the variables passed in `context.condition_vars` merged with these factory-managed maps:
 
 - `folder_ids`: folder ids keyed by folder path, e.g. `${folder_ids["teams/team-a"]}`
 - `projects`: project ids keyed by project file name, e.g. `${projects["app-0-0"]}`
@@ -1225,6 +1225,19 @@ automation:
       iam_sa_roles:
         $service_account_ids:folder-hcl/automation/hcl-sa:
           - roles/iam.serviceAccountTokenCreator
+org_policies:
+  compute.disableSerialPortAccess:
+    rules:
+      - enforce: true
+        condition:
+          title: org-${organization.id}
+          expression: >-
+            resource.matchTagId('${tag_keys["context"]}', '${tag_values["context/project-factory"]}')
+  compute.trustedImageProjects:
+    rules:
+      - allow:
+          values:
+            - 'projects/${projects["test-0"]}'
 # tftest-file id=folder-0 path=data/folders/folder-0/.config.yaml schema=folder.schema.json
 ```
 
@@ -1311,6 +1324,20 @@ log_buckets:
         iam:
           roles/logging.viewAccessor:
             - $iam_principals:tag-test
+org_policies:
+  compute.disableSerialPortAccess:
+    rules:
+      - enforce: true
+        condition:
+          description: Org ${organization.id} condition
+          expression: >-
+            resource.matchTag('${organization.id}/context', 'project-factory')
+          location: org-${organization.id}
+          title: org-${organization.id}
+  essentialcontacts.managed.allowedContactDomains:
+    rules:
+      - enforce: true
+        parameters: '{"allowedDomains": ["@${organization.id}.example.com"]}'
 # tftest-file id=test-0 path=data/projects/test-0.yaml
 ```
 
