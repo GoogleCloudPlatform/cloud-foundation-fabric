@@ -301,7 +301,7 @@ def validate_dataset_files(
       continue
 
     if doc is None:
-      doc = {}
+      continue
     docs[rel] = doc
 
     validator = get_validator(expected_schema)

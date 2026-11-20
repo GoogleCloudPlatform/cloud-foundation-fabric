@@ -209,6 +209,12 @@ VPCs are defined in `.config.yaml` files within the `vpcs/[vpc-name]` directory 
 
 ```yaml
 # vpcs/hub/psc-endpoints.yaml
+global_apis:
+  pscallapis:
+    address: 10.0.250.1
+    network: $networks:hub
+    target: all-apis
+
 published_services:
   ssm-http:
     region: $locations:primary
@@ -225,7 +231,7 @@ regional_apis:
 ```
 
 ```yaml
-# dns/zones/aiplatform-eu-rep.yaml
+# dns/zones/net-core-0/pvt-aiplatform-eu-rep.yaml
 project_id: $project_ids:net-core-0
 domain: aiplatform.eu.rep.googleapis.com.
 private:

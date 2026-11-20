@@ -423,6 +423,56 @@ def test_discover_stage_dir_from_vendored_extension(
   assert resolved == vendored_stage.resolve()
 
 
+@pytest.mark.parametrize("dataset_name", ("classic", *REFERENCE_DATASETS))
+def test_commented_psc_and_mrep_examples_pass_when_uncommented(
+    dataset_name: str, tmp_path: pathlib.Path) -> None:
+  ds_copy = tmp_path / dataset_name
+  shutil.copytree(DATASETS_DIR / dataset_name, ds_copy)
+
+  def _uncomment_body(path: pathlib.Path) -> None:
+    lines = path.read_text(encoding="utf-8").splitlines()
+    out: list[str] = []
+    uncommenting = False
+    for line in lines:
+      if uncommenting:
+        if line.startswith("# "):
+          out.append(line[2:])
+        elif line == "#":
+          out.append("")
+        else:
+          out.append(line)
+      else:
+        out.append(line)
+        if line.startswith("# yaml-language-server:"):
+          uncommenting = True
+    path.write_text("\n".join(out) + "\n", encoding="utf-8")
+
+  psc_files = list(ds_copy.glob("vpcs/*/psc-endpoints.yaml"))
+  mrep_files = list(ds_copy.glob("dns/zones/**/pvt-aiplatform-eu-rep.yaml"))
+  assert len(psc_files) == 1, f"Expected 1 psc-endpoints.yaml in {dataset_name}"
+  assert len(mrep_files
+            ) == 1, f"Expected 1 pvt-aiplatform-eu-rep.yaml in {dataset_name}"
+
+  for f in (*psc_files, *mrep_files):
+    assert yaml.safe_load(f.read_text(encoding="utf-8")) is None
+    _uncomment_body(f)
+    assert isinstance(yaml.safe_load(f.read_text(encoding="utf-8")), dict)
+
+  def_path = ds_copy / "defaults.yaml"
+  def_doc = yaml.safe_load(def_path.read_text(encoding="utf-8"))
+  def_doc.setdefault("context", {})["service_attachments"] = {
+      "ssm-http":
+          "projects/prod-0/regions/europe-west1/serviceAttachments/ssm-http"
+  }
+  def_path.write_text(yaml.safe_dump(def_doc), encoding="utf-8")
+
+  issues, _ = validate_dataset.validate_dataset_files(ds_copy, STAGE_DIR)
+  errors = [i for i in issues if i.level == "error"]
+  warnings = [i for i in issues if i.level == "warn"]
+  assert not errors, f"Unexpected errors in uncommented {dataset_name}: {errors}"
+  assert not warnings, f"Unexpected warnings in uncommented {dataset_name}: {warnings}"
+
+
 def test_agents_cli_extension_manifest_is_valid() -> None:
   manifest_path = REPO_ROOT / "agents-cli-extension.yaml"
   doc = yaml.safe_load(manifest_path.read_text(encoding="utf-8"))
