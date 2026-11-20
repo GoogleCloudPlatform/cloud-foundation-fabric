@@ -38,6 +38,7 @@ values:
     - ALL
     timeouts: null
   google_folder.folder[0]:
+    deletion_policy: DELETE
     deletion_protection: false
     display_name: Test Context
     parent: organizations/1234567890
@@ -127,6 +128,7 @@ values:
     kms_key_name: projects/test-kms-0/locations/europe-west8/keyRings/test/cryptoKeys/test
     timeouts: null
   google_logging_folder_sink.sink["test-pubsub"]:
+    deletion_policy: DELETE
     description: ''
     destination: pubsub.googleapis.com/projects/test-prod-audit-logs-0/topics/audit-logs
     disabled: false
@@ -135,6 +137,68 @@ values:
     include_children: true
     intercept_children: false
     name: test-pubsub
+  google_org_policy_policy.default["compute.trustedImageProjects"]:
+    dry_run_spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition:
+        - description: null
+          expression: resource.matchTag('1234567890/environment', 'development')
+          location: null
+          title: dry-run-1234567890
+        deny_all: null
+        enforce: null
+        parameters: null
+        values:
+        - allowed_values: null
+          denied_values:
+          - under:organizations/1234567890
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: null
+        parameters: null
+        values:
+        - allowed_values:
+          - under:organizations/1234567890
+          denied_values: null
+    timeouts: null
+  google_org_policy_policy.default["essentialcontacts.managed.allowedContactDomains"]:
+    dry_run_spec: []
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: '{"allowedDomains":["@1234567890.example.com"]}'
+        values: []
+    timeouts: null
+  google_org_policy_policy.default["iam.disableServiceAccountKeyUpload"]:
+    dry_run_spec: []
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition:
+        - description: Org 1234567890 condition
+          expression: resource.matchTag('1234567890/environment', 'development')
+          location: org-1234567890
+          title: org-1234567890
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+    timeouts: null
   google_privileged_access_manager_entitlement.default["net-admins"]:
     additional_notification_targets: []
     approval_workflow:
@@ -193,11 +257,12 @@ counts:
   google_iam_deny_policy: 1
   google_logging_folder_settings: 1
   google_logging_folder_sink: 1
+  google_org_policy_policy: 3
   google_privileged_access_manager_entitlement: 1
   google_pubsub_topic_iam_member: 1
   google_tags_tag_binding: 3
   modules: 0
-  resources: 21
+  resources: 24
 
 outputs:
   asset_search_results: {}
@@ -205,7 +270,7 @@ outputs:
   folder: __missing__
   id: __missing__
   name: Test Context
-  organization_policies_ids: {}
+  organization_policies_ids: __missing__
   scc_custom_sha_modules_ids: {}
   service_agents: {}
   sink_writer_identities: __missing__
