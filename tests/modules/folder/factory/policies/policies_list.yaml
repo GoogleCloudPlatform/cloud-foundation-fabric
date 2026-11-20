@@ -25,6 +25,7 @@ iam.allowedPolicyMemberDomains:
         values:
           - C0xxxxxxx
           - C0yyyyyyy
+          - "$${literal}"
 compute.restrictLoadBalancerCreationForTypes:
   rules:
     - condition:
@@ -45,3 +46,4 @@ compute.restrictLoadBalancerCreationForTypes:
     - deny:
         values:
           - in:EXTERNAL
+          - "$${literal}"

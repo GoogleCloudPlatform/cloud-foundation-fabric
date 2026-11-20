@@ -166,3 +166,41 @@ iam_deny_policies = {
     ]
   }
 }
+
+org_policies = {
+  "iam.disableServiceAccountKeyUpload" = {
+    rules = [{
+      condition = {
+        description = "Org $${organization.id} condition"
+        expression  = "resource.matchTag('$${organization.id}/environment', 'development')"
+        location    = "org-$${organization.id}"
+        title       = "org-$${organization.id}"
+      }
+      enforce = true
+    }]
+  }
+  "essentialcontacts.managed.allowedContactDomains" = {
+    rules = [{
+      enforce    = true
+      parameters = "{\"allowedDomains\": [\"@$${organization.id}.example.com\"]}"
+    }]
+  }
+  "compute.trustedImageProjects" = {
+    rules = [{
+      allow = {
+        values = ["under:organizations/$${organization.id}"]
+      }
+    }]
+  }
+  "dry_run:compute.trustedImageProjects" = {
+    rules = [{
+      condition = {
+        expression = "resource.matchTag('$${organization.id}/environment', 'development')"
+        title      = "dry-run-$${organization.id}"
+      }
+      deny = {
+        values = ["under:organizations/$${organization.id}"]
+      }
+    }]
+  }
+}

@@ -114,6 +114,18 @@ module "folder-1-iam" {
   model_armor_floor_setting     = lookup(each.value, "model_armor_floor_setting", null)
   tag_bindings                  = lookup(each.value, "tag_bindings", {})
   context = merge(local.ctx, {
+    condition_vars = merge(
+      local.ctx.condition_vars, {
+        folder_ids = {
+          for k, v in local.ctx_folder_ids : replace(k, "$folder_ids:", "") => v
+        }
+        projects = {
+          for k, v in module.projects : k => v.project_id
+        }
+        tag_keys   = local.ctx_tag_keys
+        tag_values = local.ctx_tag_values
+      }
+    )
     tag_vars = {
       projects     = merge(try(local.ctx.tag_vars.projects, {}), local.tag_vars_projects)
       organization = try(local.ctx.tag_vars.organization, {})
@@ -203,6 +215,18 @@ module "folder-2-iam" {
     folder_ids = merge(local.ctx.folder_ids, {
       for k, v in module.folder-1 : k => v.id
     })
+    condition_vars = merge(
+      local.ctx.condition_vars, {
+        folder_ids = {
+          for k, v in local.ctx_folder_ids : replace(k, "$folder_ids:", "") => v
+        }
+        projects = {
+          for k, v in module.projects : k => v.project_id
+        }
+        tag_keys   = local.ctx_tag_keys
+        tag_values = local.ctx_tag_values
+      }
+    )
     tag_vars = {
       projects     = merge(try(local.ctx.tag_vars.projects, {}), local.tag_vars_projects)
       organization = try(local.ctx.tag_vars.organization, {})
@@ -292,6 +316,18 @@ module "folder-3-iam" {
     folder_ids = merge(local.ctx.folder_ids, {
       for k, v in module.folder-2 : k => v.id
     })
+    condition_vars = merge(
+      local.ctx.condition_vars, {
+        folder_ids = {
+          for k, v in local.ctx_folder_ids : replace(k, "$folder_ids:", "") => v
+        }
+        projects = {
+          for k, v in module.projects : k => v.project_id
+        }
+        tag_keys   = local.ctx_tag_keys
+        tag_values = local.ctx_tag_values
+      }
+    )
     tag_vars = {
       projects     = merge(try(local.ctx.tag_vars.projects, {}), local.tag_vars_projects)
       organization = try(local.ctx.tag_vars.organization, {})
@@ -381,6 +417,18 @@ module "folder-4-iam" {
     folder_ids = merge(local.ctx.folder_ids, {
       for k, v in module.folder-3 : k => v.id
     })
+    condition_vars = merge(
+      local.ctx.condition_vars, {
+        folder_ids = {
+          for k, v in local.ctx_folder_ids : replace(k, "$folder_ids:", "") => v
+        }
+        projects = {
+          for k, v in module.projects : k => v.project_id
+        }
+        tag_keys   = local.ctx_tag_keys
+        tag_values = local.ctx_tag_values
+      }
+    )
     tag_vars = {
       projects     = merge(try(local.ctx.tag_vars.projects, {}), local.tag_vars_projects)
       organization = try(local.ctx.tag_vars.organization, {})

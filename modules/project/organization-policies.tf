@@ -30,50 +30,23 @@ locals {
       reset               = try(v.reset, null)
       rules = [
         for r in try(v.rules, []) : {
-          allow = can(r.allow) ? {
-            all = try(r.allow.all, null)
-            values = (
-              can(r.allow.values)
-              ? [for x in r.allow.values : templatestring(x, var.context.condition_vars)]
-              : null
-            )
+          # use try() not can(), as can() is true for explicit YAML nulls
+          allow = try(r.allow, null) != null ? {
+            all    = try(r.allow.all, null)
+            values = try(r.allow.values, null)
           } : null
-          deny = can(r.deny) ? {
-            all = try(r.deny.all, null)
-            values = (
-              can(r.deny.values)
-              ? [for x in r.deny.values : templatestring(x, var.context.condition_vars)]
-              : null
-            )
+          deny = try(r.deny, null) != null ? {
+            all    = try(r.deny.all, null)
+            values = try(r.deny.values, null)
           } : null
           enforce = try(r.enforce, null)
           condition = {
-            description = (
-              can(r.condition.description)
-              ? templatestring(r.condition.description, var.context.condition_vars)
-              : null
-            )
-            expression = (
-              can(r.condition.expression)
-              ? templatestring(r.condition.expression, var.context.condition_vars)
-              : null
-            )
-            location = (
-              can(r.condition.location)
-              ? templatestring(r.condition.location, var.context.condition_vars)
-              : null
-            )
-            title = (
-              can(r.condition.title)
-              ? templatestring(r.condition.title, var.context.condition_vars)
-              : null
-            )
+            description = try(r.condition.description, null)
+            expression  = try(r.condition.expression, null)
+            location    = try(r.condition.location, null)
+            title       = try(r.condition.title, null)
           }
-          parameters = (
-            can(r.parameters)
-            ? templatestring(r.parameters, var.context.condition_vars)
-            : null
-          )
+          parameters = try(r.parameters, null)
         }
       ]
     }
@@ -85,16 +58,68 @@ locals {
       is_boolean_policy = (
         alltrue([for r in v.rules : r.allow == null && r.deny == null])
       )
-      has_values = (
-        length(coalesce(try(v.allow.values, []), [])) > 0 ||
-        length(coalesce(try(v.deny.values, []), [])) > 0
-      )
       rules = [
         for r in v.rules :
         merge(r, {
+          # check != null not can(), as can() is true for normalized nulls
+          allow = r.allow == null ? null : merge(r.allow, {
+            values = (
+              r.allow.values == null
+              ? null
+              : [
+                for x in r.allow.values :
+                templatestring(x, var.context.condition_vars)
+              ]
+            )
+          })
+          deny = r.deny == null ? null : merge(r.deny, {
+            values = (
+              r.deny.values == null
+              ? null
+              : [
+                for x in r.deny.values :
+                templatestring(x, var.context.condition_vars)
+              ]
+            )
+          })
+          condition = {
+            description = (
+              r.condition.description == null
+              ? null
+              : templatestring(
+                r.condition.description, var.context.condition_vars
+              )
+            )
+            expression = (
+              r.condition.expression == null
+              ? null
+              : templatestring(
+                r.condition.expression, var.context.condition_vars
+              )
+            )
+            location = (
+              r.condition.location == null
+              ? null
+              : templatestring(
+                r.condition.location, var.context.condition_vars
+              )
+            )
+            title = (
+              r.condition.title == null
+              ? null
+              : templatestring(
+                r.condition.title, var.context.condition_vars
+              )
+            )
+          }
           has_values = (
             length(coalesce(try(r.allow.values, []), [])) > 0 ||
             length(coalesce(try(r.deny.values, []), [])) > 0
+          )
+          parameters = (
+            r.parameters == null
+            ? null
+            : templatestring(r.parameters, var.context.condition_vars)
           )
         })
       ]
@@ -138,12 +163,8 @@ resource "google_org_policy_policy" "default" {
           dynamic "values" {
             for_each = rule.value.has_values ? [1] : []
             content {
-              allowed_values = try(rule.value.allow.values, null) == null ? null : [
-                for v in rule.value.allow.values : templatestring(v, var.context.condition_vars)
-              ]
-              denied_values = try(rule.value.deny.values, null) == null ? null : [
-                for v in rule.value.deny.values : templatestring(v, var.context.condition_vars)
-              ]
+              allowed_values = try(rule.value.allow.values, null)
+              denied_values  = try(rule.value.deny.values, null)
             }
           }
         }
@@ -181,12 +202,8 @@ resource "google_org_policy_policy" "default" {
           dynamic "values" {
             for_each = rule.value.has_values ? [1] : []
             content {
-              allowed_values = try(rule.value.allow.values, null) == null ? null : [
-                for v in rule.value.allow.values : templatestring(v, var.context.condition_vars)
-              ]
-              denied_values = try(rule.value.deny.values, null) == null ? null : [
-                for v in rule.value.deny.values : templatestring(v, var.context.condition_vars)
-              ]
+              allowed_values = try(rule.value.allow.values, null)
+              denied_values  = try(rule.value.deny.values, null)
             }
           }
         }

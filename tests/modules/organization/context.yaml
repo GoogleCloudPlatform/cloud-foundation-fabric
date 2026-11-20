@@ -52,8 +52,10 @@ values:
     timeouts: null
     title: my_level
   google_access_context_manager_gcp_user_access_binding.binding["my_binding"]:
+    dry_run_access_levels: null
     group_key: foo@example.com
     organization_id: '1234567890'
+    principal: []
     scoped_access_settings: []
     session_settings: []
     timeouts: null
@@ -175,6 +177,74 @@ values:
     intercept_children: false
     name: test-storage
     org_id: '1234567890'
+  google_org_policy_policy.default["compute.trustedImageProjects"]:
+    dry_run_spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition:
+        - description: null
+          expression: resource.matchTag('1234567890/environment', 'development')
+          location: null
+          title: dry-run-1234567890
+        deny_all: null
+        enforce: null
+        parameters: null
+        values:
+        - allowed_values: null
+          denied_values:
+          - under:organizations/1234567890
+    name: organizations/1234567890/policies/compute.trustedImageProjects
+    parent: organizations/1234567890
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: null
+        parameters: null
+        values:
+        - allowed_values:
+          - under:organizations/1234567890
+          denied_values: null
+    timeouts: null
+  google_org_policy_policy.default["essentialcontacts.managed.allowedContactDomains"]:
+    dry_run_spec: []
+    name: organizations/1234567890/policies/essentialcontacts.managed.allowedContactDomains
+    parent: organizations/1234567890
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: '{"allowedDomains":["@1234567890.example.com"]}'
+        values: []
+    timeouts: null
+  google_org_policy_policy.default["iam.disableServiceAccountKeyUpload"]:
+    dry_run_spec: []
+    name: organizations/1234567890/policies/iam.disableServiceAccountKeyUpload
+    parent: organizations/1234567890
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition:
+        - description: Org 1234567890 condition
+          expression: resource.matchTag('1234567890/environment', 'development')
+          location: org-1234567890
+          title: org-1234567890
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+    timeouts: null
   google_organization_iam_audit_config.default["allServices"]:
     audit_log_config:
     - exempted_members:
@@ -399,6 +469,7 @@ counts:
   google_iam_deny_policy: 1
   google_logging_organization_settings: 1
   google_logging_organization_sink: 5
+  google_org_policy_policy: 3
   google_organization_iam_audit_config: 1
   google_organization_iam_binding: 7
   google_organization_iam_member: 1
@@ -412,7 +483,7 @@ counts:
   google_tags_tag_value_iam_binding: 4
   google_tags_tag_value_iam_member: 2
   modules: 0
-  resources: 41
+  resources: 44
 
 outputs:
   access_levels: __missing__
@@ -427,7 +498,7 @@ outputs:
   network_tag_keys: {}
   network_tag_values: {}
   organization_id: organizations/1234567890
-  organization_policies_ids: {}
+  organization_policies_ids: __missing__
   scc_custom_sha_modules_ids: {}
   scc_mute_configs: {}
   scim_tenants: {}
