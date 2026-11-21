@@ -107,6 +107,7 @@ These modules are used in the examples included in this repository. If you are u
 
 - [AI Applications](./ai-applications/README.md)
 - [Gemini Enterprise Agent Platform (GEAP) - Agent Gateway](./geap-agent-gateway/README.md)
+- [Gemini Enterprise Agent Platform (GEAP) - Agent Registry](./geap-agent-registry/README.md)
 - [Gemini Enterprise Agent Platform (GEAP) - Agent Runtime](./geap-agent-runtime/README.md)
 - [Gemini Enterprise Agent Platform (GEAP) - Gemini Enterprise](./geap-gemini-enterprise/README.md)
 - [Gemini Enterprise Agent Platform (GEAP) - Workbench](./geap-workbench/README.md)

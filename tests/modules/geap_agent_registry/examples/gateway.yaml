@@ -1,0 +1,139 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.agent-gateway.google_iam_project_access_policy.default["egress"]:
+    access_policy_id: egress
+    annotations: null
+    deletion_policy: DELETE
+    details:
+    - rules:
+      - description: null
+        effect: ALLOW
+        excluded_principals: []
+        operation:
+        - excluded_permissions: []
+          permissions:
+          - iap.googleapis.com/resources.egressViaIAP
+        principals:
+        - principalSet://goog/group/organization-admins@example.org
+    display_name: null
+    location: global
+    project: project-id
+    timeouts: null
+  module.agent-gateway.google_iam_projects_policy_binding.default["egress"]:
+    annotations: null
+    condition: []
+    deletion_policy: DELETE
+    display_name: null
+    location: global
+    policy: projects/project-id/locations/global/accessPolicies/egress
+    policy_binding_id: egress
+    policy_kind: ACCESS
+    project: project-id
+    target:
+    - principal_set: null
+      resource: //cloudresourcemanager.googleapis.com/projects/project-id
+    timeouts: null
+  module.agent-gateway.google_network_security_authz_policy.iap[0]:
+    action: CUSTOM
+    custom_provider:
+    - authz_extension:
+      - {}
+      cloud_iap: []
+    deletion_policy: DELETE
+    description: null
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    http_rules: []
+    labels: null
+    location: europe-west8
+    name: my-gateway-iap
+    network_rules: []
+    policy_profile: REQUEST_AUTHZ
+    project: project-id
+    target:
+    - load_balancing_scheme: null
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+  module.agent-gateway.google_network_services_agent_gateway.default:
+    agent_connectivity_template: null
+    deletion_policy: DELETE
+    description: Terraform managed.
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    google_managed:
+    - governed_access_path: AGENT_TO_ANYWHERE
+    labels: null
+    location: europe-west8
+    name: my-gateway
+    network_config: []
+    project: project-id
+    protocols: null
+    registries:
+    - //agentregistry.googleapis.com/projects/project-id/locations/europe-west8
+    self_managed: []
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+  module.agent-gateway.google_network_services_authz_extension.iap[0]:
+    authority: null
+    deletion_policy: DELETE
+    description: null
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    fail_open: false
+    forward_attributes: null
+    forward_headers: null
+    labels: null
+    load_balancing_scheme: null
+    location: europe-west8
+    metadata:
+      iapPolicyVersion: V2
+    name: my-gateway-iap
+    project: project-id
+    service: iap.googleapis.com
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeout: 2s
+    timeouts: null
+  module.agent-registry.google_agent_registry_service.default["weather-mcp"]:
+    agent_spec: []
+    deletion_policy: DELETE
+    description: null
+    display_name: null
+    endpoint_spec: []
+    interfaces:
+    - protocol_binding: JSONRPC
+      url: https://weather-mcp-123456789.europe-west8.run.app/mcp
+    location: europe-west8
+    mcp_server_spec:
+    - content: '{"tools":[]}'
+      type: TOOL_SPEC
+    project: project-id
+    service_id: weather-mcp
+    timeouts: null
+
+counts:
+  google_agent_registry_service: 1
+  google_iam_project_access_policy: 1
+  google_iam_projects_policy_binding: 1
+  google_network_security_authz_policy: 1
+  google_network_services_agent_gateway: 1
+  google_network_services_authz_extension: 1
+  modules: 2
+  resources: 6
+
+outputs: {}

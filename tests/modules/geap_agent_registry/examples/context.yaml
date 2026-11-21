@@ -1,0 +1,52 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.agent-registry.google_agent_registry_service.default["aiplatform"]:
+    agent_spec: []
+    deletion_policy: DELETE
+    description: null
+    display_name: null
+    endpoint_spec:
+    - type: NO_SPEC
+    interfaces:
+    - protocol_binding: HTTP_JSON
+      url: https://aiplatform.googleapis.com
+    location: europe-west1
+    mcp_server_spec: []
+    project: my-prj-id
+    service_id: aiplatform
+    timeouts: null
+  module.agent-registry.google_agent_registry_service.default["logging"]:
+    agent_spec: []
+    deletion_policy: DELETE
+    description: null
+    display_name: null
+    endpoint_spec:
+    - type: NO_SPEC
+    interfaces:
+    - protocol_binding: HTTP_JSON
+      url: https://logging.googleapis.com
+    location: global
+    mcp_server_spec: []
+    project: my-prj-id
+    service_id: logging
+    timeouts: null
+
+counts:
+  google_agent_registry_service: 2
+  modules: 1
+  resources: 2
+
+outputs: {}
