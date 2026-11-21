@@ -26,6 +26,10 @@ resource "google_cloud_identity_group" "group" {
   labels = {
     "cloudidentity.googleapis.com/groups.discussion_forum" = ""
   }
+
+  lifecycle {
+    ignore_changes = [initial_group_config]
+  }
 }
 
 # resource "google_cloud_identity_group_membership" "owners" {
