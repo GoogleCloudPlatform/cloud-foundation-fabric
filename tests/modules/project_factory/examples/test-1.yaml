@@ -273,6 +273,39 @@ values:
     uniform_bucket_level_access: true
     versioning:
     - enabled: false
+  module.project-factory.module.folder-1-iam["folder-0"].google_org_policy_policy.default["compute.disableSerialPortAccess"]:
+    dry_run_spec: []
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition:
+        - description: null
+          expression: resource.matchTagId('tagKeys/1234567890', 'tagValues/1234567890')
+          location: null
+          title: org-1234567890
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+    timeouts: null
+  module.project-factory.module.folder-1-iam["folder-0"].google_org_policy_policy.default["compute.trustedImageProjects"]:
+    dry_run_spec: []
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: null
+        parameters: null
+        values:
+        - allowed_values:
+          - projects/foo-test-0
+          denied_values: null
+    timeouts: null
   module.project-factory.module.folder-1["folder-0"].google_folder.folder[0]:
     deletion_policy: DELETE
     deletion_protection: false
@@ -311,6 +344,40 @@ values:
     project: foo-test-0
     retention_days: 365
   module.project-factory.module.log-buckets["test-0/audit-logs"].google_tags_tag_binding.binding["project-level"]:
+    timeouts: null
+  module.project-factory.module.projects-iam["test-0"].google_org_policy_policy.default["compute.disableSerialPortAccess"]:
+    dry_run_spec: []
+    name: projects/foo-test-0/policies/compute.disableSerialPortAccess
+    parent: projects/foo-test-0
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition:
+        - description: Org 1234567890 condition
+          expression: resource.matchTag('1234567890/context', 'project-factory')
+          location: org-1234567890
+          title: org-1234567890
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+    timeouts: null
+  ? module.project-factory.module.projects-iam["test-0"].google_org_policy_policy.default["essentialcontacts.managed.allowedContactDomains"]
+  : dry_run_spec: []
+    name: projects/foo-test-0/policies/essentialcontacts.managed.allowedContactDomains
+    parent: projects/foo-test-0
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: '{"allowedDomains":["@1234567890.example.com"]}'
+        values: []
     timeouts: null
   module.project-factory.module.projects-iam["test-0"].google_project_iam_member.bindings["test_context"]:
     condition:
@@ -617,6 +684,7 @@ counts:
   google_logging_log_view: 1
   google_logging_log_view_iam_binding: 1
   google_logging_project_bucket_config: 1
+  google_org_policy_policy: 4
   google_project: 4
   google_project_iam_member: 9
   google_project_service: 12
@@ -633,8 +701,8 @@ counts:
   google_tags_tag_key: 1
   google_tags_tag_value: 1
   google_tags_tag_value_iam_binding: 1
-  modules: 28
-  resources: 66
+  modules: 29
+  resources: 70
   terraform_data: 2
 
 outputs:

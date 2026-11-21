@@ -27,7 +27,7 @@ org_policies = {
     inherit_from_parent = true
     rules = [{
       allow = {
-        values = ["C0xxxxxxx", "C0yyyyyyy"]
+        values = ["C0xxxxxxx", "C0yyyyyyy", "$$${literal}"]
       }
     }]
   }
@@ -56,7 +56,7 @@ org_policies = {
         }
       },
       {
-        deny = { values = ["in:EXTERNAL"] }
+        deny = { values = ["in:EXTERNAL", "$$${literal}"] }
       }
     ]
   }

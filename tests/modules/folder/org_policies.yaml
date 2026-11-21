@@ -57,6 +57,7 @@ values:
         - allowed_values: null
           denied_values:
           - in:EXTERNAL
+          - ${literal}
     timeouts: null
   google_org_policy_policy.default["compute.vmExternalIpAccess"]:
     dry_run_spec: []
@@ -86,6 +87,7 @@ values:
         - allowed_values:
           - C0xxxxxxx
           - C0yyyyyyy
+          - ${literal}
           denied_values: null
     timeouts: null
   google_org_policy_policy.default["iam.disableServiceAccountKeyCreation"]:
