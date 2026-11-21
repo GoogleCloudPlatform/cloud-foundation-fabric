@@ -1,0 +1,74 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.gemini-enterprise.google_discovery_engine_assistant.default["existing-app"]:
+    assistant_id: default_assistant
+    collection_id: default_collection
+    customer_policy:
+    - banned_phrases:
+      - ignore_diacritics: true
+        match_type: SIMPLE_STRING_MATCH
+        phrase: confidential
+      model_armor_config:
+      - failure_mode: FAIL_CLOSED
+        response_template: projects/project-id/locations/eu/templates/ge-response
+        user_prompt_template: projects/project-id/locations/eu/templates/ge-prompt
+    default_web_grounding_toggle_off: null
+    deletion_policy: ABANDON
+    description: null
+    display_name: Enterprise Assistant
+    engine_id: existing-app
+    generation_config:
+    - default_language: en
+      system_instruction:
+      - additional_system_instruction: Answer concisely using verified internal sources.
+    location: eu
+    project: project-id
+    timeouts: null
+    web_grounding_type: WEB_GROUNDING_TYPE_GOOGLE_SEARCH
+  ? module.gemini-enterprise.google_discovery_engine_search_engine_iam_binding.authoritative["existing-app/roles/discoveryengine.agentspaceUser"]
+  : collection_id: default_collection
+    condition: []
+    engine_id: existing-app
+    location: eu
+    members:
+    - group:organization-admins@example.org
+    project: project-id
+    role: roles/discoveryengine.agentspaceUser
+  module.gemini-enterprise.google_discovery_engine_widget_config.default["existing-app"]:
+    access_settings:
+    - allow_public_access: false
+      allowlisted_domains:
+      - example.com
+      enable_web_app: true
+      language_code: null
+      workforce_identity_pool_provider: null
+    collection_id: default_collection
+    engine_id: existing-app
+    homepage_setting: []
+    location: eu
+    project: project-id
+    timeouts: null
+    ui_branding: []
+    widget_config_id: default_search_widget_config
+
+counts:
+  google_discovery_engine_assistant: 1
+  google_discovery_engine_search_engine_iam_binding: 1
+  google_discovery_engine_widget_config: 1
+  modules: 1
+  resources: 3
+
+outputs: {}

@@ -1,0 +1,121 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.gemini-enterprise.google_discovery_engine_data_connector.default["sharepoint-corp"]:
+    action_config: []
+    auto_run_disabled: null
+    bap_config: []
+    collection_display_name: sharepoint-corp
+    collection_id: sharepoint-corp
+    connector_modes:
+    - DATA_INGESTION
+    data_source: sharepoint
+    deletion_policy: DELETE
+    destination_configs: []
+    entities:
+    - entity_name: file
+      params: null
+    - entity_name: site
+      params: null
+    incremental_refresh_interval: null
+    incremental_sync_disabled: null
+    json_params: '{"tenant_id":"00000000-0000-0000-0000-000000000000"}'
+    kms_key_name: null
+    location: eu
+    params: null
+    project: project-id
+    refresh_interval: 86400s
+    static_ip_enabled: false
+    sync_mode: null
+    tag: sharepoint-corp
+    timeouts: null
+  module.gemini-enterprise.google_discovery_engine_data_connector.mcp["bq-tools"]:
+    action_config:
+    - action_params:
+        auth_type: NO_AUTH
+        instance_uri: https://mcp.internal.example.com/mcp
+        mcp_server_source: BYO_MCP
+      create_bap_connection: true
+    auto_run_disabled: null
+    bap_config: []
+    collection_display_name: BigQuery+MCP
+    collection_id: bq-tools
+    connector_modes:
+    - FEDERATED
+    data_source: custom_mcp
+    deletion_policy: DELETE
+    destination_configs: []
+    entities:
+    - entity_name: mcp_data
+      params: null
+    incremental_refresh_interval: null
+    incremental_sync_disabled: null
+    json_params: null
+    kms_key_name: null
+    location: eu
+    params:
+      oauth_access_token: none
+    project: project-id
+    refresh_interval: 86400s
+    static_ip_enabled: false
+    sync_mode: null
+    tag: bq-tools
+    timeouts: null
+  module.gemini-enterprise.google_discovery_engine_search_engine.default["intranet"]:
+    app_type: APP_TYPE_INTRANET
+    collection_id: default_collection
+    common_config: []
+    data_store_ids: []
+    deletion_policy: DELETE
+    disable_analytics: null
+    display_name: Connected Intranet
+    engine_id: intranet
+    industry_vertical: GENERIC
+    kms_key_name: null
+    location: eu
+    procurement_contact_emails: null
+    project: project-id
+    search_engine_config:
+    - search_add_ons:
+      - SEARCH_ADD_ON_LLM
+      search_tier: SEARCH_TIER_ENTERPRISE
+    timeouts: null
+  module.gemini-enterprise.terraform_data.app_agent_gateway_patch["intranet"]:
+    input: null
+    output: null
+    triggers_replace:
+      agent_gateway: projects/project-id/locations/europe-west1/agentGateways/egress-gw
+      collection_id: default_collection
+  module.gemini-enterprise.terraform_data.app_data_stores["intranet"]:
+    input: null
+    output: null
+    triggers_replace:
+      collection_id: default_collection
+      data_store_ids: '["bq-tools_mcp_data","sharepoint-corp_file"]'
+      native_stores: '[]'
+  module.gemini-enterprise.terraform_data.mcp_action_config["bq-tools"]:
+    input: null
+    output: null
+    triggers_replace:
+      patch_body: 97571b21be278449641d076cc9f4854c331c19664fe74740e0f081d172c75aba
+
+counts:
+  google_discovery_engine_data_connector: 2
+  google_discovery_engine_search_engine: 1
+  modules: 1
+  resources: 6
+  terraform_data: 3
+
+outputs: {}
