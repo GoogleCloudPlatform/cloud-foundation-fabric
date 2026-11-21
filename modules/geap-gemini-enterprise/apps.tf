@@ -216,9 +216,9 @@ locals {
 }
 
 # Discovery Engine's UpdateEngine API rejects dataStoreIds of length 1 (only 0
-# or >= 2 are allowed). Create an empty NO_CONTENT companion store whenever an
-# app resolves to exactly 1 attached store. deletion_policy is hardcoded to
-# DELETE so 1 -> 2 and 1 -> 0 store transitions succeed under
+# or >= 2 are allowed; see b/571953870). Create an empty NO_CONTENT companion
+# store whenever an app resolves to exactly 1 attached store. deletion_policy
+# is hardcoded to DELETE so 1 -> 2 and 1 -> 0 store transitions succeed under
 # deletion_protection = true.
 resource "google_discovery_engine_data_store" "companion" {
   for_each      = local.apps_with_single_store
@@ -444,8 +444,8 @@ resource "google_discovery_engine_search_engine" "default" {
   }
 }
 
-# Reconcile engine dataStoreIds outside google_discovery_engine_search_engine so
-# targeted connector destruction can detach stores before deleting collections.
+# Reconcile engine dataStoreIds outside google_discovery_engine_search_engine
+# for detach-before-destroy ordering and empty list updates (b/576645990).
 resource "terraform_data" "app_data_stores" {
   for_each = local.apps_with_data_stores_reconcile
 
@@ -558,7 +558,7 @@ resource "terraform_data" "app_data_stores" {
 }
 
 # Temporary shim until google_discovery_engine_search_engine exposes
-# agentGatewaySetting natively.
+# agentGatewaySetting natively (b/576646759).
 resource "terraform_data" "app_agent_gateway_patch" {
   for_each = local.apps_with_gateway
 
@@ -633,9 +633,9 @@ resource "terraform_data" "app_agent_gateway_patch" {
 }
 
 # CreateEngine with APP_TYPE_INTRANET auto-provisions default_assistant, while
-# google_discovery_engine_assistant issues POST on create (409 AlreadyExists).
-# Import default_assistant before enabling assistant on an app; ABANDON ensures
-# it is never deleted on destroy.
+# google_discovery_engine_assistant issues POST on create (409 AlreadyExists,
+# b/576646840). Import default_assistant before enabling assistant on an app;
+# ABANDON ensures it is never deleted on destroy.
 resource "google_discovery_engine_assistant" "default" {
   for_each                         = local.apps_with_assistant
   project                          = local.project_id

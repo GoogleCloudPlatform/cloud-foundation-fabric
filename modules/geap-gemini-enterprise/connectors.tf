@@ -118,6 +118,7 @@ locals {
           )
         })
       ]
+      # TODO(b/576646188): remove once provider >= 8.13.0.
       entities_normalized = [
         for e in concat(
           v.entities,
@@ -214,6 +215,8 @@ locals {
   }
 }
 
+# Note: sync flags and params/action_config are ignored on Read (b/576646758,
+# b/576646839).
 resource "google_discovery_engine_data_connector" "default" {
   for_each      = local.data_connectors
   project       = local.project_id
@@ -306,6 +309,7 @@ resource "google_discovery_engine_data_connector" "default" {
   ]
 
   lifecycle {
+    # Avoid forced replacement after import (b/576646876).
     ignore_changes = [
       collection_display_name,
     ]
@@ -467,6 +471,7 @@ resource "google_discovery_engine_data_connector" "mcp" {
   static_ip_enabled = false
   tag               = replace(each.value.collection_id, "_", "-")
 
+  # Initial POST requires dummy oauth_access_token and NO_AUTH (b/569798395).
   params = {
     oauth_access_token = "none"
   }
@@ -491,6 +496,7 @@ resource "google_discovery_engine_data_connector" "mcp" {
   ]
 
   lifecycle {
+    # See b/569798395, b/576646839, and b/576646876.
     ignore_changes = [
       action_config,
       collection_display_name,
@@ -639,11 +645,9 @@ resource "google_discovery_engine_data_connector" "mcp" {
   }
 }
 
-# Temporary shim until hashicorp/google exposes action_config.json_action_params
-# on google_discovery_engine_data_connector (action_params is map(string) in
-# 8.12.0, which serializes boolean flags as strings ignored by the API).
-# Runs unconditionally for all MCP connectors so URL edits and OAuth / gateway
-# opt-outs are always reconciled.
+# Temporary shim for b/569798395 and b/576646839 (and json_action_params in
+# b/576646874, pending provider >= 8.13.0). Runs unconditionally for all MCP
+# connectors so URL edits and OAuth / gateway opt-outs are always reconciled.
 resource "terraform_data" "mcp_action_config" {
   for_each = local.mcp_connectors
 
