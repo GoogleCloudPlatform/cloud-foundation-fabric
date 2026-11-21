@@ -12,6 +12,13 @@ As of version 4.34 of the GCP Terraform provider one operation is not working:
 
 Until that bug is fixed, this module will only support the creation of MEMBER and MANAGER memberships.
 
+### Lifecycle
+
+The `google_cloud_identity_group` resource configures `lifecycle { ignore_changes = [initial_group_config] }`. Because `initial_group_config` is a create-only parameter that defaults to `EMPTY` in the provider schema and forces replacement on diff, ignoring post-creation changes avoids unintended destroy-and-recreate in two cases:
+
+- importing an existing group, where the provider leaves `initial_group_config` empty in state ([bug](https://github.com/hashicorp/terraform-provider-google/issues/13515))
+- migrating state for an existing group originally created with a different `initial_group_config` value (such as `WITH_INITIAL_OWNER`)
+
 ## Examples
 
 ### Simple Group
