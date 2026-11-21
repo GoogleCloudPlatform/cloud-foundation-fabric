@@ -82,6 +82,12 @@ locals {
       ])
     )
   }
+  _default_engine_features = {
+    "agent-sharing-without-admin-approval" = "FEATURE_STATE_ON"
+    "disable-agent-sharing"                = "FEATURE_STATE_OFF"
+    "enable-end-user-sharing-with-groups"  = "FEATURE_STATE_OFF"
+    "workflow-agents"                      = "FEATURE_STATE_ON"
+  }
   apps = {
     for k, v in var.apps : k => merge(v, {
       companion_store_id = (
@@ -368,17 +374,21 @@ resource "google_discovery_engine_data_store" "companion" {
 }
 
 resource "google_discovery_engine_search_engine" "default" {
-  for_each                   = local.engines
-  project                    = local.project_id
-  location                   = local.location
-  collection_id              = each.value.collection_id
-  engine_id                  = each.value.engine_id
-  display_name               = each.value.engine.display_name
-  app_type                   = "APP_TYPE_INTRANET"
-  data_store_ids             = []
-  deletion_policy            = local.deletion_policy
-  disable_analytics          = each.value.engine.disable_analytics
-  features                   = each.value.engine.features
+  for_each          = local.engines
+  project           = local.project_id
+  location          = local.location
+  collection_id     = each.value.collection_id
+  engine_id         = each.value.engine_id
+  display_name      = each.value.engine.display_name
+  app_type          = "APP_TYPE_INTRANET"
+  data_store_ids    = []
+  deletion_policy   = local.deletion_policy
+  disable_analytics = each.value.engine.disable_analytics
+  features = (
+    each.value.engine.features == null
+    ? null
+    : merge(local._default_engine_features, each.value.engine.features)
+  )
   industry_vertical          = each.value.engine.industry_vertical
   kms_key_name               = each.value.kms_key_name
   model_configs              = each.value.engine.model_configs
