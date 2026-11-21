@@ -28,6 +28,7 @@ resource "google_cloud_identity_group" "group" {
   }
 
   lifecycle {
+    # create-only field (https://github.com/hashicorp/terraform-provider-google/issues/13515)
     ignore_changes = [initial_group_config]
   }
 }
