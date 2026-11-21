@@ -21,7 +21,7 @@ values:
     location: eu
     project: actual-prj
     timeouts: null
-  module.gemini-enterprise.google_discovery_engine_assistant.default["intranet"]:
+  module.gemini-enterprise.google_discovery_engine_assistant.default["existing-app"]:
     assistant_id: default_assistant
     collection_id: default_collection
     customer_policy:
@@ -34,7 +34,7 @@ values:
     deletion_policy: ABANDON
     description: null
     display_name: Default Assistant
-    engine_id: intranet
+    engine_id: existing-app
     generation_config: []
     location: eu
     project: actual-prj
@@ -91,7 +91,7 @@ values:
     display_name: Intranet-companion
     document_processing_config: []
     industry_vertical: GENERIC
-    kms_key_name: null
+    kms_key_name: projects/kms-prj/locations/eu/keyRings/ring/cryptoKeys/eu-key
     location: eu
     project: actual-prj
     skip_default_schema_creation: false
@@ -157,14 +157,19 @@ values:
     timeouts: null
     ui_branding: []
     widget_config_id: default_search_widget_config
+  module.gemini-enterprise.terraform_data.app_agent_gateway_patch["existing-app"]:
+    input: null
+    output: null
+    triggers_replace:
+      agent_gateway: projects/actual-prj/locations/europe-west1/agentGateways/egress
+      collection_id: default_collection
+      engine_id: existing-app
   module.gemini-enterprise.terraform_data.app_agent_gateway_patch["intranet"]:
     input: null
     output: null
     triggers_replace:
       agent_gateway: projects/actual-prj/locations/europe-west1/agentGateways/egress
       collection_id: default_collection
-      engine_config: c067a407925a932a29dc9c7a57de406d971e8b8399e9403be65d51a09c1c2ca2
-      engine_id: intranet
   module.gemini-enterprise.terraform_data.app_data_stores["intranet"]:
     input: null
     output: null
@@ -172,7 +177,6 @@ values:
       collection_id: default_collection
       connectors: '[]'
       data_store_ids: '["intranet-companion","tools_mcp_data"]'
-      engine_id: intranet
       native_stores: '[]'
   module.gemini-enterprise.terraform_data.mcp_action_config["tools"]:
     input: null
@@ -192,7 +196,7 @@ counts:
   google_discovery_engine_user_store: 1
   google_discovery_engine_widget_config: 1
   modules: 1
-  resources: 13
-  terraform_data: 3
+  resources: 14
+  terraform_data: 4
 
 outputs: {}

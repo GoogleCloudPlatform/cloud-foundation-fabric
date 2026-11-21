@@ -31,15 +31,17 @@ data_stores = {
   kb = {
     acl_enabled = true
     app_ids     = ["intranet"]
+    json_schema = "{\"$schema\":\"https://json-schema.org/draft/2020-12/schema\",\"type\":\"object\",\"properties\":{\"title\":{\"type\":\"string\",\"keyPropertyMapping\":\"title\"},\"department\":{\"type\":\"string\"},\"owner\":{\"type\":\"string\"},\"summary\":{\"type\":\"string\",\"description\":\"Long inline JSON schema exceeding 255 characters to verify fileexists guard against ENAMETOOLONG.\"}}}"
     kms_key     = "$kms_keys:eu"
   }
 }
 
 data_connectors = {
   outlook-corp = {
-    app_ids     = ["intranet"]
-    data_source = "outlook"
-    kms_key     = "$kms_keys:eu"
+    app_ids                 = ["intranet"]
+    collection_display_name = "Outlook & Mail"
+    data_source             = "outlook"
+    kms_key                 = "$kms_keys:eu"
     entities = [
       {
         entity_name = "mail"
@@ -50,22 +52,25 @@ data_connectors = {
 
 mcp_connectors = {
   tools = {
-    app_ids = ["intranet"]
+    app_ids = ["intranet", "existing_app"]
     url     = "https://mcp.internal.example.com/mcp"
   }
 }
 
 apps = {
-  intranet = {
-    engine = {
-      display_name = "Intranet"
-      kms_key      = "$kms_keys:eu"
-    }
+  existing_app = {
+    data_store_ids = ["console-store-1"]
     assistant = {
       model_armor_config = {
         response_template    = "$model_armor_templates:response"
         user_prompt_template = "$model_armor_templates:prompt"
       }
+    }
+  }
+  intranet = {
+    engine = {
+      display_name = "Intranet"
+      kms_key      = "$kms_keys:eu"
     }
     widget_config = {
       access_settings = {

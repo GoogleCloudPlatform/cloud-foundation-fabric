@@ -39,19 +39,19 @@ variable "apps" {
       web_grounding_type = optional(string)
     }))
     collection_id        = optional(string, "default_collection")
+    data_store_ids       = optional(list(string))
     egress_agent_gateway = optional(string)
     engine = optional(object({
       display_name      = string
       company_name      = optional(string)
-      data_store_ids    = optional(list(string), [])
       disable_analytics = optional(bool)
       features          = optional(map(string))
       industry_vertical = optional(string, "GENERIC")
       kms_key           = optional(string)
       knowledge_graph = optional(object({
-        cloud_knowledge_graph_types    = optional(list(string), [])
-        enable_cloud_knowledge_graph   = optional(bool, false)
-        enable_private_knowledge_graph = optional(bool, false)
+        cloud_knowledge_graph_types    = optional(list(string))
+        enable_cloud_knowledge_graph   = optional(bool)
+        enable_private_knowledge_graph = optional(bool)
         feature_config = optional(object({
           disable_private_kg_auto_complete       = optional(bool)
           disable_private_kg_enrichment          = optional(bool)
@@ -178,10 +178,10 @@ variable "apps" {
     condition = alltrue(flatten([
       for a in var.apps : [
         for ao in coalesce(try(a.engine.search_add_ons, null), []) :
-        contains(["SEARCH_ADD_ON_LLM", "SEARCH_ADD_ON_UNSPECIFIED"], ao)
+        contains(["SEARCH_ADD_ON_LLM"], ao)
       ]
     ]))
-    error_message = "apps[*].engine.search_add_ons values must be 'SEARCH_ADD_ON_LLM' or 'SEARCH_ADD_ON_UNSPECIFIED'."
+    error_message = "apps[*].engine.search_add_ons values must be 'SEARCH_ADD_ON_LLM'."
   }
 
   validation {

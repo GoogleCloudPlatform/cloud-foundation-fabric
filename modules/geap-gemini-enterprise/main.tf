@@ -21,7 +21,7 @@ locals {
   ctx = {
     for k, v in var.context : k => {
       for kk, vv in v : "${local._ctx_p}${k}:${kk}" => vv
-    } if !endswith(k, "_vars")
+    }
   }
   default_license_config = (
     try(var.user_store_config.default_license_config, null) == null
@@ -40,6 +40,15 @@ locals {
       local.ctx.agent_gateways,
       var.egress_agent_gateway,
       var.egress_agent_gateway
+    )
+  )
+  encryption_kms_key = (
+    var.encryption_config == null
+    ? null
+    : lookup(
+      local.ctx.kms_keys,
+      var.encryption_config.kms_key,
+      var.encryption_config.kms_key
     )
   )
   location   = lookup(local.ctx.locations, var.location, var.location)
@@ -80,12 +89,8 @@ resource "google_discovery_engine_cmek_config" "default" {
   location        = local.location
   cmek_config_id  = var.encryption_config.cmek_config_id
   deletion_policy = local.deletion_policy
-  kms_key = lookup(
-    local.ctx.kms_keys,
-    var.encryption_config.kms_key,
-    var.encryption_config.kms_key
-  )
-  set_default = var.encryption_config.set_default
+  kms_key         = local.encryption_kms_key
+  set_default     = var.encryption_config.set_default
 
   dynamic "single_region_keys" {
     for_each = var.encryption_config.single_region_keys
@@ -96,6 +101,13 @@ resource "google_discovery_engine_cmek_config" "default" {
         single_region_keys.value,
         single_region_keys.value
       )
+    }
+  }
+
+  lifecycle {
+    precondition {
+      condition     = contains(["us", "eu"], local.location)
+      error_message = "encryption_config (google_discovery_engine_cmek_config) is only supported when location resolves to 'us' or 'eu'."
     }
   }
 }

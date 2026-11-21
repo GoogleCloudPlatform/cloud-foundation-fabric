@@ -21,7 +21,7 @@ values:
     location: eu
     project: actual-prj
     timeouts: null
-  google_discovery_engine_assistant.default["intranet"]:
+  google_discovery_engine_assistant.default["existing_app"]:
     assistant_id: default_assistant
     collection_id: default_collection
     customer_policy:
@@ -34,7 +34,7 @@ values:
     deletion_policy: ABANDON
     description: null
     display_name: Default Assistant
-    engine_id: corp-intranet
+    engine_id: existing_app
     generation_config: []
     location: eu
     project: actual-prj
@@ -54,7 +54,7 @@ values:
     action_config: []
     auto_run_disabled: null
     bap_config: []
-    collection_display_name: corp-outlook-corp
+    collection_display_name: Outlook+%26+Mail
     collection_id: corp-outlook-corp
     connector_modes: null
     data_source: outlook
@@ -77,7 +77,7 @@ values:
     sync_mode: null
     tag: corp-outlook-corp
     timeouts: null
-  google_discovery_engine_data_connector.mcp["tools"]:
+  google_discovery_engine_data_connector.mcp["tools/existing_app"]:
     action_config:
     - action_params:
         auth_type: NO_AUTH
@@ -87,7 +87,7 @@ values:
     auto_run_disabled: null
     bap_config: []
     collection_display_name: tools
-    collection_id: corp-tools
+    collection_id: corp-tools-existing-app
     connector_modes:
     - FEDERATED
     data_source: custom_mcp
@@ -107,7 +107,39 @@ values:
     refresh_interval: 86400s
     static_ip_enabled: false
     sync_mode: null
-    tag: corp-tools
+    tag: corp-tools-existing-app
+    timeouts: null
+  google_discovery_engine_data_connector.mcp["tools/intranet"]:
+    action_config:
+    - action_params:
+        auth_type: NO_AUTH
+        instance_uri: https://mcp.internal.example.com/mcp
+        mcp_server_source: BYO_MCP
+      create_bap_connection: true
+    auto_run_disabled: null
+    bap_config: []
+    collection_display_name: tools
+    collection_id: corp-tools-intranet
+    connector_modes:
+    - FEDERATED
+    data_source: custom_mcp
+    deletion_policy: DELETE
+    destination_configs: []
+    entities:
+    - entity_name: mcp_data
+      params: null
+    incremental_refresh_interval: null
+    incremental_sync_disabled: null
+    json_params: null
+    kms_key_name: null
+    location: eu
+    params:
+      oauth_access_token: none
+    project: actual-prj
+    refresh_interval: 86400s
+    static_ip_enabled: false
+    sync_mode: null
+    tag: corp-tools-intranet
     timeouts: null
   google_discovery_engine_data_store.default["kb"]:
     acl_enabled: true
@@ -121,9 +153,19 @@ values:
     kms_key_name: projects/kms-prj/locations/eu/keyRings/ring/cryptoKeys/eu-key
     location: eu
     project: actual-prj
-    skip_default_schema_creation: false
+    skip_default_schema_creation: true
     solution_types:
     - SOLUTION_TYPE_SEARCH
+    timeouts: null
+  google_discovery_engine_schema.default["kb"]:
+    data_store_id: corp-kb
+    deletion_policy: DELETE
+    json_schema: '{"$schema":"https://json-schema.org/draft/2020-12/schema","properties":{"department":{"type":"string"},"owner":{"type":"string"},"summary":{"description":"Long
+      inline JSON schema exceeding 255 characters to verify fileexists guard against
+      ENAMETOOLONG.","type":"string"},"title":{"keyPropertyMapping":"title","type":"string"}},"type":"object"}'
+    location: eu
+    project: actual-prj
+    schema_id: default_schema
     timeouts: null
   google_discovery_engine_search_engine.default["intranet"]:
     app_type: APP_TYPE_INTRANET
@@ -214,22 +256,40 @@ values:
       search_addon_spec: []
       source_admin_display_name_enabled: null
     widget_config_id: default_search_widget_config
+  terraform_data.app_agent_gateway_patch["existing_app"]:
+    input: null
+    output: null
+    triggers_replace:
+      agent_gateway: projects/actual-prj/locations/europe-west1/agentGateways/egress
+      collection_id: default_collection
+      engine_id: existing_app
   terraform_data.app_agent_gateway_patch["intranet"]:
     input: null
     output: null
     triggers_replace:
       agent_gateway: projects/actual-prj/locations/europe-west1/agentGateways/egress
       collection_id: default_collection
-      engine_config: c067a407925a932a29dc9c7a57de406d971e8b8399e9403be65d51a09c1c2ca2
-      engine_id: corp-intranet
+  terraform_data.app_data_stores["existing_app"]:
+    input: null
+    output: null
+    triggers_replace:
+      collection_id: default_collection
+      connectors: '[]'
+      data_store_ids: '["console-store-1","corp-tools-existing-app_mcp_data"]'
+      engine_id: existing_app
+      native_stores: '[]'
   terraform_data.app_data_stores["intranet"]:
     input: null
     output: null
     triggers_replace:
       collection_id: default_collection
-      data_store_ids: '["corp-kb","corp-outlook-corp_mail","corp-tools_mcp_data"]'
-      engine_id: corp-intranet
-  terraform_data.mcp_action_config["tools"]:
+      data_store_ids: '["corp-kb","corp-outlook-corp_mail","corp-tools-intranet_mcp_data"]'
+  terraform_data.mcp_action_config["tools/existing_app"]:
+    input: null
+    output: null
+    triggers_replace:
+      patch_body: 42f9f73123000b4e2eea9c6fceca16ec25d383426c22de7a790de4e6fbe98be8
+  terraform_data.mcp_action_config["tools/intranet"]:
     input: null
     output: null
     triggers_replace:
@@ -239,16 +299,17 @@ counts:
   google_discovery_engine_acl_config: 1
   google_discovery_engine_assistant: 1
   google_discovery_engine_cmek_config: 1
-  google_discovery_engine_data_connector: 2
+  google_discovery_engine_data_connector: 3
   google_discovery_engine_data_store: 1
+  google_discovery_engine_schema: 1
   google_discovery_engine_search_engine: 1
   google_discovery_engine_search_engine_iam_binding: 2
   google_discovery_engine_search_engine_iam_member: 1
   google_discovery_engine_user_store: 1
   google_discovery_engine_widget_config: 1
   modules: 0
-  resources: 15
-  terraform_data: 3
+  resources: 20
+  terraform_data: 6
 
 outputs:
   acl_config: __missing__

@@ -31,7 +31,7 @@ values:
     display_name: Knowledge Portal-companion
     document_processing_config: []
     industry_vertical: GENERIC
-    kms_key_name: null
+    kms_key_name: projects/project-id/locations/eu/keyRings/ge-ring/cryptoKeys/ge-key
     location: eu
     project: project-id
     skip_default_schema_creation: false
@@ -95,7 +95,6 @@ values:
       collection_id: default_collection
       connectors: '[]'
       data_store_ids: '["test-intranet-companion","test-kb"]'
-      engine_id: test-intranet
       mcp_connectors: '[]'
 
 counts:

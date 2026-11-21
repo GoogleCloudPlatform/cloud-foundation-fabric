@@ -95,7 +95,6 @@ values:
       collection_id: default_collection
       connectors: '[]'
       data_store_ids: '[]'
-      engine_id: intranet
       mcp_connectors: '[]'
       native_stores: '[]'
 

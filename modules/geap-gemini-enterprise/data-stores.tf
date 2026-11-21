@@ -24,7 +24,9 @@ locals {
         v.json_schema == null
         ? null
         : jsonencode(jsondecode(
-          fileexists(pathexpand(v.json_schema))
+          !startswith(trimspace(v.json_schema), "{")
+          && !startswith(trimspace(v.json_schema), "[")
+          && try(fileexists(pathexpand(v.json_schema)), false)
           ? file(pathexpand(v.json_schema))
           : v.json_schema
         ))
@@ -37,7 +39,7 @@ locals {
     })
   }
   data_stores_with_schema = {
-    for k, v in local.data_stores : k => v if v.json_schema_normalized != null
+    for k, v in local.data_stores : k => v if v.json_schema != null
   }
 }
 
@@ -55,7 +57,7 @@ resource "google_discovery_engine_data_store" "default" {
   kms_key_name      = each.value.kms_key_name
   skip_default_schema_creation = coalesce(
     each.value.skip_default_schema_creation,
-    each.value.json_schema_normalized != null
+    each.value.json_schema != null
   )
 
   dynamic "document_processing_config" {
@@ -220,53 +222,127 @@ resource "google_discovery_engine_data_store" "default" {
   provisioner "local-exec" {
     when        = destroy
     interpreter = ["/bin/bash", "-c"]
-    command     = <<-EOT
+    environment = {
+      DATA_STORE_IDS  = jsonencode([self.data_store_id])
+      DELETION_POLICY = coalesce(self.deletion_policy, "DELETE")
+      LOCATION        = self.location
+      PROJECT         = self.project
+    }
+    command = <<-EOT
       set -euo pipefail
 
-      endpoint="https://${self.location == "global" ? "" : "${self.location}-"}discoveryengine.googleapis.com/v1"
-      ds_id="${self.data_store_id}"
-      token="$(gcloud auth print-access-token)"
-      lockdir="/tmp/ge-mcp-detach-${self.project}-${self.location}.lock"
-      body=$(mktemp)
-      resp=$(mktemp)
-
-      while ! mkdir "$lockdir" 2>/dev/null; do
-        sleep 1
-      done
-      trap 'rmdir "$lockdir" 2>/dev/null || true; rm -f "$body" "$resp"' EXIT
-
-      engines_url="$endpoint/projects/${self.project}/locations/${self.location}/collections/default_collection/engines"
-      status=$(curl -sS \
-        -H "Authorization: Bearer $token" \
-        -H "X-Goog-User-Project: ${self.project}" \
-        -o "$body" -w '%%{http_code}' \
-        "$engines_url")
-
-      if [[ "$status" == "404" ]]; then
+      if [[ "$DELETION_POLICY" != "DELETE" ]]; then
         exit 0
       fi
-      if [[ "$status" != 2* ]]; then
-        echo "Failed to list Discovery Engine apps while detaching $ds_id (HTTP $status)" >&2
-        cat "$body" >&2
-        exit 1
-      fi
 
-      engines=$(jq -r --arg ds "$ds_id" '.engines[]? | select((.dataStoreIds // []) | index($ds)) | .name' "$body")
-      for engine in $engines; do
-        payload=$(jq -c --arg eng "$engine" --arg ds "$ds_id" \
-          '.engines[] | select(.name == $eng) | ((.dataStoreIds // []) - [$ds]) as $rem | {dataStoreIds: (if ($rem | length) == 1 then [] else $rem end)}' "$body")
-        patch_status=$(curl -sS -X PATCH \
-          -H "Authorization: Bearer $token" \
-          -H "Content-Type: application/json" \
-          -H "X-Goog-User-Project: ${self.project}" \
-          -d "$payload" \
-          -o "$resp" -w '%%{http_code}' \
-          "$endpoint/$engine?updateMask=dataStoreIds")
-        if [[ "$patch_status" != 2* && "$patch_status" != "404" ]]; then
-          echo "Failed to detach $ds_id from $engine (HTTP $patch_status)" >&2
-          cat "$resp" >&2
-          exit 1
+      host_prefix=""
+      [[ "$LOCATION" != "global" ]] && host_prefix="$${LOCATION}-"
+      v1_ep="https://$${host_prefix}discoveryengine.googleapis.com/v1"
+      v1alpha_ep="https://$${host_prefix}discoveryengine.googleapis.com/v1alpha"
+
+      if [[ -n "$${GOOGLE_OAUTH_ACCESS_TOKEN:-}" ]]; then
+        token="$GOOGLE_OAUTH_ACCESS_TOKEN"
+      elif [[ -n "$${GOOGLE_IMPERSONATE_SERVICE_ACCOUNT:-}" ]]; then
+        token="$(gcloud auth print-access-token --impersonate-service-account="$GOOGLE_IMPERSONATE_SERVICE_ACCOUNT")"
+      else
+        token="$(gcloud auth print-access-token 2>/dev/null || gcloud auth application-default print-access-token)"
+      fi
+      quota_project="$${GOOGLE_BILLING_PROJECT:-$${CLOUDSDK_BILLING_QUOTA_PROJECT:-$PROJECT}}"
+
+      hdr=$(mktemp)
+      body=$(mktemp)
+      resp=$(mktemp)
+      chmod 600 "$hdr"
+      printf 'header = "Authorization: Bearer %s"\nheader = "X-Goog-User-Project: %s"\n' "$token" "$quota_project" > "$hdr"
+
+      lockbase="/tmp/ge-ds-sync-$${PROJECT}-$${LOCATION}"
+      if command -v flock >/dev/null 2>&1; then
+        exec 9>"$${lockbase}.lock"
+        flock -w 300 9
+        cleanup() { rm -f "$hdr" "$body" "$resp"; }
+      else
+        lockdir="$${lockbase}.lockdir"
+        waited=0
+        while ! mkdir "$lockdir" 2>/dev/null; do
+          if [[ -f "$lockdir/pid" ]]; then
+            holder=$(cat "$lockdir/pid" 2>/dev/null || true)
+            if [[ -n "$holder" ]] && ! kill -0 "$holder" 2>/dev/null; then
+              rm -rf "$lockdir"
+              continue
+            fi
+          fi
+          if (( waited >= 300 )); then
+            echo "Timed out waiting for lock $lockdir" >&2
+            exit 1
+          fi
+          sleep 1
+          waited=$((waited + 1))
+        done
+        echo "$$" > "$lockdir/pid"
+        cleanup() { rm -rf "$lockdir" "$hdr" "$body" "$resp"; }
+      fi
+      trap cleanup EXIT
+
+      collections=("projects/$${PROJECT}/locations/$${LOCATION}/collections/default_collection")
+      page_token=""
+      while :; do
+        col_url="$${v1alpha_ep}/projects/$${PROJECT}/locations/$${LOCATION}/collections"
+        if [[ -n "$page_token" ]]; then
+          col_url="$${col_url}?pageToken=$(jq -rn --arg t "$page_token" '$t | @uri')"
         fi
+        status=$(curl -sS -K "$hdr" -o "$body" -w '%%{http_code}' "$col_url")
+        [[ "$status" != 2* ]] && break
+        while IFS= read -r col; do
+          [[ -n "$col" && "$${col##*/}" != "default_collection" ]] && collections+=("$col")
+        done < <(jq -r '.collections[]? | select(.dataConnector == null) | .name' "$body")
+        page_token=$(jq -r '.nextPageToken // empty' "$body")
+        [[ -z "$page_token" ]] && break
+      done
+
+      for col in "$${collections[@]}"; do
+        page_token=""
+        while :; do
+          eng_url="$${v1_ep}/$${col}/engines"
+          if [[ -n "$page_token" ]]; then
+            eng_url="$${eng_url}?pageToken=$(jq -rn --arg t "$page_token" '$t | @uri')"
+          fi
+          status=$(curl -sS -K "$hdr" -o "$body" -w '%%{http_code}' "$eng_url")
+          [[ "$status" == "404" ]] && break
+          if [[ "$status" != 2* ]]; then
+            echo "Failed to list Discovery Engine apps in $col (HTTP $status)" >&2
+            cat "$body" >&2
+            exit 1
+          fi
+          while IFS= read -r engine; do
+            [[ -z "$engine" ]] && continue
+            payload=$(jq -c --arg eng "$engine" --argjson targets "$DATA_STORE_IDS" \
+              '.engines[] | select(.name == $eng) | ((.dataStoreIds // []) - $targets) as $rem | {dataStoreIds: (if ($rem | length) == 1 then [] else $rem end)}' "$body")
+            patch_status=""
+            for attempt in {1..5}; do
+              patch_status=$(printf '%s' "$payload" | curl -sS -X PATCH -K "$hdr" \
+                -H "Content-Type: application/json" \
+                --data-binary @- \
+                -o "$resp" -w '%%{http_code}' \
+                "$${v1_ep}/$${engine}?updateMask=dataStoreIds")
+              if [[ "$patch_status" == 2* || "$patch_status" == "404" ]]; then
+                break
+              fi
+              if [[ "$patch_status" == 5* || "$patch_status" == "429" ]]; then
+                sleep 2
+                continue
+              fi
+              break
+            done
+            if [[ "$patch_status" != 2* && "$patch_status" != "404" ]]; then
+              echo "Failed to detach stores from $engine (HTTP $patch_status)" >&2
+              cat "$resp" >&2
+              exit 1
+            fi
+          done < <(jq -r --argjson targets "$DATA_STORE_IDS" \
+            '.engines[]? | select(any((.dataStoreIds // [])[]; . as $id | $targets | index($id))) | .name' "$body")
+          page_token=$(jq -r '.nextPageToken // empty' "$body")
+          [[ -z "$page_token" ]] && break
+        done
       done
     EOT
   }

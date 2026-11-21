@@ -94,6 +94,7 @@ output "engine_ids" {
     google_discovery_engine_widget_config.default,
     terraform_data.app_agent_gateway_patch,
     terraform_data.app_data_stores,
+    terraform_data.mcp_action_config,
   ]
 }
 
@@ -108,6 +109,7 @@ output "engines" {
     google_discovery_engine_widget_config.default,
     terraform_data.app_agent_gateway_patch,
     terraform_data.app_data_stores,
+    terraform_data.mcp_action_config,
   ]
 }
 

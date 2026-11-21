@@ -90,11 +90,13 @@ variable "location" {
   validation {
     condition = contains(
       ["global", "us", "eu"],
-      lookup(
+      startswith(var.location, "$locations:")
+      ? lookup(
         var.context.locations,
         trimprefix(var.location, "$locations:"),
         var.location
       )
+      : var.location
     )
     error_message = "location must resolve to 'global', 'us', or 'eu'."
   }

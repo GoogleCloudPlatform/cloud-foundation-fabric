@@ -20,7 +20,7 @@ locals {
   _app_raw_data_store_ids = {
     for k, v in local.apps : k => distinct(concat(
       [
-        for ds in coalesce(try(v.engine.data_store_ids, null), []) : (
+        for ds in coalesce(v.data_store_ids, []) : (
           contains(keys(local.data_stores), ds)
           ? local.data_stores[ds].data_store_id
           : ds
@@ -51,7 +51,7 @@ locals {
   # created stores and connectors.
   _app_resolved_data_store_ids = {
     for k, ds_ids in local._app_raw_data_store_ids : k => (
-      length(ds_ids) == 1
+      local._app_static_store_count[k] == 1
       && contains(keys(google_discovery_engine_data_store.companion), k)
       ? concat(
         ds_ids,
@@ -60,8 +60,35 @@ locals {
       : ds_ids
     )
   }
+  # Static store count avoids calling distinct() on potentially unknown
+  # apply-time data_store_ids elements so companion for_each stays plan-known.
+  _app_static_store_count = {
+    for k, v in local.apps : k => (
+      length(coalesce(v.data_store_ids, []))
+      + length([
+        for ds_k, ds_v in local.data_stores :
+        ds_k if contains(ds_v.app_ids, k)
+      ])
+      + length(flatten([
+        for dc_k, dc_v in local.data_connectors : [
+          for e in dc_v.entities : e.entity_name
+          if e.entity_name != null && !contains(["root", "site"], e.entity_name)
+        ]
+        if contains(dc_v.app_ids, k)
+      ]))
+      + length([
+        for mc_k, mc_v in local.mcp_connectors :
+        mc_k if contains(mc_v.app_ids, k)
+      ])
+    )
+  }
   apps = {
     for k, v in var.apps : k => merge(v, {
+      companion_store_id = (
+        length("${replace(coalesce(v.engine_id, v.engine == null ? k : "${local.prefix}${k}"), "_", "-")}-companion") <= 63
+        ? "${replace(coalesce(v.engine_id, v.engine == null ? k : "${local.prefix}${k}"), "_", "-")}-companion"
+        : "${trimsuffix(substr(replace(coalesce(v.engine_id, v.engine == null ? k : "${local.prefix}${k}"), "_", "-"), 0, 44), "-")}-${substr(md5(coalesce(v.engine_id, v.engine == null ? k : "${local.prefix}${k}")), 0, 8)}-companion"
+      )
       egress_gateway_resolved = (
         v.egress_agent_gateway == ""
         ? null
@@ -76,6 +103,29 @@ locals {
       engine_id = coalesce(
         v.engine_id,
         v.engine == null ? k : "${local.prefix}${k}"
+      )
+      gateway_patch_body = (
+        (
+          v.egress_agent_gateway == ""
+          ? false
+          : v.egress_agent_gateway != null || var.egress_agent_gateway != null
+        )
+        ? jsonencode({
+          agentGatewaySetting = {
+            defaultEgressAgentGateway = {
+              name = (
+                v.egress_agent_gateway != null
+                ? lookup(
+                  local.ctx.agent_gateways,
+                  v.egress_agent_gateway,
+                  v.egress_agent_gateway
+                )
+                : local.egress_agent_gateway
+              )
+            }
+          }
+        })
+        : null
       )
       has_egress_gateway = (
         v.egress_agent_gateway == ""
@@ -117,7 +167,7 @@ locals {
   }
   apps_with_data_stores_reconcile = {
     for k, v in local.apps : k => v
-    if v.engine != null || length(local._app_raw_data_store_ids[k]) > 0
+    if v.engine != null || v.data_store_ids != null || local._app_static_store_count[k] > 0
   }
   apps_with_gateway = {
     for k, v in local.apps : k => v
@@ -125,7 +175,7 @@ locals {
   }
   apps_with_single_store = {
     for k, v in local.apps : k => v
-    if length(local._app_raw_data_store_ids[k]) == 1
+    if local._app_static_store_count[k] == 1
   }
   apps_with_widget = {
     for k, v in local.apps : k => merge(v, {
@@ -161,12 +211,14 @@ locals {
 
 # Discovery Engine's UpdateEngine API rejects dataStoreIds of length 1 (only 0
 # or >= 2 are allowed). Create an empty NO_CONTENT companion store whenever an
-# app resolves to exactly 1 attached store.
+# app resolves to exactly 1 attached store. deletion_policy is hardcoded to
+# DELETE so 1 -> 2 and 1 -> 0 store transitions succeed under
+# deletion_protection = true.
 resource "google_discovery_engine_data_store" "companion" {
   for_each      = local.apps_with_single_store
   project       = local.project_id
   location      = local.location
-  data_store_id = "${replace(each.value.engine_id, "_", "-")}-companion"
+  data_store_id = each.value.companion_store_id
   display_name = (
     "${coalesce(try(each.value.engine.display_name, null), each.value.engine_id)}-companion"
   )
@@ -174,7 +226,8 @@ resource "google_discovery_engine_data_store" "companion" {
   content_config               = "NO_CONTENT"
   solution_types               = ["SOLUTION_TYPE_SEARCH"]
   create_advanced_site_search  = false
-  deletion_policy              = local.deletion_policy
+  deletion_policy              = "DELETE"
+  kms_key_name                 = try(coalesce(each.value.kms_key_name, local.encryption_kms_key), null)
   skip_default_schema_creation = false
 
   depends_on = [
@@ -188,53 +241,127 @@ resource "google_discovery_engine_data_store" "companion" {
   provisioner "local-exec" {
     when        = destroy
     interpreter = ["/bin/bash", "-c"]
-    command     = <<-EOT
+    environment = {
+      DATA_STORE_IDS  = jsonencode([self.data_store_id])
+      DELETION_POLICY = coalesce(self.deletion_policy, "DELETE")
+      LOCATION        = self.location
+      PROJECT         = self.project
+    }
+    command = <<-EOT
       set -euo pipefail
 
-      endpoint="https://${self.location == "global" ? "" : "${self.location}-"}discoveryengine.googleapis.com/v1"
-      ds_id="${self.data_store_id}"
-      token="$(gcloud auth print-access-token)"
-      lockdir="/tmp/ge-mcp-detach-${self.project}-${self.location}.lock"
-      body=$(mktemp)
-      resp=$(mktemp)
-
-      while ! mkdir "$lockdir" 2>/dev/null; do
-        sleep 1
-      done
-      trap 'rmdir "$lockdir" 2>/dev/null || true; rm -f "$body" "$resp"' EXIT
-
-      engines_url="$endpoint/projects/${self.project}/locations/${self.location}/collections/default_collection/engines"
-      status=$(curl -sS \
-        -H "Authorization: Bearer $token" \
-        -H "X-Goog-User-Project: ${self.project}" \
-        -o "$body" -w '%%{http_code}' \
-        "$engines_url")
-
-      if [[ "$status" == "404" ]]; then
+      if [[ "$DELETION_POLICY" != "DELETE" ]]; then
         exit 0
       fi
-      if [[ "$status" != 2* ]]; then
-        echo "Failed to list Discovery Engine apps while detaching $ds_id (HTTP $status)" >&2
-        cat "$body" >&2
-        exit 1
-      fi
 
-      engines=$(jq -r --arg ds "$ds_id" '.engines[]? | select((.dataStoreIds // []) | index($ds)) | .name' "$body")
-      for engine in $engines; do
-        payload=$(jq -c --arg eng "$engine" --arg ds "$ds_id" \
-          '.engines[] | select(.name == $eng) | ((.dataStoreIds // []) - [$ds]) as $rem | {dataStoreIds: (if ($rem | length) == 1 then [] else $rem end)}' "$body")
-        patch_status=$(curl -sS -X PATCH \
-          -H "Authorization: Bearer $token" \
-          -H "Content-Type: application/json" \
-          -H "X-Goog-User-Project: ${self.project}" \
-          -d "$payload" \
-          -o "$resp" -w '%%{http_code}' \
-          "$endpoint/$engine?updateMask=dataStoreIds")
-        if [[ "$patch_status" != 2* && "$patch_status" != "404" ]]; then
-          echo "Failed to detach $ds_id from $engine (HTTP $patch_status)" >&2
-          cat "$resp" >&2
-          exit 1
+      host_prefix=""
+      [[ "$LOCATION" != "global" ]] && host_prefix="$${LOCATION}-"
+      v1_ep="https://$${host_prefix}discoveryengine.googleapis.com/v1"
+      v1alpha_ep="https://$${host_prefix}discoveryengine.googleapis.com/v1alpha"
+
+      if [[ -n "$${GOOGLE_OAUTH_ACCESS_TOKEN:-}" ]]; then
+        token="$GOOGLE_OAUTH_ACCESS_TOKEN"
+      elif [[ -n "$${GOOGLE_IMPERSONATE_SERVICE_ACCOUNT:-}" ]]; then
+        token="$(gcloud auth print-access-token --impersonate-service-account="$GOOGLE_IMPERSONATE_SERVICE_ACCOUNT")"
+      else
+        token="$(gcloud auth print-access-token 2>/dev/null || gcloud auth application-default print-access-token)"
+      fi
+      quota_project="$${GOOGLE_BILLING_PROJECT:-$${CLOUDSDK_BILLING_QUOTA_PROJECT:-$PROJECT}}"
+
+      hdr=$(mktemp)
+      body=$(mktemp)
+      resp=$(mktemp)
+      chmod 600 "$hdr"
+      printf 'header = "Authorization: Bearer %s"\nheader = "X-Goog-User-Project: %s"\n' "$token" "$quota_project" > "$hdr"
+
+      lockbase="/tmp/ge-ds-sync-$${PROJECT}-$${LOCATION}"
+      if command -v flock >/dev/null 2>&1; then
+        exec 9>"$${lockbase}.lock"
+        flock -w 300 9
+        cleanup() { rm -f "$hdr" "$body" "$resp"; }
+      else
+        lockdir="$${lockbase}.lockdir"
+        waited=0
+        while ! mkdir "$lockdir" 2>/dev/null; do
+          if [[ -f "$lockdir/pid" ]]; then
+            holder=$(cat "$lockdir/pid" 2>/dev/null || true)
+            if [[ -n "$holder" ]] && ! kill -0 "$holder" 2>/dev/null; then
+              rm -rf "$lockdir"
+              continue
+            fi
+          fi
+          if (( waited >= 300 )); then
+            echo "Timed out waiting for lock $lockdir" >&2
+            exit 1
+          fi
+          sleep 1
+          waited=$((waited + 1))
+        done
+        echo "$$" > "$lockdir/pid"
+        cleanup() { rm -rf "$lockdir" "$hdr" "$body" "$resp"; }
+      fi
+      trap cleanup EXIT
+
+      collections=("projects/$${PROJECT}/locations/$${LOCATION}/collections/default_collection")
+      page_token=""
+      while :; do
+        col_url="$${v1alpha_ep}/projects/$${PROJECT}/locations/$${LOCATION}/collections"
+        if [[ -n "$page_token" ]]; then
+          col_url="$${col_url}?pageToken=$(jq -rn --arg t "$page_token" '$t | @uri')"
         fi
+        status=$(curl -sS -K "$hdr" -o "$body" -w '%%{http_code}' "$col_url")
+        [[ "$status" != 2* ]] && break
+        while IFS= read -r col; do
+          [[ -n "$col" && "$${col##*/}" != "default_collection" ]] && collections+=("$col")
+        done < <(jq -r '.collections[]? | select(.dataConnector == null) | .name' "$body")
+        page_token=$(jq -r '.nextPageToken // empty' "$body")
+        [[ -z "$page_token" ]] && break
+      done
+
+      for col in "$${collections[@]}"; do
+        page_token=""
+        while :; do
+          eng_url="$${v1_ep}/$${col}/engines"
+          if [[ -n "$page_token" ]]; then
+            eng_url="$${eng_url}?pageToken=$(jq -rn --arg t "$page_token" '$t | @uri')"
+          fi
+          status=$(curl -sS -K "$hdr" -o "$body" -w '%%{http_code}' "$eng_url")
+          [[ "$status" == "404" ]] && break
+          if [[ "$status" != 2* ]]; then
+            echo "Failed to list Discovery Engine apps in $col (HTTP $status)" >&2
+            cat "$body" >&2
+            exit 1
+          fi
+          while IFS= read -r engine; do
+            [[ -z "$engine" ]] && continue
+            payload=$(jq -c --arg eng "$engine" --argjson targets "$DATA_STORE_IDS" \
+              '.engines[] | select(.name == $eng) | ((.dataStoreIds // []) - $targets) as $rem | {dataStoreIds: (if ($rem | length) == 1 then [] else $rem end)}' "$body")
+            patch_status=""
+            for attempt in {1..5}; do
+              patch_status=$(printf '%s' "$payload" | curl -sS -X PATCH -K "$hdr" \
+                -H "Content-Type: application/json" \
+                --data-binary @- \
+                -o "$resp" -w '%%{http_code}' \
+                "$${v1_ep}/$${engine}?updateMask=dataStoreIds")
+              if [[ "$patch_status" == 2* || "$patch_status" == "404" ]]; then
+                break
+              fi
+              if [[ "$patch_status" == 5* || "$patch_status" == "429" ]]; then
+                sleep 2
+                continue
+              fi
+              break
+            done
+            if [[ "$patch_status" != 2* && "$patch_status" != "404" ]]; then
+              echo "Failed to detach stores from $engine (HTTP $patch_status)" >&2
+              cat "$resp" >&2
+              exit 1
+            fi
+          done < <(jq -r --argjson targets "$DATA_STORE_IDS" \
+            '.engines[]? | select(any((.dataStoreIds // [])[]; . as $id | $targets | index($id))) | .name' "$body")
+          page_token=$(jq -r '.nextPageToken // empty' "$body")
+          [[ -z "$page_token" ]] && break
+        done
       done
     EOT
   }
@@ -323,7 +450,7 @@ resource "terraform_data" "app_data_stores" {
     data_store_ids = jsonencode(sort(local._app_resolved_data_store_ids[each.key]))
     engine_id = (
       contains(keys(google_discovery_engine_search_engine.default), each.key)
-      ? google_discovery_engine_search_engine.default[each.key].engine_id
+      ? google_discovery_engine_search_engine.default[each.key].id
       : each.value.engine_id
     )
     mcp_connectors = jsonencode([
@@ -337,44 +464,87 @@ resource "terraform_data" "app_data_stores" {
       google_discovery_engine_data_store.default[ds_k].id
       if(
         contains(ds_v.app_ids, each.key)
-        || contains(
-          coalesce(try(each.value.engine.data_store_ids, null), []),
-          ds_k
-        )
+        || contains(coalesce(each.value.data_store_ids, []), ds_k)
       ) && contains(keys(google_discovery_engine_data_store.default), ds_k)
     ])
   }
 
   provisioner "local-exec" {
     interpreter = ["/bin/bash", "-c"]
-    command     = <<-EOT
+    environment = {
+      COLLECTION_ID = each.value.collection_id
+      ENGINE_ID     = each.value.engine_id
+      LOCATION      = local.location
+      PAYLOAD       = jsonencode({ dataStoreIds = local._app_resolved_data_store_ids[each.key] })
+      PROJECT       = local.project_id
+    }
+    command = <<-EOT
       set -euo pipefail
 
-      endpoint="https://${local.location == "global" ? "" : "${local.location}-"}discoveryengine.googleapis.com/v1"
-      url="$endpoint/projects/${local.project_id}/locations/${local.location}/collections/${each.value.collection_id}/engines/${each.value.engine_id}"
-      lockdir="/tmp/ge-mcp-detach-${local.project_id}-${local.location}.lock"
+      host_prefix=""
+      [[ "$LOCATION" != "global" ]] && host_prefix="$${LOCATION}-"
+      endpoint="https://$${host_prefix}discoveryengine.googleapis.com/v1"
+      url="$${endpoint}/projects/$${PROJECT}/locations/$${LOCATION}/collections/$${COLLECTION_ID}/engines/$${ENGINE_ID}"
+
+      if [[ -n "$${GOOGLE_OAUTH_ACCESS_TOKEN:-}" ]]; then
+        token="$GOOGLE_OAUTH_ACCESS_TOKEN"
+      elif [[ -n "$${GOOGLE_IMPERSONATE_SERVICE_ACCOUNT:-}" ]]; then
+        token="$(gcloud auth print-access-token --impersonate-service-account="$GOOGLE_IMPERSONATE_SERVICE_ACCOUNT")"
+      else
+        token="$(gcloud auth print-access-token 2>/dev/null || gcloud auth application-default print-access-token)"
+      fi
+      quota_project="$${GOOGLE_BILLING_PROJECT:-$${CLOUDSDK_BILLING_QUOTA_PROJECT:-$PROJECT}}"
+
+      hdr=$(mktemp)
       body=$(mktemp)
+      chmod 600 "$hdr"
+      printf 'header = "Authorization: Bearer %s"\nheader = "X-Goog-User-Project: %s"\n' "$token" "$quota_project" > "$hdr"
 
-      while ! mkdir "$lockdir" 2>/dev/null; do
-        sleep 1
-      done
-      trap 'rmdir "$lockdir" 2>/dev/null || true; rm -f "$body"' EXIT
+      lockbase="/tmp/ge-ds-sync-$${PROJECT}-$${LOCATION}"
+      if command -v flock >/dev/null 2>&1; then
+        exec 9>"$${lockbase}.lock"
+        flock -w 300 9
+        cleanup() { rm -f "$hdr" "$body"; }
+      else
+        lockdir="$${lockbase}.lockdir"
+        waited=0
+        while ! mkdir "$lockdir" 2>/dev/null; do
+          if [[ -f "$lockdir/pid" ]]; then
+            holder=$(cat "$lockdir/pid" 2>/dev/null || true)
+            if [[ -n "$holder" ]] && ! kill -0 "$holder" 2>/dev/null; then
+              rm -rf "$lockdir"
+              continue
+            fi
+          fi
+          if (( waited >= 300 )); then
+            echo "Timed out waiting for lock $lockdir" >&2
+            exit 1
+          fi
+          sleep 1
+          waited=$((waited + 1))
+        done
+        echo "$$" > "$lockdir/pid"
+        cleanup() { rm -rf "$lockdir" "$hdr" "$body"; }
+      fi
+      trap cleanup EXIT
 
-      status=$(curl -sS -X PATCH \
-        -H "Authorization: Bearer $(gcloud auth print-access-token)" \
+      status=$(printf '%s' "$PAYLOAD" | curl -sS -X PATCH -K "$hdr" \
         -H "Content-Type: application/json" \
-        -H "X-Goog-User-Project: ${local.project_id}" \
-        -d '${jsonencode({ dataStoreIds = local._app_resolved_data_store_ids[each.key] })}' \
+        --data-binary @- \
         -o "$body" -w '%%{http_code}' \
-        "$url?updateMask=dataStoreIds")
+        "$${url}?updateMask=dataStoreIds")
 
       if [[ "$status" != 2* ]]; then
-        echo "Failed to update dataStoreIds on ${each.value.engine_id} (HTTP $status)" >&2
+        echo "Failed to update dataStoreIds on $ENGINE_ID (HTTP $status)" >&2
         cat "$body" >&2
         exit 1
       fi
     EOT
   }
+
+  depends_on = [
+    terraform_data.mcp_action_config,
+  ]
 }
 
 # Temporary shim until google_discovery_engine_search_engine exposes
@@ -385,10 +555,9 @@ resource "terraform_data" "app_agent_gateway_patch" {
   triggers_replace = {
     agent_gateway = each.value.egress_gateway_resolved
     collection_id = each.value.collection_id
-    engine_config = sha256(jsonencode(each.value.engine))
     engine_id = (
       contains(keys(google_discovery_engine_search_engine.default), each.key)
-      ? google_discovery_engine_search_engine.default[each.key].engine_id
+      ? google_discovery_engine_search_engine.default[each.key].id
       : each.value.engine_id
     )
   }
@@ -402,40 +571,55 @@ resource "terraform_data" "app_agent_gateway_patch" {
 
   provisioner "local-exec" {
     interpreter = ["/bin/bash", "-c"]
+    environment = {
+      COLLECTION_ID  = each.value.collection_id
+      ENGINE_ID      = each.value.engine_id
+      LOCATION       = local.location
+      PATCH_BODY     = each.value.gateway_patch_body
+      PROJECT        = local.project_id
+      PROJECT_NUMBER = coalesce(var.project_number, "-")
+    }
     command = <<-EOT
       set -euo pipefail
 
-      endpoint="https://${local.location == "global" ? "" : "${local.location}-"}discoveryengine.googleapis.com/v1"
-      url="$endpoint/projects/${var.project_number}/locations/${local.location}/collections/${each.value.collection_id}/engines/${each.value.engine_id}"
+      host_prefix=""
+      [[ "$LOCATION" != "global" ]] && host_prefix="$${LOCATION}-"
+      endpoint="https://$${host_prefix}discoveryengine.googleapis.com/v1"
+      url="$${endpoint}/projects/$${PROJECT_NUMBER}/locations/$${LOCATION}/collections/$${COLLECTION_ID}/engines/$${ENGINE_ID}"
       mask="agentGatewaySetting.defaultEgressAgentGateway.name"
-      body=$(mktemp)
-      trap 'rm -f "$body"' EXIT
 
-      status=$(curl -sS -X PATCH \
-        -H "Authorization: Bearer $(gcloud auth print-access-token)" \
+      if [[ -n "$${GOOGLE_OAUTH_ACCESS_TOKEN:-}" ]]; then
+        token="$GOOGLE_OAUTH_ACCESS_TOKEN"
+      elif [[ -n "$${GOOGLE_IMPERSONATE_SERVICE_ACCOUNT:-}" ]]; then
+        token="$(gcloud auth print-access-token --impersonate-service-account="$GOOGLE_IMPERSONATE_SERVICE_ACCOUNT")"
+      else
+        token="$(gcloud auth print-access-token 2>/dev/null || gcloud auth application-default print-access-token)"
+      fi
+      quota_project="$${GOOGLE_BILLING_PROJECT:-$${CLOUDSDK_BILLING_QUOTA_PROJECT:-$PROJECT}}"
+
+      hdr=$(mktemp)
+      body=$(mktemp)
+      chmod 600 "$hdr"
+      printf 'header = "Authorization: Bearer %s"\nheader = "X-Goog-User-Project: %s"\n' "$token" "$quota_project" > "$hdr"
+      trap 'rm -f "$hdr" "$body"' EXIT
+
+      status=$(printf '%s' "$PATCH_BODY" | curl -sS -X PATCH -K "$hdr" \
         -H "Content-Type: application/json" \
-        -H "X-Goog-User-Project: ${local.project_id}" \
-        -d '${jsonencode({
-    agentGatewaySetting = {
-      defaultEgressAgentGateway = {
-        name = each.value.egress_gateway_resolved
-      }
-    }
-})}' \
+        --data-binary @- \
         -o "$body" -w '%%{http_code}' \
-        "$url?updateMask=$mask")
+        "$${url}?updateMask=$${mask}")
 
       if [[ "$status" != 2* ]]; then
-        echo "Agent Gateway engine patch failed for ${each.value.engine_id} (HTTP $status)" >&2
+        echo "Agent Gateway engine patch failed for $ENGINE_ID (HTTP $status)" >&2
         cat "$body" >&2
         exit 1
       fi
     EOT
-}
+  }
 
-depends_on = [
-  google_discovery_engine_search_engine.default,
-]
+  depends_on = [
+    google_discovery_engine_search_engine.default,
+  ]
 }
 
 # CreateEngine with APP_TYPE_INTRANET auto-provisions default_assistant, while

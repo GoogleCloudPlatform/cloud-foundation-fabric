@@ -81,12 +81,9 @@ variable "data_connectors" {
   validation {
     condition = alltrue([
       for dc in var.data_connectors :
-      dc.sync_mode == null || contains(
-        ["PERIODIC", "STREAMING", "CONNECTOR_SYNC_MODE_UNSPECIFIED"],
-        dc.sync_mode
-      )
+      dc.sync_mode == null || contains(["PERIODIC", "STREAMING"], dc.sync_mode)
     ])
-    error_message = "data_connectors[*].sync_mode must be one of 'PERIODIC', 'STREAMING', 'CONNECTOR_SYNC_MODE_UNSPECIFIED'."
+    error_message = "data_connectors[*].sync_mode must be 'PERIODIC' or 'STREAMING'."
   }
 
   validation {

@@ -18,9 +18,11 @@ This module manages a Gemini Enterprise tenant in a single Discovery Engine mult
 
 Enable the `discoveryengine.googleapis.com` API in the target project before deploying this module (plus `cloudkms.googleapis.com` when registering CMEK keys, `modelarmor.googleapis.com` when referencing Model Armor templates, and `networkservices.googleapis.com` when binding an Egress Agent Gateway).
 
-When authenticating with local user Application Default Credentials (ADC), configure `user_project_override = true` and `billing_project` on the `google` provider because `discoveryengine.googleapis.com` requires a quota project. When referencing Secret Manager secret versions in `oauth_config` (`client_id` / `client_secret`), grant `roles/secretmanager.secretAccessor` on those secrets to the Discovery Engine service agent (`service-<PROJECT_NUMBER>@gcp-sa-discoveryengine.iam.gserviceaccount.com`).
-
-When attaching data stores or connectors to engines or binding an Egress Agent Gateway, apply and destroy steps invoke authenticated Discovery Engine REST `PATCH` calls and require `curl`, `gcloud`, and `jq` in `PATH`.
+- **CMEK (`encryption_config`)**: Supported only when `location` resolves to `us` or `eu`. Grant `roles/cloudkms.cryptoKeyEncrypterDecrypter` on the KMS key(s) to the Discovery Engine service agent (`service-<PROJECT_NUMBER>@gcp-sa-discoveryengine.iam.gserviceaccount.com`) before applying.
+- **Secret Manager OAuth 2.0**: When referencing Secret Manager secret versions in `oauth_config` (`client_id` / `client_secret`), grant `roles/secretmanager.secretAccessor` on those secrets to the Discovery Engine service agent.
+- **Egress Agent Gateway**: Discovery Engine enforces a region allowlist per app location (`eu` -> `europe-west1`, `us` -> `us-central1`, `global` -> `europe-west1` or `us-central1`). When passing an apply-time gateway ID (e.g. `module.agent-gateway.id`), pass it via `context.agent_gateways` (`"$agent_gateways:egress"`) so `for_each` keys remain known at plan time.
+- **User ADC & `local-exec` runner authentication**: When authenticating with local user Application Default Credentials (ADC), configure `user_project_override = true` and `billing_project` on the `google` provider because `discoveryengine.googleapis.com` requires a quota project. Because `app_data_stores` reconciles engine `dataStoreIds` on every created engine (including minimal configurations), `curl`, `gcloud`, and `jq` must be installed in `PATH`. The `local-exec` helpers resolve tokens from `GOOGLE_OAUTH_ACCESS_TOKEN`, then `gcloud auth print-access-token` (honoring `GOOGLE_IMPERSONATE_SERVICE_ACCOUNT` / `CLOUDSDK_AUTH_IMPERSONATE_SERVICE_ACCOUNT`), then `gcloud auth application-default print-access-token`, and read the quota project from `GOOGLE_BILLING_PROJECT` / `CLOUDSDK_BILLING_QUOTA_PROJECT` (falling back to `project_id`).
+- **State-only destroy on singleton resources**: In `hashicorp/google`, `google_discovery_engine_acl_config`, `google_discovery_engine_user_store`, and `google_discovery_engine_widget_config` remove only Terraform state on destroy without deleting the underlying GCP configuration.
 
 ### Project-level companion IAM
 
@@ -259,12 +261,6 @@ module "gemini-enterprise" {
         display_name = "Intranet"
         kms_key      = "$kms_keys:eu"
       }
-      assistant = {
-        model_armor_config = {
-          response_template    = "$model_armor_templates:response"
-          user_prompt_template = "$model_armor_templates:prompt"
-        }
-      }
       widget_config = {
         access_settings = {
           enable_web_app                   = true
@@ -278,6 +274,14 @@ module "gemini-enterprise" {
         contractor-user = {
           member = "$iam_principals:contractors"
           role   = "roles/discoveryengine.agentspaceUser"
+        }
+      }
+    }
+    existing-app = {
+      assistant = {
+        model_armor_config = {
+          response_template    = "$model_armor_templates:response"
+          user_prompt_template = "$model_armor_templates:prompt"
         }
       }
     }
@@ -327,21 +331,21 @@ module "gemini-enterprise" {
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [project_id](variables.tf#L156) | Project ID where Gemini Enterprise resources are managed. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L158) | Project ID where Gemini Enterprise resources are managed. | <code>string</code> | ✓ |  |
 | [apps](variables-apps.tf#L17) | Gemini Enterprise applications, keyed by logical app ID. Omit 'engine' to adopt an existing Console-created app while managing its assistant, widget, gateway binding, and IAM. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [context](variables.tf#L17) | Context-specific interpolations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [data_connectors](variables-data-sources.tf#L17) | First-party and third-party SaaS data connectors in the location, keyed by logical connector ID and attached to apps via app_ids. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [data_stores](variables-data-sources.tf#L101) | Native Discovery Engine data stores in the location, keyed by logical store ID and attached to apps via app_ids. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [data_stores](variables-data-sources.tf#L98) | Native Discovery Engine data stores in the location, keyed by logical store ID and attached to apps via app_ids. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [deletion_protection](variables.tf#L35) | Prevent Terraform from destroying created engines, data stores, schemas, CMEK configs, and data connectors (sets deletion_policy to PREVENT instead of DELETE). | <code>bool</code> |  | <code>true</code> |
 | [egress_agent_gateway](variables.tf#L42) | Optional default Egress Agent Gateway resource ID bound to apps unless overridden per app. | <code>string</code> |  | <code>null</code> |
 | [encryption_config](variables.tf#L48) | Location-level CMEK configuration registered before stores and engines are created. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [idp_config](variables.tf#L59) | Location-level Discovery Engine identity provider (ACL) configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [location](variables.tf#L84) | Discovery Engine multi-region location (global, us, or eu). | <code>string</code> |  | <code>&#34;eu&#34;</code> |
-| [mcp_connectors](variables-data-sources.tf#L207) | Custom MCP server data connectors in the location, keyed by logical connector ID and attached to apps via app_ids. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [oauth_config](variables.tf#L103) | Default OAuth 2.0 configuration for Custom MCP connectors. Can be overridden per connector via mcp_connectors[*].oauth_config. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [prefix](variables.tf#L145) | Optional prefix prepended to created engine, data store, and connector IDs. | <code>string</code> |  | <code>null</code> |
-| [project_number](variables.tf#L162) | Optional project number, required when binding an Egress Agent Gateway or routing Custom MCP connectors through it. | <code>string</code> |  | <code>null</code> |
-| [user_store_config](variables.tf#L168) | Location-level default_user_store license assignment configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [mcp_connectors](variables-data-sources.tf#L204) | Custom MCP server data connectors in the location, keyed by logical connector ID and attached to apps via app_ids. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [oauth_config](variables.tf#L105) | Default OAuth 2.0 configuration for Custom MCP connectors. Can be overridden per connector via mcp_connectors[*].oauth_config. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [prefix](variables.tf#L147) | Optional prefix prepended to created engine, data store, and connector IDs. | <code>string</code> |  | <code>null</code> |
+| [project_number](variables.tf#L164) | Optional project number, required when binding an Egress Agent Gateway or routing Custom MCP connectors through it. | <code>string</code> |  | <code>null</code> |
+| [user_store_config](variables.tf#L170) | Location-level default_user_store license assignment configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 
 ## Outputs
 
@@ -359,11 +363,11 @@ module "gemini-enterprise" {
 | [data_store_ids](outputs.tf#L66) | Native data store resource IDs, keyed by store key. |  |
 | [data_stores](outputs.tf#L76) | Native data store resources, keyed by store key. |  |
 | [engine_ids](outputs.tf#L84) | Created Gemini Enterprise search engine resource IDs, keyed by app key. |  |
-| [engines](outputs.tf#L100) | Created Gemini Enterprise search engine resources, keyed by app key. |  |
-| [mcp_connector_ids](outputs.tf#L114) | Custom MCP data connector resource IDs, keyed by connector key (or '<connector>/<app>' when expanded across multiple gateway-bound apps). |  |
-| [mcp_connectors](outputs.tf#L124) | Custom MCP data connector resources, keyed by connector key (or '<connector>/<app>' when expanded across multiple gateway-bound apps). |  |
-| [user_store](outputs.tf#L132) | Location-level default user store resource. |  |
-| [user_store_id](outputs.tf#L137) | Location-level default user store resource ID. |  |
-| [widget_config_ids](outputs.tf#L142) | Search widget configuration resource IDs, keyed by app key. |  |
-| [widget_configs](outputs.tf#L149) | Search widget configuration resources, keyed by app key. |  |
+| [engines](outputs.tf#L101) | Created Gemini Enterprise search engine resources, keyed by app key. |  |
+| [mcp_connector_ids](outputs.tf#L116) | Custom MCP data connector resource IDs, keyed by connector key (or '<connector>/<app>' when expanded across multiple gateway-bound apps). |  |
+| [mcp_connectors](outputs.tf#L126) | Custom MCP data connector resources, keyed by connector key (or '<connector>/<app>' when expanded across multiple gateway-bound apps). |  |
+| [user_store](outputs.tf#L134) | Location-level default user store resource. |  |
+| [user_store_id](outputs.tf#L139) | Location-level default user store resource ID. |  |
+| [widget_config_ids](outputs.tf#L144) | Search widget configuration resource IDs, keyed by app key. |  |
+| [widget_configs](outputs.tf#L151) | Search widget configuration resources, keyed by app key. |  |
 <!-- END TFDOC -->

@@ -98,15 +98,12 @@ values:
     triggers_replace:
       agent_gateway: projects/project-id/locations/europe-west1/agentGateways/egress-gw
       collection_id: default_collection
-      engine_config: ddf5bb0515f84fda3ff0269b190bac33b7272cb6047b5993dce6e4f71d50bdb4
-      engine_id: intranet
   module.gemini-enterprise.terraform_data.app_data_stores["intranet"]:
     input: null
     output: null
     triggers_replace:
       collection_id: default_collection
       data_store_ids: '["bq-tools_mcp_data","sharepoint-corp_file"]'
-      engine_id: intranet
       native_stores: '[]'
   module.gemini-enterprise.terraform_data.mcp_action_config["bq-tools"]:
     input: null
