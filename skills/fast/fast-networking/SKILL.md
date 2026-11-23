@@ -33,7 +33,7 @@ This skill guides users from functional networking and security requirements—o
 1. **Step-by-Step by Default, Adaptive on Rich Input:**
    - **Default Mode (Conditional Interview DAG):** When the user starts with a general request (e.g., *"Help me define my FAST networking dataset"*), follow the Conditional Interview DAG in `references/1-requirements-to-topology.md`, asking only the questions that apply to the user's chosen branch (`2` turns for Single Shared VPC; `3` turns for Multi-VPC Hub & Spokes) and recommending sensible FAST defaults.
    - **Adaptive Mode (Diagram, IP Table, or Detailed Spec Provided):** When the user provides an architecture diagram (PNG/SVG/PDF/Draw.io), an IP table, or a detailed prompt upfront, extract all stated facts immediately, mark **Phase 1** completed, jump straight to **Phase 2 (Topology, IPAM & Plumbing Proposal)** with pre-filled defaults for any unspecified CIDRs/ASNs, and ask for a single sign-off before generating files.
-   - **Validation-Only Mode:** When the user points to an existing dataset directory and asks to validate or test it, run `uv run skills/fast/networking/scripts/validate_dataset.py <path>` directly and report the findings.
+   - **Validation-Only Mode:** When the user points to an existing dataset directory and asks to validate or test it, run `uv run skills/fast/fast-networking/scripts/validate_dataset.py <path>` directly and report the findings.
    - **Zero-Redundancy Rule:** Never ask the user to repeat a region, CIDR, environment name, connectivity choice, or workload type they already provided in their prompt or diagram.
 
 2. **Stage 2 Boundary ("Plumbing vs. Downstream Consumption"):**

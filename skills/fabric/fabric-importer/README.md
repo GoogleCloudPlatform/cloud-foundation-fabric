@@ -463,7 +463,7 @@ Three human-owned files govern the process. The agent may propose edits, but onl
 ## Repository Layout
 
 ```text
-skills/fabric-importer/
+skills/fabric/fabric-importer/
 ├── SKILL.md                     # Agent protocol and operational contract
 ├── README.md                    # Human operator guide and architecture overview
 ├── COVERAGE.md                  # Resource family maturity matrix (N / C / V)

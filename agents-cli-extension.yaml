@@ -21,8 +21,8 @@ description: Cloud Foundation Fabric Terraform module builder and FAST landing z
 
 skills:
   fabric-builder:
-    path: skills/fabric-builder
+    path: skills/fabric/fabric-builder
   fast-networking:
-    path: skills/fast/networking
+    path: skills/fast/fast-networking
   fast-prerequisites:
-    path: skills/fast/prerequisites
+    path: skills/fast/fast-prerequisites

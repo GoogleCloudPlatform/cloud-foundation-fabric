@@ -1,5 +1,5 @@
 ---
-name: contributing
+name: cff-contributing
 description: "End-to-end workflow for contributing to Cloud Foundation Fabric: triaging GitHub issues, proactive feature development, validating with tests and Policy Troubleshooter, and submitting sanitized Pull Requests. Use when addressing a Fabric GitHub issue, developing a module or FAST stage change, or preparing a branch for a pull request."
 ---
 

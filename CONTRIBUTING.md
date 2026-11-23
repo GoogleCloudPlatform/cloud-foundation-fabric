@@ -1380,4 +1380,4 @@ The tool can also be run so that it prints the generated output on standard outp
 
 ## Cutting a new release
 
-The release process has been codified into a Gemini CLI skill. Please refer to the [Release Process Skill](skills/maintenance/release-process/SKILL.md) for detailed instructions on how to cut a new release.
+The release process has been codified into a Gemini CLI skill. Please refer to the [Release Process Skill](skills/maintainer/cff-release/SKILL.md) for detailed instructions on how to cut a new release.

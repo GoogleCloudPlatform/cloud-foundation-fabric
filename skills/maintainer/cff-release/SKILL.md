@@ -1,5 +1,5 @@
 ---
-name: release-process
+name: cff-release
 description: Guide for cutting a new release of the Cloud Foundation Fabric (CFF) repository. Use this skill when asked to create, prepare, or draft a new release.
 ---
 
