@@ -115,3 +115,34 @@ Wave 1 is developed at current `master` while explicitly recording the authoring
 - **Single source of design truth with safe fallback:** `cff-contributing` and `cff-pr-review` share one canonical set of `design/`, `conventions/`, and `workflow/testing.md` files, while a lean root `AGENTS.md` keeps core guardrails and direct file pointers visible even when skills are not auto-loaded.
 - **Migration impact:** Existing `agents-cli` users keep `fabric-builder`, `fast-networking`, and `fast-prerequisites` under the same installed skill names (only internal repo paths in `agents-cli-extension.yaml` change); contributors using `skills/contributing`, `skills/maintenance/release-process`, or `GEMINI.md` update to `skills/contributor/cff-contributing`, `skills/maintainer/cff-release`, and `AGENTS.md` (documented with an `upgrade-note`).
 - **Reusable authoring and grading process:** Documenting the mining-to-eval loop and publishing the sanitized evaluation suite gives Fabric a repeatable way to evolve future skills (including deep FAST skills), grade skills mechanically across agents, and run reproducible evaluations against frozen snapshots.
+
+---
+
+## Implementation Tracker (temporary — remove before PR)
+
+<!-- TEMPORARY: Delete this entire section before opening the PR (covered in Step 5). -->
+
+### Settled branch decisions
+
+- Implement the ADR in a single PR on branch `ludo/skills-architecture` using clean atomic commits per step (one fresh session per major authoring step).
+- Leave `fabric-importer` out of `agents-cli-extension.yaml` for now.
+- Defer Step 6 (evaluation loop and `tools/skill-turn-harness/` revamp scope) until Steps 1–5 are complete.
+
+### Progress
+
+- [x] **Step 0 (preliminary) — Refresh `FACTORIES.md`:** Audited all 21 modules, 6 FAST stages, FAST addons, and FAST project templates; added `Schema` column (99/99 `*.schema.json` mapped, 0 broken links) and updated Maintenance Guide (`6f0fa0b1560a7779e322135436df154711504864`).
+- [x] **Step 1 — Hierarchy migration:** Moved all 6 existing skills into `skills/{fabric,fast,contributor,maintainer}/` with flat-safe leaf names matching `SKILL.md` frontmatter `name:`, updated `agents-cli-extension.yaml`, `skills/README.md`, `CONTRIBUTING.md`, and internal paths in `fast-networking` and `fabric-importer`; verified all 23 `fast-networking` and 225 `fabric-importer` unit tests pass (`a67638f46fe6c670da2cff96408c8b85cb5cb872`).
+- [ ] **Step 2 — Author `skills/contributor/cff-contributing/`:** Mine source material, settle the `design/` file split with the human, and replace the legacy `SKILL.md` with the lean router plus `design/`, `conventions/`, and `workflow/` files.
+- [ ] **Step 3 — Author `skills/maintainer/cff-pr-review/`:** Draft the standalone maintainer PR review skill referencing `../../contributor/cff-contributing/` criteria with zero rule duplication.
+- [ ] **Step 4 — Consumer skills (`fabric-factories` + `fabric-builder` polish):** Author `skills/fabric/fabric-factories/` anchored on `FACTORIES.md`, and apply the light polish to `skills/fabric/fabric-builder/` (frontmatter trigger, convention checks, handoff to `fabric-factories`).
+- [ ] **Step 5 — Reconciliation & PR prep:** Replace `AGENTS.md -> GEMINI.md` symlink with lean root `AGENTS.md` compass; align `CONTRIBUTING.md`, `skills/README.md`, `agents-cli-extension.yaml` (register `fabric-factories` and update `skills/fast/fast-networking/tests/test_validate_dataset.py` manifest assertion), and `tools/skill-turn-harness/playbooks/fast/prerequisites/*.yaml` (`link_paths`); flip ADR `Status` to `Accepted` and delete this temporary `Implementation Tracker` section.
+- [ ] **Step 6 — Verification & evaluation loop:** Discuss and execute evals / `tools/skill-turn-harness/` plan once Steps 1–5 are complete.
+
+### Next pickup (Step 2 — `cff-contributing`)
+
+Start by mining source material (via parallel reads or a read-only subagent) before proposing the exact `design/` file split and outline for sign-off:
+
+- `CONTRIBUTING.md` (66 KB), `GEMINI.md` (tutorials/patterns to migrate into `cff-contributing/`), `CURSED_KNOWLEDGE.md`, and `adrs/`.
+- Existing `skills/contributor/cff-contributing/SKILL.md` (25 KB mechanical workflow to split/distill into `workflow/`).
+- Golden-path modules (`modules/project`, `modules/compute-vm`, `modules/net-vpc`, `modules/project-factory`, `modules/net-vpc-factory`, `modules/vpc-sc`) and `FACTORIES.md`.
+- Note on tests in this environment: `uv run --with-requirements tests/requirements.txt` currently hits a resolution error on `tftest>=2.0.0`; run pure Python skill tests directly with `uv run --with pyyaml --with jsonschema --with pytest pytest ...` (or check local `.venv` / `~/venv` when Terraform plan tests are needed).
