@@ -356,12 +356,9 @@ As an example, the id of the folder defined in `folders/networking/prod/.config.
 
 ### Project context ids
 
-Project ids ise the `$project_ids:` namespace, with ids defined in two different ways:
+Project ids use the `$project_ids:` namespace, keyed by the YAML filename stem (dirname is stripped) for projects defined under both `var.factories_config.paths.projects` and `var.factories_config.paths.folders`. Project filenames must therefore be unique across both trees.
 
-- projects defined in the `var.factories_config.paths.project` tree use the filename (dirname is stripped)
-- projects defined in the `var.factories_config.paths.folders` tree use the full path (dirname is kept)
-
-As an example, the id of the project defined in the `projects/team-0/app-0-0.yaml` file will be accessible via `$project_ids:app-0-0`. The id of the project defined in the `folders/shared/iac-core-0.yaml` file will be accessible via `$project_ids:shared/iac-core-0`.
+As an example, the id of the project defined in `projects/team-0/app-0-0.yaml` is accessible via `$project_ids:app-0-0`, and the id of the project defined in `folders/shared/iac-core-0.yaml` is accessible via `$project_ids:iac-core-0`.
 
 ### Service account context ids
 
