@@ -17,13 +17,13 @@ Keep context lean by opening only the guide(s) matching the files you are author
 ## Core Workflow
 
 1. **Understand the request:** Identify the GCP resources, whether a standard module or YAML factory (`project-factory`, `net-vpc-factory`, `vpc-sc`, in-module `factories_config`) fits best, and the target Fabric release tag.
-2. **Inspect exact module and factory contracts:** Do not invent module variables, outputs, or YAML keys from memory. Query the live Fabric repository with `scripts/fabric.py`:
-   - List modules: `python3 scripts/fabric.py modules`
-   - Latest release tag: `python3 scripts/fabric.py release`
-   - Fetch module interface: `python3 scripts/fabric.py fetch readme|variables|outputs <module>` (accepts `--ref <tag>`)
-   - List factory-enabled modules and FAST stages, or inspect one target's keys and schemas: `python3 scripts/fabric.py factories [target]`
-   - Fetch JSON schemas (stdout or saved to a folder): `python3 scripts/fabric.py fetch schemas <module_or_stage> [--stage] [--ref <tag>] [--out schemas/]`
-   - Validate YAML factory files against `# yaml-language-server: $schema=...` modelines: `uv run --with pyyaml --with jsonschema python3 scripts/fabric.py validate <data_dir_or_file> --require-modeline`
+2. **Inspect exact module and factory contracts:** Do not invent module variables, outputs, or YAML keys from memory. Query Fabric using `scripts/fabric.py` from **this skill's directory** (resolve `scripts/fabric.py` relative to this `SKILL.md`, e.g. `<skill-dir>/scripts/fabric.py`, rather than searching inside a target Fabric checkout):
+   - List modules: `python3 <skill-dir>/scripts/fabric.py modules`
+   - Latest release tag: `python3 <skill-dir>/scripts/fabric.py release`
+   - Fetch module interface: `python3 <skill-dir>/scripts/fabric.py fetch readme|variables|outputs <module>` (accepts `--ref <tag>`)
+   - List factory-enabled modules and FAST stages, or inspect one target's keys and schemas: `python3 <skill-dir>/scripts/fabric.py factories [target]`
+   - Fetch JSON schemas (stdout or saved to a folder): `python3 <skill-dir>/scripts/fabric.py fetch schemas <module_or_stage> [--stage] [--ref <tag>] [--out schemas/]`
+   - Validate YAML factory files against `# yaml-language-server: $schema=...` modelines: `uv run --with pyyaml --with jsonschema python3 <skill-dir>/scripts/fabric.py validate <data_dir_or_file> --require-modeline`
    - If the host uses custom TLS interception, pass `--no-ssl-verify` before the subcommand.
 3. **Author HCL and/or YAML:** Prefer CFF modules over raw `google_*` resources, rely on module README examples, and validate every YAML dataset against its JSON schema.
 4. **Verify before finishing:** Run `terraform fmt`, `terraform validate`, and `terraform plan` (when Terraform is available and appropriate) plus `fabric.py validate` on any YAML files, then check the rationale-backed points below.

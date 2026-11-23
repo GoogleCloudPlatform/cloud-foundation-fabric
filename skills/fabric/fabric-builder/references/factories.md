@@ -10,13 +10,13 @@ Fabric uses YAML factories at three levels:
 - **Pure factories** manage collections of top-level entities from a dataset folder (`project-factory`, `net-vpc-factory`, `net-vpc-firewall`, `dataplex-aspect-types`, `data-catalog-tag-template`, `secops-rules`). Pure factories like `project-factory` and `net-vpc-factory` pair `factories_config = { basepath = "...", paths = { ... } }` with `data_defaults`, `data_overrides`, and (in `project-factory`) `data_merges`.
 - **FAST stage datasets** (`0-org-setup`, `1-vpcsc`, `2-networking`, `2-project-factory`, `2-security`, `3-secops-dev`) wrap module factories alongside stage-level loaders and a `defaults.yaml` file under `factories_config = { dataset = "...", paths = { ... } }`.
 
-Query exact `factories_config` keys, folder-vs-file expectations, and schema paths on demand instead of guessing:
+Query exact `factories_config` keys, folder-vs-file expectations, and schema paths on demand using `<skill-dir>/scripts/fabric.py` (resolved relative to `fabric-builder/SKILL.md`) instead of guessing:
 
 ```bash
-python3 scripts/fabric.py factories                  # list all factory modules and FAST stages
-python3 scripts/fabric.py factories project-factory  # inspect keys and schemas for one target
-python3 scripts/fabric.py fetch schemas project-factory --ref v54.0.0 --out schemas/
-python3 scripts/fabric.py fetch schemas 2-project-factory --stage --ref v54.0.0 --out schemas/
+python3 <skill-dir>/scripts/fabric.py factories                  # list all factory modules and FAST stages
+python3 <skill-dir>/scripts/fabric.py factories project-factory  # inspect keys and schemas for one target
+python3 <skill-dir>/scripts/fabric.py fetch schemas project-factory --ref v54.0.0 --out schemas/
+python3 <skill-dir>/scripts/fabric.py fetch schemas 2-project-factory --stage --ref v54.0.0 --out schemas/
 ```
 
 ## Schema-First Authoring and Modelines
