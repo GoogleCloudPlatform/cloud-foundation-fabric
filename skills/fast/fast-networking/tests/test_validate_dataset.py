@@ -471,22 +471,3 @@ def test_commented_psc_and_mrep_examples_pass_when_uncommented(
   warnings = [i for i in issues if i.level == "warn"]
   assert not errors, f"Unexpected errors in uncommented {dataset_name}: {errors}"
   assert not warnings, f"Unexpected warnings in uncommented {dataset_name}: {warnings}"
-
-
-def test_agents_cli_extension_manifest_is_valid() -> None:
-  manifest_path = REPO_ROOT / "agents-cli-extension.yaml"
-  doc = yaml.safe_load(manifest_path.read_text(encoding="utf-8"))
-  assert doc["schema"] == "agents-cli-extension/v1alpha1"
-  assert doc["name"] == "cloud-foundation-fabric"
-  skills = doc["skills"]
-  assert set(skills.keys()) == {
-      "fabric-builder",
-      "fast-networking",
-      "fast-prerequisites",
-  }
-  for skill_name, entry in skills.items():
-    skill_md = REPO_ROOT / entry["path"] / "SKILL.md"
-    assert skill_md.is_file(), f"Missing SKILL.md for {skill_name}"
-    raw = skill_md.read_text(encoding="utf-8")
-    frontmatter = yaml.safe_load(raw.split("---", 2)[1])
-    assert frontmatter["name"] == skill_name

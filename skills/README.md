@@ -4,7 +4,7 @@ This directory contains skills for AI agents to leverage Cloud Foundation Fabric
 
 ## Installing with `agents-cli`
 
-You can install the user-facing Fabric skills (`fabric-builder`, `fast-networking`, and `fast-prerequisites`) into your project's `.agents/skills/` directory (or globally into `~/.agents/skills/` with `--global`) using [`agents-cli`](https://google.github.io/agents-cli/guide/extensions/):
+You can install the user-facing Fabric skills (`fabric-builder`, `fabric-factories`, `fast-networking`, and `fast-prerequisites`) into your project's `.agents/skills/` directory (or globally into `~/.agents/skills/` with `--global`) using [`agents-cli`](https://google.github.io/agents-cli/guide/extensions/):
 
 ```bash
 agents-cli extension add GoogleCloudPlatform/cloud-foundation-fabric
@@ -16,7 +16,8 @@ Skills are organized into four audience-oriented buckets, and every leaf directo
 
 ### Fabric (`skills/fabric/`)
 
-- **[fabric-builder](./fabric/fabric-builder)**: Generates idiomatic Cloud Foundation Fabric (CFF) Terraform code using CFF modules. Use when users ask to create GCP resources, use Fabric modules, or generate Terraform code for Google Cloud.
+- **[fabric-builder](./fabric/fabric-builder)**: Generates idiomatic Cloud Foundation Fabric (CFF) Terraform code through module composition using CFF modules. Use when users ask to create GCP resources, compose Fabric modules into a root configuration, or generate Terraform HCL for Google Cloud (hands off YAML factory data authoring to `fabric-factories`).
+- **[fabric-factories](./fabric/fabric-factories)**: Authors, structures, and validates Cloud Foundation Fabric (CFF) YAML factory datasets across module factories (`project-factory`, `net-vpc-factory`, `vpc-sc`, and in-module `factories_config` keys) and FAST stages. Use when creating or editing Fabric YAML data files, configuring `factories_config`, writing `$context:` interpolation or `data_defaults`/`data_overrides`/`data_merges`, or validating YAML datasets against Fabric JSON schemas.
 - **[fabric-importer](./fabric/fabric-importer)**: Reverse-engineers live GCP resources into Cloud Foundation Fabric Terraform modules with native import blocks, driven by an agreed import manifest and verified by automated completeness and plan-convergence gates. Use when migrating or importing existing GCP infrastructure into Cloud Foundation Fabric or Terraform.
 
 ### FAST (`skills/fast/`)
@@ -26,8 +27,10 @@ Skills are organized into four audience-oriented buckets, and every leaf directo
 
 ### Contributor (`skills/contributor/`)
 
-- **[cff-contributing](./contributor/cff-contributing)**: End-to-end workflow for contributing to Cloud Foundation Fabric: triaging GitHub issues, proactive feature development, validating with tests and Policy Troubleshooter, and submitting sanitized Pull Requests. Use when addressing a Fabric GitHub issue, developing a module or FAST stage change, or preparing a branch for a pull request.
+- **[cff-contributing](./contributor/cff-contributing)**: Design-first contributor guide and PR workflow for Cloud Foundation Fabric. Use when implementing a Fabric GitHub issue, designing or modifying modules, YAML factories, schemas, or FAST boundaries, writing `tftest`/README tests, or preparing a Fabric pull request.
 
 ### Maintainer (`skills/maintainer/`)
 
+- **[cff-issue-triage](./maintainer/cff-issue-triage)**: Maintainer GitHub issue triage guide for Cloud Foundation Fabric. Use when triaging incoming Fabric issues or sweeping the backlog to classify bugs, enhancements, questions, duplicates, or out-of-scope proposals, verify claims against current code and released provider docs, recommend labels and disposition, and optionally hand off into `cff-contributing`.
+- **[cff-pr-review](./maintainer/cff-pr-review)**: Maintainer pull request review guide for Cloud Foundation Fabric. Use when reviewing a Fabric GitHub PR or local branch diff for architectural fit, canonical module and factory interfaces, HCL and OpenTofu correctness, test inventory accuracy, FAST blast radius, and repository hygiene.
 - **[cff-release](./maintainer/cff-release)**: Guide for cutting a new release of the Cloud Foundation Fabric (CFF) repository. Use this skill when asked to create, prepare, or draft a new release.

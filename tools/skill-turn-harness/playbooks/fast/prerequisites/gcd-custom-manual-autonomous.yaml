@@ -24,7 +24,6 @@ tmpdir:
     - tools
     - skills
     - .yamllint
-    - GEMINI.md
     - AGENTS.md
     - README.md
     - FACTORIES.md

@@ -37,6 +37,8 @@ If you feel like tackling it directly via a PR check out the quick developer wor
 
 For small or first time issues the simplest way is to fork our repo, but if you are a regular contributor or are developing a large addition, ask us to be added directly to the repo so you can work on local branches, it makes life easier for both of us!
 
+If you are working with an AI coding agent, start from [AGENTS.md](AGENTS.md) and the repository skills indexed in [skills/README.md](skills/README.md) ([cff-contributing](skills/contributor/cff-contributing/SKILL.md), [cff-pr-review](skills/maintainer/cff-pr-review/SKILL.md), and [cff-issue-triage](skills/maintainer/cff-issue-triage/SKILL.md)).
+
 Fork or clone and go through the usual edit/add/commit cycle until your code is ready.
 
 ```bash
@@ -1380,4 +1382,4 @@ The tool can also be run so that it prints the generated output on standard outp
 
 ## Cutting a new release
 
-The release process has been codified into a Gemini CLI skill. Please refer to the [Release Process Skill](skills/maintainer/cff-release/SKILL.md) for detailed instructions on how to cut a new release.
+The release process has been codified into an agent skill. Please refer to the [Release Process Skill](skills/maintainer/cff-release/SKILL.md) for detailed instructions on how to cut a new release.
