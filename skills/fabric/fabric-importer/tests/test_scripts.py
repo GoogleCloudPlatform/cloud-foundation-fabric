@@ -16,8 +16,8 @@
 integrity, manifest_init, manifest_from_state).
 
 Run with: uv run --with pyyaml --with pytest -m pytest \
-            skills/fabric-importer/tests -q
-      or: uv run --with pyyaml skills/fabric-importer/tests/test_scripts.py
+            skills/fabric/fabric-importer/tests -q
+      or: uv run --with pyyaml skills/fabric/fabric-importer/tests/test_scripts.py
 
 The scripts under test declare their dependencies inline (PEP 723), but
 this file is imported rather than executed as a script, so the `--with`

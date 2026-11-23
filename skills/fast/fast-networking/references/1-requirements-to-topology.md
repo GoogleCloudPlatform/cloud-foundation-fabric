@@ -13,7 +13,7 @@ Inspect the user's first message and any attached files silently—**never** ask
   1. Extract all stated facts (Projects, Single VPC vs. Hub & Spokes, regions, subnet CIDRs, interconnect/VPN links, NVAs, NCC hubs, peerings, DNS zones) and infer the required Stage 2 plumbing (e.g., GKE secondary ranges, `/23` `proxy_only: true` subnets for ALBs, `psa_configs` for Cloud SQL/AlloyDB, `$security_profile_groups:` for Cloud NGFW Enterprise).
   2. Mark **Phase 1** completed and jump straight to **Phase 2 (Unified Topology, IPAM & Plumbing Proposal)** (Section 4), pre-filling sensible defaults for any unspecified CIDRs/ASNs and highlighting only the remaining ambiguities for confirmation.
 - **If the user asks to clone & mutate an existing in-tree dataset:** Jump straight to **Phase 2 (Section 4)** showing the proposed delta and IPAM table against `fast/stages/2-networking/datasets/<name>/`.
-- **If the user only asks to validate an existing dataset on disk:** Run `uv run skills/fast/networking/scripts/validate_dataset.py <path>` directly and report the results without running the interview.
+- **If the user only asks to validate an existing dataset on disk:** Run `uv run skills/fast/fast-networking/scripts/validate_dataset.py <path>` directly and report the results without running the interview.
 
 ---
 

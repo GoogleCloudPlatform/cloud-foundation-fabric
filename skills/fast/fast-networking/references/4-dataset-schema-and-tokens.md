@@ -128,7 +128,7 @@ After writing the YAML files into the user's custom dataset directory:
 
 1. **Run the Bundled Validator Script (Mandatory Gate):**
    ```bash
-   uv run skills/fast/networking/scripts/validate_dataset.py <path/to/custom-dataset>
+   uv run skills/fast/fast-networking/scripts/validate_dataset.py <path/to/custom-dataset>
    ```
    - This script validates:
      1. Every YAML file against its JSON schema in `fast/stages/2-networking/schemas/`.
