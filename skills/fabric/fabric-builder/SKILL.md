@@ -41,6 +41,6 @@ Before returning generated Terraform code, verify every one of these recurring c
 
 - `variables.tf` declarations are sorted in strict alphabetical order.
 - No root `required_providers` or `required_version` constraints are declared (let Terraform resolve constraints from the consumed CFF modules).
-- No stray `terraform.tfvars` file is created unless explicitly requested by the user.
+- No stray `terraform.tfvars` file is created unless explicitly requested by the user (set user-provided or reasonable defaults directly in `variables.tf`).
 - `provider "google"` / `provider "google-beta"` blocks do not set `project`, `region`, or `zone` (pass those explicitly to modules).
 - All GitHub module sources pin the exact same release tag with `?ref=<tag>&depth=1`.
