@@ -57,20 +57,13 @@ uv run tools/tfdoc.py --replace modules/<module-name>
 uv run tools/schema_docs.py
 ```
 
-Run `tools/lint.sh` **and** the extra CI checks enforced by [.github/workflows/linting.yml](../../../../.github/workflows/linting.yml) that `tools/lint.sh` does not execute:
+Run `tools/lint.sh`, which mirrors [.github/workflows/linting.yml](../../../../.github/workflows/linting.yml) (boilerplate, `terraform fmt`, `tflint` on modules and FAST, `check_documentation.py`, `check_schema_docs.py`, `check_links.py`, `check_names.py`, `check_yaml_schema.py`, `duplicate-diff.py`, `yamllint`, `yapf`, `versions.tf`/`versions.tofu` diff checks, and `codespell`):
 
 ```bash
-# Core lint script (boilerplate, terraform fmt, check_documentation, check_schema_docs, check_links, check_names, yamllint, yapf, versions diff)
 tools/lint.sh
-
-# Additional CI-enforced checks not covered by tools/lint.sh
-(cd modules && tflint --recursive -f compact)
-python3 tools/tflint-fast.py
-python3 tools/check_yaml_schema.py modules fast
-python3 tools/duplicate-diff.py
-python3 tools/versions.py --check
-codespell
 ```
+
+> `tools/lint.sh` skips `tflint` and `codespell` with a notice if those binaries are not in `PATH`; CI always enforces them. If `versions.tf` or `versions.tofu` drift is reported, align all files with `uv run tools/versions.py --quiet`.
 
 ## Pre-Submission Self-Review
 
