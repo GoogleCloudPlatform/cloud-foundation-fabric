@@ -64,7 +64,7 @@ skills/contributor/cff-contributing/
 │   ├── interfaces.md                    # interface design principles (mostly modules, plus cross-cutting interface grammar)
 │   ├── modules.md                       # logical-entity boundaries, ownership, IAM/context/outputs, when NOT to add a module
 │   ├── factories.md                     # in-module vs pure factories, two-tier splits (project + project-iam), DAG invariants, schemas
-│   └── fast-seam.md                     # thin module-to-FAST boundary contract for Wave 1 (deep FAST internals deferred)
+│   └── fast.md                          # thin module-to-FAST boundary contract for Wave 1 (deep FAST internals deferred)
 ├── conventions/                         # coding and schema conventions
 │   └── hcl.md                           # compact optional(), maps vs lists, context lookups, OpenTofu nulls, permadiffs, style
 └── workflow/                            # testing and mechanical PR lifecycle (out of SKILL.md so it never drowns design turns)
@@ -72,9 +72,9 @@ skills/contributor/cff-contributing/
     └── pr-lifecycle.md                  # branches, lint.sh, tfdoc, schema_docs, duplicate-diff, versions.py, E2E, PII/PR body
 ```
 
-*(Note on `design/` granularity: keeping **interface design** explicit — primarily modules while capturing cross-cutting principles that apply across modules, factories, and FAST seams — is a Wave 1 requirement; the exact file boundaries inside `design/` will be finalized while mining source material.)*
+*(Note on `design/` granularity: keeping **interface design** explicit — primarily modules while capturing cross-cutting principles that apply across modules, factories, and FAST boundaries — is a Wave 1 requirement; the exact file boundaries inside `design/` will be finalized while mining source material.)*
 
-**Where Wave 1 draws the FAST line:** FAST stages are their own world of complexity. Wave 1 covers `modules` + `factories` + a concise `fast-seam.md` covering cross-cutting PR boundaries (factories belong in modules unless a stage iterates standard modules, `duplicate-diff.py` schema sync into FAST stages, `tftest.yaml`). Deep FAST stage architecture (`0-org-setup`, `1-vpcsc`, `2-networking`, `2-security` internals) is deferred to a later pass — either expanding `design/fast.md` inside `cff-contributing/` or adding a dedicated `skills/contributor/cff-fast/` skill.
+**Where Wave 1 draws the FAST line:** FAST stages are their own world of complexity. Wave 1 covers `modules` + `factories` + a concise `fast.md` covering cross-cutting PR boundaries (factories belong in modules unless a stage iterates standard modules, `duplicate-diff.py` schema sync into FAST stages, `tftest.yaml`). Deep FAST stage architecture (`0-org-setup`, `1-vpcsc`, `2-networking`, `2-security` internals) is deferred to a later pass — either expanding `design/fast.md` inside `cff-contributing/` or adding a dedicated `skills/contributor/cff-fast/` skill.
 
 **`skills/maintainer/cff-pr-review/` (new):** Standalone top-level maintainer skill with a distinct trigger and diagnostic posture (starting from an existing diff rather than a feature request). Because both skills operate inside a `cloud-foundation-fabric` checkout, `cff-pr-review/SKILL.md` explicitly points to `../../contributor/cff-contributing/design/`, `conventions/`, and `workflow/testing.md` as its canonical criteria (zero rule duplication) and focuses its own text strictly on reviewing:
 
@@ -133,17 +133,17 @@ Wave 1 is developed at current `master` while explicitly recording the authoring
 
 - [x] **Step 0 (preliminary) — Refresh `FACTORIES.md`:** Audited all 21 modules, 6 FAST stages, FAST addons, and FAST project templates; added `Schema` column (99/99 `*.schema.json` mapped, 0 broken links) and updated Maintenance Guide (`6f0fa0b1560a7779e322135436df154711504864`).
 - [x] **Step 1 — Hierarchy migration:** Moved all 6 existing skills into `skills/{fabric,fast,contributor,maintainer}/` with flat-safe leaf names matching `SKILL.md` frontmatter `name:`, updated `agents-cli-extension.yaml`, `skills/README.md`, `CONTRIBUTING.md`, and internal paths in `fast-networking` and `fabric-importer`; verified all 23 `fast-networking` and 225 `fabric-importer` unit tests pass (`a67638f46fe6c670da2cff96408c8b85cb5cb872`).
-- [ ] **Step 2 — Author `skills/contributor/cff-contributing/`:** Mine source material, settle the `design/` file split with the human, and replace the legacy `SKILL.md` with the lean router plus `design/`, `conventions/`, and `workflow/` files.
+- [x] **Step 2 — Author `skills/contributor/cff-contributing/`:** Mined `CONTRIBUTING.md`, `GEMINI.md`, `CURSED_KNOWLEDGE.md`, `FACTORIES.md`, 2023–2026 ADRs, and golden-path modules; settled the 8-file layout (`SKILL.md` lean snippet-free router with always-on baselines + load triggers, `design/{modules,interfaces,factories,fast}.md`, `conventions/hcl.md`, `workflow/{testing,pr-lifecycle}.md`), verified links/anchors and boilerplate (`be42cdb45a649d98f0ea1eea71daee86643d0a7f`).
 - [ ] **Step 3 — Author `skills/maintainer/cff-pr-review/`:** Draft the standalone maintainer PR review skill referencing `../../contributor/cff-contributing/` criteria with zero rule duplication.
 - [ ] **Step 4 — Consumer skills (`fabric-factories` + `fabric-builder` polish):** Author `skills/fabric/fabric-factories/` anchored on `FACTORIES.md`, and apply the light polish to `skills/fabric/fabric-builder/` (frontmatter trigger, convention checks, handoff to `fabric-factories`).
 - [ ] **Step 5 — Reconciliation & PR prep:** Replace `AGENTS.md -> GEMINI.md` symlink with lean root `AGENTS.md` compass; align `CONTRIBUTING.md`, `skills/README.md`, `agents-cli-extension.yaml` (register `fabric-factories`), and `tools/skill-turn-harness/playbooks/fast/prerequisites/*.yaml` (`link_paths`); relocate `test_agents_cli_extension_manifest_is_valid` from `skills/fast/fast-networking/tests/test_validate_dataset.py` into a repo-level test (`tests/skills/`) covering `agents-cli-extension.yaml` plus the flat-install naming invariant across all `skills/*/*/`; flip ADR `Status` to `Accepted` and delete this temporary `Implementation Tracker` section.
 - [ ] **Step 6 — Verification & evaluation loop:** Discuss and execute evals / `tools/skill-turn-harness/` plan once Steps 1–5 are complete.
 
-### Next pickup (Step 2 — `cff-contributing`)
+### Next pickup (Step 3 — `cff-pr-review`)
 
-Start by mining source material (via parallel reads or a read-only subagent) before proposing the exact `design/` file split and outline for sign-off:
+Draft `skills/maintainer/cff-pr-review/SKILL.md` (and any compact supporting references if genuinely warranted) with zero rule duplication against `skills/contributor/cff-contributing/`:
 
-- `CONTRIBUTING.md` (66 KB), `GEMINI.md` (tutorials/patterns to migrate into `cff-contributing/`), `CURSED_KNOWLEDGE.md`, and `adrs/`.
-- Existing `skills/contributor/cff-contributing/SKILL.md` (25 KB mechanical workflow to split/distill into `workflow/`).
-- Golden-path modules (`modules/project`, `modules/compute-vm`, `modules/net-vpc`, `modules/project-factory`, `modules/net-vpc-factory`, `modules/vpc-sc`) and `FACTORIES.md`.
+- Read `skills/contributor/cff-contributing/SKILL.md`, `design/{modules,interfaces,factories,fast}.md`, `conventions/hcl.md`, and `workflow/testing.md` so review criteria point directly to the exact files and sections (`../../contributor/cff-contributing/...`).
+- Keep skill prose free of internal rollout jargon (no "Wave 1", no "seam") and use real repo paths (`fast/project-templates/`, `modules/<module>/recipe-*`, `default-versions.tf`/`default-versions.tofu`).
+- Focus `cff-pr-review` strictly on reviewing from an existing diff or PR: Step 0 architectural triage, diff-level correctness/regression checks (OpenTofu compatibility, `try()`/`for_each`, `!= null` permadiffs, dependency tiering on outputs, missing `context`/`depends_on`, resource-management unison across `organization`/`folder`/`project`, stale `.schema.json`/`.schema.md`/`duplicate-diff.py` copies, missing or unaudited test inventory diffs, `**Breaking Changes**`/`upgrade-note`, `default-versions.*` drift), verifying claims against released provider schemas and sibling modules before commenting, and separating blocking defects from nits with exact file/line evidence.
 - Note on tests in this environment: `uv run --with-requirements tests/requirements.txt` currently hits a resolution error on `tftest>=2.0.0`; run pure Python skill tests directly with `uv run --with pyyaml --with jsonschema --with pytest pytest ...` (or check local `.venv` / `~/venv` when Terraform plan tests are needed).
