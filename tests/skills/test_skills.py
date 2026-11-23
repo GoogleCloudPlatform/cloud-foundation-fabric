@@ -33,7 +33,6 @@ CONSUMER_BUCKETS = {"fabric", "fast"}
 
 EXPECTED_MANIFEST_SKILLS = {
     "fabric-builder",
-    "fabric-factories",
     "fast-networking",
     "fast-prerequisites",
 }

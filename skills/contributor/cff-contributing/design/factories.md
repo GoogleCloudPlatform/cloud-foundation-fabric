@@ -51,10 +51,12 @@ See [context-locals ADR](../../../../adrs/20251013-context-locals.md) and [templ
 
 Terraform treats a variable or local (including `local.ctx`) as a single node in its dependency graph ([context-locals ADR](../../../../adrs/20251013-context-locals.md), [CURSED_KNOWLEDGE.md](../../../../CURSED_KNOWLEDGE.md)). A single module invocation cannot both create resources (such as projects, custom roles, tags, and service agents) and consume those sibling outputs through `context` in the same call without creating a cycle.
 
-`modules/project-factory` solves this with a strict **two-tier split** for both folders (`folder-1..4` + `folder-1..4-iam`) and projects (`projects` + `projects-iam`):
+`modules/project-factory` solves this with a strict **multi-stage split** for folders (`folder-1..4` -> `folder-1..4-iam`) and projects (`projects` -> KMS/SAs/WIF -> `projects-iam` -> encrypted sub-resources):
 
 - **Pass 1 (`module.projects`, `module.folder-1..4`):** Creates the core entity, enables services, creates custom roles, tag keys/values (`tags_config = { ignore_iam = true }`), primary service agents (`grant_service_agent_editor = false`), logging sinks/metrics, quotas, and non-IAM factories. Exposes `project_ids`, `project_numbers`, `service_agents`, `custom_role_id`, `tag_keys`, and `tag_values`.
-- **Pass 2 (`module.projects-iam`, `module.folder-1..4-iam`):** Reuses the Pass 1 entity (`project_reuse = { use_data_source = false, attributes = { ... } }` or `folder_create = false`) with an expanded `context` carrying all Pass 1 outputs (`iam_principals`, `custom_roles`, `project_ids`, `kms_keys`, `tag_keys`, `tag_values`, `condition_vars`, `tag_vars`). Manages IAM bindings, org policies, PAM entitlements, tag bindings, Shared VPC, CMEK, Cloud Armor policy attachment, Model Armor, and external service-agent bindings.
+- **Intermediate Pass-1 consumers (`projects-kms.tf`, `projects-service-accounts.tf`, `projects-wif.tf`):** Consume `module.projects[...].project_id` so their outputs (`kms_keys`, `service_accounts` IAM emails) can be injected into Pass 2 `context`.
+- **Pass 2 (`module.projects-iam`, `module.folder-1..4-iam`):** Reuses the Pass 1 entity (`project_reuse = { use_data_source = false, attributes = { ... } }` or `folder_create = false`) with an expanded `context` carrying all Pass 1 and intermediate outputs (`iam_principals`, `custom_roles`, `project_ids`, `kms_keys`, `tag_keys`, `tag_values`, `condition_vars`, `tag_vars`). Settles IAM bindings, org policies, PAM entitlements, tag bindings, Shared VPC, CMEK service-agent bindings (`service_encryption_key_ids`), Cloud Armor policy attachment, Model Armor, and external service-agent bindings.
+- **Post-Pass 2 encrypted sub-resources (`module.buckets`, `module.log-buckets`, `module.pubsub`):** Hang deliberately off `module.projects-iam[...].project_id` so `module.kms` keys, CMEK service-agent bindings, and project-level org policies are already applied before GCS buckets, logging buckets, or Pub/Sub topics are created. Moving them back onto `module.projects` breaks CMEK/org-policy ordering, and feeding their outputs back into `module.projects-iam` creates a cycle.
 
 ```hcl
 # From modules/project-factory/projects.tf (Pass 2 reusing Pass 1)
@@ -82,9 +84,10 @@ module "projects-iam" {
 
 **Placement rule when modifying `project-factory`:**
 
-- Place a new attribute or sub-factory in **Pass 1** only if it is required to create the entity or produces outputs that Pass 2 or parallel resource modules (`projects-buckets.tf`, `projects-service-accounts.tf`, `projects-kms.tf`, etc.) depend on.
-- Place anything that can reference IAM principals, custom roles, tags, sibling projects, or expanded `context` in **Pass 2** (note `org_policies` and `pam_entitlements` are deliberately filtered out of Pass 1 `factories_config` and run in Pass 2).
-- Never introduce a dependency from Pass 1 back onto Pass 2 outputs, and never enable the same resource (such as `grant_service_agent_editor` or `create_primary_agents`) in both passes.
+- Place a new attribute or sub-factory in **Pass 1** only if it is required to create the entity or produces outputs that Pass 2 or Pass-1 consumers (`projects-kms.tf`, `projects-service-accounts.tf`, `projects-wif.tf`) need.
+- Place anything that consumes IAM principals, custom roles, tags, KMS keys, sibling projects, or expanded `context` in **Pass 2** (note `org_policies` and `pam_entitlements` are deliberately filtered out of Pass 1 `factories_config` and run in Pass 2).
+- Place sub-resource modules that rely on settled CMEK bindings or project-level org policies (such as `buckets`, `log-buckets`, `pubsub`) **downstream of Pass 2** (`module.projects-iam`).
+- Keep Pass 1 free of dependencies back onto Pass 2 outputs, and enable each resource (such as `grant_service_agent_editor` or `create_primary_agents`) in only one pass so Terraform does not try to manage the same resource twice.
 
 ## `data_defaults`, `data_overrides`, and `data_merges`
 

@@ -30,7 +30,7 @@ done
 curl -s https://raw.githubusercontent.com/hashicorp/terraform-provider-google/v8.12.0/website/docs/r/<resource>.html.markdown -o scratch/<resource>_doc.md
 ```
 
-3. **Provider minimum version bumps:** Check [default-versions.tf](../../../../default-versions.tf). If your feature requires a newer released provider version, bump repo-wide (never edit individual module `versions.tf` / `versions.tofu` files by hand):
+3. **Provider minimum version bumps:** Every module pins its constraints in `versions.tf` and `versions.tofu`, kept identical to [default-versions.tf](../../../../default-versions.tf) / [default-versions.tofu](../../../../default-versions.tofu) so consumers can compose modules without version conflicts. If your feature requires a newer released provider version, update the repo-wide defaults and propagate across all modules rather than diverging one module or introducing a new provider:
 
 ```bash
 uv run tools/versions.py --provider-min-version <x.y.z> --write-defaults

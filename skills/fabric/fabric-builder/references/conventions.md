@@ -22,8 +22,8 @@ When generating Terraform code that consumes Cloud Foundation Fabric modules, yo
 
 ## 4. Factories
 - **When to Use Factories:** Use factories when managing many similar resources (projects, folders, VPCs, subnets, firewall rules, org policies, VPC-SC perimeters) so YAML configuration data stays cleanly separated from Terraform logic.
-- **Wiring in HCL:** Configure `factories_config` on the module call (for example `factories_config = { basepath = "data" }` on `project-factory` or `net-vpc-factory`, or key-specific folder/file paths on in-module factories such as `net-vpc`, `net-vpc-firewall`, `organization`, `folder`, `project`, and `vpc-sc`).
-- **Authoring & Validating YAML Data:** Hand off YAML dataset authoring, `# yaml-language-server: $schema=...` modelines, `$context:` interpolation, `data_defaults`/`data_overrides`/`data_merges` precedence, and JSON-schema validation to the `fabric-factories` skill.
+- **Discovering Keys & Schemas:** Run `python3 scripts/fabric.py factories [target]` to inspect exact `factories_config` keys and schema paths without guessing, and `python3 scripts/fabric.py fetch schemas <target> [--stage] [--ref <tag>]` to pull the JSON schema.
+- **Wiring & Authoring YAML Data:** Configure `factories_config` on the module call (for example `factories_config = { basepath = "data" }` on `project-factory` or `net-vpc-factory`, or key-specific folder/file paths on in-module factories), and follow [factories.md](factories.md) for `# yaml-language-server: $schema=...` modelines, `$context:` interpolation, precedence, and schema validation (`scripts/fabric.py validate`).
 
 ## 5. Style for Root Modules
 - **File Structure:** Make file structure dependent on size. For small configurations, use a single `main.tf`. For larger configurations, split into multiple files grouped by resource type (e.g., `main.tf` for general elements, `networking.tf`, `compute.tf`, etc.).

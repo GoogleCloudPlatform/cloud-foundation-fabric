@@ -4,7 +4,7 @@ This directory contains skills for AI agents to leverage Cloud Foundation Fabric
 
 ## Installing with `agents-cli`
 
-You can install the user-facing Fabric skills (`fabric-builder`, `fabric-factories`, `fast-networking`, and `fast-prerequisites`) into your project's `.agents/skills/` directory (or globally into `~/.agents/skills/` with `--global`) using [`agents-cli`](https://google.github.io/agents-cli/guide/extensions/):
+You can install the user-facing Fabric skills (`fabric-builder`, `fast-networking`, and `fast-prerequisites`) into your project's `.agents/skills/` directory (or globally into `~/.agents/skills/` with `--global`) using [`agents-cli`](https://google.github.io/agents-cli/guide/extensions/):
 
 ```bash
 agents-cli extension add GoogleCloudPlatform/cloud-foundation-fabric
@@ -16,8 +16,7 @@ Skills are organized into four audience-oriented buckets, and every leaf directo
 
 ### Fabric (`skills/fabric/`)
 
-- **[fabric-builder](./fabric/fabric-builder)**: Generates idiomatic Cloud Foundation Fabric (CFF) Terraform code through module composition using CFF modules. Use when users ask to create GCP resources, compose Fabric modules into a root configuration, or generate Terraform HCL for Google Cloud (hands off YAML factory data authoring to `fabric-factories`).
-- **[fabric-factories](./fabric/fabric-factories)**: Authors, structures, and validates Cloud Foundation Fabric (CFF) YAML factory datasets across module factories (`project-factory`, `net-vpc-factory`, `vpc-sc`, and in-module `factories_config` keys) and FAST stages. Use when creating or editing Fabric YAML data files, configuring `factories_config`, writing `$context:` interpolation or `data_defaults`/`data_overrides`/`data_merges`, or validating YAML datasets against Fabric JSON schemas.
+- **[fabric-builder](./fabric/fabric-builder)**: Generates idiomatic Cloud Foundation Fabric (CFF) Terraform configurations and schema-validated YAML factory datasets (`project-factory`, `net-vpc-factory`, `vpc-sc`, in-module `factories_config`, and FAST stage datasets). Includes `scripts/fabric.py` for live module, factory catalog, and JSON schema lookups plus YAML validation.
 - **[fabric-importer](./fabric/fabric-importer)**: Reverse-engineers live GCP resources into Cloud Foundation Fabric Terraform modules with native import blocks, driven by an agreed import manifest and verified by automated completeness and plan-convergence gates. Use when migrating or importing existing GCP infrastructure into Cloud Foundation Fabric or Terraform.
 
 ### FAST (`skills/fast/`)

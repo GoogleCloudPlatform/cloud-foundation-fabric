@@ -17,13 +17,11 @@
 
 schema: agents-cli-extension/v1alpha1
 name: cloud-foundation-fabric
-description: Cloud Foundation Fabric Terraform module builder, YAML factory, and FAST landing zone skills.
+description: Cloud Foundation Fabric Terraform module and YAML factory builder plus FAST landing zone skills.
 
 skills:
   fabric-builder:
     path: skills/fabric/fabric-builder
-  fabric-factories:
-    path: skills/fabric/fabric-factories
   fast-networking:
     path: skills/fast/fast-networking
   fast-prerequisites:
