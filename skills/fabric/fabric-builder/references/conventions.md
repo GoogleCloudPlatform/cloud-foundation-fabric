@@ -21,15 +21,9 @@ When generating Terraform code that consumes Cloud Foundation Fabric modules, yo
 - **Implicit Dependencies:** Avoid explicit `depends_on` unless absolutely necessary. Rely on implicit dependencies (passing outputs to inputs) for better readability and maintainability.
 
 ## 4. Factories
-- **When to Use Factories:** Use factories when you need to manage a large number of similar resources (e.g., projects, VPCs, firewall rules) without duplicating module blocks. Factories separate configuration data (in YAML files) from Terraform logic.
-- **Main Modules with Factory Support:**
-  - `project-factory`: For bulk creation of projects, folders, and budgets.
-  - `net-vpc-factory`: For bulk creation of VPCs and associated resources.
-  - `net-vpc`: Supports loading subnets and internal ranges from folders via `subnets_folder` and `internal_ranges_folder` keys in `factories_config`.
-  - `net-vpc-firewall`: Supports loading firewall rules from a folder via `rules_folder`.
-  - `organization` and `folder`: Support loading organization policies and custom roles.
-  - `vpc-sc`: Supports loading access levels and service perimeters.
-- **Usage:** Pass the path to the directory containing YAML files to the `factories_config` variable of the respective module.
+- **When to Use Factories:** Use factories when managing many similar resources (projects, folders, VPCs, subnets, firewall rules, org policies, VPC-SC perimeters) so YAML configuration data stays cleanly separated from Terraform logic.
+- **Wiring in HCL:** Configure `factories_config` on the module call (for example `factories_config = { basepath = "data" }` on `project-factory` or `net-vpc-factory`, or key-specific folder/file paths on in-module factories such as `net-vpc`, `net-vpc-firewall`, `organization`, `folder`, `project`, and `vpc-sc`).
+- **Authoring & Validating YAML Data:** Hand off YAML dataset authoring, `# yaml-language-server: $schema=...` modelines, `$context:` interpolation, `data_defaults`/`data_overrides`/`data_merges` precedence, and JSON-schema validation to the `fabric-factories` skill.
 
 ## 5. Style for Root Modules
 - **File Structure:** Make file structure dependent on size. For small configurations, use a single `main.tf`. For larger configurations, split into multiple files grouped by resource type (e.g., `main.tf` for general elements, `networking.tf`, `compute.tf`, etc.).
