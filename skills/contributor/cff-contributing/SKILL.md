@@ -1,14 +1,11 @@
 ---
 name: cff-contributing
-description: "Design-first contributor guide and PR workflow for Cloud Foundation Fabric. Use when triaging Fabric GitHub issues, designing or modifying modules, YAML factories, schemas, or FAST boundaries, writing tftest/README tests, or preparing a Fabric pull request."
+description: "Design-first contributor guide and PR workflow for Cloud Foundation Fabric. Use when implementing a Fabric GitHub issue, designing or modifying modules, YAML factories, schemas, or FAST boundaries, writing tftest/README tests, or preparing a Fabric pull request. For triaging incoming GitHub issues or sweeping the issue backlog, use cff-issue-triage instead."
 ---
 
 # Contributing to Cloud Foundation Fabric
 
-Design-first entry skill for contributing to Cloud Foundation Fabric (CFF). Identify your entry mode before starting (ask if unclear):
-
-- **Mode A — Issue Triage & Bug Fix:** Addressing a GitHub issue (`gh issue view <n>`). Complete Step 0 and Pre-Design Research first, then stop at the **Triage Disposition** gate.
-- **Mode B — Proactive Development & PR Prep:** Building a feature, refactoring, or preparing an existing branch. Complete Step 0 and Pre-Design Research, then stop at **Design Sign-off** before writing code.
+Design-first entry skill for implementing changes and preparing pull requests in Cloud Foundation Fabric (CFF). For triaging incoming GitHub issues or sweeping the issue backlog, use [cff-issue-triage](../../maintainer/cff-issue-triage/SKILL.md) first. If implementing an existing issue, inspect it via `gh issue view <n>`, complete Step 0 and Pre-Design Research, and stop at **Design Sign-off** before writing code (skippable only for trivial, obvious fixes).
 
 ## Step 0: Fit, Boundary, and Honest-Stop Check
 
@@ -18,7 +15,7 @@ Before designing or coding, verify the change actually belongs in Fabric:
 2. **Canonical interfaces and resource-management parity:** Reuse Fabric's canonical interfaces verbatim (`iam*`, org policies, tags, log sinks, secrets, `context`, bindings) rather than inventing variants. The three resource management modules (`organization`, `folder`, `project`) always move in unison for every shared feature they support. Service modules never grant project-level companion IAM (expose wiring outputs instead).
 3. **Provider selection and repo-wide version constraints:** Prefer the `google` provider, use `google-beta` only on specific resources when a feature exists only there, avoid `google-nightly`, and confirm features exist in a released provider version. The entire repo pivots around a single set of provider constraints in root [default-versions.tf](../../../default-versions.tf) and [default-versions.tofu](../../../default-versions.tofu): constraints live only in modules (save for corner cases), and bumping a constraint is never a per-module edit — always a repo-wide update via `tools/versions.py`.
 4. **Honest stop on ambiguity:** If requirements, target boundaries, or trade-offs are under-specified, stop and ask instead of guessing an interface.
-5. **Mode A issue discipline:** If an issue fails the fit test, report your reasoning to the human and stop — never comment on, label, or close GitHub issues yourself.
+5. **Issue discipline:** If a linked GitHub issue fails the fit test, report your reasoning to the human and stop — never comment on, label, or close GitHub issues yourself.
 
 ## The Zen of Fabric
 
@@ -48,7 +45,7 @@ Use the baselines below on every change; open the linked guide whenever its trig
 | [design/fast.md](design/fast.md) | High-blast-radius modules (`project`, `folder`, `organization`, `net-vpc*`, `vpc-sc`, `net-cloud-armor`, `billing-account`, `iam-service-account`) carry duplicated schemas/files checked by `duplicate-diff.py` and `check_yaml_schema.py`. | Changing a FAST stage or any module with FAST schema or factory impact. |
 | [conventions/hcl.md](conventions/hcl.md) | 79-char lines; strict alphabetical `variables*.tf` and `outputs*.tf`; `_` private locals; `!= null` (not `== true`) on dynamic blocks to avoid permadiffs; no `provider::` functions (OpenTofu); `== null` instead of `try()` on partially-known `for_each` maps. | Writing non-trivial locals, `context` lookups, dynamic blocks, or resource refactors. |
 | [workflow/testing.md](workflow/testing.md) | Any resource-block change requires updated test inventories (`generate_plan_summary.py --save` + mandatory `git diff tests/` audit); test directories use underscores (`tests/modules/net_vpc`); run `pytest` on impacted suites and README examples. | Authoring `# tftest` examples, `tftest.yaml` or `context` tests, or debugging locals with `terraform_data`. |
-| [workflow/pr-lifecycle.md](workflow/pr-lifecycle.md) | Run `tools/lint.sh` and `tfdoc.py`; capitalized imperative PR titles (no Conventional Commits); scrub all PII; include `upgrade-note` for breaking changes; never edit `CHANGELOG.md`. | Running Mode A issue triage, provider version bumps, full CI lint checks, pre-PR self-review, live E2E sandbox verification, or PR submission. |
+| [workflow/pr-lifecycle.md](workflow/pr-lifecycle.md) | Run `tools/lint.sh` and `tfdoc.py`; capitalized imperative PR titles (no Conventional Commits); scrub all PII; include `upgrade-note` for breaking changes; never edit `CHANGELOG.md`. | Running provider research or version bumps, full CI lint checks, pre-PR self-review, live E2E sandbox verification, or PR submission. |
 
 ## Human-in-the-Loop Gates
 
@@ -56,7 +53,6 @@ Keep reversible mechanical steps (linting, tests, `tfdoc`, inventory regeneratio
 
 | Gate | When | What the human decides |
 | :--- | :--- | :--- |
-| **Triage Disposition** | End of Mode A triage | Proceed, reject, or escalate the GitHub issue. |
 | **Design Sign-off** | Before writing code | Approves target module(s), variable/output interface, provider include/exclude list, and any provider version bump. Mandatory for features and interface changes; skippable for trivial obvious fixes. |
 | **E2E Opt-in** | After tests & self-review pass | Whether to deploy live (providing a sandbox project ID authorizes `-auto-approve` deploy and destroy). |
 | **Behavioral Verification Opt-in** | After E2E read-back passes | Whether to run live runtime/traffic checks given described time and cost. |

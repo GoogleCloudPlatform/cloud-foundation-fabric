@@ -1,17 +1,13 @@
-# Issue Triage, Linting, E2E, and PR Lifecycle
+# Linting, E2E, and PR Lifecycle
 
-This guide covers the mechanical end-to-end contribution workflow: Mode A issue triage, provider research and version bumps, full CI lint parity, pre-submission self-review, optional live E2E verification, and sanitized PR submission.
+This guide covers the mechanical end-to-end contribution workflow: provider research and version bumps, branching, full CI lint parity, pre-submission self-review, optional live E2E verification, and sanitized PR submission. For triaging incoming GitHub issues or sweeping the issue backlog, use [cff-issue-triage](../../../maintainer/cff-issue-triage/SKILL.md) first.
 
-## Entry Modes and Human-in-the-Loop Gates
+## Human-in-the-Loop Gates
 
-- **Mode A — Issue Triage & Bug Fix:** Working from a GitHub issue (`gh issue view <issue-number>`). Complete Step 0 fit assessment and provider research first, then stop at the **Triage Disposition** gate. Never comment on, label, or close issues yourself — issue disposition is a maintainer action.
-- **Mode B — Proactive Development & PR Prep:** Building a feature, refactoring, or preparing an existing branch. Start at **Design Sign-off** before writing code.
-
-Gates are **blocking**: if running non-interactively and you cannot obtain an answer, stop — never assume approval.
+Gates are **blocking**: if running non-interactively and you cannot obtain an answer, stop — never assume approval. When implementing from an existing GitHub issue (`gh issue view <issue-number>`), never comment on, label, or close issues yourself.
 
 | Gate | When | What the human decides |
 | :--- | :--- | :--- |
-| **Triage Disposition** | End of Mode A triage | Proceed, reject, or escalate the issue. |
 | **Design Sign-off** | Before writing code | Approves target module(s), variable/output interface, provider include/exclude list, and any provider version bump. Mandatory for features/interface changes; skippable for trivial obvious fixes. |
 | **E2E Opt-in** | After tests & self-review pass | Whether to deploy live. Providing a sandbox project ID authorizes `terraform apply/destroy -auto-approve` in it. |
 | **Behavioral Verification Opt-in** | After E2E read-back passes | Whether to run live runtime/traffic checks given described time and cost. |
@@ -43,7 +39,7 @@ uv run tools/versions.py --provider-min-version <x.y.z> --write-defaults
 ## Branching
 
 - Create a direct branch named `<username>/<feature-name>` off updated `master` (`git checkout master && git pull && git checkout -b <username>/<feature-name>`), or use a fork if you do not have direct push access.
-- When preparing an existing branch (Mode B), do not create a new one; rebase or merge with `master` before submitting.
+- When preparing an existing branch, do not create a new one; rebase or merge with `master` before submitting.
 
 ## Docs, Schemas, and Full CI Lint Parity
 
