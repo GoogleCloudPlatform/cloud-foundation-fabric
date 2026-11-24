@@ -176,16 +176,11 @@ context:
 
 ### Switch to GCD Dataset
 
-Create a `terraform.tfvars` file to configure the `classic-gcd` dataset. This overrides the default factory locations to use the GCD-specific configurations.
+Create a `terraform.tfvars` file to configure the `classic-gcd` dataset. This overrides the default dataset base path to use the GCD-specific configurations.
 
 ```terraform
 factories_config = {
-  billing_accounts = "datasets/classic-gcd/billing-accounts"
-  cicd_workflows   = "datasets/classic-gcd/cicd.yaml"
-  defaults         = "datasets/classic-gcd/defaults.yaml"
-  folders          = "datasets/classic-gcd/folders"
-  organization     = "datasets/classic-gcd/organization"
-  projects         = "datasets/classic-gcd/projects"
+  dataset = "datasets/classic-gcd"
 }
 ```
 ## 5. Organization Policies
