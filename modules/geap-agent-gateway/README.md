@@ -44,6 +44,8 @@ A gateway reaches your VPC network through an [agent connectivity template](http
 
 Set `psc_i_network_attachment_id` to have the module create the template and attach the gateway to it. The other attributes configure that template, which inherits the gateway project, region and access path, and defaults its name to the gateway name.
 
+When `dns_peering_config` is configured, the Agent Gateway service agent (`service-PROJECT_NUMBER@gcp-sa-agentgateway.iam.gserviceaccount.com`) needs `roles/agentgateway.serviceAgent` (or `roles/dns.peer`) on the project hosting `target_network` (granted automatically on the gateway project when `networkservices.googleapis.com` is enabled via [`modules/project`](../project)).
+
 ```hcl
 module "addresses" {
   source     = "./fabric/modules/net-address"

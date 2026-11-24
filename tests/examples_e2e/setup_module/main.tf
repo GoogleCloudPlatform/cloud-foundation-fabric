@@ -13,14 +13,30 @@
 # limitations under the License.
 
 locals {
+  _sa_raw = yamldecode(
+    file("${path.module}/../../../modules/project/service-agents.yaml")
+  )
+  _service_agents = [
+    for agent in local._sa_raw : agent
+    if agent.api != null && contains(local.services, agent.api)
+  ]
   prefix = "${var.prefix}-${var.timestamp}${var.suffix}"
+  primary_service_agents = [
+    for agent in local._service_agents : agent.api if agent.is_primary
+  ]
+  service_agent_roles = {
+    for agent in local._service_agents : agent.name => {
+      role = agent.role
+      iam_email = "serviceAccount:${templatestring(agent.identity, {
+        project_number  = google_project.project.number
+        universe_domain = ""
+      })}"
+    } if agent.role != null && !agent.skip_iam
+  }
   services = [
-    # trimmed down list of services, to be extended as needed. If you
-    # update this list, make sure to update E2E_SERVICES in
-    # tools/built_service_agents.py and run:
-    #
-    # python tools/build_service_agents.py --e2e > tests/examples_e2e/setup_module/jit.tf.json
-    #
+    # Trimmed down list of services, to be extended as needed. Service
+    # agents and their default IAM roles are derived from
+    # modules/project/service-agents.yaml.
     "alloydb.googleapis.com",
     "analyticshub.googleapis.com",
     "apigee.googleapis.com",
@@ -66,12 +82,24 @@ resource "google_folder" "folder" {
   deletion_protection = false
 }
 
+resource "google_org_policy_policy" "skip_default_network" {
+  name   = "${google_folder.folder.name}/policies/compute.skipDefaultNetworkCreation"
+  parent = google_folder.folder.name
+  spec {
+    rules {
+      enforce = "TRUE"
+    }
+  }
+}
+
 resource "google_project" "project" {
-  name            = "${local.prefix}-prj"
-  billing_account = var.billing_account
-  folder_id       = google_folder.folder.id
-  project_id      = "${local.prefix}-prj"
-  deletion_policy = "DELETE"
+  name                = "${local.prefix}-prj"
+  billing_account     = var.billing_account
+  folder_id           = google_folder.folder.id
+  project_id          = "${local.prefix}-prj"
+  auto_create_network = false
+  deletion_policy     = "DELETE"
+  depends_on          = [google_org_policy_policy.skip_default_network]
 }
 
 resource "google_project_service" "project_service" {
@@ -222,7 +250,7 @@ resource "google_service_networking_connection" "psa_connection" {
   service                 = "servicenetworking.googleapis.com"
   reserved_peering_ranges = [google_compute_global_address.psa_ranges.name]
   deletion_policy         = "ABANDON"
-  depends_on              = [google_project_iam_binding.agents]
+  depends_on              = [google_project_iam_member.agents]
 }
 
 ### END OF PSA
@@ -234,7 +262,7 @@ resource "google_service_account" "service_account" {
 }
 
 resource "google_project_service_identity" "jit_si" {
-  for_each   = local.jit_services
+  for_each   = toset(local.primary_service_agents)
   provider   = google-beta
   project    = google_project.project.project_id
   service    = each.key
@@ -251,15 +279,15 @@ data "google_bigquery_default_service_account" "bq_sa" {
   depends_on = [google_project_service.project_service]
 }
 
-resource "google_project_iam_binding" "agents" {
-  for_each = {
-    for k, v in local.jit_services : k => v if v != null
-  }
-  members = [
-    google_project_service_identity.jit_si[each.key].member
+resource "google_project_iam_member" "agents" {
+  for_each = local.service_agent_roles
+  project  = google_project.project.project_id
+  role     = each.value.role
+  member   = each.value.iam_email
+  depends_on = [
+    google_project_service.project_service,
+    google_project_service_identity.jit_si
   ]
-  project = google_project.project.project_id
-  role    = each.value
 }
 
 
