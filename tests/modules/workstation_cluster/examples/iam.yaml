@@ -65,7 +65,10 @@ values:
     workstation_cluster_id: my-workstation-cluster
     workstation_config_id: my-workstation-config
   ? module.workstation-cluster.google_workstations_workstation_config_iam_binding.bindings["my-workstation-config-workstations-config-viewer"]
-  : condition: []
+  : condition:
+    - description: null
+      expression: resource.name.startsWith('my-')
+      title: limited-access
     location: europe-west8
     members:
     - group:group2@my-org.com
@@ -74,7 +77,10 @@ values:
     workstation_cluster_id: my-workstation-cluster
     workstation_config_id: my-workstation-config
   ? module.workstation-cluster.google_workstations_workstation_config_iam_member.bindings["my-workstation-config-workstations-config-editor"]
-  : condition: []
+  : condition:
+    - description: null
+      expression: resource.name.startsWith('my-')
+      title: limited-access
     location: europe-west8
     member: group:group3@my-org.com
     project: project-id

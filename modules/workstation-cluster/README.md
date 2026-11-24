@@ -221,18 +221,18 @@ module "workstation-cluster" {
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [id](variables.tf#L59) | Workstation cluster ID. | <code>string</code> | ✓ |  |
-| [location](variables.tf#L70) | Location. | <code>string</code> | ✓ |  |
-| [network_config](variables.tf#L75) | Network configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
-| [project_id](variables.tf#L92) | Cluster ID. | <code>string</code> | ✓ |  |
+| [id](variables.tf#L60) | Workstation cluster ID. | <code>string</code> | ✓ |  |
+| [location](variables.tf#L71) | Location. | <code>string</code> | ✓ |  |
+| [network_config](variables.tf#L76) | Network configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| [project_id](variables.tf#L93) | Cluster ID. | <code>string</code> | ✓ |  |
 | [annotations](variables.tf#L17) | Workstation cluster annotations. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 | [context](variables.tf#L23) | Context-specific interpolations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [display_name](variables.tf#L38) | Display name. | <code>string</code> |  | <code>null</code> |
-| [domain](variables.tf#L44) | Domain. | <code>string</code> |  | <code>null</code> |
-| [factories_config](variables.tf#L50) | Path to folder with YAML resource description data files. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [labels](variables.tf#L64) | Workstation cluster labels. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [private_cluster_config](variables.tf#L83) | Private cluster config. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [workstation_configs](variables.tf#L97) | Workstation configurations. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [display_name](variables.tf#L39) | Display name. | <code>string</code> |  | <code>null</code> |
+| [domain](variables.tf#L45) | Domain. | <code>string</code> |  | <code>null</code> |
+| [factories_config](variables.tf#L51) | Path to folder with YAML resource description data files. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [labels](variables.tf#L65) | Workstation cluster labels. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [private_cluster_config](variables.tf#L84) | Private cluster config. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [workstation_configs](variables.tf#L98) | Workstation configurations. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
 
@@ -242,5 +242,5 @@ module "workstation-cluster" {
 | [id](outputs.tf#L22) | Workstation cluster id. |  |
 | [service_attachment_uri](outputs.tf#L27) | Workstation service attachment URI. |  |
 | [workstation_configs](outputs.tf#L32) | Workstation configurations. |  |
-| [workstations](outputs.tf#L37) | Workstations. |  |
+| [workstations](outputs.tf#L42) | Workstations. |  |
 <!-- END TFDOC -->

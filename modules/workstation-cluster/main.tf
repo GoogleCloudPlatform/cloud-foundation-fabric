@@ -56,7 +56,14 @@ resource "google_workstations_workstation_cluster" "cluster" {
     for_each = var.private_cluster_config == null ? [] : [""]
     content {
       enable_private_endpoint = var.private_cluster_config.enable_private_endpoint
-      allowed_projects        = var.private_cluster_config.allowed_projects
+      allowed_projects = (
+        var.private_cluster_config.allowed_projects == null
+        ? null
+        : [
+          for p in var.private_cluster_config.allowed_projects :
+          lookup(local.ctx.project_ids, p, p)
+        ]
+      )
     }
   }
   dynamic "domain_config" {
@@ -161,7 +168,15 @@ resource "google_workstations_workstation_config" "configs" {
   dynamic "encryption_key" {
     for_each = each.value.encryption_key == null ? [] : [""]
     content {
-      kms_key = each.value.encryption_key.kms_key
+      kms_key = (
+        each.value.encryption_key.kms_key == null
+        ? null
+        : lookup(
+          local.ctx.kms_keys,
+          each.value.encryption_key.kms_key,
+          each.value.encryption_key.kms_key
+        )
+      )
       kms_key_service_account = (
         each.value.encryption_key.kms_key_service_account == null
         ? null
