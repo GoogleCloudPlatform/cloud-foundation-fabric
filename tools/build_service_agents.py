@@ -29,7 +29,6 @@ from dataclasses import asdict, dataclass
 from itertools import chain
 
 import click
-import json
 import requests
 import yaml
 from bs4 import BeautifulSoup
@@ -83,45 +82,6 @@ AGENT_NAME_OVERRIDE = {
     'PROJECT_NUMBER@cloudbuild.gserviceaccount.com': 'cloudbuild-sa',
 }
 
-E2E_SERVICES = [
-    "alloydb.googleapis.com",
-    "analyticshub.googleapis.com",
-    "apigee.googleapis.com",
-    "artifactregistry.googleapis.com",
-    "assuredworkloads.googleapis.com",
-    "bigquery.googleapis.com",
-    "certificatemanager.googleapis.com",
-    "cloudbuild.googleapis.com",
-    "cloudfunctions.googleapis.com",
-    "cloudkms.googleapis.com",
-    "cloudresourcemanager.googleapis.com",
-    "compute.googleapis.com",
-    "container.googleapis.com",
-    "dataform.googleapis.com",
-    "dataplex.googleapis.com",
-    "dataproc.googleapis.com",
-    "dns.googleapis.com",
-    "eventarc.googleapis.com",
-    "iam.googleapis.com",
-    "iap.googleapis.com",
-    "logging.googleapis.com",
-    "looker.googleapis.com",
-    "monitoring.googleapis.com",
-    "networkconnectivity.googleapis.com",
-    "networksecurity.googleapis.com",
-    "networkservices.googleapis.com",
-    "privateca.googleapis.com",
-    "pubsub.googleapis.com",
-    "run.googleapis.com",
-    "secretmanager.googleapis.com",
-    "servicenetworking.googleapis.com",
-    "serviceusage.googleapis.com",
-    "sqladmin.googleapis.com",
-    "storage-component.googleapis.com",
-    "storage.googleapis.com",
-    "vpcaccess.googleapis.com",
-]
-
 PRIMARY_OVERRIDE = {
     'storage-transfer-service': True,
     # networkservices.googleapis.com has no documented primary agent, and API
@@ -156,16 +116,13 @@ class Agent:
 
 
 @click.command()
-@click.option('--e2e', is_flag=True, default=False)
 @click.option('--organization', 'mode', flag_value='organization',
               default=False, help='Extract organization-level service agents')
 @click.option('--folder', 'mode', flag_value='folder', default=False,
               help='Extract folder-level service agents')
 @click.option('--project', 'mode', flag_value='project', default=False,
               help='Extract project-level service agents')
-def main(mode, e2e=False):
-  if e2e and mode not in ('organization', 'folder', 'project'):
-    mode = 'project'
+def main(mode):
   page = requests.get(SERVICE_AGENTS_URL).content
   soup = BeautifulSoup(page, 'html.parser')
   agents = []
@@ -272,19 +229,11 @@ def main(mode, e2e=False):
   # mode \in [O, F] => empty(aliases)
   assert mode not in ['organization', 'folder'] or len(aliases) == 0
 
-  if not e2e:
-    # take the header from the first lines of this file
-    header = open(__file__).readlines()[2:15]
-    print("".join(header))
-    # and print all the agents
-    print(yaml.safe_dump([a.to_dict() for a in agents], sort_keys=False))
-  else:
-    jit_services = {}
-    result = {"locals": {"jit_services": jit_services}}
-    for a in agents:
-      if a.is_primary and a.api in E2E_SERVICES:
-        jit_services[a.api] = a.role
-    print(json.dumps(result, indent=2))
+  # take the header from the first lines of this file
+  header = open(__file__).readlines()[2:15]
+  print("".join(header))
+  # and print all the agents
+  print(yaml.safe_dump([a.to_dict() for a in agents], sort_keys=False))
 
 
 if __name__ == '__main__':

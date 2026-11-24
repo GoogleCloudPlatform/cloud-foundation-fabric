@@ -183,7 +183,7 @@ module "alloydb" {
 
   deletion_protection = false
 }
-# tftest modules=3 resources=19 inventory=read_pool_with_advanced_query_insights.yaml e2e
+# tftest modules=3 resources=19 inventory=read_pool_with_advanced_query_insights.yaml
 ```
 
 ### Cross region replication
@@ -333,11 +333,13 @@ module "alloydb" {
     }
     # IAM user
     iam_user1 = {
-      type = "ALLOYDB_IAM_USER"
+      roles = ["alloydbiamuser", "alloydbsuperuser"]
+      type  = "ALLOYDB_IAM_USER"
     }
     # IAM group
     iam_group1 = {
-      type = "ALLOYDB_IAM_GROUP"
+      roles = ["alloydbiamgroup", "alloydbsuperuser"]
+      type  = "ALLOYDB_IAM_GROUP"
     }
   }
 
