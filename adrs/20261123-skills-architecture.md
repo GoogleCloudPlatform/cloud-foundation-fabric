@@ -115,3 +115,59 @@ Wave 1 is developed at current `master` while explicitly recording the authoring
 - **Single source of design truth with safe fallback:** `cff-contributing`, `cff-pr-review`, and `cff-issue-triage` share one canonical set of `design/`, `conventions/`, and `workflow/` files, while a lean root `AGENTS.md` keeps core guardrails and direct file pointers visible even when skills are not auto-loaded.
 - **Migration impact:** Existing `agents-cli` users keep `fabric-builder`, `fast-networking`, and `fast-prerequisites` under the same installed skill names (only internal repo paths in `agents-cli-extension.yaml` change); contributors using `skills/contributing`, `skills/maintenance/release-process`, or `GEMINI.md` update to `skills/contributor/cff-contributing`, `skills/maintainer/cff-release`, and `AGENTS.md` (documented with an `upgrade-note`).
 - **Reusable authoring and grading process:** Documenting the mining-to-eval loop and publishing the sanitized evaluation suite gives Fabric a repeatable way to evolve future skills (including deep FAST skills), grade skills mechanically across agents, and run reproducible evaluations against frozen snapshots.
+
+## Evaluation Results and Backlog
+
+### Measurement Protocol and Suite
+
+To validate Wave 1 mechanically without relying on subjective spot-checks, every skill iteration is measured against a frozen 34-item post-cutoff evaluation suite (all contributor and PR-review tasks drawn from Fabric PRs merged after March 22, 2026 and pinned to their pre-PR parent commits via `git archive`):
+
+| Slice | Items | Count | Sandbox surface | Grading |
+| --- | --- | --- | --- | --- |
+| Contributor design | `C01`–`C10` | 10 | Read-only repo checkout | Offline 3-bucket rubric (`+/~/-`) + per-criterion hit rate |
+| Composition & YAML factories | `U01`–`U10` | 10 | Writable workspace + read-only `./fabric` | Deterministic offline `terraform fmt`/`init`/`plan`, resource/attribute checks, JSON schema validation, `conventions.md` lint |
+| Honest-stop & boundaries | `H01`–`H06` | 6 | Mixed (`user`, `contributor`, editable) | Mechanical exit slot (`stop_and_clarify`) + `imm_w == 0` + semantic stop verification |
+| PR review | `P01`–`P08` | 8 | Read-only repo checkout | Offline 3-bucket rubric (`+/~/-`) + per-criterion hit rate |
+
+Every rollout runs inside an isolated, network-disabled `bwrap` sandbox exposing standard coding-agent tools (`read`, `bash`, `edit`, `write`, an offline `provider_schema` lookup pinned to `hashicorp/google` and `hashicorp/google-beta` `8.10.0`, and a non-penalized `stop_and_clarify` exit slot). All compared arms share fixed decoding parameters (`temperature=0.7`, `top_p=0.95`, `top_k=20`, `presence_penalty=0.0`, `seed=42`, `max_turns=100`, matched `reasoning_effort=medium`).
+
+To prevent historical files in pinned snapshots from contaminating comparisons, every materialized snapshot strips `skills/`, `AGENTS.md`, `GEMINI.md`, and `agents-cli-extension.yaml` before execution:
+
+- **Bare baseline (`none`):** runs against the stripped human repository (`modules/`, `fast/`, `adrs/`, `CONTRIBUTING.md`, `CURSED_KNOWLEDGE.md`, `FACTORIES.md`) with zero agent-instruction or skill files reachable on disk.
+- **Skill arms (`blurb-<short-sha>`):** overlay only that exact git commit's coupled `AGENTS.md`/`GEMINI.md` and `skills/` tree via realistic `<available_skills>` discovery (and offline `fabric.py` shims in consumer mode), preventing stale snapshot files (such as deleted `GEMINI.md` alongside Wave 1 `AGENTS.md`, or `./fabric/skills/` in consumer workspaces) from leaking across arms.
+
+In the tables below, `+ / ~ / -` is strictly ordered (`+` `Aligned` = idiomatic, maintainer-grade Fabric meeting all core criteria; `~` `Provider/AdHoc` = coherent partial design/review or verified schema-gap stop; `-` `Broken` = wrong module boundary, missed core requirements, rubber-stamped broken PR, or premature stop). `Strict` counts `+` on Design and PR Review, full deterministic pass on Composition, and verified valid stops on Honest-stop (`x/34`). `imm_w` counts attempted writes to read-only fixtures (`0` required).
+
+### Temperature 0.7 Measurements
+
+Tier 1 anchor runs (`Qwen3.8-27B` bare vs `master` `2fd071954` vs Wave 1 `6c2c92c95`) and the compact MoE bare floor (`Qwen3.6-35B-A3B`) are complete; Tier 2 milestone validation on `Qwen3.8-Flash-Next` at `temperature=0.7` is in progress:
+
+| Model | Arm | Design (`+/~/-`, crit) | PR Rev (`+/~/-`, crit) | Comp (`plan` / full) | Honest-stop (`m/v`) | `imm_w` | Strict | Avg / item (`turns · tok`) |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| `Qwen3.6-35B-A3B` | `q35b-none` *(bare)* | `0 / 2 / 8` (`42.7%`) | `0 / 3 / 5` (`28.1%`) | `10/10` / `1/10` | `3/6` / `3/6` | `1` | `4/34` | `17.7t · 7.2k` |
+| `Qwen3.8-27B` | `q27b-none` *(bare)* | `0 / 9 / 1` (`58.4%`) | `0 / 7 / 1` (`51.9%`) | `10/10` / `0/10` | `4/6` / `3/6` | `0` | `3/34` | `18.9t · 12.2k` |
+| `Qwen3.8-27B` | `q27b-blurb-2fd071954` *(`master`)* | `0 / 8 / 2` (`60.3%`) | `2 / 6 / 0` (`56.4%`) | `10/10` / `7/10` | `5/6` / `5/6` | `0` | `14/34` | `16.4t · 9.9k` |
+| `Qwen3.8-27B` | `q27b-blurb-6c2c92c95` *(Wave 1)* | **`2 / 6 / 2` (`63.2%`)** | **`2 / 6 / 0` (`66.7%`)** | **`10/10` / `8/10`** | `5/6` / `4/6` | **`0`** | **`16/34`** | **`15.6t · 11.0k`** |
+
+Slice-by-slice progression on `Qwen3.8-27B` isolates what current `master` already delivers versus what Wave 1 adds:
+
+| Dimension | `none` -> `master` (`2fd071954`) | `master` -> Wave 1 (`6c2c92c95`) | Key observation |
+| --- | --- | --- | --- |
+| Design (`C01`–`C10`) | `0/9/1` -> `0/8/2` (`+1.9%` crit) | `0/8/2` -> **`2/6/2`** (`+2.9%` crit) | `master` stayed at `0` `+`; Wave 1 unlocked the first `+` designs (`C01`, `C03`) and moved `C04` (`-` -> `~`, `5/7`) and `C02` (`3/6` -> `5/8`). Remaining `-`: `C05` (`vpc-sc` vs `organization` ownership) and `C10` (FAST workspaces, deferred in Wave 1). |
+| PR Review (`P01`–`P08`) | `0/7/1` -> `2/6/0` (`+4.5%` crit) | `2/6/0` -> `2/6/0` (**`+10.3%` crit**, `66.7%`) | `100%` `cff-pr-review` activation (`8/8`), `0` `-`, first-ever `+` on `P02` (`4/4`) plus `P07` (`5/5`); remaining near-misses cluster cleanly into the two backlog patterns below. |
+| Composition (`U01`–`U10`) | `0/10` -> `7/10` full (`10/10` plan) | `7/10` -> **`8/10` full** (`10/10` plan) | `10/10` `fabric-builder` activation and `3/3` `references/factories.md` + `scripts/fabric.py` usage on all YAML factory tasks (`U01`, `U04`, `U09`; all JSON schemas passed). Only misses: `U06` (additive vs authoritative GCS IAM on 2/3 roles) and `U09` (`variables.tf` ordering). |
+| Honest-stop (`H01`–`H06`) | `3/6` -> `5/6` verified | `5/6` -> `4/6` verified (`5/6` mech) | Both skill arms pass `H05` (single-resource-context pushback, failed bare even after reading `CONTRIBUTING.md`); Wave 1 `H06` stopped cleanly in 13t but offered direct project firewall association as a fallback option. |
+| Efficiency & hygiene | `18.9t` -> `16.4t`, `0` `imm_w` | `16.4t` -> **`15.6t`**, `0` `imm_w` | Role-separated skills hit `100%` activation across all slices while using fewer average turns than both `master` and bare `none`. |
+
+### Follow-up Backlog (Near-Miss Structural Patterns)
+
+Two structural near-miss patterns surfaced in `q27b-blurb-6c2c92c95` PR-review traces for the next targeted iteration on `skills/maintainer/cff-pr-review/`:
+
+1. **Over-applying scope restraint to paired wrapper/factory plumbing and `var.context` parity:**
+   - **Traces:** `q27b-blurb-6c2c92c95` / `P08` (PR `#4052`, `modules/net-vpc` BGP configuration, `3/4` criteria, 13 turns) and `q27b-blurb-6c2c92c95` / `P04` (PR `#4425`, `modules/cloud-build-v2-connection` `var.context` and IAM conditions, `3/5` criteria, 22 turns).
+   - **Observed failure:** On `P08`, the reviewer caught the unrelated `modules/iam-service-account` hunk and missing enum validations, then explicitly dismissed wiring `bgp_config` through `modules/net-vpc-factory` and mirrored `vpc-factory.schema.json` copies (`modules/net-vpc-factory/schemas/`, `fast/stages/0-org-setup/schemas/`) as unnecessary because the new variable was optional. On `P04`, the reviewer spotted `repositories[].triggers[].service_account` as a `service_account_ids` context candidate and explicitly dismissed it as out-of-scope ("do not expand scope in this PR") while also missing `secrets` context interpolation on `*_secret_version` fields.
+   - **Planned refinement:** Clarify in `skills/maintainer/cff-pr-review/SKILL.md` the distinction between unrelated cross-module edits (split out) and paired wrapper/factory parity (`net-vpc` <-> `net-vpc-factory`, `project` <-> `project-factory`) or complete `var.context` coverage across a PR's target resource surface (blocking parity gaps).
+2. **Stopping after the first diff-level HCL or null-handling defect instead of sweeping every block in the diff:**
+   - **Traces:** `q27b-blurb-6c2c92c95` / `P01` (PR `#4424`, `modules/project-factory` `logging_sinks`, `3/4` criteria, 12 turns), `q27b-blurb-6c2c92c95` / `P05` (PR `#4310`, `modules/organization` Model Armor floor setting, `5/9` criteria, 14 turns), and `q27b-blurb-6c2c92c95` / `P03` (PR `#4423`, `modules/project` + `project-factory` Model Armor templates, `4/8` criteria, 13 turns).
+   - **Observed failure:** On `P01`, the reviewer nailed the two-tier DAG and CMEK/org-policy rejection, then missed that `logging_sinks` in `modules/project-factory/projects.tf` was nested inside `module.projects-iam`'s `context = { ... }` block rather than passed as a top-level argument. On `P05` and `P03`, the reviewer caught the first explicit-`null` crash (`integrated_services = null`, `filters = null`) and silent `count`, then stopped short of auditing remaining nullable sub-objects and `dynamic` blocks (`rai = null`, `location = null`, and empty `sdp = {}` emitting an empty `sdp_settings {}` permadiff).
+   - **Planned refinement:** Reinforce a full-diff verification pass in `skills/maintainer/cff-pr-review/SKILL.md`: verify exact block nesting for every added or moved argument in the diff, and check every nullable sub-object and `dynamic` block for explicit-`null` crashes and empty-block permadiffs rather than stopping after the first defect.
