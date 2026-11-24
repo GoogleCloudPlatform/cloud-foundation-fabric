@@ -16,7 +16,7 @@ Keep context lean by opening only the guide(s) matching the files you are author
 
 ## Core Workflow
 
-1. **Understand the request:** Identify the GCP resources, whether a standard module or YAML factory (`project-factory`, `net-vpc-factory`, `vpc-sc`, in-module `factories_config`) fits best, and the target Fabric release tag.
+1. **Understand the request (clarify before writing):** Identify the GCP resources, whether a standard module or YAML factory (`project-factory`, `net-vpc-factory`, `vpc-sc`, in-module `factories_config`) fits best, and the target Fabric release tag. If core deployment inputs or topology choices are missing (such as org/folder parent IDs, billing account, backend/state setup, or module source preference), stop and ask the user before writing placeholder variables or stub YAML files.
 2. **Inspect exact module and factory contracts:** Do not invent module variables, outputs, or YAML keys from memory. Query Fabric using `scripts/fabric.py` from **this skill's directory** (resolve `scripts/fabric.py` relative to this `SKILL.md`, e.g. `<skill-dir>/scripts/fabric.py`, rather than searching inside a target Fabric checkout):
    - List modules: `python3 <skill-dir>/scripts/fabric.py modules`
    - Latest release tag: `python3 <skill-dir>/scripts/fabric.py release`
@@ -30,7 +30,7 @@ Keep context lean by opening only the guide(s) matching the files you are author
 
 ## Pre-Finish Check
 
-- **Alphabetical `variables.tf`:** Keep variable declarations in strict alphabetical order so larger root configs stay easy to scan and match Fabric tooling conventions.
+- **Alphabetical `variables.tf`:** Keep variable declarations in strict ASCII alphabetical order (`_` sorts before `a`-`z`, so `node_zone` comes before `nodepool_name`; verify with `LC_ALL=C` / `grep '^variable ' variables.tf`) so larger root configs stay easy to scan and match Fabric tooling conventions.
 - **Omit root `required_providers` / `required_version`:** Fabric modules already carry uniform, compatible version constraints, so omitting root constraints lets Terraform resolve versions cleanly from the consumed modules without lock-in or duplicate maintenance.
 - **Defaults in `variables.tf`, not a stray `terraform.tfvars`:** Put user-provided or sensible defaults directly in `variables.tf` so the root module plans cleanly out of the box without a hidden sidecar file; create `terraform.tfvars` only when the user asks for one.
 - **Keep `provider` blocks free of `project`, `region`, and `zone`:** Passing scope explicitly to each module keeps multi-project and multi-region compositions predictable and self-documenting.

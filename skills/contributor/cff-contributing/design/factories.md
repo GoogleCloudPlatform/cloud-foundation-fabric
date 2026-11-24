@@ -88,6 +88,7 @@ module "projects-iam" {
 - Place anything that consumes IAM principals, custom roles, tags, KMS keys, sibling projects, or expanded `context` in **Pass 2** (note `org_policies` and `pam_entitlements` are deliberately filtered out of Pass 1 `factories_config` and run in Pass 2).
 - Place sub-resource modules that rely on settled CMEK bindings or project-level org policies (such as `buckets`, `log-buckets`, `pubsub`) **downstream of Pass 2** (`module.projects-iam`).
 - Keep Pass 1 free of dependencies back onto Pass 2 outputs, and enable each resource (such as `grant_service_agent_editor` or `create_primary_agents`) in only one pass so Terraform does not try to manage the same resource twice.
+- Keep `project-factory` at its two-pass ceiling: do not add a third `../project` pass to work around a DAG cycle. When a feature cannot sit cleanly in Pass 1 or Pass 2 without a cycle, direct callers to higher-level hierarchy resources (org or folder level) or a downstream `modules/project` call with `project_reuse = true`.
 
 ## `data_defaults`, `data_overrides`, and `data_merges`
 

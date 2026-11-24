@@ -32,7 +32,7 @@ When generating Terraform code that consumes Cloud Foundation Fabric modules, yo
   - Set defaults directly in the `default` attribute if a reasonable default exists or if provided by the user.
   - Avoid creating a `terraform.tfvars` file unless explicitly requested by the user.
 - **Value Handling & Providers:**
-  - **No Hardcoded Values:** Never use hardcoded values for project IDs, folder IDs, or other specific identifiers unless provided by the user. If a value is required, ask the user for it or create a variable.
+  - **No Hardcoded Values:** Never use hardcoded values for project IDs, folder IDs, or other specific identifiers unless provided by the user. When core deployment inputs (such as org/folder parent IDs, billing account, backend, or module source) are missing, stop and ask the user before authoring files rather than inventing placeholder variables or stub YAML data.
   - **Provider Attributes:** Do not configure provider-level attributes like `project`, `region`, or `zone` in provider blocks (`provider "google"`, `provider "google-beta"`). All attributes must be passed to the modules explicitly in the module calls.
 - **Formatting:** Adhere to standard Terraform formatting and keep line lengths readable. Wrap complex ternaries in parentheses.
 - **No Local Exec:** Never use `local-exec` or similar provisioners to run shell commands. Rely on native Terraform resources and data sources, preferably from official providers (i.e., no third-party providers).

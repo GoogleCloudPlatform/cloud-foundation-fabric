@@ -40,7 +40,7 @@ variable "boot_disk" {
 ## Compact Variable Spaces and Type Safety
 
 - **Use `object(...)` with `optional(...)`:** Group related settings into one compact object variable instead of scattering flat scalar variables.
-- **Omit explicit `optional()` defaults by default:** Prefer `optional(string)` / `optional(bool)` with no default so the provider applies its own default and modules do not drift against provider updates. Supply an explicit default only when (a) internal module logic requires a non-null value, or (b) Fabric intentionally provides an ergonomic prototyping default (such as `boot_disk` above).
+- **Omit explicit `optional()` defaults by default:** Prefer `optional(string)` / `optional(bool)` with no default so the provider applies its own default and modules do not drift against provider updates. Supply an explicit default only when (a) internal module logic requires a non-null value, or (b) Fabric intentionally provides an ergonomic prototyping default (such as `boot_disk` above). When simplifying an outdated default or obsolete cross-variable coupling, prefer a clean provider-aligned default (documented with a PR `upgrade-note`) over keeping `default = null` plus `coalesce(...)` compatibility shims.
 - **Attributes accepting one or two values become booleans:** When a provider argument only carries a binary choice (enable/disable or two mutually exclusive modes), model it as a `bool` rather than a string enum unless GCP is actively adding more modes.
 - **Use maps instead of lists for multiple items:** `map(object(...))` gives stable Terraform state keys (preventing index-shift replacements), avoids dynamic-value `for_each` errors, and lets callers specify only the attributes they want to override per key.
 - **Set `nullable = false` on collection/config objects with `{}` or `[]` defaults** so internal `for` expressions never have to guard against `null`.
@@ -85,7 +85,7 @@ Defined in [iam-refactor ADR](../../../../adrs/modules/20230816-iam-refactor.md)
 
 Defined in [context-locals ADR](../../../../adrs/20251013-context-locals.md) and [templatestring-vars-convention ADR](../../../../adrs/20260424-templatestring-vars-convention.md).
 
-- Expose a single `variable "context"` (`default = {}`, `nullable = false`) containing only the lookup maps relevant to the module (`project_ids`, `locations`, `networks`, `subnets`, `kms_keys`, `iam_principals`, `custom_roles`, `addresses`, etc.). Do not add `context` blindly when symbolic interpolation brings no value.
+- Expose a single `variable "context"` (`default = {}`, `nullable = false`) containing only the lookup maps relevant to the module (`project_ids`, `locations`, `networks`, `subnets`, `kms_keys`, `iam_principals`, `custom_roles`, `addresses`, `secrets`, `service_account_ids`, etc.). Do not add `context` blindly when symbolic interpolation brings no value, but once a module exposes `var.context`, audit every scope and reference input across the module so no applicable field is left un-interpolated.
 - Any key intended as the variables map passed to `templatestring()` MUST end with `_vars` (for example, `condition_vars`, `tag_vars`) so `local.ctx` excludes it automatically via `if !endswith(k, "_vars")`. See [conventions/hcl.md](../conventions/hcl.md#context-interpolation-implementation) for the exact `local.ctx` and lookup patterns.
 
 ```hcl
