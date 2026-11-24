@@ -120,19 +120,19 @@ ln -s ~/fast-config/2-security.auto.tfvars ./
 If you have no local output files, check the previous state's outputs for the name of your GCS outputs bucket and replace it in the example below.
 
 ```bash
-../fast-links.sh gs://myprefix-prod-iac-org-0-iac-outputs
+../fast-links.sh gs://myprefix-prod-iac-core-0-iac-outputs
 
 # File linking commands for security stage
 
 # provider file
-gcloud storage cp gs://myprefix-prod-iac-org-0-iac-outputs/providers/2-security-providers.tf ./
+gcloud storage cp gs://myprefix-prod-iac-core-0-iac-outputs/providers/2-security-providers.tf ./
 
 # input files from other stages
-gcloud storage cp gs://myprefix-prod-iac-org-0-iac-outputs/tfvars/0-globals.auto.tfvars.json ./
-gcloud storage cp gs://myprefix-prod-iac-org-0-iac-outputs/tfvars/0-org-setup.auto.tfvars.json ./
+gcloud storage cp gs://myprefix-prod-iac-core-0-iac-outputs/tfvars/0-globals.auto.tfvars.json ./
+gcloud storage cp gs://myprefix-prod-iac-core-0-iac-outputs/tfvars/0-org-setup.auto.tfvars.json ./
 
 # conventional location for this stage terraform.tfvars (manually managed)
-gcloud storage cp gs://myprefix-prod-iac-org-0-iac-outputs/2-security.auto.tfvars ./
+gcloud storage cp gs://myprefix-prod-iac-core-0-iac-outputs/2-security.auto.tfvars ./
 ```
 
 Once you have one of the above outputs, copy/paste it in your terminal from within this stage's folder.
