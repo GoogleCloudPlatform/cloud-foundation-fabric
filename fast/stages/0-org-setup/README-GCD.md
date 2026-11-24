@@ -262,7 +262,7 @@ terraform init
 terraform apply
 ```
 
-Once the apply completes successfully, continue with the [Provider setup and final apply cycle](../README.md#provider-setup-and-final-apply-cycle) instructions in the main README.
+Once the apply completes successfully, continue with the [Provider setup and final apply cycle](./README.md#provider-setup-and-final-apply-cycle) instructions in the main README.
 
 
 ## 7. Next Steps
