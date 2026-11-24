@@ -94,6 +94,8 @@ filters = try(var.config.filters, {})
 filters = coalesce(try(var.config.filters, null), {})
 ```
 
+  Watch out for `coalesce()` itself: in Terraform and OpenTofu, `coalesce()` errors if every argument is `null` or `""` (empty string counts as empty). Always pass a guaranteed non-null, non-empty final fallback (such as `{}` or `[]` for collections, or a non-empty string); to test whether an optional string or scalar is `null` or empty, use `try(var.x.y, null) == null` / `!= ""` rather than `coalesce(var.x.y, null)` or `coalesce(var.x.y, "")`.
+
 - **`try()` destroys partial knownness in `for_each`:** `try(local.partially_known, [])` turns the entire result into `known after apply`, crashing resource `for_each` because keys must be known at plan time. Guard with an explicit null check instead:
 
 ```hcl
