@@ -84,7 +84,7 @@ tag_value = templatestring(local._tag_bindings[each.key], var.context.tag_vars)
 
 CI runs both Terraform and OpenTofu (see `versions.tofu`). Watch for these recurring bugs:
 
-- **`try()` does not catch explicit `null` values (in `locals` or `validation`):** `try()` only falls back when an expression raises an error: if an optional object attribute is explicitly `null`, `try(var.x.y, {})` succeeds and returns `null`, crashing downstream `for` loops, `length()`, `merge()`, `lower()`, and `contains()` in both `locals` and `validation {}` blocks (especially on OpenTofu). Wrap with `coalesce` or an explicit `== null` guard whenever callers can pass `null`:
+- **`try()` does not catch explicit `null` values (in `locals` or `validation`):** `try()` only falls back when an expression raises an error: if an optional object attribute (including `optional(..., {})` fields) or a map/list element value is explicitly `null`, `try(var.x.y, {})` succeeds and returns `null`, crashing downstream `for` loops, `length()`, `merge()`, `lower()`, and `contains()` in both `locals` and `validation {}` blocks (especially on OpenTofu). Wrap with `coalesce` or an explicit `== null` guard whenever callers can pass `null`:
 
 ```hcl
 # BAD: returns null when var.config.filters is explicitly null
@@ -106,7 +106,7 @@ for_each = try(local.partially_known_map, {})
 for_each = local.partially_known_map == null ? {} : local.partially_known_map
 ```
 
-- **Silent no-op `count` and empty-block `dynamic` permadiffs:** Gate a resource's `count` on the top-level config variable (`var.config == null ? 0 : 1`) rather than a nested field, otherwise passing `{ filters = null }` silently creates zero resources. For `dynamic` blocks, check `!= null` rather than `== true` when `false` is a meaningful API/state value (for example, `immutable_tags` in `modules/artifact-registry`, where `== true` drifts between `false` and `null` every plan), and guard blocks whose inner attributes can all be `null` (for example with `anytrue(...)`) so Terraform never emits an empty block that drifts on follow-up plans:
+- **Silent no-op `count` and empty-block `dynamic` permadiffs:** Gate a resource's `count` on the top-level config variable (`var.config == null ? 0 : 1`) rather than a nested field, otherwise passing `{ filters = null }` silently creates zero resources. For `dynamic` blocks (both outer and nested), check `!= null` rather than `== true` when `false` is a meaningful API/state value (for example, `immutable_tags` in `modules/artifact-registry`, where `== true` drifts between `false` and `null` every plan), and guard blocks whose inner attributes can all be `null` (including when callers pass `{}` — for example with `anytrue(...)`) so Terraform never emits an empty block that drifts on follow-up plans:
 
 ```hcl
 dynamic "docker_config" {
