@@ -1,4 +1,4 @@
-# Copyright 2025 Google LLC
+# Copyright 2026 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,6 +16,10 @@
   display_name: Access Approval Service Agent
   api: accessapproval.googleapis.com
   identity: service-f${folder_number}@gcp-sa-accessapproval.iam.gserviceaccount.com
+- name: dbmonitoring
+  display_name: Assured Workloads Monitoring Service Agent
+  api: assuredworkloads.googleapis.com
+  identity: service-folder-${folder_number}@gcp-sa-dbmonitoring.iam.gserviceaccount.com
 - name: assuredworkloads
   display_name: Assured Workloads Service Agent
   api: assuredworkloads.googleapis.com

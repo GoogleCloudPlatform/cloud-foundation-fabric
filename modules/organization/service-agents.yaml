@@ -1,4 +1,4 @@
-# Copyright 2025 Google LLC
+# Copyright 2026 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -28,6 +28,14 @@
   display_name: Audit Manager Service Agent
   api: auditmanager.googleapis.com
   identity: service-org-${organization_number}@gcp-sa-audit-manager.iam.gserviceaccount.com
+- name: biglakeidentityfed
+  display_name: BigLake Identity Federation Service Agent
+  api: biglake.googleapis.com
+  identity: service-org-${organization_number}@gcp-sa-biglakeidentityfed.iam.gserviceaccount.com
+- name: chronicle-org
+  display_name: Chronicle Organization Service Account
+  api: chronicle.googleapis.com
+  identity: service-org-${organization_number}@gcp-sa-chronicle-org.iam.gserviceaccount.com
 - name: chronicle-soar
   display_name: Chronicle Soar Service Agent
   api: chronicle.googleapis.com
@@ -92,6 +100,10 @@
   display_name: Dataplex Service Agent
   api: dataplex.googleapis.com
   identity: service-org-${organization_number}@gcp-sa-dataplex.iam.gserviceaccount.com
+- name: geminicloudassist
+  display_name: Gemini Cloud Assist Service Agent
+  api: geminicloudassist.googleapis.com
+  identity: service-org-${organization_number}@gcp-sa-geminicloudassist.iam.gserviceaccount.com
 - name: osconfig-rollout
   display_name: Google Cloud OS Config Rollout Service Agent
   api: osconfig.googleapis.com
