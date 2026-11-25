@@ -10,6 +10,7 @@ When using an existing keyring be mindful about applying IAM bindings, as all bi
   - [Keyring creation and crypto key rotation and IAM roles](#keyring-creation-and-crypto-key-rotation-and-iam-roles)
   - [Using an existing keyring](#using-an-existing-keyring)
   - [Crypto key purpose](#crypto-key-purpose)
+  - [Crypto key deletion policy](#crypto-key-deletion-policy)
   - [Import job](#import-job)
   - [Tag Bindings](#tag-bindings)
 - [Variables](#variables)
@@ -19,6 +20,8 @@ When using an existing keyring be mindful about applying IAM bindings, as all bi
 ## Protecting against destroy
 
 In this module **no lifecycle blocks are set on resources to prevent destroy**, in order to allow for experimentation and testing where rapid `apply`/`destroy` cycles are needed. If you plan on using this module to manage non-development resources, **clone it and uncomment the lifecycle blocks** found in `main.tf`.
+
+Individual crypto keys can also be protected via the `deletion_policy` key attribute, as shown in the [crypto key deletion policy](#crypto-key-deletion-policy) example.
 
 ## Examples
 
@@ -110,6 +113,27 @@ module "kms" {
 # tftest modules=1 resources=2 inventory=purpose.yaml e2e
 ```
 
+### Crypto key deletion policy
+
+Set `deletion_policy` to `PREVENT` to make any apply or destroy that would delete the key fail, or to `ABANDON` to remove the key from state without deleting it. The default `DELETE` allows the key to be destroyed.
+
+```hcl
+module "kms" {
+  source     = "./fabric/modules/kms"
+  project_id = var.project_id
+  keyring = {
+    location = var.region
+    name     = "${var.prefix}-test"
+  }
+  keys = {
+    key-a = {
+      deletion_policy = "PREVENT"
+    }
+  }
+}
+# tftest modules=1 resources=2 inventory=deletion-policy.yaml
+```
+
 ### Import job
 
 ```hcl
@@ -168,7 +192,7 @@ module "kms" {
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
 | [keyring](variables.tf#L84) | Keyring attributes. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
-| [project_id](variables.tf#L153) | Project id where the keyring will be created. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L162) | Project id where the keyring will be created. | <code>string</code> | ✓ |  |
 | [context](variables.tf#L17) | Context-specific interpolations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam](variables.tf#L37) | Keyring IAM bindings in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam_bindings](variables.tf#L44) | Authoritative IAM bindings in {KEY => {role = ROLE, members = [], condition = {}}}. Keys are arbitrary. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
@@ -176,7 +200,7 @@ module "kms" {
 | [import_job](variables.tf#L74) | Keyring import job attributes. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [keyring_create](variables.tf#L93) | Set to false to manage keys and IAM bindings in an existing keyring. | <code>bool</code> |  | <code>true</code> |
 | [keys](variables.tf#L99) | Key names and base attributes. Set attributes to null if not needed. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [tag_bindings](variables.tf#L158) | Tag bindings for this keyring, in key => tag value id format. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [tag_bindings](variables.tf#L167) | Tag bindings for this keyring, in key => tag value id format. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
 
