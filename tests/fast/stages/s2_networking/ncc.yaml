@@ -38,7 +38,7 @@ counts:
   google_network_connectivity_hub: 1
   google_network_connectivity_spoke: 3
   google_project: 3
-  google_project_iam_member: 24
+  google_project_iam_member: 21
   google_project_service: 30
   google_project_service_identity: 24
   google_service_networking_connection: 1
@@ -46,5 +46,5 @@ counts:
   google_storage_bucket_object: 2
   modules: 26
   random_id: 3
-  resources: 195
+  resources: 192
   terraform_data: 2

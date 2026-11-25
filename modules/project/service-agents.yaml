@@ -12,6 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+- name: aiplatform-agx
+  display_name: AI Platform Agent Experience Service Agent
+  api: aiplatform.googleapis.com
+  identity: service-${project_number}@gcp-sa-aiplatform-agx.${universe_domain}iam.gserviceaccount.com
+  role: null
+  is_primary: false
+  aliases: []
+  skip_iam: false
 - name: aiplatform-cc
   display_name: AI Platform Custom Code Service Agent
   api: aiplatform.googleapis.com
@@ -148,11 +156,27 @@
   is_primary: false
   aliases: []
   skip_iam: false
+- name: agentregistry
+  display_name: Agent Registry Service Account
+  api: agentregistry.googleapis.com
+  identity: service-${project_number}@gcp-sa-agentregistry.${universe_domain}iam.gserviceaccount.com
+  role: null
+  is_primary: true
+  aliases: []
+  skip_iam: false
 - name: alloydb
   display_name: AlloyDB Service Account
   api: alloydb.googleapis.com
   identity: service-${project_number}@gcp-sa-alloydb.${universe_domain}iam.gserviceaccount.com
   role: roles/alloydb.serviceAgent
+  is_primary: true
+  aliases: []
+  skip_iam: false
+- name: analyticshub
+  display_name: Analytics Hub Service Agent
+  api: analyticshub.googleapis.com
+  identity: service-${project_number}@gcp-sa-analyticshub.${universe_domain}iam.gserviceaccount.com
+  role: roles/analyticshub.serviceAgent
   is_primary: true
   aliases: []
   skip_iam: false
@@ -244,14 +268,6 @@
   is_primary: true
   aliases: []
   skip_iam: false
-- name: apigeeregistry
-  display_name: Apigee Registry Service Account
-  api: apigeeregistry.googleapis.com
-  identity: service-${project_number}@gcp-sa-apigeeregistry.${universe_domain}iam.gserviceaccount.com
-  role: null
-  is_primary: true
-  aliases: []
-  skip_iam: false
 - name: apigee
   display_name: Apigee Service Agent
   api: apigee.googleapis.com
@@ -317,6 +333,14 @@
   is_primary: true
   aliases: []
   skip_iam: false
+- name: dbmonitoring
+  display_name: Assured Workloads Monitoring Service Agent
+  api: assuredworkloads.googleapis.com
+  identity: service-${project_number}@gcp-sa-dbmonitoring.${universe_domain}iam.gserviceaccount.com
+  role: roles/assuredworkloads.monitoringServiceAgent
+  is_primary: false
+  aliases: []
+  skip_iam: false
 - name: assuredworkloads
   display_name: AssuredWorkloads Service Account
   api: assuredworkloads.googleapis.com
@@ -333,27 +357,11 @@
   is_primary: true
   aliases: []
   skip_iam: false
-- name: autoannotate
-  display_name: Auto Annotate Service Account
-  api: storage.googleapis.com
-  identity: service-${project_number}@gcp-sa-autoannotate.${universe_domain}iam.gserviceaccount.com
-  role: null
-  is_primary: false
-  aliases: []
-  skip_iam: false
 - name: recommendationengine
   display_name: AutoML Recommendations Service Account
   api: recommendationengine.googleapis.com
   identity: service-${project_number}@gcp-sa-recommendationengine.${universe_domain}iam.gserviceaccount.com
   role: roles/automlrecommendations.serviceAgent
-  is_primary: true
-  aliases: []
-  skip_iam: false
-- name: automl
-  display_name: AutoML Service Agent
-  api: automl.googleapis.com
-  identity: service-${project_number}@gcp-sa-automl.${universe_domain}iam.gserviceaccount.com
-  role: roles/automl.serviceAgent
   is_primary: true
   aliases: []
   skip_iam: false
@@ -397,15 +405,6 @@
   is_primary: true
   aliases: []
   skip_iam: false
-- name: bigquery-encryption
-  display_name: Big Query Service Agent
-  api: bigquery.googleapis.com
-  identity: bq-${project_number}@bigquery-encryption.${universe_domain}iam.gserviceaccount.com
-  role: null
-  is_primary: false
-  aliases:
-  - bq
-  skip_iam: false
 - name: connectedsheets
   display_name: BigQuery Connected Sheets Service Agent
   api: bigquery.googleapis.com
@@ -437,6 +436,15 @@
   role: roles/bigquerydatatransfer.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
+- name: bigquery-encryption
+  display_name: BigQuery Encryption Service Agent
+  api: bigquery.googleapis.com
+  identity: bq-${project_number}@bigquery-encryption.${universe_domain}iam.gserviceaccount.com
+  role: null
+  is_primary: false
+  aliases:
+  - bq
   skip_iam: false
 - name: bqms
   display_name: BigQuery Migration Service Agent
@@ -483,6 +491,14 @@
   api: blockchainnodeengine.googleapis.com
   identity: service-${project_number}@gcp-sa-bne.${universe_domain}iam.gserviceaccount.com
   role: roles/blockchainnodeengine.serviceAgent
+  is_primary: true
+  aliases: []
+  skip_iam: false
+- name: businessaicode
+  display_name: Business AI Code Service Agent
+  api: businessaicode.googleapis.com
+  identity: service-${project_number}@gcp-sa-businessaicode.${universe_domain}iam.gserviceaccount.com
+  role: roles/businessaicode.serviceAgent
   is_primary: true
   aliases: []
   skip_iam: false
@@ -648,6 +664,14 @@
   is_primary: true
   aliases: []
   skip_iam: false
+- name: filer-backup
+  display_name: Cloud Filestore Backup Service Agent
+  api: file.googleapis.com
+  identity: service-${project_number}@gcp-sa-filer-backup.${universe_domain}iam.gserviceaccount.com
+  role: roles/file.serviceAgent
+  is_primary: false
+  aliases: []
+  skip_iam: false
 - name: firestore
   display_name: Cloud Firestore Service Agent
   api: firestore.googleapis.com
@@ -724,7 +748,7 @@
   display_name: Cloud Network Management Service Account
   api: networkmanagement.googleapis.com
   identity: service-${project_number}@gcp-sa-networkmanagement.${universe_domain}iam.gserviceaccount.com
-  role: roles/networkmanagement.serviceAgent
+  role: null
   is_primary: true
   aliases: []
   skip_iam: false
@@ -749,14 +773,6 @@
   api: observability.googleapis.com
   identity: service-${project_number}@gcp-sa-observability.${universe_domain}iam.gserviceaccount.com
   role: roles/observability.serviceAgent
-  is_primary: true
-  aliases: []
-  skip_iam: false
-- name: cloudoptim
-  display_name: Cloud Optimization Service Agent
-  api: cloudoptimization.googleapis.com
-  identity: service-${project_number}@gcp-sa-cloudoptim.${universe_domain}iam.gserviceaccount.com
-  role: roles/cloudoptimization.serviceAgent
   is_primary: true
   aliases: []
   skip_iam: false
@@ -808,6 +824,14 @@
   is_primary: false
   aliases: []
   skip_iam: true
+- name: security-center-api
+  display_name: Cloud Security Command Center Service Agent
+  api: securitycenter.googleapis.com
+  identity: service-${project_number}@security-center-api.${universe_domain}iam.gserviceaccount.com
+  role: null
+  is_primary: false
+  aliases: []
+  skip_iam: false
 - name: csc-hpsa
   display_name: Cloud Security Compliance Service Agent
   api: cloudsecuritycompliance.googleapis.com
@@ -822,6 +846,14 @@
   identity: service-${project_number}@gcp-sa-spanner.${universe_domain}iam.gserviceaccount.com
   role: roles/spanner.serviceAgent
   is_primary: true
+  aliases: []
+  skip_iam: false
+- name: storage-sra
+  display_name: Cloud Storage Security Risk Assessment Service Agent
+  api: storage.googleapis.com
+  identity: service-${project_number}@gcp-sa-storage-sra.${universe_domain}iam.gserviceaccount.com
+  role: null
+  is_primary: false
   aliases: []
   skip_iam: false
 - name: firebasestorage
@@ -1033,11 +1065,11 @@
   is_primary: true
   aliases: []
   skip_iam: false
-- name: datalabeling
-  display_name: Data Labeling Service Account
-  api: datalabeling.googleapis.com
-  identity: service-${project_number}@gcp-sa-datalabeling.${universe_domain}iam.gserviceaccount.com
-  role: roles/datalabeling.serviceAgent
+- name: datalineage
+  display_name: Data Lineage Service Agent
+  api: datalineage.googleapis.com
+  identity: service-${project_number}@gcp-sa-datalineage.${universe_domain}iam.gserviceaccount.com
+  role: null
   is_primary: true
   aliases: []
   skip_iam: false
@@ -1062,6 +1094,14 @@
   api: datastudio.googleapis.com
   identity: service-${project_number}@gcp-sa-datastudio.${universe_domain}iam.gserviceaccount.com
   role: roles/datastudio.serviceAgent
+  is_primary: true
+  aliases: []
+  skip_iam: false
+- name: dbinsights
+  display_name: Database Insights Service Agent
+  api: databaseinsights.googleapis.com
+  identity: service-${project_number}@gcp-sa-dbinsights.${universe_domain}iam.gserviceaccount.com
+  role: roles/databaseinsights.serviceAgent
   is_primary: true
   aliases: []
   skip_iam: false
@@ -1102,6 +1142,14 @@
   api: developerconnect.googleapis.com
   identity: service-${project_number}@gcp-sa-devconnect.${universe_domain}iam.gserviceaccount.com
   role: roles/developerconnect.serviceAgent
+  is_primary: true
+  aliases: []
+  skip_iam: false
+- name: devicerun
+  display_name: Device Run Service Agent
+  api: devicerun.googleapis.com
+  identity: service-${project_number}@gcp-sa-devicerun.${universe_domain}iam.gserviceaccount.com
+  role: roles/devicerun.serviceAgent
   is_primary: true
   aliases: []
   skip_iam: false
@@ -1273,6 +1321,14 @@
   is_primary: true
   aliases: []
   skip_iam: false
+- name: firebasetelemetry
+  display_name: Firebase Telemetry Service Agent
+  api: firebasetelemetry.googleapis.com
+  identity: service-${project_number}@gcp-sa-firebasetelemetry.${universe_domain}iam.gserviceaccount.com
+  role: roles/firebasetelemetry.serviceAgent
+  is_primary: true
+  aliases: []
+  skip_iam: false
 - name: firewallinsights
   display_name: Firewall Insights Service Account
   api: firewallinsights.googleapis.com
@@ -1287,6 +1343,14 @@
   identity: service-${project_number}@gcp-sa-gsuiteaddons.${universe_domain}iam.gserviceaccount.com
   role: null
   is_primary: true
+  aliases: []
+  skip_iam: false
+- name: gcs-malware
+  display_name: GCS Malware Scanning Service Account
+  api: storage.googleapis.com
+  identity: service-${project_number}@gcp-sa-gcs-malware.${universe_domain}iam.gserviceaccount.com
+  role: null
+  is_primary: false
   aliases: []
   skip_iam: false
 - name: storage-search
@@ -1473,14 +1537,6 @@
   aliases:
   - storage
   skip_iam: false
-- name: diagon
-  display_name: Hypercompute Diagon Service Account
-  api: hypercomputecluster.googleapis.com
-  identity: service-${project_number}@gcp-sa-diagon.${universe_domain}iam.gserviceaccount.com
-  role: null
-  is_primary: false
-  aliases: []
-  skip_iam: false
 - name: iap
   display_name: IAP Service Account
   api: iap.googleapis.com
@@ -1511,6 +1567,14 @@
   identity: service-${project_number}@gcp-sa-config.${universe_domain}iam.gserviceaccount.com
   role: roles/cloudconfig.serviceAgent
   is_primary: true
+  aliases: []
+  skip_iam: false
+- name: config-worker
+  display_name: Infrastructure Manager Worker Service Account
+  api: config.googleapis.com
+  identity: service-${project_number}@gcp-sa-config-worker.${universe_domain}iam.gserviceaccount.com
+  role: roles/config.agent
+  is_primary: false
   aliases: []
   skip_iam: false
 - name: ivs
@@ -1563,6 +1627,14 @@
   - container
   - container-engine
   skip_iam: false
+- name: lakehouse
+  display_name: Lakehouse Service Agent
+  api: biglake.googleapis.com
+  identity: lh-${project_number}@gcp-sa-lakehouse.${universe_domain}iam.gserviceaccount.com
+  role: null
+  is_primary: false
+  aliases: []
+  skip_iam: false
 - name: cloudbuild-sa
   display_name: Legacy Cloud Build service account
   api: cloudbuild.googleapis.com
@@ -1609,6 +1681,14 @@
   identity: service-${project_number}@gcp-sa-managedkafka.${universe_domain}iam.gserviceaccount.com
   role: roles/managedkafka.serviceAgent
   is_primary: true
+  aliases: []
+  skip_iam: false
+- name: vertex-memory
+  display_name: Memory Bank Service Agent
+  api: aiplatform.googleapis.com
+  identity: service-${project_number}@gcp-sa-vertex-memory.${universe_domain}iam.gserviceaccount.com
+  role: null
+  is_primary: false
   aliases: []
   skip_iam: false
 - name: memorystore
@@ -1690,6 +1770,14 @@
   identity: service-${project_number}@gcp-sa-networksecurity.${universe_domain}iam.gserviceaccount.com
   role: null
   is_primary: true
+  aliases: []
+  skip_iam: false
+- name: autoannotate
+  display_name: Object Enrichment Service Account
+  api: storage.googleapis.com
+  identity: service-${project_number}@gcp-sa-autoannotate.${universe_domain}iam.gserviceaccount.com
+  role: null
+  is_primary: false
   aliases: []
   skip_iam: false
 - name: ondemandscanning
@@ -1868,6 +1956,14 @@
   is_primary: true
   aliases: []
   skip_iam: false
+- name: vertex-skills
+  display_name: Skill Registry Service Agent
+  api: aiplatform.googleapis.com
+  identity: service-${project_number}@gcp-sa-vertex-skills.${universe_domain}iam.gserviceaccount.com
+  role: null
+  is_primary: false
+  aliases: []
+  skip_iam: false
 - name: spectrumsas
   display_name: Spectrum SAS Service Account
   api: sasportal.googleapis.com
@@ -1964,6 +2060,22 @@
   is_primary: true
   aliases: []
   skip_iam: false
+- name: vertex-agenv
+  display_name: Vertex AI Agent Environment Service Agent
+  api: aiplatform.googleapis.com
+  identity: service-${project_number}@gcp-sa-vertex-agenv.${universe_domain}iam.gserviceaccount.com
+  role: null
+  is_primary: false
+  aliases: []
+  skip_iam: false
+- name: vertex-al
+  display_name: Vertex AI Agent Learning Service Agent
+  api: aiplatform.googleapis.com
+  identity: service-${project_number}@gcp-sa-vertex-al.${universe_domain}iam.gserviceaccount.com
+  role: null
+  is_primary: false
+  aliases: []
+  skip_iam: false
 - name: vertex-sandbox
   display_name: Vertex AI Agent Sandbox Service Agent
   api: aiplatform.googleapis.com
@@ -2012,6 +2124,14 @@
   is_primary: false
   aliases: []
   skip_iam: false
+- name: vertex-grounding
+  display_name: Vertex AI Grounding Service Agent
+  api: aiplatform.googleapis.com
+  identity: service-${project_number}@gcp-sa-vertex-grounding.${universe_domain}iam.gserviceaccount.com
+  role: null
+  is_primary: false
+  aliases: []
+  skip_iam: false
 - name: vertex-logging
   display_name: Vertex AI Logging Service Agent
   api: aiplatform.googleapis.com
@@ -2057,6 +2177,14 @@
   api: aiplatform.googleapis.com
   identity: service-${project_number}@gcp-sa-vertex-tune.${universe_domain}iam.gserviceaccount.com
   role: roles/aiplatform.tuningServiceAgent
+  is_primary: false
+  aliases: []
+  skip_iam: false
+- name: vertex-session
+  display_name: Vertex AI Session Service Agent
+  api: aiplatform.googleapis.com
+  identity: service-${project_number}@gcp-sa-vertex-session.${universe_domain}iam.gserviceaccount.com
+  role: null
   is_primary: false
   aliases: []
   skip_iam: false
