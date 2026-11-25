@@ -535,10 +535,12 @@ variable "projects" {
         }))
       }))
       metadata = optional(object({
+        data_residency_compliant           = optional(bool)
         enforcement_type                   = optional(string)
         ignore_partial_invocation_failures = optional(bool)
         log_sanitize_operations            = optional(bool)
         log_template_operations            = optional(bool)
+        modalities                         = optional(list(string))
         multi_language_detection           = optional(bool)
         custom_llm_response_safety_error = optional(object({
           code    = optional(number)

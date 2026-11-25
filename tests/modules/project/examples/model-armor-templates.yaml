@@ -40,6 +40,7 @@ values:
       custom_llm_response_safety_error_message: null
       custom_prompt_safety_error_code: null
       custom_prompt_safety_error_message: null
+      data_residency_compliant: true
       enforcement_type: INSPECT_AND_BLOCK
       filter_version_selector: []
       ignore_partial_invocation_failures: null
@@ -70,7 +71,9 @@ values:
       ignore_partial_invocation_failures: null
       log_sanitize_operations: null
       log_template_operations: null
-      modalities: null
+      modalities:
+      - MODALITY_TEXT
+      - MODALITY_IMAGE
       multi_language_detection: []
 
 counts:

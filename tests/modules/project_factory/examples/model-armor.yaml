@@ -82,7 +82,8 @@ values:
     project: foo-ai-app-0
     template_id: default
     template_metadata:
-    - enforcement_type: INSPECT_AND_BLOCK
+    - data_residency_compliant: true
+      enforcement_type: INSPECT_AND_BLOCK
   module.project-factory.module.projects["ai-app-0"].google_project.project[0]:
     auto_create_network: false
     billing_account: 012345-67890A-ABCDEF

@@ -46,12 +46,14 @@ values:
       custom_llm_response_safety_error_message: Response blocked.
       custom_prompt_safety_error_code: 400
       custom_prompt_safety_error_message: Prompt blocked.
+      data_residency_compliant: false
       enforcement_type: INSPECT_AND_BLOCK
       filter_version_selector: []
       ignore_partial_invocation_failures: true
       log_sanitize_operations: true
       log_template_operations: true
-      modalities: null
+      modalities:
+      - MODALITY_TEXT
       multi_language_detection:
       - enable_multi_language_detection: true
   google_model_armor_template.default["sdp-empty"]:

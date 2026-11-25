@@ -2578,8 +2578,9 @@ module "project" {
         }
       }
       metadata = {
-        enforcement_type        = "INSPECT_AND_BLOCK"
-        log_sanitize_operations = true
+        data_residency_compliant = true
+        enforcement_type         = "INSPECT_AND_BLOCK"
+        log_sanitize_operations  = true
       }
     }
     inspect-only = {
@@ -2589,6 +2590,7 @@ module "project" {
       }
       metadata = {
         enforcement_type = "INSPECT_ONLY"
+        modalities       = ["MODALITY_TEXT", "MODALITY_IMAGE"]
       }
     }
   }

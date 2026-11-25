@@ -256,12 +256,14 @@ resource "google_model_armor_template" "default" {
       custom_prompt_safety_error_message = try(
         metadata.value.custom_prompt_safety_error.message, null
       )
-      enforcement_type = metadata.value.enforcement_type
+      data_residency_compliant = metadata.value.data_residency_compliant
+      enforcement_type         = metadata.value.enforcement_type
       ignore_partial_invocation_failures = (
         metadata.value.ignore_partial_invocation_failures
       )
       log_sanitize_operations = metadata.value.log_sanitize_operations
       log_template_operations = metadata.value.log_template_operations
+      modalities              = metadata.value.modalities
       dynamic "multi_language_detection" {
         for_each = (
           metadata.value.multi_language_detection == null ? [] : [""]
