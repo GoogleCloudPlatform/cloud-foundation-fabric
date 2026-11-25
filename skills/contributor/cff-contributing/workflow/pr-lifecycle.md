@@ -1,6 +1,6 @@
 # Linting, E2E, and PR Lifecycle
 
-This guide covers the mechanical end-to-end contribution workflow: provider research and version bumps, branching, full CI lint parity, pre-submission self-review, optional live E2E verification, and sanitized PR submission. For triaging incoming GitHub issues or sweeping the issue backlog, use [cff-issue-triage](../../../maintainer/cff-issue-triage/SKILL.md) first.
+This guide covers the mechanical end-to-end contribution workflow: provider research and version bumps, branching, full CI lint parity, pre-submission self-review, optional live E2E verification, and sanitized PR submission. For triaging incoming GitHub issues or sweeping the issue backlog, use [cff-issue-triage](../../../../skills/maintainer/cff-issue-triage/SKILL.md) first.
 
 ## Human-in-the-Loop Gates
 

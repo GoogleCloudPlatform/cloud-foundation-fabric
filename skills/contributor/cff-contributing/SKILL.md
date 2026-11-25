@@ -5,7 +5,7 @@ description: "Design-first contributor guide and PR workflow for Cloud Foundatio
 
 # Contributing to Cloud Foundation Fabric
 
-Design-first entry skill for implementing changes and preparing pull requests in Cloud Foundation Fabric (CFF). For reviewing an existing PR or local branch diff, use [cff-pr-review](../../maintainer/cff-pr-review/SKILL.md); for triaging incoming GitHub issues or sweeping the issue backlog, use [cff-issue-triage](../../maintainer/cff-issue-triage/SKILL.md) first. If implementing an existing issue, inspect it via `gh issue view <n>`, complete Step 0 and Pre-Design Research, and stop at **Design Sign-off** before writing code (skippable only for trivial, obvious fixes).
+Design-first entry skill for implementing changes and preparing pull requests in Cloud Foundation Fabric (CFF). For reviewing an existing PR or local branch diff, use [cff-pr-review](../../../skills/maintainer/cff-pr-review/SKILL.md); for triaging incoming GitHub issues or sweeping the issue backlog, use [cff-issue-triage](../../../skills/maintainer/cff-issue-triage/SKILL.md) first. If implementing an existing issue, inspect it via `gh issue view <n>`, complete Step 0 and Pre-Design Research, and stop at **Design Sign-off** before writing code (skippable only for trivial, obvious fixes).
 
 ## Step 0: Fit, Boundary, and Honest-Stop Check
 

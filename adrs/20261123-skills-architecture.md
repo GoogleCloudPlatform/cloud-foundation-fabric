@@ -12,6 +12,7 @@ Ready
 - [Context](#context)
 - [Decision](#decision)
   - [Four audience buckets and flat install naming](#four-audience-buckets-and-flat-install-naming)
+  - [Auto-discovery publication via `.agents/skills/` and `.claude/skills`](#auto-discovery-publication-via-agentsskills-and-claudeskills)
   - [Consumer skills in Wave 1](#consumer-skills-in-wave-1)
   - [Repository skills for contributors](#repository-skills-for-contributors)
   - [Repository skills for maintainers](#repository-skills-for-maintainers)
@@ -65,6 +66,26 @@ skills/
 
 Every skill's leaf directory name must match the `name:` field in its `SKILL.md` frontmatter and carry its audience prefix (`fabric-`, `fast-` or `cff-`). That rule allows any harness to symlink or install any skill straight into a flat `.agents/skills/<name>` or `~/.agents/skills/<name>` directory without path remapping or name collisions with other repositories. Using `fabric-` and `fast-` for consumer skills and `cff-` for repository skills keeps both groups visually distinct in `<available_skills>`. `fabric-builder` keeps its existing name so current `agents-cli` users face no breaking change, while its frontmatter description now names both module composition and YAML factory datasets.
 
+### Auto-discovery publication via `.agents/skills/` and `.claude/skills`
+
+Canonical skill sources remain visible and audience-grouped under `skills/`, rather than moving into a hidden dot-directory. To give anyone cloning Fabric zero-setup skill auto-discovery across standard coding agents, we track `.agents/skills/` as a curated publication layer containing per-skill relative symlinks (`../../skills/<bucket>/<name>`) and alias `.claude/skills` to `../.agents/skills` for Claude Code:
+
+```text
+.agents/skills/
+├── cff-contributing -> ../../skills/contributor/cff-contributing
+├── fabric-builder -> ../../skills/fabric/fabric-builder
+├── fast-networking -> ../../skills/fast/fast-networking
+└── fast-prerequisites -> ../../skills/fast/fast-prerequisites
+
+.claude/skills -> ../.agents/skills
+```
+
+Publishing per-skill symlinks rather than exposing the full `skills/` tree solves 3 constraints at once:
+
+- flat 1-level discovery without sacrificing audience buckets: most harnesses scan `.agents/skills/*/SKILL.md` at depth 1, while canonical sources keep their `skills/{fabric,fast,contributor,maintainer}/` organization and preserve depth-3 relative links cleanly across `skills/`, `.agents/skills/` and `.claude/skills/`
+- graduation gate for incubating skills: beta skills such as `fabric-importer` live under `skills/fabric/` without being auto-discovered by cloners until ready, matching `agents-cli-extension.yaml`
+- separation of contributor and maintainer surfaces: cloners (both fork-and-own FAST/Fabric consumers and contributors) auto-discover the stable consumer skills plus `cff-contributing`, while maintainer-only skills (`cff-issue-triage`, `cff-pr-review` and `cff-release`) stay opt-in; `.gitignore` allowlists only the published symlinks under `.agents/skills/` and `.claude/skills` so personal local `.agents/` or `.claude/` files and maintainer symlinks remain untracked
+
 ### Consumer skills in Wave 1
 
 Consumer skills under `skills/fabric/` and `skills/fast/` stay self-contained and never reference repository-only files such as `CONTRIBUTING.md` or `AGENTS.md`, because users install them into external repositories through `agents-cli`.
@@ -111,8 +132,9 @@ To keep every agent harness aligned with the new skill tree, we reconciled the r
 - renamed `GEMINI.md` to `AGENTS.md` and dropped the symlink so `AGENTS.md` is the single real repository instruction file across `agy`, `pi` and standard coding agents
 - trimmed `AGENTS.md` to a concise 1 to 2 page compass carrying the repository map, core architectural principles, mechanical gotchas (`tfdoc`, alphabetical variables, `lint.sh` and `pytest`) and direct links to the `cff-*` skills, so agents without skill auto-loading still get core guardrails immediately
 - aligned `CONTRIBUTING.md` with the same design principles so human readers keep the full handbook while agents rely on the concise skill files
-- updated `agents-cli-extension.yaml`, `skills/README.md` and `tools/skill-turn-harness/` playbook `link_paths` to point to `skills/fabric/*` and `skills/fast/*` (keeping `fabric-importer` excluded from `agents-cli-extension.yaml` for now)
-- relocated `test_agents_cli_extension_manifest_is_valid` from `skills/fast/fast-networking/tests/test_validate_dataset.py` into `tests/skills/test_skills.py`, which validates both `agents-cli-extension.yaml` and the flat-install naming rule across every directory under `skills/*/*/`
+- updated `agents-cli-extension.yaml`, `skills/README.md` and `tools/skill-turn-harness/` playbook `link_paths` to point to `skills/fabric/*` and `skills/fast/*` (keeping `fabric-importer` excluded from `agents-cli-extension.yaml` and `.agents/skills/` for now)
+- narrowed `.gitignore` to track only the curated symlinks under `.agents/skills/` and the `.claude/skills` alias while keeping personal local `.agents/` and `.claude/` entries untracked
+- relocated `test_agents_cli_extension_manifest_is_valid` from `skills/fast/fast-networking/tests/test_validate_dataset.py` into `tests/skills/test_skills.py`, which validates `agents-cli-extension.yaml`, the flat-install naming rule across every directory under `skills/*/*/` and the `.agents/skills/` and `.claude/skills` publication symlinks
 
 ### Repeatable skill authoring and evaluation gate
 
@@ -125,14 +147,14 @@ Previously, skill authoring followed an ad-hoc process of editing prose by intui
 
 ## Rollout plan
 
-1. Wave 1 (this branch) lands this ADR, refreshes `FACTORIES.md`, migrates existing skills into `skills/{fabric,fast,contributor,maintainer}/` with flat-safe names, adds `cff-contributing`, `cff-pr-review` and `cff-issue-triage`, extends `fabric-builder` with YAML factory guidance and `scripts/fabric.py` validation, replaces `GEMINI.md` with a lean `AGENTS.md`, reconciles `CONTRIBUTING.md`, `skills/README.md`, `agents-cli-extension.yaml` and playbook `link_paths`, and adds repo-wide skill contract tests in `tests/skills/test_skills.py`.
+1. Wave 1 (this branch) lands this ADR, refreshes `FACTORIES.md`, migrates existing skills into `skills/{fabric,fast,contributor,maintainer}/` with flat-safe names, publishes the curated cloner set via `.agents/skills/` and `.claude/skills` symlinks, adds `cff-contributing`, `cff-pr-review` and `cff-issue-triage`, extends `fabric-builder` with YAML factory guidance and `scripts/fabric.py` validation, replaces `GEMINI.md` with a lean `AGENTS.md`, reconciles `CONTRIBUTING.md`, `skills/README.md`, `agents-cli-extension.yaml` and playbook `link_paths`, and adds repo-wide skill contract tests in `tests/skills/test_skills.py`.
 2. Wave 2 (follow-up pull request) publishes the sanitized evaluation suite in-repo and ports the runner, deterministic verifiers and A/B skill grading flow into `tools/skill-turn-harness/`.
 
 ## Consequences
 
 This architecture produces 4 operational effects:
 
-- flat-install portability: every skill installs into a flat `.agents/skills/` or `~/.agents/skills/` directory with zero name collisions or manual remapping
+- flat-install portability and zero-setup clone discovery: every skill installs into a flat `.agents/skills/` or `~/.agents/skills/` directory with zero name collisions or manual remapping, and cloning the repository automatically exposes the curated consumer and contributor skills through `.agents/skills/` and `.claude/skills` while keeping incubating and maintainer-only skills opt-in
 - one source of design truth with a safe fallback: `cff-contributing`, `cff-pr-review` and `cff-issue-triage` share one canonical set of `design/`, `conventions/` and `workflow/` guides, while root `AGENTS.md` keeps core guardrails and direct file links visible even when skills are inactive
 - low migration friction: existing `agents-cli` users keep `fabric-builder`, `fast-networking` and `fast-prerequisites` under the same installed names because only internal repository paths in `agents-cli-extension.yaml` changed, while contributors referencing `skills/contributing`, `skills/maintenance/release-process` or `GEMINI.md` move to the new paths (documented with an `upgrade-note`)
 - repeatable skill evolution: pairing the mining-to-evaluation workflow with the upcoming public evaluation suite gives maintainers a mechanical way to evolve deep FAST skills and test new models against frozen snapshots

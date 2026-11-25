@@ -34,5 +34,13 @@ cloud_sql_proxy
 env/
 logs/*
 .jetskicli
-.agents
+.agents/*
+!.agents/skills/
+.agents/skills/*
+!.agents/skills/cff-contributing
+!.agents/skills/fabric-builder
+!.agents/skills/fast-networking
+!.agents/skills/fast-prerequisites
+.claude/*
+!.claude/skills
 scratch/

@@ -15,7 +15,9 @@
 
 from __future__ import annotations
 
+import os
 import pathlib
+import subprocess
 
 import yaml
 
@@ -35,6 +37,13 @@ EXPECTED_MANIFEST_SKILLS = {
     "fabric-builder",
     "fast-networking",
     "fast-prerequisites",
+}
+
+EXPECTED_PUBLISHED_AGENT_SKILLS = {
+    "cff-contributing": pathlib.Path("skills/contributor/cff-contributing"),
+    "fabric-builder": pathlib.Path("skills/fabric/fabric-builder"),
+    "fast-networking": pathlib.Path("skills/fast/fast-networking"),
+    "fast-prerequisites": pathlib.Path("skills/fast/fast-prerequisites"),
 }
 
 
@@ -106,3 +115,43 @@ def test_skills_hierarchy_and_flat_install_naming() -> None:
       expected_link = f"(./{bucket}/{leaf})"
       assert expected_link in readme_text, (
           f"skills/README.md is missing link {expected_link}")
+
+
+def test_published_agent_skill_symlinks() -> None:
+  agents_skills = REPO_ROOT / ".agents" / "skills"
+  assert agents_skills.is_dir(), "Missing .agents/skills directory"
+
+  for skill_name, rel_target in EXPECTED_PUBLISHED_AGENT_SKILLS.items():
+    link_path = agents_skills / skill_name
+    assert link_path.is_symlink(), f"{link_path} must be a symlink"
+    expected_raw = os.path.join("..", "..", *rel_target.parts)
+    assert os.readlink(link_path) == expected_raw, (
+        f"{link_path} symlink target {os.readlink(link_path)!r} != "
+        f"{expected_raw!r}")
+    resolved = link_path.resolve(strict=True)
+    assert resolved == (REPO_ROOT / rel_target).resolve(strict=True)
+    frontmatter = _parse_frontmatter(link_path / "SKILL.md")
+    assert frontmatter.get("name") == skill_name
+
+  claude_skills = REPO_ROOT / ".claude" / "skills"
+  assert claude_skills.is_symlink(), ".claude/skills must be a symlink"
+  assert os.readlink(claude_skills) == os.path.join("..", ".agents", "skills")
+  assert claude_skills.resolve(strict=True) == agents_skills.resolve(
+      strict=True)
+
+  if (REPO_ROOT / ".git").exists():
+    proc = subprocess.run(
+        ["git", "ls-files", ".agents/skills"],
+        cwd=REPO_ROOT,
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+    tracked = {
+        pathlib.Path(line).name
+        for line in proc.stdout.splitlines()
+        if line.strip()
+    }
+    if tracked:
+      assert tracked == set(EXPECTED_PUBLISHED_AGENT_SKILLS.keys()), (
+          f"Unexpected tracked entries under .agents/skills: {sorted(tracked)}")
