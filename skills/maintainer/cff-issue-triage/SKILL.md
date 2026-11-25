@@ -22,7 +22,7 @@ Classify the issue and check whether it belongs in Fabric before proposing any d
 - **Feature request (`enhancement`):** Evaluate against [design/modules.md](../../../skills/contributor/cff-contributing/design/modules.md) (and [design/factories.md](../../../skills/contributor/cff-contributing/design/factories.md) when factories or schemas are involved):
   - Reject thin single-resource pass-through wrappers, standalone feature modules (such as central IAM or tag-binding modules), unrelated resource bundles outside `project-factory` / `net-vpc-factory`, and project-level companion IAM inside service modules.
   - Redirect one-off or end-to-end reference architectures to `fast/project-templates/`, `modules/<module>/recipe-*`, or consumer repositories.
-  - Identify cross-module parity and FAST blast radius early: shared resource-management capabilities must move in unison across `organization`, `folder`, and `project`, and high-blast-radius module changes must account for [design/fast.md](../../../skills/contributor/cff-contributing/design/fast.md).
+  - Identify cross-module parity and FAST blast radius early: shared resource-management capabilities must move in unison across `organization`, `folder`, and `project`, and changes to any module consumed by `fast/` (check `fast/` callers and `FACTORIES.md`) must account for [design/fast.md](../../../skills/contributor/cff-contributing/design/fast.md).
 - **Usage question / support (`question`):** General GCP, Terraform, or architecture questions belong in GitHub Discussions rather than the issue tracker.
 - **Duplicate / Already fixed / Invalid / Out of scope (`duplicate`, `invalid`, `wontfix`):** Cite the exact issue, PR, commit, existing variable, or ADR that resolves or precludes the request.
 
