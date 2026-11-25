@@ -86,6 +86,8 @@ Publishing per-skill symlinks rather than exposing the full `skills/` tree solve
 - graduation gate for incubating skills: beta skills such as `fabric-importer` live under `skills/fabric/` without being auto-discovered by cloners until ready, matching `agents-cli-extension.yaml`
 - separation of contributor and maintainer surfaces: cloners (both fork-and-own FAST/Fabric consumers and contributors) auto-discover the stable consumer skills plus `cff-contributing`, while maintainer-only skills (`cff-issue-triage`, `cff-pr-review` and `cff-release`) stay opt-in; `.gitignore` allowlists only the published symlinks under `.agents/skills/` and `.claude/skills` so personal local `.agents/` or `.claude/` files and maintainer symlinks remain untracked
 
+Note on single-skill installs and relative links: consumer skills under `skills/fabric/` and `skills/fast/` have zero links outside their own directory and can be installed standalone anywhere (`~/.agents/skills/` or another repository). Repo-facing contributor and maintainer skills (`cff-contributing`, `cff-pr-review` and `cff-issue-triage`) link to repository files (`adrs/`, `CURSED_KNOWLEDGE.md`, `default-versions.*`, `FACTORIES.md`, `tools/`) and cross-link via repo root (`../../../skills/...`) at depth 3, so they should always be installed by symlinking inside a Fabric checkout (`.agents/skills/<name> -> ../../skills/<bucket>/<name>`, already tracked for `cff-contributing` and gitignored for opt-in maintainer skills) rather than copied standalone; each of those 3 `SKILL.md` files also ends with a short path-resolution fallback telling agents to strip leading `../` segments and resolve from the Fabric repository root if a link ever fails under a global install.
+
 ### Consumer skills in Wave 1
 
 Consumer skills under `skills/fabric/` and `skills/fast/` stay self-contained and never reference repository-only files such as `CONTRIBUTING.md` or `AGENTS.md`, because users install them into external repositories through `agents-cli`.
@@ -117,7 +119,7 @@ Wave 1 scopes `design/fast.md` to cross-cutting module-to-FAST boundaries (where
 
 ### Repository skills for maintainers
 
-We added 2 standalone maintainer skills under `skills/maintainer/` alongside the moved `cff-release` skill. Both run inside a `cloud-foundation-fabric` checkout and point directly to `../../contributor/cff-contributing/` for all canonical design, HCL and testing rules so there is one source of truth.
+We added 2 standalone maintainer skills under `skills/maintainer/` alongside the moved `cff-release` skill. Both run inside a `cloud-foundation-fabric` checkout and point directly to `../../../skills/contributor/cff-contributing/` for all canonical design, HCL and testing rules so there is one source of truth (working both from `skills/maintainer/` and when symlinked locally into `.agents/skills/`).
 
 `cff-pr-review` starts from an existing pull request or branch diff. It enforces Step 1 architectural triage (rejecting thin single-resource wrappers, companion project IAM inside service modules, `project-factory` two-pass DAG breaks and unrelated cross-module churn), routes selectively to 1 to 2 diff-triggered guides and sweeps every modified block for nesting, explicit-`null` and empty-`dynamic` defects. All GitHub write commands stay behind explicit maintainer approval.
 

@@ -4,7 +4,7 @@ This directory contains skills for AI agents to leverage Cloud Foundation Fabric
 
 ## Auto-Discovery in a Repository Clone
 
-Cloning this repository automatically exposes the stable user-facing skills (`fabric-builder`, `fast-networking`, and `fast-prerequisites`) and the contributor skill (`cff-contributing`) through per-skill symlinks in `.agents/skills/` (with `.claude/skills` aliased to `../.agents/skills` for Claude Code). Incubating skills (such as `fabric-importer`) and maintainer-only skills (`skills/maintainer/`) are intentionally not linked there so cloners do not pick up beta or maintainer workflows by default; maintainers can symlink them locally into `.agents/skills/` (ignored by `.gitignore`) or globally into `~/.agents/skills/`.
+Cloning this repository automatically exposes the stable user-facing skills (`fabric-builder`, `fast-networking`, and `fast-prerequisites`) and the contributor skill (`cff-contributing`) through per-skill symlinks in `.agents/skills/` (with `.claude/skills` aliased to `../.agents/skills` for Claude Code). Incubating skills (such as `fabric-importer`) and maintainer-only skills (`skills/maintainer/`) are intentionally not linked there so cloners do not pick up beta or maintainer workflows by default; because repo-facing `cff-*` skills link to repository files, install opt-in maintainer skills by symlinking them into the checkout's `.agents/skills/` (ignored by `.gitignore`).
 
 ## Installing with `agents-cli`
 

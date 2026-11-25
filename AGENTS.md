@@ -17,7 +17,7 @@ Cloud Foundation Fabric is a monorepo of composable Terraform/OpenTofu modules (
 
 ## Skills and Canonical Guides
 
-Cloning this repository automatically exposes `cff-contributing` and the published consumer skills via `.agents/skills/` (and `.claude/skills/` for Claude Code). Maintainer skills (`cff-pr-review`, `cff-issue-triage`, `cff-release`) stay opt-in (symlink locally into `.agents/skills/` or globally into `~/.agents/skills/`). If your harness does not auto-load skills, read the relevant plain-Markdown file directly before designing, coding, reviewing, or triaging:
+Cloning this repository automatically exposes `cff-contributing` and the published consumer skills via `.agents/skills/` (and `.claude/skills/` for Claude Code). Maintainer skills (`cff-pr-review`, `cff-issue-triage`, `cff-release`) stay opt-in (install by symlinking into `.agents/skills/` inside the checkout, which `.gitignore` keeps untracked). If your harness does not auto-load skills, read the relevant plain-Markdown file directly before designing, coding, reviewing, or triaging:
 
 | Task | Entry guide | Canonical references |
 | :--- | :--- | :--- |

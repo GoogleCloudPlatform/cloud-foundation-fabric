@@ -57,3 +57,5 @@ Keep reversible mechanical steps (linting, tests, `tfdoc`, inventory regeneratio
 | **E2E Opt-in** | After tests & self-review pass | Whether to deploy live (providing a sandbox project ID authorizes `-auto-approve` deploy and destroy). |
 | **Behavioral Verification Opt-in** | After E2E read-back passes | Whether to run live runtime/traffic checks given described time and cost. |
 | **PR Approval** | Before `gh pr create` | Reviews the final sanitized PR title and body. |
+
+> **Path resolution fallback:** Relative links in this skill assume an in-checkout depth of 3 (`skills/contributor/cff-contributing/` or `.agents/skills/cff-contributing/`). If a relative link does not resolve (for example when installed under `~/.agents/skills/`), strip the leading `../` segments and resolve it from the `cloud-foundation-fabric` repository root.

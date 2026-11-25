@@ -5,7 +5,7 @@ description: "Maintainer GitHub issue triage guide for Cloud Foundation Fabric. 
 
 # Triaging Cloud Foundation Fabric Issues
 
-Maintainer-facing GitHub issue triage skill for Cloud Foundation Fabric (CFF). This skill focuses on evaluating incoming issues (individually or across a backlog sweep), delegates all canonical design and boundary criteria to [cff-contributing](../../contributor/cff-contributing/SKILL.md) with zero rule duplication, and flows directly into `cff-contributing` when the maintainer decides to implement the issue.
+Maintainer-facing GitHub issue triage skill for Cloud Foundation Fabric (CFF). This skill focuses on evaluating incoming issues (individually or across a backlog sweep), delegates all canonical design and boundary criteria to [cff-contributing](../../../skills/contributor/cff-contributing/SKILL.md) with zero rule duplication, and flows directly into `cff-contributing` when the maintainer decides to implement the issue.
 
 ## Step 0: Intake, Duplicates, and Stale-Version Check
 
@@ -19,10 +19,10 @@ Maintainer-facing GitHub issue triage skill for Cloud Foundation Fabric (CFF). T
 Classify the issue and check whether it belongs in Fabric before proposing any design:
 
 - **Bug (`bug`):** Reproducible defect in a Fabric module, factory, FAST stage, schema, or tool on current `master` (distinguish from upstream provider bugs, GCP API constraints, or consumer misconfiguration).
-- **Feature request (`enhancement`):** Evaluate against [design/modules.md](../../contributor/cff-contributing/design/modules.md) (and [design/factories.md](../../contributor/cff-contributing/design/factories.md) when factories or schemas are involved):
+- **Feature request (`enhancement`):** Evaluate against [design/modules.md](../../../skills/contributor/cff-contributing/design/modules.md) (and [design/factories.md](../../../skills/contributor/cff-contributing/design/factories.md) when factories or schemas are involved):
   - Reject thin single-resource pass-through wrappers, standalone feature modules (such as central IAM or tag-binding modules), unrelated resource bundles outside `project-factory` / `net-vpc-factory`, and project-level companion IAM inside service modules.
   - Redirect one-off or end-to-end reference architectures to `fast/project-templates/`, `modules/<module>/recipe-*`, or consumer repositories.
-  - Identify cross-module parity and FAST blast radius early: shared resource-management capabilities must move in unison across `organization`, `folder`, and `project`, and high-blast-radius module changes must account for [design/fast.md](../../contributor/cff-contributing/design/fast.md).
+  - Identify cross-module parity and FAST blast radius early: shared resource-management capabilities must move in unison across `organization`, `folder`, and `project`, and high-blast-radius module changes must account for [design/fast.md](../../../skills/contributor/cff-contributing/design/fast.md).
 - **Usage question / support (`question`):** General GCP, Terraform, or architecture questions belong in GitHub Discussions rather than the issue tracker.
 - **Duplicate / Already fixed / Invalid / Out of scope (`duplicate`, `invalid`, `wontfix`):** Cite the exact issue, PR, commit, existing variable, or ADR that resolves or precludes the request.
 
@@ -31,7 +31,7 @@ Classify the issue and check whether it belongs in Fabric before proposing any d
 Never triage from memory or rely on partial snippets pasted into the issue body:
 
 1. **Inspect current Fabric code:** Read the target module or FAST stage (`variables*.tf`, `.tf`, `schemas/`, `README.md`) and relevant golden-path siblings (`project`, `compute-vm`, `net-vpc`, `project-factory`, `net-vpc-factory`, `vpc-sc`) to confirm whether the capability already exists, is partially covered, or conflicts with an existing interface.
-2. **Verify released provider support:** Check [default-versions.tf](../../../default-versions.tf) and read the full **released** `google` or `google-beta` provider documentation (see [workflow/pr-lifecycle.md](../../contributor/cff-contributing/workflow/pr-lifecycle.md#pre-design-research-commands) for the raw-markdown fetch fallback). Confirm whether the requested feature exists in a released provider version, requires `google-beta`, requires a repo-wide minimum version bump via [tools/versions.py](../../../tools/versions.py) (since all modules share uniform provider constraints so consumers can compose them cleanly), or is blocked upstream on the provider or GCP API.
+2. **Verify released provider support:** Check [default-versions.tf](../../../default-versions.tf) and read the full **released** `google` or `google-beta` provider documentation (see [workflow/pr-lifecycle.md](../../../skills/contributor/cff-contributing/workflow/pr-lifecycle.md#pre-design-research-commands) for the raw-markdown fetch fallback). Confirm whether the requested feature exists in a released provider version, requires `google-beta`, requires a repo-wide minimum version bump via [tools/versions.py](../../../tools/versions.py) (since all modules share uniform provider constraints so consumers can compose them cleanly), or is blocked upstream on the provider or GCP API.
 3. **Check ADRs and runtime hazards:** Scan [adrs/](../../../adrs/) by status (ignore `Rejected`; treat `Draft`/`Proposed` as directional; on conflict, current golden-path code wins) and cross-check [CURSED_KNOWLEDGE.md](../../../CURSED_KNOWLEDGE.md).
 
 ## Step 3: Triage Disposition, Labels, and GitHub Write Gate
@@ -48,6 +48,8 @@ Present a concise triage brief to the maintainer:
 
 If the maintainer decides during or after triage to go ahead and implement the fix or feature directly:
 
-1. **Transition into [cff-contributing](../../contributor/cff-contributing/SKILL.md):** Do not repeat Step 0 fit assessment or provider research from scratch — carry forward the verified issue scope, target module(s), released provider findings, and cross-module/FAST blast radius already established in Steps 1–2.
-2. **Enter at Design Sign-off:** Load [design/interfaces.md](../../contributor/cff-contributing/design/interfaces.md) (plus [design/factories.md](../../contributor/cff-contributing/design/factories.md), [design/fast.md](../../contributor/cff-contributing/design/fast.md), or [conventions/hcl.md](../../contributor/cff-contributing/conventions/hcl.md) as triggered) and propose the concrete variable/output interface, provider include/exclude list, and any required provider version bump for **Design Sign-off** before creating a branch or editing `.tf` files.
-3. **Link the issue on PR creation:** Carry `Fixes #<n>` (or `Closes #<n>`) into the final sanitized PR body prepared under [workflow/pr-lifecycle.md](../../contributor/cff-contributing/workflow/pr-lifecycle.md#sanitized-commit-and-pr-submission).
+1. **Transition into [cff-contributing](../../../skills/contributor/cff-contributing/SKILL.md):** Do not repeat Step 0 fit assessment or provider research from scratch — carry forward the verified issue scope, target module(s), released provider findings, and cross-module/FAST blast radius already established in Steps 1–2.
+2. **Enter at Design Sign-off:** Load [design/interfaces.md](../../../skills/contributor/cff-contributing/design/interfaces.md) (plus [design/factories.md](../../../skills/contributor/cff-contributing/design/factories.md), [design/fast.md](../../../skills/contributor/cff-contributing/design/fast.md), or [conventions/hcl.md](../../../skills/contributor/cff-contributing/conventions/hcl.md) as triggered) and propose the concrete variable/output interface, provider include/exclude list, and any required provider version bump for **Design Sign-off** before creating a branch or editing `.tf` files.
+3. **Link the issue on PR creation:** Carry `Fixes #<n>` (or `Closes #<n>`) into the final sanitized PR body prepared under [workflow/pr-lifecycle.md](../../../skills/contributor/cff-contributing/workflow/pr-lifecycle.md#sanitized-commit-and-pr-submission).
+
+> **Path resolution fallback:** Relative links in this skill assume an in-checkout depth of 3 (`skills/maintainer/cff-issue-triage/` or `.agents/skills/cff-issue-triage/`). If a relative link does not resolve (for example when installed under `~/.agents/skills/`), strip the leading `../` segments and resolve it from the `cloud-foundation-fabric` repository root.
