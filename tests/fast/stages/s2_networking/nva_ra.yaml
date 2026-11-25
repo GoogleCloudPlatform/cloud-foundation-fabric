@@ -767,10 +767,6 @@ values:
     condition: []
     project: fast-prod-net-core-0
     role: roles/monitoring.notificationServiceAgent
-  module.projects.module.projects["net-core-0"].google_project_iam_member.service_agents["networkmanagement"]:
-    condition: []
-    project: fast-prod-net-core-0
-    role: roles/networkmanagement.serviceAgent
   module.projects.module.projects["net-core-0"].google_project_iam_member.service_agents["service-networking"]:
     condition: []
     project: fast-prod-net-core-0
@@ -1096,12 +1092,12 @@ counts:
   google_network_connectivity_hub: 1
   google_network_connectivity_spoke: 4
   google_project: 1
-  google_project_iam_member: 8
+  google_project_iam_member: 7
   google_project_service: 10
   google_project_service_identity: 8
   google_storage_bucket_object: 2
   modules: 7
-  resources: 74
+  resources: 73
   terraform_data: 13
 
 outputs:

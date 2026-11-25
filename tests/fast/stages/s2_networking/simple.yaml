@@ -36,7 +36,7 @@ counts:
   google_dns_response_policy: 1
   google_dns_response_policy_rule: 42
   google_project: 3
-  google_project_iam_member: 24
+  google_project_iam_member: 21
   google_project_service: 30
   google_project_service_identity: 24
   google_service_networking_connection: 1
@@ -44,5 +44,5 @@ counts:
   google_storage_bucket_object: 2
   modules: 28
   random_id: 3
-  resources: 197
+  resources: 194
   terraform_data: 2

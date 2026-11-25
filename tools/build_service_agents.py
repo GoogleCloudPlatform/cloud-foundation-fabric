@@ -233,7 +233,7 @@ def main(mode):
   header = open(__file__).readlines()[2:15]
   print("".join(header))
   # and print all the agents
-  print(yaml.safe_dump([a.to_dict() for a in agents], sort_keys=False))
+  print(yaml.safe_dump([a.to_dict() for a in agents], sort_keys=False), end='')
 
 
 if __name__ == '__main__':

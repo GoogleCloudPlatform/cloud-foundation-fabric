@@ -22,12 +22,12 @@ counts:
   google_compute_subnetwork: 2
   google_logging_project_settings: 1
   google_project: 1
-  google_project_iam_member: 8
+  google_project_iam_member: 7
   google_project_service: 10
   google_project_service_identity: 8
   google_storage_bucket_object: 2
   modules: 8
-  resources: 46
+  resources: 45
   terraform_data: 2
 values:
   module.addresses["core/nat-static"].google_compute_address.external["core-nat-static-ip-0"]:
