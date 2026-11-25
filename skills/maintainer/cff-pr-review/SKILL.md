@@ -35,7 +35,7 @@ Never file a technical objection from memory or from partial snippets in a PR de
 
 ## Step 3: Selective Diff-Triggered Audit Routing
 
-Each canonical guide covers one layer of the repository. Reading guides for surfaces the diff does not touch dilutes attention on the actual code and invites false-positive findings (such as asking a standalone non-factory module for `schemas/` or `FACTORIES.md`). Open **every** guide whose trigger appears in the diff — skip unrelated rows — and never cite a guide, script, or rule you did not inspect:
+Each canonical guide covers one layer of the repository. Reading guides for surfaces the diff does not touch dilutes attention on the actual code and invites false-positive findings (such as asking a standalone non-factory module for `schemas/` or `FACTORIES.md`). Open **only** the 1–2 guides whose trigger appears in the diff, and never cite a guide, script, or rule you did not inspect:
 
 | Diff touches... | Canonical criteria | Reviewer-specific checks on the diff |
 | :--- | :--- | :--- |
