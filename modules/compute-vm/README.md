@@ -341,7 +341,7 @@ module "vm-disk-options-example" {
   shielded_config = {}
 }
 
-# tftest inventory=disk-hyperdisk-cust-performance.yaml e2e
+# tftest inventory=disk-hyperdisk-cust-performance.yaml
 ```
 
 You can use storage pool for better management of storage capacity.

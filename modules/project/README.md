@@ -803,14 +803,14 @@ module "gcs" {
 module "dataset" {
   source     = "./fabric/modules/bigquery-dataset"
   project_id = var.project_id
-  id         = "bq_sink"
+  id         = "${replace(var.prefix, "-", "_")}_bq_sink"
   options    = { delete_contents_on_destroy = true }
 }
 
 module "pubsub" {
   source     = "./fabric/modules/pubsub"
   project_id = var.project_id
-  name       = "pubsub_sink"
+  name       = "${var.prefix}-pubsub_sink"
 }
 
 module "bucket" {
@@ -2154,7 +2154,6 @@ module "project" {
   }
   services = [
     "apigee.googleapis.com",
-    "bigquery.googleapis.com",
     "container.googleapis.com",
     "compute.googleapis.com",
     "logging.googleapis.com",
@@ -2209,14 +2208,14 @@ module "gcs" {
 module "dataset" {
   source     = "./fabric/modules/bigquery-dataset"
   project_id = var.project_id
-  id         = "bq_sink"
+  id         = "${replace(var.prefix, "-", "_")}_bq_sink"
   options    = { delete_contents_on_destroy = true }
 }
 
 module "pubsub" {
   source     = "./fabric/modules/pubsub"
   project_id = var.project_id
-  name       = "pubsub_sink"
+  name       = "${var.prefix}-pubsub_sink"
 }
 
 module "bucket" {

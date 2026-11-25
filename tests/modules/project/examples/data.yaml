@@ -38,7 +38,7 @@ values:
       goog-terraform-provisioned: 'true'
     timeouts: null
   module.dataset.google_bigquery_dataset.default:
-    dataset_id: bq_sink
+    dataset_id: test_bq_sink
     default_encryption_configuration: []
     default_partition_expiration_ms: null
     default_table_expiration_ms: null
@@ -123,8 +123,6 @@ values:
   module.kms.google_kms_key_ring_iam_binding.authoritative["roles/cloudkms.cryptoKeyEncrypterDecrypter"]:
     condition: []
     role: roles/cloudkms.cryptoKeyEncrypterDecrypter
-  module.project.data.google_bigquery_default_service_account.bq_sa[0]:
-    project: test-project
   module.project.data.google_logging_project_settings.logging_sa[0]:
     project: test-project
   module.project.data.google_storage_project_service_account.gcs_sa[0]:
@@ -180,7 +178,7 @@ values:
     custom_writer_identity: null
     deletion_policy: DELETE
     description: notice (Terraform-managed).
-    destination: pubsub.googleapis.com/projects/project-id/topics/pubsub_sink
+    destination: pubsub.googleapis.com/projects/project-id/topics/test-pubsub_sink
     disabled: false
     exclusions: []
     filter: severity=NOTICE
@@ -441,13 +439,6 @@ values:
     project: test-project
     service: apigee.googleapis.com
     timeouts: null
-  module.project.google_project_service.project_services["bigquery.googleapis.com"]:
-    deletion_policy: DELETE
-    disable_dependent_services: false
-    disable_on_destroy: false
-    project: test-project
-    service: bigquery.googleapis.com
-    timeouts: null
   module.project.google_project_service.project_services["compute.googleapis.com"]:
     deletion_policy: DELETE
     disable_dependent_services: false
@@ -499,7 +490,7 @@ values:
     condition: []
     project: project-id
     role: roles/pubsub.publisher
-    topic: pubsub_sink
+    topic: test-pubsub_sink
   module.project.google_storage_bucket_iam_member.gcs_sinks_binding["warnings"]:
     bucket: test-gcs_sink
     condition: []
@@ -514,7 +505,7 @@ values:
     labels: null
     message_retention_duration: null
     message_transforms: []
-    name: pubsub_sink
+    name: test-pubsub_sink
     project: project-id
     schema_settings: []
     tags: null
@@ -525,7 +516,6 @@ values:
 counts:
   google_bigquery_dataset: 1
   google_bigquery_dataset_iam_member: 1
-  google_bigquery_default_service_account: 1
   google_compute_shared_vpc_host_project: 1
   google_compute_shared_vpc_service_project: 1
   google_kms_crypto_key: 1
@@ -541,7 +531,7 @@ counts:
   google_project_iam_audit_config: 2
   google_project_iam_binding: 7
   google_project_iam_member: 14
-  google_project_service: 7
+  google_project_service: 6
   google_project_service_identity: 3
   google_pubsub_topic: 1
   google_pubsub_topic_iam_member: 1
@@ -549,6 +539,6 @@ counts:
   google_storage_bucket_iam_member: 1
   google_storage_project_service_account: 1
   modules: 8
-  resources: 64
+  resources: 62
 
 outputs: {}

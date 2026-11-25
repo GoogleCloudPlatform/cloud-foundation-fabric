@@ -23,7 +23,7 @@ values:
     project: project-id
     retention_days: 30
   module.dataset.google_bigquery_dataset.default:
-    dataset_id: bq_sink
+    dataset_id: test_bq_sink
     default_encryption_configuration: []
     default_partition_expiration_ms: null
     default_table_expiration_ms: null
@@ -145,7 +145,7 @@ values:
     custom_writer_identity: null
     deletion_policy: DELETE
     description: notice (Terraform-managed).
-    destination: pubsub.googleapis.com/projects/project-id/topics/pubsub_sink
+    destination: pubsub.googleapis.com/projects/project-id/topics/test-pubsub_sink
     disabled: false
     exclusions: []
     filter: severity=NOTICE
@@ -197,7 +197,7 @@ values:
     condition: []
     project: project-id
     role: roles/pubsub.publisher
-    topic: pubsub_sink
+    topic: test-pubsub_sink
   module.project-host.google_storage_bucket_iam_member.gcs_sinks_binding["warnings"]:
     bucket: test-gcs_sink
     condition: []
@@ -212,7 +212,7 @@ values:
     labels: null
     message_retention_duration: null
     message_transforms: []
-    name: pubsub_sink
+    name: test-pubsub_sink
     project: project-id
     schema_settings: []
     tags: null

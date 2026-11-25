@@ -250,14 +250,14 @@ map(select(.member != "deleted:*")) | group_by(.member) | sort_by(.[0].member) |
 
 Like any other FAST stage, this stage creates output files that contain information about the resources it manages, or provide initial provider and backend configuration for the following stages.
 
-These files are only persisted by default on a special outputs bucket, but can additionally be also persisted to a local path. This is very useful during the initial deployment, as it allows rapid apply iteration cycles between stages, and provides an easy way to check or derive resource ids.
+These files are persisted on a dedicated outputs bucket (which serves as a shared source for CI/CD pipelines and preserves outputs if they are not checked into a repository), and the built-in datasets also persist them to a local path (`~/fast-config/fast-test-00`) by default. Local persistence is very useful during the initial deployment, as it allows rapid apply iteration cycles between stages, and provides an easy way to check or derive resource ids.
 
-To enable local output files storage, set the `output_files.local_path` attribute in your `defaults.yaml` file to a filesystem path dedicated to this organization's output files. The following snippet provides an example.
+Update the `output_files.local_path` attribute in your `defaults.yaml` file to a filesystem path dedicated to this organization's output files (or comment out/remove `local_path` if you only want output files persisted on the GCS bucket). The following snippet provides an example.
 
 ```yaml
 # defaults.yaml
 output_files:
-  local_path: "~/fast-configs/test-0"
+  local_path: ~/fast-config/fast-test-00
 ```
 
 #### Init and apply the stage
@@ -281,17 +281,17 @@ If local output files are available adjust the path, run the script, then copy/p
 
 ```bash
 # if local outputs file are available
-../fast-links.sh ~/fast-configs/test-0
+../fast-links.sh ~/fast-config/fast-test-00
 # File linking commands for FAST Organization Setup stage
 
 # provider file
-ln -s /home/user/fast-configs/test-0/providers/0-org-setup-providers.tf ./
+ln -s /home/user/fast-config/fast-test-00/providers/0-org-setup-providers.tf ./
 
 # conventional location for this stage terraform.tfvars (manually managed)
-ln -s /home/user/fast-configs/test-0/0-org-setup.auto.tfvars ./
+ln -s /home/user/fast-config/fast-test-00/0-org-setup.auto.tfvars ./
 ```
 
-If you did not configure local output files use the GCS bucket to fetch output files. The bucket name can be derived from the `tfvars["org-setup"].automation.outputs_bucket` Terraform output. Adjust the path, run the script, then copy/paste the resulting commands.
+If you disabled local output files use the GCS bucket to fetch output files. The bucket name can be derived from the `tfvars["org-setup"].automation.outputs_bucket` Terraform output. Adjust the path, run the script, then copy/paste the resulting commands.
 
 ```bash
 ../fast-links.sh gs://test0-prod-iac-core-0-iac-outputs
@@ -304,10 +304,12 @@ gcloud storage cp gs://test0-prod-iac-core-0-iac-outputs/providers/0-org-setup-p
 gcloud storage cp gs://test0-prod-iac-core-0-iac-outputs/0-org-setup.auto.tfvars ./
 ```
 
-If you had previously configured a temporary project in `gcloud`, you should now set the `iac-0` project as default.
+If you had previously configured a temporary project in `gcloud`, switch it to the `iac-0` project so you can safely delete the temporary one. If you also have `GOOGLE_CLOUD_QUOTA_PROJECT` set in your environment (or an ADC `quota_project_id` pointing to a temporary or inaccessible project), unset it or point it to `iac-0` before migrating state; otherwise `terraform init -migrate-state` or `terraform apply` while impersonating `iac-org-rw` can fail with `403 Permission 'serviceusage.services.use' denied`.
 
 ```bash
 gcloud config set project [iac-0 project id]
+# if an ADC quota project is configured, update it as well
+# gcloud auth application-default set-quota-project [iac-0 project id]
 ```
 
 Once the provider file has been setup, migrate local state to the GCS backend and re-run apply.
@@ -368,10 +370,10 @@ iam_by_principals:
 
 #### Observability
 
-To configure and provision observability resources such as log-based metrics and monitoring alerts:
+To configure and provision observability resources such as log-based metrics, notification channels, and monitoring alerts:
 
-1. Create a folder `datasets/classic/observability`.
-2. Place your monitoring alerts and log-based metrics in this folder. Sample of existing alerts and log-based metrics can be found in the [hardened dataset](./datasets/hardened/observability).
+- For organization-wide audit log metrics and alerts in `log-0` (already configured via `observability:` in `datasets/classic/defaults.yaml`), place YAML definitions directly in `datasets/classic/observability/`. Sample alerts and log-based metrics can be found in the [hardened dataset](./datasets/hardened/observability).
+- For project-specific metrics and alerts, place YAML definitions in a project subfolder and reference it via `factories_config.observability` in the project YAML file (see the commented sample in [`datasets/classic/observability/iac-0/impersonation.yaml`](./datasets/classic/observability/iac-0/impersonation.yaml)).
 
 ## Detailed configuration
 
@@ -426,6 +428,12 @@ The default paths point to the dataset in the `datasets/classic` folder which de
   folder-level factory to define the resource management hierarchy and individual folder attributes (IAM, org policies, tag bindings, etc.); also supports defining folder-level IaC resources
 - **projects** (`[dataset]/projects`) \
   folder-level factory to define projects and their attributes (project factory)
+- **project_templates** (`[dataset]/templates`) \
+  folder-level factory to define reusable project configuration templates referenced by projects via `project_template`
+- **vpcs** (`[dataset]/vpcs`) \
+  folder-level factory to define VPC networks and subnets (VPC factory)
+- **observability** (`[dataset]/observability`) \
+  folder-level factory to define log-based metrics, notification channels, and monitoring alerts on the project configured under `observability` in `defaults.yaml`
 - **cicd_workflows** (`[dataset]/cicd.yaml`, disabled by default unless set in `factories_config.paths.cicd_workflows`) \
   file-level factory to define CI/CD configurations for this and subsequent stages
 

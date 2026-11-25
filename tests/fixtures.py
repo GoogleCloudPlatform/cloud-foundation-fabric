@@ -408,7 +408,14 @@ def e2e_validator(module_path, extra_files, tf_var_files, basedir=None):
       # If above did not fail, this should not either, but left as a safety check
       assert changes == {}, f'Plan not empty for following resources: {", ".join(changes.keys())}'
     finally:
-      destroy = tf.destroy(tf_var_file=tf_var_files, tf_vars=tf_vars)
+      for attempt in range(3):
+        try:
+          destroy = tf.destroy(tf_var_file=tf_var_files, tf_vars=tf_vars)
+          break
+        except tftest.TerraformTestError:
+          if attempt == 2:
+            raise
+          time.sleep(10 * (attempt + 1))
 
 
 @pytest.fixture(name='e2e_validator')

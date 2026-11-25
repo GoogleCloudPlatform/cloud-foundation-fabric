@@ -78,12 +78,14 @@ values:
     user_type: ALLOYDB_BUILT_IN
   module.alloydb.google_alloydb_user.users["iam_user1"]:
     database_roles:
+    - alloydbiamuser
     - alloydbsuperuser
     timeouts: null
     user_id: iam_user1
     user_type: ALLOYDB_IAM_USER
   module.alloydb.google_alloydb_user.users["iam_group1"]:
     database_roles:
+    - alloydbiamgroup
     - alloydbsuperuser
     timeouts: null
     user_id: iam_group1

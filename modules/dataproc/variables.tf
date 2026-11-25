@@ -53,9 +53,9 @@ variable "dataproc_config" {
         min_cpu_platform = optional(string)
         image_uri        = optional(string)
         disk_config = optional(object({
-          boot_disk_type    = string
-          boot_disk_size_gb = number
-          num_local_ssds    = number
+          boot_disk_type    = optional(string)
+          boot_disk_size_gb = optional(number)
+          num_local_ssds    = optional(number)
         }))
         accelerators = optional(object({
           accelerator_type  = string
@@ -64,14 +64,14 @@ variable "dataproc_config" {
       }))
       worker_config = optional(object({
         num_instances    = number
-        machine_type     = string
-        min_cpu_platform = string
+        machine_type     = optional(string)
+        min_cpu_platform = optional(string)
+        image_uri        = optional(string)
         disk_config = optional(object({
-          boot_disk_type    = string
-          boot_disk_size_gb = number
-          num_local_ssds    = number
+          boot_disk_type    = optional(string)
+          boot_disk_size_gb = optional(number)
+          num_local_ssds    = optional(number)
         }))
-        image_uri = string
         accelerators = optional(object({
           accelerator_type  = string
           accelerator_count = number

@@ -30,17 +30,11 @@ The diagram below shows the relationships between the components:
 
 ## Usage
 
-To use this `hardened` dataset, create a `0-org-setup.auto.tfvars` file in the `fast/stages/0-org-setup` directory and override the `factories_config` variable as shown below.
-
-Inputting this configuration replaces the default factory paths with the hardened versions. However, please note that configurations not explicitly listed here (such as `billing-account`) will continue to be read from the `classic` dataset folder.
+To use this `hardened` dataset, create a `0-org-setup.auto.tfvars` file in the `fast/stages/0-org-setup` directory and set `factories_config.dataset` as shown below.
 
 ```tfvars
 factories_config = {
-  defaults         = "datasets/hardened/defaults.yaml"
-  folders          = "datasets/hardened/folders"
-  observability    = "datasets/hardened/observability"
-  organization     = "datasets/hardened/organization"
-  projects         = "datasets/hardened/projects"
+  dataset = "datasets/hardened"
 }
 ```
 

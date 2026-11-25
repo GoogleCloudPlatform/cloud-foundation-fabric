@@ -265,7 +265,7 @@ Set the newly created personal access as `gitlab_config.access_token` variable
 and then issue the following commands:
 
 ```bash
-gcloud storage cp gs://${prefix}-prod-iac-core-outputs-0/workflows/*-workflow.yaml ./workflows/
+gcloud storage cp gs://${prefix}-prod-iac-core-0-iac-outputs/workflows/*-workflow.yaml ./workflows/
 ```
 
 This will download Gitlab CICD workflow files generated during 0-org-setup stage
