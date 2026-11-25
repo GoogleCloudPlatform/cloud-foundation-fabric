@@ -1,36 +1,56 @@
-# Skills Architecture, Naming, and Contributor/Maintainer Revamp
+# Skills architecture, naming and contributor revamp
 
 **authors:** [Ludo](https://github.com/ludoo) \
-**date:** Nov 23, 2026
+**date:** 23 November 2026
 
 ## Status
 
-Accepted
+Ready
+
+## Contents
+
+- [Context](#context)
+- [Decision](#decision)
+  - [Four audience buckets and flat install naming](#four-audience-buckets-and-flat-install-naming)
+  - [Consumer skills in Wave 1](#consumer-skills-in-wave-1)
+  - [Repository skills for contributors](#repository-skills-for-contributors)
+  - [Repository skills for maintainers](#repository-skills-for-maintainers)
+  - [Root instructions, manifests and contract tests](#root-instructions-manifests-and-contract-tests)
+  - [Repeatable skill authoring and evaluation gate](#repeatable-skill-authoring-and-evaluation-gate)
+- [Rollout plan](#rollout-plan)
+- [Consequences](#consequences)
+- [Validation](#validation)
+  - [Suite and measurement protocol](#suite-and-measurement-protocol)
+  - [Results across models](#results-across-models)
+  - [Design lessons from ablations](#design-lessons-from-ablations)
+  - [Next steps for Wave 2](#next-steps-for-wave-2)
 
 ## Context
 
-Cloud Foundation Fabric currently ships six skills under `skills/` (`contributing`, `fabric-builder`, `fabric-importer`, `fast/networking`, `fast/prerequisites`, `maintenance/release-process`) with inconsistent folder hierarchy, inconsistent flat-install naming (`skills/fast/networking` carries `name: fast-networking` and requires remapping in `agents-cli-extension.yaml`), and uneven architectural depth.
+Cloud Foundation Fabric previously shipped 6 skills under `skills/` (`contributing`, `fabric-builder`, `fabric-importer`, `fast/networking`, `fast/prerequisites` and `maintenance/release-process`). Those skills grew independently and organically over the past months as individual needs came up, so their folder layout, install names, architectural depth and authoring habits diverged (for example, `skills/fast/networking` declared `name: fast-networking` and needed manual remapping in `agents-cli-extension.yaml`). This ADR rationalizes them into one deliberate architecture, naming convention and maintenance lifecycle.
 
-In practice and in multi-model evaluations across local and hosted agents, two structural gaps stand out:
+Multi-model evaluations and daily maintainer use exposed 2 structural gaps in those skills.
 
-1. **Consumer skills cover HCL composition well (`fabric-builder`) but omit Fabric's YAML factory layer.** Authoring and validating YAML datasets for `project-factory`, `net-vpc-factory`, `vpc-sc`, in-module `factories_config` keys (`FACTORIES.md`), and FAST stages is a distinct mental model (JSON schemas and modelines, `$context:` interpolation, `data_defaults` / `data_overrides` / `data_merges` precedence, and the two-tier module split used to keep dependency chains clean) that has no dedicated skill.
-2. **Repo-facing skills bury design and omit PR review.** `skills/contributing/SKILL.md` is a 25 KB mechanical PR workflow checklist with thin interface-design guidance, while operational design knowledge is scattered across a 66 KB `CONTRIBUTING.md`, `GEMINI.md`, `adrs/`, and maintainer review habits. There is no dedicated skill for reviewing pull requests. Even strong frontier and local models mostly produce raw provider-schema translations or ad-hoc wrappers rather than idiomatic Fabric interfaces on module design and PR review under the current `contributing` skill.
+First, consumer skills covered HCL module composition well in `fabric-builder` and left YAML factories uncovered. Authoring and validating YAML datasets for `project-factory`, `net-vpc-factory`, `vpc-sc`, in-module `factories_config` options in `FACTORIES.md` and FAST stages relies on JSON schemas, modelines, `$context:` interpolation, `data_defaults` / `data_overrides` / `data_merges` precedence and the two-pass module split, so consumer agents lacked guidance on that entire layer.
 
-Our primary short- and long-term goals are twofold:
+Second, repository skills buried design guidance inside a 25 KB `skills/contributing/SKILL.md` pull-request checklist and omitted pull-request review altogether. Operational design rules lived across a 66 KB `CONTRIBUTING.md`, `GEMINI.md`, ADRs and maintainer review habits, which meant that even capable models produced raw provider-schema translations or ad-hoc wrappers on module design and pull-request review.
 
-1. **Ship a core initial set of evergreen Fabric skills while rationalizing the hierarchy and laying out clear conventions and a repeatable process for future skills** at current `master`.
-2. **Publish a sanitized Fabric agent evaluation suite in the repository** (task definitions, deterministic verifiers, and rubric grading — strictly excluding any contributor session traces) to mechanically grade skills across a variety of agents and support reproducible runs over frozen repository snapshots and datasets.
+We set 3 goals for this revamp:
+
+- rationalize existing and new Fabric skills into a clean hierarchy with consistent flat-install naming and clear boundaries at current `master`
+- replace ad-hoc skill editing and manual spot checks with a repeatable authoring workflow and quality gate backed by an evaluation bundle, so every future skill addition or revision is measured deterministically and qualitatively before merge
+- publish a sanitized version of that evaluation suite in the repository as a Wave 2 follow-up (task definitions, deterministic offline verifiers and rubric grading, excluding contributor session traces) so maintainers can test skills mechanically across agents and frozen snapshots
 
 ## Decision
 
-### 1. Four-Bucket Top-Level Hierarchy and Flat-Install Naming
+### Four audience buckets and flat install naming
 
-Reorganize `skills/` into four audience-oriented top-level buckets immediately — applying the layout to all existing and new skills, even those whose contents are untouched in Wave 1:
+We reorganize `skills/` into 4 top-level buckets grouped by audience, moving every existing and new skill into this layout immediately:
 
 ```text
 skills/
 ├── fabric/                              # user-facing Fabric consumer skills (self-contained)
-│   ├── fabric-builder/                  # module composition + YAML factory authoring/lookup/validation
+│   ├── fabric-builder/                  # module composition and YAML factory authoring/validation
 │   └── fabric-importer/                 # moved from skills/fabric-importer/
 ├── fast/                                # user-facing FAST skills (self-contained)
 │   ├── fast-networking/                 # renamed from skills/fast/networking/
@@ -39,135 +59,138 @@ skills/
 │   └── cff-contributing/                # replaces skills/contributing/
 └── maintainer/                          # repo-facing maintainer skills (in-checkout, replaces maintenance/)
     ├── cff-issue-triage/                # new: maintainer issue triage with handoff into cff-contributing
-    ├── cff-pr-review/                   # new: maintainer PR review
+    ├── cff-pr-review/                   # new: maintainer pull-request review
     └── cff-release/                     # moved/renamed from skills/maintenance/release-process/
 ```
 
-**Flat-install naming rule:** Every skill's leaf directory name MUST match the `name:` field in its `SKILL.md` frontmatter and carry its namespace prefix (`fabric-*`, `fast-*`, `cff-*`). Any skill can then be symlinked or installed directly into a flat `.agents/skills/<name>` or `~/.agents/skills/<name>` directory without path remapping or collisions with other repositories. Using `fabric-*` / `fast-*` for user-facing consumer skills and `cff-*` for repo-facing contributor/maintainer skills keeps both groups visually distinct in `<available_skills>`. `fabric-builder` keeps its name to avoid breaking existing `agents-cli` users, while explicitly mentioning both module composition and YAML factory datasets in its frontmatter `description`.
+Every skill's leaf directory name must match the `name:` field in its `SKILL.md` frontmatter and carry its audience prefix (`fabric-`, `fast-` or `cff-`). That rule allows any harness to symlink or install any skill straight into a flat `.agents/skills/<name>` or `~/.agents/skills/<name>` directory without path remapping or name collisions with other repositories. Using `fabric-` and `fast-` for consumer skills and `cff-` for repository skills keeps both groups visually distinct in `<available_skills>`. `fabric-builder` keeps its existing name so current `agents-cli` users face no breaking change, while its frontmatter description now names both module composition and YAML factory datasets.
 
-### 2. User-Facing Skills (Wave 1 Scope)
+### Consumer skills in Wave 1
 
-User-facing skills under `skills/fabric/` and `skills/fast/` MUST remain self-contained (never relying on repo-internal files like `CONTRIBUTING.md` or `AGENTS.md`) because users install them into consumer repositories via `agents-cli`.
+Consumer skills under `skills/fabric/` and `skills/fast/` stay self-contained and never reference repository-only files such as `CONTRIBUTING.md` or `AGENTS.md`, because users install them into external repositories through `agents-cli`.
 
-- **`fabric/fabric-builder` (module composition + YAML factories):** Retain its lean structure (`SKILL.md` + `references/conventions.md` + `references/factories.md` + `scripts/fabric.py`) rather than splitting YAML factories into a separate skill — just as on the contributor side, HCL module composition and YAML factory datasets are tightly coupled in practice, and splitting them risks agents loading factory guidance while skipping root-module conventions. Extend `scripts/fabric.py` to surface `FACTORIES.md` entries on demand (`factories [target]`), fetch module or FAST stage schemas (`fetch schemas [--stage] [--ref] [--out]`), and validate YAML modelines against JSON schemas (`validate`) so agents never ingest a static catalog table. Keep `references/conventions.md` (HCL root modules) and `references/factories.md` (modelines, `$context:`, precedence, multi-pass DAG order, schema gotchas) compact and orthogonal so agents load only what applies.
-- **`fabric/fabric-importer`, `fast/fast-networking`, `fast/fast-prerequisites`:** Move/rename into the new hierarchy in Wave 1 without rewriting their contents; interactive FAST skills remain a separate track.
+We keep module composition and YAML factories together inside `skills/fabric/fabric-builder/` (`SKILL.md`, `references/conventions.md`, `references/factories.md` and `scripts/fabric.py`). Users routinely mix HCL root modules and YAML factory datasets in the same workspace, so keeping both in one lean skill ensures that an agent loading factory guidance also sees root-module conventions. We extended `scripts/fabric.py` so agents can look up `FACTORIES.md` entries on demand (`factories [target]`), fetch module or FAST stage schemas (`fetch schemas [--stage] [--ref] [--out]`) and validate YAML modelines against JSON schemas (`validate`) without ingesting a static catalog table. Both reference files stay short and orthogonal so agents load only the file that applies.
 
-### 3. Repo-Facing Skills: Lean Contributor Router + Shared References + Standalone PR Review
+We moved `fabric/fabric-importer`, `fast/fast-networking` and `fast/fast-prerequisites` into the new hierarchy in Wave 1 while keeping their contents unchanged, because interactive FAST skills follow a separate track.
 
-Because Fabric modules and factories are tightly coupled (`21` modules under `modules/` declare `variable "factories_config"` as of `master` `2fd071954`), splitting contributor guidance into separate `modules` and `factories` top-level skills risks smaller agents loading one and missing schema sync or `duplicate-diff.py` rules on cross-cutting PRs. Instead, `skills/contributor/cff-contributing/` serves as one lean, design-first entry skill with role-named subdirectories that clearly separate architectural design, coding conventions, and testing/PR workflow:
+### Repository skills for contributors
+
+In Fabric, modules and factories are tightly coupled (21 modules under `modules/` declare `variable "factories_config"` as of `master` `2fd071954`). Splitting contributor rules into separate module and factory skills risks an agent editing a module and missing schema synchronization or `duplicate-diff.py` copies. We therefore use `skills/contributor/cff-contributing/` as one lean, design-first router whose subdirectories separate architecture, HCL craft and pull-request mechanics:
 
 ```text
 skills/contributor/cff-contributing/
-├── SKILL.md                             # lean router: Step 0 fit/boundary check, Fabric Zen, verification habit, routing table
-├── design/                              # architectural & interface design (exact file split finalized during authoring)
-│   ├── interfaces.md                    # interface design principles (mostly modules, plus cross-cutting interface grammar)
-│   ├── modules.md                       # logical-entity boundaries, ownership, IAM/context/outputs, when NOT to add a module
-│   ├── factories.md                     # in-module vs pure factories, two-tier splits (project + project-iam), DAG invariants, schemas
-│   └── fast.md                          # thin module-to-FAST boundary contract for Wave 1 (deep FAST internals deferred)
-├── conventions/                         # coding and schema conventions
-│   └── hcl.md                           # compact optional(), maps vs lists, context lookups, OpenTofu nulls, permadiffs, style
-└── workflow/                            # testing and mechanical PR lifecycle (out of SKILL.md so it never drowns design turns)
-    ├── testing.md                       # what/how to write (README # tftest, tftest.yaml, inventory diffs, debug dump) & pre-PR test run
-    └── pr-lifecycle.md                  # branches, lint.sh, tfdoc, schema_docs, duplicate-diff, versions.py, E2E, PII/PR body
+├── SKILL.md                             # lean router: Step 0 fit check, Fabric Zen, verification habit, routing table
+├── design/                              # architectural and interface design
+│   ├── interfaces.md                    # caller-facing ergonomics, compact optional(), canonical IAM/context/secrets
+│   ├── modules.md                       # logical-entity boundaries, ownership, outputs and when to reject a module
+│   ├── factories.md                     # in-module and pure factories, two-pass DAG invariants, schemas
+│   └── fast.md                          # concise module-to-FAST contract for Wave 1 (deep FAST internals deferred)
+├── conventions/                         # HCL craft and runtime safety
+│   └── hcl.md                           # context lookups, OpenTofu null traps, permadiffs, style
+└── workflow/                            # testing and mechanical pull-request lifecycle
+    ├── testing.md                       # README # tftest, tftest.yaml, inventory audits, debug dumps, pytest
+    └── pr-lifecycle.md                  # branches, lint.sh, tfdoc, schema_docs, duplicate-diff, versions.py, PR body
 ```
 
-*(Note on `design/` granularity: keeping **interface design** explicit — primarily modules while capturing cross-cutting principles that apply across modules, factories, and FAST boundaries — is a Wave 1 requirement; the exact file boundaries inside `design/` will be finalized while mining source material.)*
+Wave 1 scopes `design/fast.md` to cross-cutting module-to-FAST boundaries (where factories belong, `duplicate-diff.py` schema copies into FAST stages and `tftest.yaml` coverage), so deep FAST stage architecture (`0-org-setup`, `1-vpcsc`, `2-networking` and `2-security` internals) stays deferred to Wave 2. We will add that depth either by expanding `design/fast.md` or by introducing a dedicated `skills/contributor/cff-fast/` skill.
 
-**Where Wave 1 draws the FAST line:** FAST stages are their own world of complexity. Wave 1 covers `modules` + `factories` + a concise `fast.md` covering cross-cutting PR boundaries (factories belong in modules unless a stage iterates standard modules, `duplicate-diff.py` schema sync into FAST stages, `tftest.yaml`). Deep FAST stage architecture (`0-org-setup`, `1-vpcsc`, `2-networking`, `2-security` internals) is deferred to a later pass — either expanding `design/fast.md` inside `cff-contributing/` or adding a dedicated `skills/contributor/cff-fast/` skill.
+### Repository skills for maintainers
 
-**`skills/maintainer/cff-pr-review/` (new):** Standalone top-level maintainer skill with a distinct trigger and diagnostic posture (starting from an existing diff rather than a feature request). Because both skills operate inside a `cloud-foundation-fabric` checkout, `cff-pr-review/SKILL.md` explicitly points to `../../contributor/cff-contributing/design/`, `conventions/`, and `workflow/testing.md` as its canonical criteria (zero rule duplication) and focuses its own text strictly on reviewing:
+We added 2 standalone maintainer skills under `skills/maintainer/` alongside the moved `cff-release` skill. Both run inside a `cloud-foundation-fabric` checkout and point directly to `../../contributor/cff-contributing/` for all canonical design, HCL and testing rules so there is one source of truth.
 
-- **Step 0 architectural triage:** Does this PR belong in Fabric? Reject single-resource wrapper modules, single-resource-context boundary violations, `project-factory` two-tier/DAG breaks, and unrelated PR scope.
-- **Concrete diff-level checks:** OpenTofu `null` crashes, permadiffs, missing `context` / `outputs` / `depends_on`, redundant booleans or locals, stale `.schema.json` / `.schema.md` / `duplicate-diff.py` copies, missing or unexplained test inventory updates, missing `**Breaking Changes**` / `upgrade-note` blocks, and per-module version-pin drift (`tools/versions.py`).
-- **Review output discipline:** Verify claims against provider schemas and sibling modules before commenting, separate blocking architectural/correctness defects from nits, and cite exact file/line evidence.
+`cff-pr-review` starts from an existing pull request or branch diff. It enforces Step 1 architectural triage (rejecting thin single-resource wrappers, companion project IAM inside service modules, `project-factory` two-pass DAG breaks and unrelated cross-module churn), routes selectively to 1 to 2 diff-triggered guides and sweeps every modified block for nesting, explicit-`null` and empty-`dynamic` defects. All GitHub write commands stay behind explicit maintainer approval.
 
-**`skills/maintainer/cff-issue-triage/` (new):** Sister maintainer skill for triaging incoming GitHub issues or sweeping the backlog. Like `cff-pr-review`, it points directly to `../../contributor/cff-contributing/design/` and `workflow/pr-lifecycle.md` with zero rule duplication, focusing strictly on issue classification (`bug`, `enhancement`, `question`, `duplicate`, `invalid`, `wontfix`), duplicate/stale-version checks, verifying claims against current code, released provider docs, and ADRs, recommending area/disposition labels (`on:*`) and a drafted reply behind a GitHub write gate, and handing off cleanly into `cff-contributing` at Design Sign-off if the maintainer decides to implement the issue directly.
+`cff-issue-triage` classifies incoming GitHub issues (`bug`, `enhancement`, `question`, `duplicate`, `invalid` and `wontfix`) and verifies claims against current code, released provider docs and ADRs. It drafts labels and replies behind a GitHub write gate and hands off cleanly into `cff-contributing` at Design Sign-off when a maintainer chooses to implement the issue directly.
 
-**Step 0 boundary and honest-stop check:** Rejecting out-of-scope requests, single-resource-context violations, non-existent GCP API features, or under-specified requirements is not a separate skill — it sits explicitly at Step 0/Step 1 of `cff-contributing`, `cff-pr-review`, and `cff-issue-triage`.
+Across all 3 repository skills (`cff-contributing`, `cff-pr-review` and `cff-issue-triage`), boundary checks and honest stops sit at Step 0 and Step 1, so agents push back on invalid boundaries, missing GCP API features or under-specified requirements before writing code.
 
-### 4. Reconciling `AGENTS.md`, `CONTRIBUTING.md`, and `agents-cli-extension.yaml`
+### Root instructions, manifests and contract tests
 
-As part of this ADR's rollout:
+To keep every agent harness aligned with the new skill tree, we reconciled the repository's root files and contract tests:
 
-- **Rename `GEMINI.md` to `AGENTS.md` and drop the symlink:** Make root `AGENTS.md` the single real repository instruction file (supported directly by `agy`, `pi`, and standard coding agents).
-- **Keep `AGENTS.md` as a lean, always-loaded compass (~1–2 pages) rather than an empty pointer:** Move verbose tutorials currently in `GEMINI.md` (such as the full `context` walkthrough and long testing examples) into `skills/contributor/cff-contributing/` so they live in one canonical place. Retain in `AGENTS.md` the repository map, the short non-negotiable architectural compass (single-resource-context boundary, logical-entity encapsulation, compact `optional()`/map interfaces, check siblings and provider schema before designing), critical mechanical gotchas (`tfdoc`, alphabetical variables, `lint.sh`, `pytest`), and direct repo-relative links to `skills/contributor/cff-contributing/SKILL.md` (plus `design/`, `conventions/`, `workflow/`), `skills/maintainer/cff-pr-review/SKILL.md`, and `skills/maintainer/cff-issue-triage/SKILL.md`. That way, even an agent running without active skill auto-loading still receives core guardrails immediately and knows the exact plain-Markdown files to `read` before designing, triaging, or reviewing.
-- **Reconcile `CONTRIBUTING.md`:** Keep `CONTRIBUTING.md` as the human handbook aligned with the skill principles without requiring agents to ingest 66 KB of prose to find operational design rules.
-- **Update `agents-cli-extension.yaml` and `skills/README.md`:** Point consumer entries to the new `skills/fabric/*` and `skills/fast/*` paths (`fabric-importer` stays excluded from `agents-cli-extension.yaml` for now).
-- **Move repo-wide skill manifest validation out of `fast-networking`:** Relocate `test_agents_cli_extension_manifest_is_valid` from `skills/fast/fast-networking/tests/test_validate_dataset.py` into a repo-level test (e.g. `tests/skills/`) that validates both `agents-cli-extension.yaml` and the flat-install naming invariant (`leaf dir == SKILL.md frontmatter name:` and bucket prefix) across all `skills/*/*/` directories.
+- renamed `GEMINI.md` to `AGENTS.md` and dropped the symlink so `AGENTS.md` is the single real repository instruction file across `agy`, `pi` and standard coding agents
+- trimmed `AGENTS.md` to a concise 1 to 2 page compass carrying the repository map, core architectural principles, mechanical gotchas (`tfdoc`, alphabetical variables, `lint.sh` and `pytest`) and direct links to the `cff-*` skills, so agents without skill auto-loading still get core guardrails immediately
+- aligned `CONTRIBUTING.md` with the same design principles so human readers keep the full handbook while agents rely on the concise skill files
+- updated `agents-cli-extension.yaml`, `skills/README.md` and `tools/skill-turn-harness/` playbook `link_paths` to point to `skills/fabric/*` and `skills/fast/*` (keeping `fabric-importer` excluded from `agents-cli-extension.yaml` for now)
+- relocated `test_agents_cli_extension_manifest_is_valid` from `skills/fast/fast-networking/tests/test_validate_dataset.py` into `tests/skills/test_skills.py`, which validates both `agents-cli-extension.yaml` and the flat-install naming rule across every directory under `skills/*/*/`
 
-### 5. Repeatable Skill Authoring Process and Testing Harness Roadmap
+### Repeatable skill authoring and evaluation gate
 
-Wave 1 is developed at current `master` while explicitly recording the authoring methodology as a reusable process for future skills and for deriving skills against frozen snapshots or datasets (including downstream evaluation or model-training experiments):
+Previously, skill authoring followed an ad-hoc process of editing prose by intuition and running informal spot checks in interactive chats, which hid regressions and made design trade-offs hard to judge. This ADR introduces a repeatable workflow and qualitative evaluation gate backed by a frozen evaluation bundle (combining deterministic offline Terraform and YAML verifiers with rubric-based grading across design, pull-request review and honest-stop boundaries), so future skill development and maintenance stay grounded in repeatable evidence.
 
-1. **Source mining:** Extract recurring principles and concrete failure modes from current `CONTRIBUTING.md`, `adrs/`, `FACTORIES.md`, golden-path modules (`project`, `compute-vm`, `net-vpc`, `project-factory`, `net-vpc-factory`, `vpc-sc`), maintainer PR review threads, and recorded maintainer sessions.
-2. **Role-separated drafting:** Keep `SKILL.md` lean and principle-driven (architectural reasoning heuristics rather than bloated numbered checklists), separate `design/`, `conventions/`, and `workflow/` files, and put Step 0 fit/boundary checks at the top.
-3. **Data-backed mechanical evaluation:** Measure every skill iteration quantitatively (`no-skills` vs baseline skill vs candidate skill) across composition (`terraform plan` + `conventions.md`), factory YAML validation, interface design, PR review, and boundary honest-stops across multiple agents before merging. In practice, we pair a capable compact local coding model (`Qwen3.8-27B`) for fast branch iteration with a stronger next-tier model (`Qwen3.8-Flash-Next`) as the milestone validator, using fixed coding-appropriate sampling (`temperature=0.7`, `top_p=0.95`, `top_k=20`, matched `reasoning_effort`) across all compared arms so run-to-run variance does not mask structural skill deltas. During iteration, we run targeted slice-only passes (for example `pr_review` or `contributor` alone, inspecting per-criterion hits alongside headline buckets) and reserve full-suite runs for milestone commits, naming every eval arm by its exact short git commit SHA so progress stays reproducible and comparable.
-4. **Follow-up task — publish the sanitized eval suite and revamp `tools/skill-turn-harness/`:** Once Wave 1 skill shapes and deterministic/rubric checks stabilize, publish the sanitized evaluation suite (task manifests, offline `terraform plan`/`conventions.md`/YAML-schema verifiers, and pluggable rubric grading — strictly without raw session traces or personal/internal references) alongside a revamped, model-agnostic `tools/skill-turn-harness/` supporting OpenAI-compatible and Gemini/Antigravity backends plus existing interactive persona playbooks. Over time, the same suite can also support optional comparative agent/model scoreboards and reproducible runs against frozen repository datasets.
+1. Mine recurring principles and real failure modes from `CONTRIBUTING.md`, `adrs/`, `FACTORIES.md`, golden-path modules (`project`, `compute-vm`, `net-vpc`, `project-factory`, `net-vpc-factory` and `vpc-sc`), maintainer review threads and recorded sessions.
+2. Draft lean, rationale-first `SKILL.md` routers with role-separated reference files (`design/`, `conventions/` and `workflow/`) and Step 0 / Step 1 boundary checks at the top.
+3. Put every change through the evaluation gate across bare (`none`), baseline (`master`) and candidate skill trees using a compact local coding model for fast slice iteration and a stronger model for milestone validation, keeping decoding settings fixed and inspecting per-criterion hits alongside headline buckets.
+4. Publish the sanitized evaluation bundle and a revamped, model-agnostic `tools/skill-turn-harness/` in a Wave 2 pull request once Wave 1 stabilizes, excluding all raw contributor session traces and internal references.
 
-## Rollout Plan
+## Rollout plan
 
-1. **Wave 1 — Skills architecture, authoring, and repository reconciliation:** Land this ADR, refresh `FACTORIES.md`, migrate existing skills into `skills/{fabric,fast,contributor,maintainer}/` with flat-safe leaf names, author `contributor/cff-contributing` (`SKILL.md` + `design/`, `conventions/`, `workflow/`), `maintainer/cff-pr-review`, and `maintainer/cff-issue-triage`, extend `fabric/fabric-builder` with YAML factory guidance (`references/factories.md`) and script-backed factory lookup/schema validation (`scripts/fabric.py`), replace the `AGENTS.md -> GEMINI.md` symlink with a lean root `AGENTS.md` compass, align `CONTRIBUTING.md`, `skills/README.md`, `agents-cli-extension.yaml`, and playbook `link_paths`, and move manifest/hierarchy contract tests into `tests/skills/`.
-2. **Follow-up PR — public eval suite and `tools/skill-turn-harness/` revamp:** Publish the sanitized eval suite in-repo and port the proven runner, deterministic verifiers, and A/B skill grading patterns into `tools/skill-turn-harness/`.
+1. Wave 1 (this branch) lands this ADR, refreshes `FACTORIES.md`, migrates existing skills into `skills/{fabric,fast,contributor,maintainer}/` with flat-safe names, adds `cff-contributing`, `cff-pr-review` and `cff-issue-triage`, extends `fabric-builder` with YAML factory guidance and `scripts/fabric.py` validation, replaces `GEMINI.md` with a lean `AGENTS.md`, reconciles `CONTRIBUTING.md`, `skills/README.md`, `agents-cli-extension.yaml` and playbook `link_paths`, and adds repo-wide skill contract tests in `tests/skills/test_skills.py`.
+2. Wave 2 (follow-up pull request) publishes the sanitized evaluation suite in-repo and ports the runner, deterministic verifiers and A/B skill grading flow into `tools/skill-turn-harness/`.
 
 ## Consequences
 
-- **Flat-install portability:** Every skill can be installed into a flat `.agents/skills/` or `~/.agents/skills/` folder with zero name collisions or manual remapping.
-- **Single source of design truth with safe fallback:** `cff-contributing`, `cff-pr-review`, and `cff-issue-triage` share one canonical set of `design/`, `conventions/`, and `workflow/` files, while a lean root `AGENTS.md` keeps core guardrails and direct file pointers visible even when skills are not auto-loaded.
-- **Migration impact:** Existing `agents-cli` users keep `fabric-builder`, `fast-networking`, and `fast-prerequisites` under the same installed skill names (only internal repo paths in `agents-cli-extension.yaml` change); contributors using `skills/contributing`, `skills/maintenance/release-process`, or `GEMINI.md` update to `skills/contributor/cff-contributing`, `skills/maintainer/cff-release`, and `AGENTS.md` (documented with an `upgrade-note`).
-- **Reusable authoring and grading process:** Documenting the mining-to-eval loop and publishing the sanitized evaluation suite gives Fabric a repeatable way to evolve future skills (including deep FAST skills), grade skills mechanically across agents, and run reproducible evaluations against frozen snapshots.
+This architecture produces 4 operational effects:
 
-## Evaluation Results and Backlog
+- flat-install portability: every skill installs into a flat `.agents/skills/` or `~/.agents/skills/` directory with zero name collisions or manual remapping
+- one source of design truth with a safe fallback: `cff-contributing`, `cff-pr-review` and `cff-issue-triage` share one canonical set of `design/`, `conventions/` and `workflow/` guides, while root `AGENTS.md` keeps core guardrails and direct file links visible even when skills are inactive
+- low migration friction: existing `agents-cli` users keep `fabric-builder`, `fast-networking` and `fast-prerequisites` under the same installed names because only internal repository paths in `agents-cli-extension.yaml` changed, while contributors referencing `skills/contributing`, `skills/maintenance/release-process` or `GEMINI.md` move to the new paths (documented with an `upgrade-note`)
+- repeatable skill evolution: pairing the mining-to-evaluation workflow with the upcoming public evaluation suite gives maintainers a mechanical way to evolve deep FAST skills and test new models against frozen snapshots
 
-### Measurement Protocol and Suite
+## Validation
 
-To validate Wave 1 mechanically without relying on subjective spot-checks, every skill iteration is measured against a frozen 34-item post-cutoff evaluation suite (all contributor and PR-review tasks drawn from Fabric PRs merged after March 22, 2026 and pinned to their pre-PR parent commits via `git archive`):
+### Suite and measurement protocol
+
+We validated Wave 1 mechanically against a frozen 34-item post-cutoff evaluation suite. Every contributor and pull-request review task comes from Fabric pull requests merged after 22 March 2026 and is pinned to its pre-PR parent commit through `git archive`:
 
 | Slice | Items | Count | Sandbox surface | Grading |
 | --- | --- | --- | --- | --- |
-| Contributor design | `C01`–`C10` | 10 | Read-only repo checkout | Offline 3-bucket rubric (`+/~/-`) + per-criterion hit rate |
-| Composition & YAML factories | `U01`–`U10` | 10 | Writable workspace + read-only `./fabric` | Deterministic offline `terraform fmt`/`init`/`plan`, resource/attribute checks, JSON schema validation, `conventions.md` lint |
-| Honest-stop & boundaries | `H01`–`H06` | 6 | Mixed (`user`, `contributor`, editable) | Mechanical exit slot (`stop_and_clarify`) + `imm_w == 0` + semantic stop verification |
-| PR review | `P01`–`P08` | 8 | Read-only repo checkout | Offline 3-bucket rubric (`+/~/-`) + per-criterion hit rate |
+| Contributor design | `C01` to `C10` | 10 | Read-only repo checkout | Offline 3-bucket rubric (`+/~/-`) and per-criterion hit rate |
+| Composition and YAML factories | `U01` to `U10` | 10 | Writable workspace and read-only `./fabric` | Offline `terraform fmt`/`init`/`plan`, resource/attribute checks, JSON schema validation and `conventions.md` lint |
+| Honest-stop and boundaries | `H01` to `H06` | 6 | Mixed (`user`, `contributor`, editable) | Mechanical exit slot (`stop_and_clarify`), `imm_w == 0` and semantic verification |
+| Pull-request review | `P01` to `P08` | 8 | Read-only repo checkout | Offline 3-bucket rubric (`+/~/-`) and per-criterion hit rate |
 
-Every rollout runs inside an isolated, network-disabled `bwrap` sandbox exposing standard coding-agent tools (`read`, `bash`, `edit`, `write`, an offline `provider_schema` lookup pinned to `hashicorp/google` and `hashicorp/google-beta` `8.10.0`, and a non-penalized `stop_and_clarify` exit slot). All compared arms share fixed decoding parameters (`temperature=0.7`, `top_p=0.95`, `top_k=20`, `presence_penalty=0.0`, `seed=42`, `max_turns=100`, matched `reasoning_effort=medium`).
+Every rollout runs inside an isolated, network-disabled `bwrap` sandbox exposing standard coding-agent tools (`read`, `bash`, `edit`, `write`, an offline `provider_schema` lookup pinned to `hashicorp/google` and `hashicorp/google-beta` `8.10.0` and a non-penalized `stop_and_clarify` exit slot). All compared arms share fixed decoding parameters (`temperature=0.7`, `top_p=0.95`, `top_k=20`, `presence_penalty=0.0`, `seed=42`, `max_turns=100` and `reasoning_effort=medium`).
 
-To prevent historical files in pinned snapshots from contaminating comparisons, every materialized snapshot strips `skills/`, `AGENTS.md`, `GEMINI.md`, and `agents-cli-extension.yaml` before execution:
+Before execution, the runner strips `skills/`, `AGENTS.md`, `GEMINI.md` and `agents-cli-extension.yaml` from every materialized snapshot so historical files never leak across conditions. Bare arms run against the stripped human repository alone, while skill arms overlay only the tested commit's coupled `AGENTS.md`/`GEMINI.md` and `skills/` tree through `<available_skills>` discovery (plus offline `fabric.py` shims in consumer mode).
 
-- **Bare baseline (`none`):** runs against the stripped human repository (`modules/`, `fast/`, `adrs/`, `CONTRIBUTING.md`, `CURSED_KNOWLEDGE.md`, `FACTORIES.md`) with zero agent-instruction or skill files reachable on disk.
-- **Skill arms (`blurb-<short-sha>`):** overlay only that exact git commit's coupled `AGENTS.md`/`GEMINI.md` and `skills/` tree via realistic `<available_skills>` discovery (and offline `fabric.py` shims in consumer mode), preventing stale snapshot files (such as deleted `GEMINI.md` alongside Wave 1 `AGENTS.md`, or `./fabric/skills/` in consumer workspaces) from leaking across arms.
+In the results table below, `+ / ~ / -` is strictly ordered: `+` is idiomatic, maintainer-grade Fabric meeting all core criteria, `~` is a coherent partial design or review (or a verified schema-gap stop), and `-` is a wrong module boundary, missed core requirement, rubber-stamped broken pull request or premature stop. `Strict` counts `+` on Design and PR review, full deterministic pass on Composition and verified valid stops on Honest-stop (`x/34`). `imm_w` counts attempted writes to read-only fixtures (`0` required).
 
-In the tables below, `+ / ~ / -` is strictly ordered (`+` `Aligned` = idiomatic, maintainer-grade Fabric meeting all core criteria; `~` `Provider/AdHoc` = coherent partial design/review or verified schema-gap stop; `-` `Broken` = wrong module boundary, missed core requirements, rubber-stamped broken PR, or premature stop). `Strict` counts `+` on Design and PR Review, full deterministic pass on Composition, and verified valid stops on Honest-stop (`x/34`). `imm_w` counts attempted writes to read-only fixtures (`0` required).
+### Results across models
 
-### Temperature 0.7 Measurements
+We measured Bare, pre-revamp `master` and Wave 1 across 2 model tiers (a compact local dense coding model, `Qwen3.8-27B`, and a stronger MoE validator, `Qwen3.8-Flash-Next`) alongside a `Qwen3.6-35B-A3B` bare floor:
 
-All nine `temperature=0.7` runs are complete across three models — the compact MoE bare floor (`Qwen3.6-35B-A3B`), the Tier 1 dense iteration model (`Qwen3.8-27B`), and the Tier 2 milestone validator (`Qwen3.8-Flash-Next`) — tracking bare `none`, pre-revamp `master` (`2fd071954`), initial Wave 1 (`6c2c92c95`), and the `cff-pr-review` parity/full-diff sweep iteration (`e45e393b0`):
-
-| Model | Arm | Design (`+/~/-`, crit) | PR Rev (`+/~/-`, crit) | Comp (`plan` / full) | Honest-stop (`m/v`) | `imm_w` | Strict | Avg / item (`turns · tok`) |
+| Model | Condition | Design (`+/~/-`, crit) | PR review (`+/~/-`, crit) | Comp (`plan` / full) | Honest-stop (`m/v`) | `imm_w` | Strict | Avg / item (`turns · tok`) |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| `Qwen3.6-35B-A3B` | `q35b-none` *(bare)* | `0 / 2 / 8` (`42.7%`) | `0 / 3 / 5` (`28.1%`) | `10/10` / `1/10` | `3/6` / `3/6` | `1` | `4/34` | `17.7t · 7.2k` |
-| `Qwen3.8-27B` | `q27b-none` *(bare)* | `0 / 9 / 1` (`58.4%`) | `0 / 7 / 1` (`51.9%`) | `10/10` / `0/10` | `4/6` / `3/6` | `0` | `3/34` | `18.9t · 12.2k` |
-| `Qwen3.8-27B` | `q27b-blurb-2fd071954` *(`master`)* | `0 / 8 / 2` (`60.3%`) | `2 / 6 / 0` (`56.4%`) | `10/10` / `7/10` | `5/6` / `5/6` | `0` | `14/34` | `16.4t · 9.9k` |
-| `Qwen3.8-27B` | `q27b-blurb-6c2c92c95` *(Wave 1)* | **`2 / 6 / 2` (`63.2%`)** | `2 / 6 / 0` (`66.7%`) | `10/10` / `8/10` | `5/6` / `4/6` | `0` | `16/34` | **`15.6t · 11.0k`** |
-| `Qwen3.8-27B` | `q27b-blurb-e45e393b0` *(Wave 1 + PR-review sweep)* | `1 / 8 / 1` (`61.8%`) | **`4 / 4 / 0` (`72.9%`)** | **`10/10` / `9/10`** | `5/6` / `4/6` | **`0`** | **`18/34`** | `16.8t · 11.3k` |
-| `Qwen3.8-Flash-Next` | `qfn-none` *(bare)* | `0 / 8 / 2` (`59.5%`) | `3 / 5 / 0` (`62.5%`) | `10/10` / `0/10` | `5/6` / `4/6` | `0` | `7/34` | `27.7t · 16.2k` |
-| `Qwen3.8-Flash-Next` | `qfn-blurb-2fd071954` *(`master`)* | `1 / 7 / 2` (`57.7%`) | `3 / 5 / 0` (`63.5%`) | `9/10` / `9/10` | `5/6` / `5/6` | `1` | `18/34` | `24.6t · 15.1k` |
-| `Qwen3.8-Flash-Next` | `qfn-blurb-6c2c92c95` *(Wave 1)* | `3 / 6 / 1` (`67.1%`) | `5 / 2 / 1` (`73.5%`) | **`10/10` / `10/10`** | `6/6` / `5/6` | **`0`** | `23/34` | **`22.4t · 13.2k`** |
-| `Qwen3.8-Flash-Next` | `qfn-blurb-e45e393b0` *(Wave 1 + PR-review sweep)* | **`3 / 5 / 2` (`68.9%`)** | **`7 / 1 / 0` (`80.9%`)** | **`10/10` / `10/10`** | **`6/6` / `6/6`** | **`0`** | **`26/34`** | `24.6t · 14.5k` |
+| `Qwen3.6-35B-A3B` | Bare | `0 / 2 / 8` (`42.7%`) | `0 / 3 / 5` (`28.1%`) | `10/10` / `1/10` | `3/6` / `3/6` | `1` | `4/34` | `17.7t · 7.2k` |
+| `Qwen3.8-27B` | Bare | `0 / 9 / 1` (`58.4%`) | `0 / 7 / 1` (`51.9%`) | `10/10` / `0/10` | `4/6` / `3/6` | `0` | `3/34` | `18.9t · 12.2k` |
+| `Qwen3.8-27B` | `master` | `0 / 8 / 2` (`60.3%`) | `2 / 6 / 0` (`56.4%`) | `10/10` / `7/10` | `5/6` / `5/6` | `0` | `14/34` | `16.4t · 9.9k` |
+| `Qwen3.8-27B` | Wave 1 | `1 / 8 / 1` (`61.8%`) | `4 / 4 / 0` (`72.9%`) | `10/10` / `9/10` | `5/6` / `4/6` | `0` | `18/34` | `16.8t · 11.3k` |
+| `Qwen3.8-Flash-Next` | Bare | `0 / 8 / 2` (`59.5%`) | `3 / 5 / 0` (`62.5%`) | `10/10` / `0/10` | `5/6` / `4/6` | `0` | `7/34` | `27.7t · 16.2k` |
+| `Qwen3.8-Flash-Next` | `master` | `1 / 7 / 2` (`57.7%`) | `3 / 5 / 0` (`63.5%`) | `9/10` / `9/10` | `5/6` / `5/6` | `1` | `18/34` | `24.6t · 15.1k` |
+| `Qwen3.8-Flash-Next` | Wave 1 | `3 / 5 / 2` (`68.9%`) | `7 / 1 / 0` (`80.9%`) | `10/10` / `10/10` | `6/6` / `6/6` | `0` | `26/34` | `24.6t · 14.5k` |
 
-Slice-by-slice progression across both `Qwen3.8-27B` and `Qwen3.8-Flash-Next` isolates what current `master` already delivers versus what Wave 1 (`e45e393b0`) adds:
+We also verified a final tightening pass on `skills/maintainer/cff-pr-review/SKILL.md` (leaving every other skill file unchanged) on the `pr_review` slice across both tiers. On `Qwen3.8-Flash-Next`, PR review held `7 / 1 / 0` (0 broken) while lifting per-criterion accuracy from 80.9% to 85.0% (`34/40`) and cutting average PR-review turns from `23.4t` to `20.1t`. On `Qwen3.8-27B`, PR review held `4/8` `+` and recovered Step 1 single-resource-wrapper rejection on `P02` (`4/4` in 10 turns).
 
-| Dimension | `none` -> `master` (`2fd071954`) | `master` -> Wave 1 (`e45e393b0`) | Key observation |
-| --- | --- | --- | --- |
-| Design (`C01`–`C10`) | `27B`: `0/9/1` -> `0/8/2` (`+1.9%`); `QFN`: `0/8/2` -> `1/7/2` (`-1.8%`) | `27B`: `1/8/1` (`+1.5%`, `2/6/2` on `6c2c92c95`); `QFN`: **`3/5/2`** (**`+11.2%`**, `68.9%`) | `master` barely moved Design (`0` `+` on `27B`, `1` `+` on `QFN`); Wave 1 unlocked `+` designs on both models (`C01`/`C03` on `27B`, `C03`/`C04`/`C07` on `QFN`). |
-| PR Review (`P01`–`P08`) | `27B`: `0/7/1` -> `2/6/0` (`+4.5%`); `QFN`: `3/5/0` -> `3/5/0` (`+1.0%`) | `27B`: **`4/4/0`** (**`+16.5%`**, `72.9%`); `QFN`: **`7/1/0`** (**`+17.4%`**, `80.9%`) | `100%` `cff-pr-review` activation (`8/8` on both models) plus the `e45e393b0` parity/full-diff sweep edits drove `0` `-` across all 16 PR reviews (`P01`/`P06`/`P07`/`P08` `+` on `27B`; all except `P03` `+` on `QFN`). |
-| Composition (`U01`–`U10`) | `27B`: `0/10` -> `7/10`; `QFN`: `0/10` -> `9/10` (`9/10` plan) | `27B`: **`9/10`** (`10/10` plan); `QFN`: **`10/10` full** (`10/10` plan) | `10/10` `fabric-builder` activation and `3/3` `references/factories.md` usage on `U01`/`U04`/`U09` on both models; `QFN` held `10/10` strict across both `6c2c92c95` and `e45e393b0`, and `27B` climbed to `9/10` (missing only `U01` `variables.tf` sorting). |
-| Honest-stop (`H01`–`H06`) | `27B`: `3/6` -> `5/6`; `QFN`: `4/6` -> `5/6` verified | `27B`: `4/6` (`5/6` mech); `QFN`: **`6/6` verified (`6/6` mech)** | Both models clear `H05` (single-resource-context pushback) under skills; `QFN` Wave 1 reached `6/6` verified (`H01`–`H06`, `0` `imm_w`). |
-| Efficiency & hygiene | `27B`: `18.9t` -> `16.4t`; `QFN`: `27.7t` -> `24.6t` (`1` `imm_w`) | `27B`: `16.8t`, **`0` `imm_w`**; `QFN`: `24.6t`, **`0` `imm_w`** | Role-separated skills hit `100%` activation across all slices with `0` `imm_w`, cutting median latency and reasoning length on `e45e393b0` relative to `6c2c92c95` on both tiers. |
+Four broad shifts explain the `14 -> 18/34` (`Qwen3.8-27B`) and `18 -> 26/34` (`Qwen3.8-Flash-Next`) lift over `master`:
 
-### Follow-up Backlog (Near-Miss Structural Patterns)
+- skill activation reached 100% across every slice on both tiers (`10/10` `cff-contributing`, `8/8` `cff-pr-review`, `10/10` `fabric-builder` and `3/3` `references/factories.md` on YAML factory tasks) with 0 read-only write violations
+- PR review showed the largest gain on both models (`2/6/0` 56.4% to `4/4/0` 72.9% on `Qwen3.8-27B`, and `3/5/0` 63.5% to `7/1/0` 85.0% on `Qwen3.8-Flash-Next`)
+- composition reached `10/10` strict pass on `Qwen3.8-Flash-Next` and `9/10` (`10/10` plan) on `Qwen3.8-27B`, fixing `master`'s YAML factory plan failure on `U01`
+- contributor design rose from `1/7/2` (57.7%) to `3/5/2` (68.9%) on `Qwen3.8-Flash-Next`, while honest-stop reached `6/6` verified stops (`H01` to `H06`)
 
-1. **Resolved in `e45e393b0` -> `396ff6fbb` — paired factory/context parity, diff-wide sweeps, and prose tightening:**
-   - First pass (`e45e393b0`, full 34-item runs on both tiers): clarifying paired factory/context parity and full-diff block-nesting/null/empty-`dynamic` sweeps lifted `27B` from `16/34` to `18/34` (`PR Rev 2/6/0 66.7% -> 4/4/0 72.9%`, flipping `P01`, `P06`, `P08` to `+`) and `QFN` from `23/34` to **`26/34`** (`PR Rev 5/2/1 73.5% -> 7/1/0 80.9%`, `10/10` Composition, `6/6` verified Honest-stop).
-   - Tightening pass (`396ff6fbb`, `pr_review` slice on both tiers): adding the legacy single-resource caveat to Step 1, broadening Step 3 row 1's `depends_on` trigger, and deduplicating Step 3 (`14.3 KB -> 13.1 KB`) held `QFN` at **`7/1/0` (`0` `-`) while lifting criteria from `80.9%` to `85.0%` (`34/40`) and cutting avg PR-review turns from `23.4t` to `20.1t`** (`P03` now catching flat top-level `output "model_armor_templates"` in `modules/project-factory/outputs.tf`), while `27B` held `4/8` `+` and snapped `P02` back to `+` (`4/4` in 10 turns) alongside `P01`, `P07`, and `P08`.
-   - Controlled guide-cap ablation (`3a6eddb60`, reverted): relaxing Step 3's `"Open only the 1–2 guides"` rule to `"Open every guide whose trigger appears"` regressed both models unanimously (`QFN`: `7/1/0 85.0% -> 4/4/0 76.2%`, `20.1t -> 25.5t`; `27B`: `4/3/1 66.0% -> 3/5/0 64.4%`, losing `P07`), confirming that selective 1–2 guide progressive disclosure is load-bearing across model scales and not a small-model artifact.
-2. **Residual open item (`P03` on both tiers):** Both `27B` and `QFN` still missed `location = null` (`lower(v.location)`), nullable map-entry values (`vv = null` in `rai` validation on OpenTofu), `local.ctx.locations` on `google_model_armor_template.default`, and `google_project_iam_member.service_agents` in `depends_on` on `P03`. Tracked for future Wave 2 / skill-iteration work once Wave 1 merges.
+### Design lessons from ablations
+
+Three empirical findings from Wave 1 iterations and controlled ablations should guide future skill authoring:
+
+- selective progressive disclosure ('Open only the 1–2 guides whose trigger appears in the diff') protects attention on both compact and larger models: a controlled 1-line ablation that relaxed the rule to opening every triggered guide regressed both `Qwen3.8-Flash-Next` (`7/1/0` 85.0% to `4/4/0` 76.2%, `20.1t` to `25.5t`) and `Qwen3.8-27B` (`4/3/1` 66.0% to `3/5/0` 64.4%)
+- rationale-first rules prevent fabricated blocking nits because explaining why per-module `versions.*` stay synced from `default-versions.*`, why `project-factory` stays at 2 passes and why older single-resource modules are legacy gives models the reasoning needed to judge edge cases accurately
+- explicit parity rules and exhaustive diff-wide sweeps materially improve PR review because separating unrelated cross-module churn from required wiring in paired aggregation factories (`net-vpc` / `net-vpc-factory`, `project` / `project-factory`) and full-surface `var.context` coverage stops models from dismissing needed wiring as out of scope, while sweeping every modified block catches nested `null` crashes and empty `dynamic` permadiffs that single-defect stops miss
+
+### Next steps for Wave 2
+
+Three focused items remain for Wave 2 once this branch merges:
+
+- close the residual `P03` PR-review gaps still missed on both tiers (`location = null` in `lower(v.location)`, nullable map-entry values in OpenTofu `validation` blocks, `local.ctx.locations` interpolation and `google_project_iam_member.service_agents` in `depends_on`)
+- raise Contributor Design alignment (`C01` to `C10`), starting with target-side ownership on `C05` (`modules/organization` and `modules/vpc-sc`) and the remaining `Provider/AdHoc` near-misses
+- expand deep FAST stage guidance and publish the sanitized evaluation suite alongside the revamped `tools/skill-turn-harness/`
