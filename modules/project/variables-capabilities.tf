@@ -41,9 +41,9 @@ variable "capability_configs" {
   validation {
     condition = alltrue([
       for k, v in var.capability_configs : (
-        length(coalesce(try(v.types, null), [])) > 0 &&
+        length(try(v.types, [])) > 0 &&
         alltrue([
-          for t in coalesce(try(v.types, null), []) :
+          for t in try(v.types, []) :
           contains(["AGENT_MANAGEMENT"], t)
         ])
       )

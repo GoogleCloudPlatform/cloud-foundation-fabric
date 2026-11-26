@@ -57,13 +57,13 @@ variable "boundary_configs" {
   }
   validation {
     condition = alltrue([
-      for k, v in coalesce(var.boundary_configs.boundaries, {}) : v != null
+      for k, v in var.boundary_configs.boundaries : v != null
     ])
     error_message = "Boundary entries cannot be null; use {} instead."
   }
   validation {
     condition = alltrue([
-      for k, v in coalesce(var.boundary_configs.boundaries, {}) :
+      for k, v in var.boundary_configs.boundaries :
       can(regex("^[a-z][a-z0-9-]{4,28}[a-z0-9]$", k))
     ])
     error_message = "Boundary keys must be 6 to 30 lowercase letters, digits, or hyphens, starting with a letter and not ending with a hyphen."
@@ -71,13 +71,13 @@ variable "boundary_configs" {
   validation {
     condition = (
       var.boundary_configs.tag_key != null ||
-      length(coalesce(var.boundary_configs.boundaries, {})) <= 1
+      length(var.boundary_configs.boundaries) <= 1
     )
     error_message = "At most one boundary can be created when tag_key is not set."
   }
   validation {
     condition = alltrue([
-      for k, v in coalesce(var.boundary_configs.boundaries, {}) : (
+      for k, v in var.boundary_configs.boundaries : (
         var.boundary_configs.tag_key == null
         ? try(v.tag_value, null) == null
         : try(v.tag_value, null) != null && try(v.tag_value, "") != ""
@@ -87,7 +87,7 @@ variable "boundary_configs" {
   }
   validation {
     condition = alltrue([
-      for k, v in coalesce(var.boundary_configs.boundaries, {}) : (
+      for k, v in var.boundary_configs.boundaries : (
         try(v.display_name, null) == null ||
         can(regex("^[a-zA-Z0-9-'\" !]{4,30}$", v.display_name))
       )
@@ -96,7 +96,7 @@ variable "boundary_configs" {
   }
   validation {
     condition = alltrue([
-      for k, v in coalesce(var.boundary_configs.boundaries, {}) : (
+      for k, v in var.boundary_configs.boundaries : (
         try(v.deletion_policy, null) == null ||
         contains(["ABANDON", "DELETE", "PREVENT"], v.deletion_policy)
       )

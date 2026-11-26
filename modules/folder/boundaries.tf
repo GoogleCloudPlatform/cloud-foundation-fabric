@@ -31,7 +31,7 @@ resource "google_resource_manager_boundary_config" "default" {
 }
 
 resource "google_resource_manager_boundary" "default" {
-  for_each        = coalesce(var.boundary_configs.boundaries, {})
+  for_each        = var.boundary_configs.boundaries
   parent          = local.folder_id
   boundary_id     = each.key
   display_name    = each.value.display_name
@@ -49,6 +49,5 @@ resource "google_resource_manager_boundary" "default" {
     google_folder_iam_binding.authoritative,
     google_folder_iam_binding.bindings,
     google_folder_iam_member.bindings,
-    google_resource_manager_boundary_config.default,
   ]
 }

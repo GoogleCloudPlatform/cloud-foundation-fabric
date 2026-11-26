@@ -33,7 +33,7 @@ resource "google_resource_manager_capability_config" "default" {
   deletion_policy = each.value.deletion_policy
   lifecycle {
     precondition {
-      condition     = length(coalesce(each.value.boundaries, [])) == 0
+      condition     = length(each.value.boundaries) == 0
       error_message = "Boundaries are not supported for project-scoped capability configs."
     }
   }

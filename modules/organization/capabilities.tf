@@ -23,11 +23,11 @@ resource "google_resource_manager_capability_config" "default" {
   display_name         = each.value.display_name
   types                = each.value.types
   boundaries = (
-    length(coalesce(each.value.boundaries, [])) == 0
+    length(each.value.boundaries) == 0
     ? null
     : [
       for b in each.value.boundaries :
-      contains(keys(coalesce(var.boundary_configs.boundaries, {})), b)
+      contains(keys(var.boundary_configs.boundaries), b)
       ? google_resource_manager_boundary.default[b].name
       : b
     ]
