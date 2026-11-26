@@ -194,6 +194,7 @@ resource "google_cloud_run_v2_worker_pool" "default_unmanaged" {
     ignore_changes = [
       client,
       client_version,
+      scaling[0].manual_instance_count,
       template[0].annotations["run.googleapis.com/operation-id"],
       template[0].containers,
       template[0].labels

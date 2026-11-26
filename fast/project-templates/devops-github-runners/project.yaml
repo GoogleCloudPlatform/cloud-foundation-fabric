@@ -1,0 +1,45 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# yaml-language-server: $schema=https://cdn.jsdelivr.net/gh/GoogleCloudPlatform/cloud-foundation-fabric@master/modules/project-factory/schemas/project.schema.json
+
+# TODO: set a parent folder if needed
+# parent: $folder_ids:devops
+iam_by_principals:
+  $iam_principals:service_accounts/_self_/crema-autoscaler-sa:
+    - roles/iam.serviceAccountUser
+    - roles/logging.logWriter
+    - roles/monitoring.metricWriter
+    - roles/monitoring.viewer
+    - roles/parametermanager.parameterAccessor
+    - roles/parametermanager.parameterViewer
+    - roles/run.admin
+  $iam_principals:service_accounts/_self_/worker-pool-sa:
+    - roles/logging.logWriter
+services:
+  - artifactregistry.googleapis.com
+  - cloudbuild.googleapis.com
+  - compute.googleapis.com
+  - iam.googleapis.com
+  - logging.googleapis.com
+  - monitoring.googleapis.com
+  - parametermanager.googleapis.com
+  - run.googleapis.com
+  - secretmanager.googleapis.com
+  - storage.googleapis.com
+service_accounts:
+  crema-autoscaler-sa:
+    display_name: CREMA autoscaler service account.
+  worker-pool-sa:
+    display_name: Cloud Run worker pool GitHub runner service account.
