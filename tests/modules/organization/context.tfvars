@@ -55,6 +55,11 @@ context = {
   tag_values = {
     "test/one" = "tagValues/1234567890"
   }
+  tag_vars = {
+    organization = {
+      env = "1234567890/environment"
+    }
+  }
 }
 asset_feeds = {
   test = {
@@ -340,5 +345,21 @@ org_policies = {
         values = ["under:organizations/$${organization.id}"]
       }
     }]
+  }
+}
+boundary_configs = {
+  tag_key = "$${organization.env}"
+  boundaries = {
+    prod-agents = {
+      display_name = "Production Agents"
+      tag_value    = "prod"
+    }
+  }
+}
+capability_configs = {
+  prod-agent-registry = {
+    display_name       = "Prod Agent Registry"
+    boundaries         = ["prod-agents"]
+    management_project = "$project_numbers:test"
   }
 }

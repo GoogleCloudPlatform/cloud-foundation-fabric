@@ -1,0 +1,63 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  google_resource_manager_boundary.default["all-projects"]:
+    boundary_id: all-projects
+    display_name: All Projects
+    parent: organizations/1234567890
+    resource_filter: []
+    timeouts: null
+  google_resource_manager_capability_config.default["agent-all"]:
+    capability_config_id: agent-all
+    display_name: All Projects Agents
+    parent: organizations/1234567890
+    timeouts: null
+    types:
+    - AGENT_MANAGEMENT
+
+counts:
+  google_resource_manager_boundary: 1
+  google_resource_manager_capability_config: 1
+  modules: 0
+  resources: 2
+
+outputs:
+  access_levels: {}
+  asset_search_results: {}
+  boundaries: __missing__
+  capability_configs: __missing__
+  context_aware_access_bindings: {}
+  custom_constraint_ids: {}
+  custom_role_id: {}
+  custom_roles: {}
+  id: organizations/1234567890
+  logging_identities:
+    kms: null
+    logging: null
+  logging_sinks: {}
+  network_tag_keys: {}
+  network_tag_values: {}
+  organization_id: organizations/1234567890
+  organization_policies_ids: {}
+  scc_custom_sha_modules_ids: {}
+  scc_mute_configs: {}
+  scim_tenants: {}
+  service_agents: {}
+  sink_writer_identities: {}
+  tag_keys: {}
+  tag_values: {}
+  workforce_identity_pool_ids: {}
+  workforce_identity_provider_names: {}
+  workforce_identity_providers: {}

@@ -15,6 +15,7 @@
 module: modules/folder
 
 tests:
+  boundaries_unfiltered:
   context:
   iam_by_principals_additive:
   iam_by_principals_conditional:

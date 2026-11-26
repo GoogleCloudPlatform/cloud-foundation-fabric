@@ -389,6 +389,21 @@ values:
     project: test-prod-audit-logs-0
     role: roles/pubsub.publisher
     topic: audit-logs
+  google_resource_manager_capability_config.default["agent-default"]:
+    boundaries: null
+    capability_config_id: agent-default
+    display_name: Default Project Agents
+    timeouts: null
+    types:
+    - AGENT_MANAGEMENT
+  google_resource_manager_capability_config.default["agent-explicit"]:
+    boundaries: null
+    capability_config_id: agent-explicit
+    display_name: Explicit Project Agents
+    management_project: projects/1234567890
+    timeouts: null
+    types:
+    - AGENT_MANAGEMENT
   google_tags_tag_binding.binding["bar"]:
     tag_value: tagValues/1234567891
     timeouts: null
@@ -504,13 +519,14 @@ counts:
   google_project_iam_member: 7
   google_project_service: 1
   google_pubsub_topic_iam_member: 1
+  google_resource_manager_capability_config: 2
   google_tags_tag_binding: 3
   google_tags_tag_key_iam_binding: 4
   google_tags_tag_key_iam_member: 3
   google_tags_tag_value_iam_binding: 4
   google_tags_tag_value_iam_member: 2
   modules: 0
-  resources: 51
+  resources: 53
 
 outputs:
   alert_ids: __missing__
@@ -518,11 +534,13 @@ outputs:
   bigquery_reservations:
     assignments: {}
     reservations: {}
+  capability_configs: __missing__
   custom_role_id: {}
   custom_roles: {}
   default_service_accounts: __missing__
   id: my-project
   kms_autokeys: {}
+  model_armor_template_ids: {}
   name: my-project
   network_tag_keys: {}
   network_tag_values: {}

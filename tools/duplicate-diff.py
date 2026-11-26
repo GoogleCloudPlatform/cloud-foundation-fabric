@@ -90,6 +90,15 @@ duplicates = [
         "modules/organization/schemas/org-policies.schema.json",
     ],
     [
+        "modules/organization/variables-boundaries.tf",
+        "modules/folder/variables-boundaries.tf",
+    ],
+    [
+        "modules/organization/variables-capabilities.tf",
+        "modules/folder/variables-capabilities.tf",
+        "modules/project/variables-capabilities.tf",
+    ],
+    [
         "modules/organization/variables-model-armor.tf",
         "modules/folder/variables-model-armor.tf",
         "modules/project/variables-model-armor.tf",
