@@ -916,6 +916,9 @@
               "type": "object",
               "additionalProperties": false,
               "properties": {
+                "data_residency_compliant": {
+                  "type": "boolean"
+                },
                 "enforcement_type": {
                   "type": "string",
                   "enum": [
@@ -931,6 +934,16 @@
                 },
                 "log_template_operations": {
                   "type": "boolean"
+                },
+                "modalities": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "enum": [
+                      "MODALITY_TEXT",
+                      "MODALITY_IMAGE"
+                    ]
+                  }
                 },
                 "multi_language_detection": {
                   "type": "boolean"

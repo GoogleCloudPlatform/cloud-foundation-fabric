@@ -32,10 +32,12 @@ variable "model_armor_templates" {
       }))
     }), {})
     metadata = optional(object({
+      data_residency_compliant           = optional(bool)
       enforcement_type                   = optional(string)
       ignore_partial_invocation_failures = optional(bool)
       log_sanitize_operations            = optional(bool)
       log_template_operations            = optional(bool)
+      modalities                         = optional(list(string))
       multi_language_detection           = optional(bool)
       custom_llm_response_safety_error = optional(object({
         code    = optional(number)
@@ -110,5 +112,14 @@ variable "model_armor_templates" {
       ) if try(v.metadata.enforcement_type, null) != null
     ])
     error_message = "Invalid enforcement_type."
+  }
+  validation {
+    condition = alltrue(flatten([
+      for k, v in var.model_armor_templates : [
+        for m in coalesce(try(v.metadata.modalities, null), []) :
+        try(contains(["MODALITY_TEXT", "MODALITY_IMAGE"], m), false)
+      ]
+    ]))
+    error_message = "Invalid modalities, use MODALITY_TEXT or MODALITY_IMAGE."
   }
 }

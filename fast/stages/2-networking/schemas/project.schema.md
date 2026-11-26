@@ -279,11 +279,15 @@
         - **deidentify_template**: *string*
     - **metadata**: *object*
       <br>*additional properties: false*
+      - **data_residency_compliant**: *boolean*
       - **enforcement_type**: *string*
         <br>*enum: ['INSPECT_ONLY', 'INSPECT_AND_BLOCK']*
       - **ignore_partial_invocation_failures**: *boolean*
       - **log_sanitize_operations**: *boolean*
       - **log_template_operations**: *boolean*
+      - **modalities**: *array*
+        - items: *string*
+          <br>*enum: ['MODALITY_TEXT', 'MODALITY_IMAGE']*
       - **multi_language_detection**: *boolean*
       - **custom_llm_response_safety_error**: *object*
         <br>*additional properties: false*

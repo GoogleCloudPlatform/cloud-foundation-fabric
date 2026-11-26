@@ -26,10 +26,12 @@ model_armor_templates = {
       }
     }
     metadata = {
+      data_residency_compliant           = false
       enforcement_type                   = "INSPECT_AND_BLOCK"
       ignore_partial_invocation_failures = true
       log_sanitize_operations            = true
       log_template_operations            = true
+      modalities                         = ["MODALITY_TEXT"]
       multi_language_detection           = true
       custom_llm_response_safety_error = {
         code    = 451

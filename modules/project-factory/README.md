@@ -544,6 +544,7 @@ model_armor_templates:
       malicious_uris: true
       pi_and_jailbreak: {}
     metadata:
+      data_residency_compliant: true
       enforcement_type: INSPECT_AND_BLOCK
 # tftest-file id=ma-1 path=data/projects/ai-app-0.yaml schema=project.schema.json
 ```
