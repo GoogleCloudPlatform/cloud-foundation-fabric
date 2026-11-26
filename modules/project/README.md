@@ -2736,31 +2736,31 @@ module "project" {
 | [asset_search_results](outputs.tf#L25) | Cloud Asset Inventory search results. |  |
 | [bigquery_reservations](outputs.tf#L32) | BigQuery reservations and assignments. |  |
 | [capability_configs](outputs.tf#L40) | Resource Manager capability config resources. |  |
-| [custom_role_id](outputs.tf#L45) | Map of custom role IDs created in the project. |  |
-| [custom_roles](outputs.tf#L50) | Map of custom roles resources created in the project. |  |
-| [default_service_accounts](outputs.tf#L55) | Emails of the default service accounts for this project. |  |
-| [id](outputs.tf#L60) | Project id. |  |
-| [kms_autokeys](outputs.tf#L80) | KMS Autokey key ids. |  |
-| [model_armor_template_ids](outputs.tf#L87) | Model Armor template ids. |  |
-| [name](outputs.tf#L94) | Project name. |  |
-| [network_tag_keys](outputs.tf#L106) | Tag key resources. |  |
-| [network_tag_values](outputs.tf#L115) | Tag value resources. |  |
-| [notification_channel_names](outputs.tf#L123) | Notification channel names. |  |
-| [notification_channels](outputs.tf#L131) | Full notification channel objects. |  |
-| [number](outputs.tf#L136) | Project number. |  |
-| [organization_policies_ids](outputs.tf#L153) | Map of ORGANIZATION_POLICIES => ID in the organization. |  |
-| [project_id](outputs.tf#L160) | Project id. |  |
-| [quota_configs](outputs.tf#L180) | Quota configurations. |  |
-| [quotas](outputs.tf#L191) | Quota resources. |  |
-| [scc_custom_sha_modules_ids](outputs.tf#L196) | Map of SCC CUSTOM SHA MODULES => ID in the project. |  |
-| [service_agents](outputs.tf#L201) | List of all (active) service agents for this project. |  |
-| [services](outputs.tf#L212) | Service APIs to enable in the project. |  |
-| [sink_writer_identities](outputs.tf#L221) | Writer identities created for each sink. |  |
-| [tag_keys](outputs.tf#L228) | Tag key resources. |  |
-| [tag_values](outputs.tf#L237) | Tag value resources. |  |
-| [workload_identity_pool_ids](outputs.tf#L245) | Workload identity provider ids. |  |
-| [workload_identity_provider_ids](outputs.tf#L252) | Workload identity provider attributes. |  |
-| [workload_identity_providers](outputs.tf#L260) | Workload identity provider attributes. |  |
+| [custom_role_id](outputs.tf#L50) | Map of custom role IDs created in the project. |  |
+| [custom_roles](outputs.tf#L55) | Map of custom roles resources created in the project. |  |
+| [default_service_accounts](outputs.tf#L60) | Emails of the default service accounts for this project. |  |
+| [id](outputs.tf#L65) | Project id. |  |
+| [kms_autokeys](outputs.tf#L85) | KMS Autokey key ids. |  |
+| [model_armor_template_ids](outputs.tf#L92) | Model Armor template ids. |  |
+| [name](outputs.tf#L99) | Project name. |  |
+| [network_tag_keys](outputs.tf#L111) | Tag key resources. |  |
+| [network_tag_values](outputs.tf#L120) | Tag value resources. |  |
+| [notification_channel_names](outputs.tf#L128) | Notification channel names. |  |
+| [notification_channels](outputs.tf#L136) | Full notification channel objects. |  |
+| [number](outputs.tf#L141) | Project number. |  |
+| [organization_policies_ids](outputs.tf#L158) | Map of ORGANIZATION_POLICIES => ID in the organization. |  |
+| [project_id](outputs.tf#L165) | Project id. |  |
+| [quota_configs](outputs.tf#L185) | Quota configurations. |  |
+| [quotas](outputs.tf#L196) | Quota resources. |  |
+| [scc_custom_sha_modules_ids](outputs.tf#L201) | Map of SCC CUSTOM SHA MODULES => ID in the project. |  |
+| [service_agents](outputs.tf#L206) | List of all (active) service agents for this project. |  |
+| [services](outputs.tf#L217) | Service APIs to enable in the project. |  |
+| [sink_writer_identities](outputs.tf#L226) | Writer identities created for each sink. |  |
+| [tag_keys](outputs.tf#L233) | Tag key resources. |  |
+| [tag_values](outputs.tf#L242) | Tag value resources. |  |
+| [workload_identity_pool_ids](outputs.tf#L250) | Workload identity provider ids. |  |
+| [workload_identity_provider_ids](outputs.tf#L257) | Workload identity provider attributes. |  |
+| [workload_identity_providers](outputs.tf#L265) | Workload identity provider attributes. |  |
 
 ## Fixtures
 

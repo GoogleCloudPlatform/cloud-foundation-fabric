@@ -29,11 +29,21 @@ output "assured_workload" {
 output "boundaries" {
   description = "Resource Manager boundary resources."
   value       = google_resource_manager_boundary.default
+  depends_on = [
+    google_folder_iam_binding.authoritative,
+    google_folder_iam_binding.bindings,
+    google_folder_iam_member.bindings,
+  ]
 }
 
 output "capability_configs" {
   description = "Resource Manager capability config resources."
   value       = google_resource_manager_capability_config.default
+  depends_on = [
+    google_folder_iam_binding.authoritative,
+    google_folder_iam_binding.bindings,
+    google_folder_iam_member.bindings,
+  ]
 }
 
 output "folder" {

@@ -40,6 +40,11 @@ output "bigquery_reservations" {
 output "capability_configs" {
   description = "Resource Manager capability config resources."
   value       = google_resource_manager_capability_config.default
+  depends_on = [
+    google_project_iam_binding.authoritative,
+    google_project_iam_binding.bindings,
+    google_project_iam_member.bindings,
+  ]
 }
 
 output "custom_role_id" {

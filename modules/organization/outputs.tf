@@ -29,11 +29,21 @@ output "asset_search_results" {
 output "boundaries" {
   description = "Resource Manager boundary resources."
   value       = google_resource_manager_boundary.default
+  depends_on = [
+    google_organization_iam_binding.authoritative,
+    google_organization_iam_binding.bindings,
+    google_organization_iam_member.bindings,
+  ]
 }
 
 output "capability_configs" {
   description = "Resource Manager capability config resources."
   value       = google_resource_manager_capability_config.default
+  depends_on = [
+    google_organization_iam_binding.authoritative,
+    google_organization_iam_binding.bindings,
+    google_organization_iam_member.bindings,
+  ]
 }
 
 output "context_aware_access_bindings" {

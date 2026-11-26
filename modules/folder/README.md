@@ -985,12 +985,12 @@ module "folder" {
 | [asset_search_results](outputs.tf#L17) | Cloud Asset Inventory search results. |  |
 | [assured_workload](outputs.tf#L24) | Assured Workloads workload resource. |  |
 | [boundaries](outputs.tf#L29) | Resource Manager boundary resources. |  |
-| [capability_configs](outputs.tf#L34) | Resource Manager capability config resources. |  |
-| [folder](outputs.tf#L39) | Folder resource. |  |
-| [id](outputs.tf#L44) | Fully qualified folder id. |  |
-| [name](outputs.tf#L55) | Folder name. |  |
-| [organization_policies_ids](outputs.tf#L64) | Map of ORGANIZATION_POLICIES => ID in the folder. |  |
-| [scc_custom_sha_modules_ids](outputs.tf#L69) | Map of SCC CUSTOM SHA MODULES => ID in the folder. |  |
-| [service_agents](outputs.tf#L74) | Identities of all folder-level service agents. |  |
-| [sink_writer_identities](outputs.tf#L82) | Writer identities created for each sink. |  |
+| [capability_configs](outputs.tf#L39) | Resource Manager capability config resources. |  |
+| [folder](outputs.tf#L49) | Folder resource. |  |
+| [id](outputs.tf#L54) | Fully qualified folder id. |  |
+| [name](outputs.tf#L65) | Folder name. |  |
+| [organization_policies_ids](outputs.tf#L74) | Map of ORGANIZATION_POLICIES => ID in the folder. |  |
+| [scc_custom_sha_modules_ids](outputs.tf#L79) | Map of SCC CUSTOM SHA MODULES => ID in the folder. |  |
+| [service_agents](outputs.tf#L84) | Identities of all folder-level service agents. |  |
+| [sink_writer_identities](outputs.tf#L92) | Writer identities created for each sink. |  |
 <!-- END TFDOC -->

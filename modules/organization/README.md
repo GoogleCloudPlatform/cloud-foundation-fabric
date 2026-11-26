@@ -1370,26 +1370,26 @@ module "org" {
 | [access_levels](outputs.tf#L17) | Access level resources. |  |
 | [asset_search_results](outputs.tf#L22) | Cloud Asset Inventory search results. |  |
 | [boundaries](outputs.tf#L29) | Resource Manager boundary resources. |  |
-| [capability_configs](outputs.tf#L34) | Resource Manager capability config resources. |  |
-| [context_aware_access_bindings](outputs.tf#L39) | GCP User Access Bindings for securing Console and APIs. |  |
-| [custom_constraint_ids](outputs.tf#L47) | Map of CUSTOM_CONSTRAINTS => ID in the organization. |  |
-| [custom_role_id](outputs.tf#L52) | Map of custom role IDs created in the organization. |  |
-| [custom_roles](outputs.tf#L57) | Map of custom roles resources created in the organization. |  |
-| [id](outputs.tf#L62) | Fully qualified organization id. |  |
-| [logging_identities](outputs.tf#L80) | Principals used for logging sinks. |  |
-| [logging_sinks](outputs.tf#L92) | Logging sink resources. |  |
-| [network_tag_keys](outputs.tf#L100) | Tag key resources. |  |
-| [network_tag_values](outputs.tf#L109) | Tag value resources. |  |
-| [organization_id](outputs.tf#L119) | Organization id dependent on module resources. |  |
-| [organization_policies_ids](outputs.tf#L136) | Map of ORGANIZATION_POLICIES => ID in the organization. |  |
-| [scc_custom_sha_modules_ids](outputs.tf#L141) | Map of SCC CUSTOM SHA MODULES => ID in the organization. |  |
-| [scc_mute_configs](outputs.tf#L146) | SCC mute configurations. |  |
-| [scim_tenants](outputs.tf#L151) | Workforce Identity provider SCIM tenants. |  |
-| [service_agents](outputs.tf#L165) | Identities of all organization-level service agents. |  |
-| [sink_writer_identities](outputs.tf#L173) | Writer identities created for each sink. |  |
-| [tag_keys](outputs.tf#L181) | Tag key resources. |  |
-| [tag_values](outputs.tf#L190) | Tag value resources. |  |
-| [workforce_identity_pool_ids](outputs.tf#L198) | Workforce identity pool ids. |  |
-| [workforce_identity_provider_names](outputs.tf#L205) | Workforce Identity provider names. |  |
-| [workforce_identity_providers](outputs.tf#L212) | Workforce Identity provider attributes. |  |
+| [capability_configs](outputs.tf#L39) | Resource Manager capability config resources. |  |
+| [context_aware_access_bindings](outputs.tf#L49) | GCP User Access Bindings for securing Console and APIs. |  |
+| [custom_constraint_ids](outputs.tf#L57) | Map of CUSTOM_CONSTRAINTS => ID in the organization. |  |
+| [custom_role_id](outputs.tf#L62) | Map of custom role IDs created in the organization. |  |
+| [custom_roles](outputs.tf#L67) | Map of custom roles resources created in the organization. |  |
+| [id](outputs.tf#L72) | Fully qualified organization id. |  |
+| [logging_identities](outputs.tf#L90) | Principals used for logging sinks. |  |
+| [logging_sinks](outputs.tf#L102) | Logging sink resources. |  |
+| [network_tag_keys](outputs.tf#L110) | Tag key resources. |  |
+| [network_tag_values](outputs.tf#L119) | Tag value resources. |  |
+| [organization_id](outputs.tf#L129) | Organization id dependent on module resources. |  |
+| [organization_policies_ids](outputs.tf#L146) | Map of ORGANIZATION_POLICIES => ID in the organization. |  |
+| [scc_custom_sha_modules_ids](outputs.tf#L151) | Map of SCC CUSTOM SHA MODULES => ID in the organization. |  |
+| [scc_mute_configs](outputs.tf#L156) | SCC mute configurations. |  |
+| [scim_tenants](outputs.tf#L161) | Workforce Identity provider SCIM tenants. |  |
+| [service_agents](outputs.tf#L175) | Identities of all organization-level service agents. |  |
+| [sink_writer_identities](outputs.tf#L183) | Writer identities created for each sink. |  |
+| [tag_keys](outputs.tf#L191) | Tag key resources. |  |
+| [tag_values](outputs.tf#L200) | Tag value resources. |  |
+| [workforce_identity_pool_ids](outputs.tf#L208) | Workforce identity pool ids. |  |
+| [workforce_identity_provider_names](outputs.tf#L215) | Workforce Identity provider names. |  |
+| [workforce_identity_providers](outputs.tf#L222) | Workforce Identity provider attributes. |  |
 <!-- END TFDOC -->
