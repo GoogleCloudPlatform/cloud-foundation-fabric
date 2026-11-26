@@ -99,6 +99,7 @@ variable "keyring_create" {
 variable "keys" {
   description = "Key names and base attributes. Set attributes to null if not needed."
   type = map(object({
+    deletion_policy               = optional(string)
     destroy_scheduled_duration    = optional(string)
     rotation_period               = optional(string)
     labels                        = optional(map(string))
@@ -130,6 +131,14 @@ variable "keys" {
   }))
   default  = {}
   nullable = false
+  validation {
+    condition = alltrue([
+      for k, v in var.keys : contains(
+        ["ABANDON", "DELETE", "PREVENT"], coalesce(v.deletion_policy, "DELETE")
+      )
+    ])
+    error_message = "Key deletion policy must be one of 'ABANDON', 'DELETE' or 'PREVENT'."
+  }
   validation {
     condition = alltrue([
       for k, v in var.keys : contains([

@@ -47,6 +47,7 @@ resource "google_kms_crypto_key" "default" {
   for_each                      = var.keys
   key_ring                      = local.keyring.id
   name                          = each.key
+  deletion_policy               = each.value.deletion_policy
   destroy_scheduled_duration    = each.value.destroy_scheduled_duration
   rotation_period               = each.value.rotation_period
   labels                        = each.value.labels
