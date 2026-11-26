@@ -32,9 +32,19 @@ output "service_attachment_uri" {
 output "workstation_configs" {
   description = "Workstation configurations."
   value       = google_workstations_workstation_config.configs
+  depends_on = [
+    google_workstations_workstation_config_iam_binding.authoritative,
+    google_workstations_workstation_config_iam_binding.bindings,
+    google_workstations_workstation_config_iam_member.bindings,
+  ]
 }
 
 output "workstations" {
   description = "Workstations."
   value       = google_workstations_workstation.workstations
+  depends_on = [
+    google_workstations_workstation_iam_binding.authoritative,
+    google_workstations_workstation_iam_binding.bindings,
+    google_workstations_workstation_iam_member.bindings,
+  ]
 }

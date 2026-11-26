@@ -229,6 +229,29 @@
             "items": {
               "type": "string"
             }
+          },
+          "condition": {
+            "type": "object",
+            "additionalProperties": false,
+            "description": "IAM condition for the binding (optional).",
+            "properties": {
+              "description": {
+                "type": "string",
+                "description": "Optional description of the expression."
+              },
+              "expression": {
+                "type": "string",
+                "description": "Textual representation of an expression in Common Expression Language syntax."
+              },
+              "title": {
+                "type": "string",
+                "description": "Title for the expression."
+              }
+            },
+            "required": [
+              "expression",
+              "title"
+            ]
           }
         },
         "required": [
@@ -251,6 +274,29 @@
           "member": {
             "type": "string",
             "description": "The member (required)."
+          },
+          "condition": {
+            "type": "object",
+            "additionalProperties": false,
+            "description": "IAM condition for the binding (optional).",
+            "properties": {
+              "description": {
+                "type": "string",
+                "description": "Optional description of the expression."
+              },
+              "expression": {
+                "type": "string",
+                "description": "Textual representation of an expression in Common Expression Language syntax."
+              },
+              "title": {
+                "type": "string",
+                "description": "Title for the expression."
+              }
+            },
+            "required": [
+              "expression",
+              "title"
+            ]
           }
         },
         "required": [
@@ -391,6 +437,29 @@
                   "items": {
                     "type": "string"
                   }
+                },
+                "condition": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "description": "IAM condition for the binding (optional).",
+                  "properties": {
+                    "description": {
+                      "type": "string",
+                      "description": "Optional description of the expression."
+                    },
+                    "expression": {
+                      "type": "string",
+                      "description": "Textual representation of an expression in Common Expression Language syntax."
+                    },
+                    "title": {
+                      "type": "string",
+                      "description": "Title for the expression."
+                    }
+                  },
+                  "required": [
+                    "expression",
+                    "title"
+                  ]
                 }
               },
               "required": [
@@ -413,6 +482,29 @@
                 "member": {
                   "type": "string",
                   "description": "The member (required)."
+                },
+                "condition": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "description": "IAM condition for the binding (optional).",
+                  "properties": {
+                    "description": {
+                      "type": "string",
+                      "description": "Optional description of the expression."
+                    },
+                    "expression": {
+                      "type": "string",
+                      "description": "Textual representation of an expression in Common Expression Language syntax."
+                    },
+                    "title": {
+                      "type": "string",
+                      "description": "Title for the expression."
+                    }
+                  },
+                  "required": [
+                    "expression",
+                    "title"
+                  ]
                 }
               },
               "required": [

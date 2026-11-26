@@ -10,6 +10,10 @@ context = {
   iam_principals = {
     myuser  = "user:test-user@example.com"
     myuser2 = "user:test-user2@example.com"
+    kmssa   = "kms-sa@dev-test-0.iam.gserviceaccount.com"
+  }
+  kms_keys = {
+    my-key = "projects/dev-test-0/locations/europe-west8/keyRings/my-kr/cryptoKeys/my-key"
   }
   locations = {
     ew8 = "europe-west8"
@@ -32,8 +36,16 @@ network_config = {
   network    = "$networks:dev-spoke-0"
   subnetwork = "$subnetworks:default"
 }
+private_cluster_config = {
+  enable_private_endpoint = true
+  allowed_projects        = ["$project_ids:test"]
+}
 workstation_configs = {
   my-workstation-config = {
+    encryption_key = {
+      kms_key                 = "$kms_keys:my-key"
+      kms_key_service_account = "$iam_principals:kmssa"
+    }
     workstations = {
       my-workstation = {
         labels = {
@@ -41,6 +53,27 @@ workstation_configs = {
         }
         iam = {
           "roles/workstations.user" = ["$iam_principals:myuser"]
+        }
+        iam_bindings = {
+          workstation-user-cond = {
+            role    = "$custom_roles:myrole"
+            members = ["$iam_principals:myuser"]
+            condition = {
+              title      = "ws-limited-access"
+              expression = "resource.name.startsWith('$${names.my-id}-')"
+            }
+          }
+        }
+        iam_bindings_additive = {
+          workstation-editor-cond = {
+            role   = "roles/editor"
+            member = "$iam_principals:myuser2"
+            condition = {
+              title       = "ws-editor-access"
+              description = "Conditional workstation editor"
+              expression  = "resource.name.startsWith('my-')"
+            }
+          }
         }
       }
     }

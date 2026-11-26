@@ -26,6 +26,7 @@ variable "context" {
     condition_vars = optional(map(map(string)), {})
     custom_roles   = optional(map(string), {})
     iam_principals = optional(map(string), {})
+    kms_keys       = optional(map(string), {})
     locations      = optional(map(string), {})
     networks       = optional(map(string), {})
     project_ids    = optional(map(string), {})
@@ -143,10 +144,20 @@ variable "workstation_configs" {
     iam_bindings = optional(map(object({
       role    = string
       members = list(string)
+      condition = optional(object({
+        expression  = string
+        title       = string
+        description = optional(string)
+      }))
     })), {})
     iam_bindings_additive = optional(map(object({
       role   = string
       member = string
+      condition = optional(object({
+        expression  = string
+        title       = string
+        description = optional(string)
+      }))
     })), {})
     persistent_directories = optional(list(object({
       mount_path = optional(string)
@@ -170,10 +181,20 @@ variable "workstation_configs" {
       iam_bindings = optional(map(object({
         role    = string
         members = list(string)
+        condition = optional(object({
+          expression  = string
+          title       = string
+          description = optional(string)
+        }))
       })), {})
       iam_bindings_additive = optional(map(object({
         role   = string
         member = string
+        condition = optional(object({
+          expression  = string
+          title       = string
+          description = optional(string)
+        }))
       })), {})
       labels = optional(map(string))
     })), {})
