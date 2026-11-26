@@ -45,6 +45,7 @@ To manage organization policies, the `orgpolicy.googleapis.com` service should b
 - [IAM Deny Policies](#iam-deny-policies)
 - [Context-Aware Access](#context-aware-access)
 - [Model Armor Floor Settings](#model-armor-floor-settings)
+- [Management Boundaries and Capability Configurations](#management-boundaries-and-capability-configurations)
 - [Files](#files)
 - [Variables](#variables)
 - [Outputs](#outputs)
@@ -1239,6 +1240,51 @@ module "org" {
 # tftest modules=1 resources=1 inventory=model-armor-floor-setting.yaml
 ```
 
+## Management Boundaries and Capability Configurations
+
+Resource Manager [management boundaries and capability configurations](https://docs.cloud.google.com/resource-manager/docs/manage-capability-configs) group member projects under the organization into a central management project for cross-project services such as [Agent Registry](https://docs.cloud.google.com/agent-registry/setup#configure-boundary).
+
+Use `boundary_configs` to manage the organization's singleton `BoundaryConfig` (via `tag_key` in namespaced `{org_id}/{short_name}` format, supporting `templatestring` via `context.tag_vars`) and one or more `Boundary` resources. Omit `tag_key` and `tag_value` to create a single organization-wide unfiltered boundary covering all descendant projects.
+
+Use `capability_configs` to associate boundaries (referenced by key from `boundary_configs.boundaries` or by full resource name) with enabled capabilities (defaulting to `["AGENT_MANAGEMENT"]`) and an optional `management_project` (`projects/{number}` or `$project_numbers:` context reference; omitted to let Google Cloud auto-provision a managed project).
+
+```hcl
+module "org" {
+  source          = "./fabric/modules/organization"
+  organization_id = var.organization_id
+  context = {
+    project_numbers = {
+      agent-mgmt-prod = "1234567890"
+    }
+  }
+  boundary_configs = {
+    tag_key = "123456789012/environment"
+    boundaries = {
+      prod-agents = {
+        display_name = "Production Agents"
+        tag_value    = "prod"
+      }
+      dev-agents = {
+        display_name = "Development Agents"
+        tag_value    = "dev"
+      }
+    }
+  }
+  capability_configs = {
+    prod-agent-registry = {
+      display_name       = "Prod Agent Registry"
+      boundaries         = ["prod-agents"]
+      management_project = "$project_numbers:agent-mgmt-prod"
+    }
+    dev-agent-registry = {
+      display_name = "Dev Agent Registry"
+      boundaries   = ["dev-agents"]
+    }
+  }
+}
+# tftest modules=1 resources=5 inventory=boundaries.yaml
+```
+
 <!-- TFDOC OPTS files:1 -->
 <!-- BEGIN TFDOC -->
 ## Files
@@ -1246,6 +1292,8 @@ module "org" {
 | name | description | resources |
 |---|---|---|
 | [assets.tf](./assets.tf) | None | <code>google_cloud_asset_organization_feed</code> |
+| [boundaries.tf](./boundaries.tf) | Resource Manager boundaries and boundary configuration. | <code>google_resource_manager_boundary</code> · <code>google_resource_manager_boundary_config</code> |
+| [capabilities.tf](./capabilities.tf) | Resource Manager capability configurations. | <code>google_resource_manager_capability_config</code> |
 | [context_aware_access.tf](./context_aware_access.tf) | Context-Aware Access resources and factory. | <code>google_access_context_manager_access_level</code> · <code>google_access_context_manager_gcp_user_access_binding</code> |
 | [deny-policies.tf](./deny-policies.tf) | IAM Deny policies. | <code>google_iam_deny_policy</code> |
 | [iam.tf](./iam.tf) | IAM bindings. | <code>google_organization_iam_binding</code> · <code>google_organization_iam_custom_role</code> · <code>google_organization_iam_member</code> |
@@ -1261,6 +1309,8 @@ module "org" {
 | [scc-sha-custom-modules.tf](./scc-sha-custom-modules.tf) | Organization-level Custom modules with Security Health Analytics. | <code>google_scc_management_organization_security_health_analytics_custom_module</code> |
 | [service-agents.tf](./service-agents.tf) | Service agents supporting resources. | <code>google_organization_service_identity</code> |
 | [tags.tf](./tags.tf) | Manages GCP Secure Tags, keys, values, and IAM. | <code>google_tags_tag_binding</code> · <code>google_tags_tag_key</code> · <code>google_tags_tag_key_iam_binding</code> · <code>google_tags_tag_key_iam_member</code> · <code>google_tags_tag_value</code> · <code>google_tags_tag_value_iam_binding</code> · <code>google_tags_tag_value_iam_member</code> |
+| [variables-boundaries.tf](./variables-boundaries.tf) | None |  |
+| [variables-capabilities.tf](./variables-capabilities.tf) | None |  |
 | [variables-iam.tf](./variables-iam.tf) | None |  |
 | [variables-identity-providers.tf](./variables-identity-providers.tf) | None |  |
 | [variables-logging.tf](./variables-logging.tf) | None |  |
@@ -1280,6 +1330,8 @@ module "org" {
 | [access_policy](variables.tf#L118) | Access Policy name or ID, required if creating access levels. | <code>string</code> |  | <code>null</code> |
 | [asset_feeds](variables.tf#L124) | Cloud Asset Inventory feeds. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [asset_search](variables.tf#L157) | Cloud Asset Inventory search configurations. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [boundary_configs](variables-boundaries.tf#L17) | Resource Manager management boundary configuration and boundaries. When `tag_key` is set (namespaced `{parent_id}/{short_name}` format, supporting `templatestring` via `context.tag_vars`), a singleton `BoundaryConfig` is configured and each boundary must specify `tag_value`. When `tag_key` is omitted, at most one unfiltered boundary can be created. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [capability_configs](variables-capabilities.tf#L17) | Resource Manager capability configurations keyed by capability config id. `boundaries` is only supported on organizations and folders (accepts keys from `boundary_configs.boundaries` or full resource names). `management_project` accepts `projects/{number}` or `$project_numbers:` context references; on projects it defaults to the project itself. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [cloud_armor_policy](variables.tf#L167) | Hierarchical Cloud Armor policy to associate to the organization, excluded folders and projects use the `folders/nnn` and `projects/nnn` (project number) formats, or `$folder_ids:` and `$project_numbers:` context references. The association name defaults to `organization-<id>`. The policy id accepts `$security_policies:` context references. Manage each association either here or via the `attachments` variable of the `net-cloud-armor` module, not both. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [contacts](variables.tf#L178) | List of essential contacts for this resource. Must be in the form EMAIL -> [NOTIFICATION_TYPES]. Valid notification types are ALL, SUSPENSION, SECURITY, TECHNICAL, BILLING, LEGAL, PRODUCT_UPDATES. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [context](variables.tf#L196) | Context-specific interpolations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
@@ -1317,25 +1369,27 @@ module "org" {
 |---|---|:---:|
 | [access_levels](outputs.tf#L17) | Access level resources. |  |
 | [asset_search_results](outputs.tf#L22) | Cloud Asset Inventory search results. |  |
-| [context_aware_access_bindings](outputs.tf#L29) | GCP User Access Bindings for securing Console and APIs. |  |
-| [custom_constraint_ids](outputs.tf#L37) | Map of CUSTOM_CONSTRAINTS => ID in the organization. |  |
-| [custom_role_id](outputs.tf#L42) | Map of custom role IDs created in the organization. |  |
-| [custom_roles](outputs.tf#L47) | Map of custom roles resources created in the organization. |  |
-| [id](outputs.tf#L52) | Fully qualified organization id. |  |
-| [logging_identities](outputs.tf#L70) | Principals used for logging sinks. |  |
-| [logging_sinks](outputs.tf#L82) | Logging sink resources. |  |
-| [network_tag_keys](outputs.tf#L90) | Tag key resources. |  |
-| [network_tag_values](outputs.tf#L99) | Tag value resources. |  |
-| [organization_id](outputs.tf#L109) | Organization id dependent on module resources. |  |
-| [organization_policies_ids](outputs.tf#L126) | Map of ORGANIZATION_POLICIES => ID in the organization. |  |
-| [scc_custom_sha_modules_ids](outputs.tf#L131) | Map of SCC CUSTOM SHA MODULES => ID in the organization. |  |
-| [scc_mute_configs](outputs.tf#L136) | SCC mute configurations. |  |
-| [scim_tenants](outputs.tf#L141) | Workforce Identity provider SCIM tenants. |  |
-| [service_agents](outputs.tf#L155) | Identities of all organization-level service agents. |  |
-| [sink_writer_identities](outputs.tf#L163) | Writer identities created for each sink. |  |
-| [tag_keys](outputs.tf#L171) | Tag key resources. |  |
-| [tag_values](outputs.tf#L180) | Tag value resources. |  |
-| [workforce_identity_pool_ids](outputs.tf#L188) | Workforce identity pool ids. |  |
-| [workforce_identity_provider_names](outputs.tf#L195) | Workforce Identity provider names. |  |
-| [workforce_identity_providers](outputs.tf#L202) | Workforce Identity provider attributes. |  |
+| [boundaries](outputs.tf#L29) | Resource Manager boundary resources. |  |
+| [capability_configs](outputs.tf#L34) | Resource Manager capability config resources. |  |
+| [context_aware_access_bindings](outputs.tf#L39) | GCP User Access Bindings for securing Console and APIs. |  |
+| [custom_constraint_ids](outputs.tf#L47) | Map of CUSTOM_CONSTRAINTS => ID in the organization. |  |
+| [custom_role_id](outputs.tf#L52) | Map of custom role IDs created in the organization. |  |
+| [custom_roles](outputs.tf#L57) | Map of custom roles resources created in the organization. |  |
+| [id](outputs.tf#L62) | Fully qualified organization id. |  |
+| [logging_identities](outputs.tf#L80) | Principals used for logging sinks. |  |
+| [logging_sinks](outputs.tf#L92) | Logging sink resources. |  |
+| [network_tag_keys](outputs.tf#L100) | Tag key resources. |  |
+| [network_tag_values](outputs.tf#L109) | Tag value resources. |  |
+| [organization_id](outputs.tf#L119) | Organization id dependent on module resources. |  |
+| [organization_policies_ids](outputs.tf#L136) | Map of ORGANIZATION_POLICIES => ID in the organization. |  |
+| [scc_custom_sha_modules_ids](outputs.tf#L141) | Map of SCC CUSTOM SHA MODULES => ID in the organization. |  |
+| [scc_mute_configs](outputs.tf#L146) | SCC mute configurations. |  |
+| [scim_tenants](outputs.tf#L151) | Workforce Identity provider SCIM tenants. |  |
+| [service_agents](outputs.tf#L165) | Identities of all organization-level service agents. |  |
+| [sink_writer_identities](outputs.tf#L173) | Writer identities created for each sink. |  |
+| [tag_keys](outputs.tf#L181) | Tag key resources. |  |
+| [tag_values](outputs.tf#L190) | Tag value resources. |  |
+| [workforce_identity_pool_ids](outputs.tf#L198) | Workforce identity pool ids. |  |
+| [workforce_identity_provider_names](outputs.tf#L205) | Workforce Identity provider names. |  |
+| [workforce_identity_providers](outputs.tf#L212) | Workforce Identity provider attributes. |  |
 <!-- END TFDOC -->

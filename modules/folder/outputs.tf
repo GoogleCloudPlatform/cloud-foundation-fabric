@@ -26,6 +26,16 @@ output "assured_workload" {
   value       = try(google_assured_workloads_workload.folder[0], null)
 }
 
+output "boundaries" {
+  description = "Resource Manager boundary resources."
+  value       = google_resource_manager_boundary.default
+}
+
+output "capability_configs" {
+  description = "Resource Manager capability config resources."
+  value       = google_resource_manager_capability_config.default
+}
+
 output "folder" {
   description = "Folder resource."
   value       = try(google_folder.folder[0], null)

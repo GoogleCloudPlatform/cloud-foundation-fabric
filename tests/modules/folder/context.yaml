@@ -236,6 +236,24 @@ values:
     project: test-prod-audit-logs-0
     role: roles/pubsub.publisher
     topic: audit-logs
+  google_resource_manager_boundary.default["prod-agents"]:
+    boundary_id: prod-agents
+    display_name: Production Agents
+    resource_filter:
+    - tag_filter:
+      - tag_key: 1234567890/environment
+        tag_value: prod
+    timeouts: null
+  google_resource_manager_boundary_config.default[0]:
+    tag_key: 1234567890/environment
+    timeouts: null
+  google_resource_manager_capability_config.default["prod-agent-registry"]:
+    capability_config_id: prod-agent-registry
+    display_name: Prod Agent Registry
+    management_project: projects/1234567890
+    timeouts: null
+    types:
+    - AGENT_MANAGEMENT
   google_tags_tag_binding.binding["bar"]:
     tag_value: tagValues/1234567891
     timeouts: null
@@ -260,13 +278,18 @@ counts:
   google_org_policy_policy: 3
   google_privileged_access_manager_entitlement: 1
   google_pubsub_topic_iam_member: 1
+  google_resource_manager_boundary: 1
+  google_resource_manager_boundary_config: 1
+  google_resource_manager_capability_config: 1
   google_tags_tag_binding: 3
   modules: 0
-  resources: 24
+  resources: 27
 
 outputs:
   asset_search_results: {}
   assured_workload: null
+  boundaries: __missing__
+  capability_configs: __missing__
   folder: __missing__
   id: __missing__
   name: Test Context

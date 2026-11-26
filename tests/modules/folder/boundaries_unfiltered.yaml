@@ -1,0 +1,53 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  google_folder.folder[0]:
+    deletion_policy: DELETE
+    deletion_protection: false
+    display_name: Folder Boundaries
+    parent: organizations/1234567890
+    tags: null
+    timeouts: null
+  google_resource_manager_boundary.default["all-projects"]:
+    boundary_id: all-projects
+    display_name: All Projects
+    resource_filter: []
+    timeouts: null
+  google_resource_manager_capability_config.default["agent-all"]:
+    capability_config_id: agent-all
+    display_name: All Projects Agents
+    timeouts: null
+    types:
+    - AGENT_MANAGEMENT
+
+counts:
+  google_folder: 1
+  google_resource_manager_boundary: 1
+  google_resource_manager_capability_config: 1
+  modules: 0
+  resources: 3
+
+outputs:
+  asset_search_results: {}
+  assured_workload: null
+  boundaries: __missing__
+  capability_configs: __missing__
+  folder: __missing__
+  id: __missing__
+  name: Folder Boundaries
+  organization_policies_ids: {}
+  scc_custom_sha_modules_ids: {}
+  service_agents: {}
+  sink_writer_identities: {}

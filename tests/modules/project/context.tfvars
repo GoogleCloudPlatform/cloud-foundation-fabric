@@ -25,6 +25,9 @@ context = {
   project_ids = {
     vpc-host = "test-vpc-host"
   }
+  project_numbers = {
+    test = "1234567890"
+  }
   tag_keys = {
     test = "tagKeys/1234567890"
   }
@@ -364,5 +367,14 @@ org_policies = {
         values = ["under:organizations/$${organization.id}"]
       }
     }]
+  }
+}
+capability_configs = {
+  agent-default = {
+    display_name = "Default Project Agents"
+  }
+  agent-explicit = {
+    display_name       = "Explicit Project Agents"
+    management_project = "$project_numbers:test"
   }
 }

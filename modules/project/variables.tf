@@ -164,6 +164,7 @@ variable "context" {
     log_buckets           = optional(map(string), {})
     notification_channels = optional(map(string), {})
     project_ids           = optional(map(string), {})
+    project_numbers       = optional(map(string), {})
     pubsub_topics         = optional(map(string), {})
     security_policies     = optional(map(string), {})
     storage_buckets       = optional(map(string), {})

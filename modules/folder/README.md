@@ -26,6 +26,7 @@ This module allows the creation and management of folders, including support for
 - [Tags](#tags)
 - [IAM Deny Policies](#iam-deny-policies)
 - [Model Armor Floor Settings](#model-armor-floor-settings)
+- [Management Boundaries and Capability Configurations](#management-boundaries-and-capability-configurations)
 - [Files](#files)
 - [Variables](#variables)
 - [Outputs](#outputs)
@@ -871,6 +872,42 @@ module "folder" {
 # tftest modules=1 resources=2 inventory=model-armor-floor-setting.yaml
 ```
 
+## Management Boundaries and Capability Configurations
+
+Resource Manager [management boundaries and capability configurations](https://docs.cloud.google.com/resource-manager/docs/manage-capability-configs) group member projects under the folder into a central management project for cross-project services such as [Agent Registry](https://docs.cloud.google.com/agent-registry/setup#configure-boundary).
+
+Use `boundary_configs` to configure the folder's partitioning `tag_key` (in namespaced `{org_id}/{short_name}` format, supporting `templatestring` via `context.tag_vars`) and tag-filtered `boundaries`, or omit `tag_key` and `tag_value` to create a single folder-wide boundary covering all descendant projects. Use `capability_configs` to link boundaries (by key from `boundary_configs.boundaries` or full resource name) to an optional `management_project` (`projects/{number}` or `$project_numbers:` context reference; omit for a Google-managed project).
+
+```hcl
+module "folder" {
+  source = "./fabric/modules/folder"
+  parent = var.folder_id
+  name   = "Folder name"
+  context = {
+    project_numbers = {
+      agent-mgmt-prod = "1234567890"
+    }
+  }
+  boundary_configs = {
+    tag_key = "123456789012/environment"
+    boundaries = {
+      prod-agents = {
+        display_name = "Production Agents"
+        tag_value    = "prod"
+      }
+    }
+  }
+  capability_configs = {
+    prod-agent-registry = {
+      display_name       = "Prod Agent Registry"
+      boundaries         = ["prod-agents"]
+      management_project = "$project_numbers:agent-mgmt-prod"
+    }
+  }
+}
+# tftest modules=1 resources=4 inventory=boundaries.yaml
+```
+
 <!-- TFDOC OPTS files:1 -->
 <!-- BEGIN TFDOC -->
 ## Files
@@ -878,6 +915,8 @@ module "folder" {
 | name | description | resources |
 |---|---|---|
 | [assets.tf](./assets.tf) | None | <code>google_cloud_asset_folder_feed</code> |
+| [boundaries.tf](./boundaries.tf) | Resource Manager boundaries and boundary configuration. | <code>google_resource_manager_boundary</code> · <code>google_resource_manager_boundary_config</code> |
+| [capabilities.tf](./capabilities.tf) | Resource Manager capability configurations. | <code>google_resource_manager_capability_config</code> |
 | [deny-policies.tf](./deny-policies.tf) | IAM Deny policies. | <code>google_iam_deny_policy</code> |
 | [iam.tf](./iam.tf) | IAM bindings. | <code>google_folder_iam_binding</code> · <code>google_folder_iam_member</code> |
 | [logging.tf](./logging.tf) | Log sinks and supporting resources. | <code>google_bigquery_dataset_iam_member</code> · <code>google_folder_iam_audit_config</code> · <code>google_logging_folder_exclusion</code> · <code>google_logging_folder_settings</code> · <code>google_logging_folder_sink</code> · <code>google_project_iam_member</code> · <code>google_pubsub_topic_iam_member</code> · <code>google_storage_bucket_iam_member</code> |
@@ -890,6 +929,8 @@ module "folder" {
 | [scc-sha-custom-modules.tf](./scc-sha-custom-modules.tf) | Folder-level Custom modules with Security Health Analytics. | <code>google_scc_management_folder_security_health_analytics_custom_module</code> |
 | [service-agents.tf](./service-agents.tf) | Service agents supporting resources. | <code>google_folder_service_identity</code> |
 | [tags.tf](./tags.tf) | None | <code>google_tags_tag_binding</code> |
+| [variables-boundaries.tf](./variables-boundaries.tf) | None |  |
+| [variables-capabilities.tf](./variables-capabilities.tf) | None |  |
 | [variables-iam.tf](./variables-iam.tf) | None |  |
 | [variables-logging.tf](./variables-logging.tf) | None |  |
 | [variables-model-armor.tf](./variables-model-armor.tf) | None |  |
@@ -906,6 +947,8 @@ module "folder" {
 | [asset_search](variables.tf#L51) | Cloud Asset Inventory search configurations. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [assured_workload_config](variables.tf#L61) | Create AssuredWorkloads folder instead of regular folder when value is provided. Incompatible with folder_create=false. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [autokey_config](variables.tf#L144) | Enable autokey support for this folder's children. Project accepts either project id or number. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [boundary_configs](variables-boundaries.tf#L17) | Resource Manager management boundary configuration and boundaries. When `tag_key` is set (namespaced `{parent_id}/{short_name}` format, supporting `templatestring` via `context.tag_vars`), a singleton `BoundaryConfig` is configured and each boundary must specify `tag_value`. When `tag_key` is omitted, at most one unfiltered boundary can be created. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [capability_configs](variables-capabilities.tf#L17) | Resource Manager capability configurations keyed by capability config id. `boundaries` is only supported on organizations and folders (accepts keys from `boundary_configs.boundaries` or full resource names). `management_project` accepts `projects/{number}` or `$project_numbers:` context references; on projects it defaults to the project itself. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [cloud_armor_policy](variables.tf#L153) | Hierarchical Cloud Armor policy to associate to this folder, excluded projects use the `projects/nnn` (project number) format or `$project_numbers:` context references. Folders can only be excluded from organization-level associations. The association name defaults to `folder-<id>`. The policy id accepts `$security_policies:` context references. Manage each association either here or via the `attachments` variable of the `net-cloud-armor` module, not both. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [contacts](variables.tf#L170) | List of essential contacts for this resource. Must be in the form EMAIL -> [NOTIFICATION_TYPES]. Valid notification types are ALL, SUSPENSION, SECURITY, TECHNICAL, BILLING, LEGAL, PRODUCT_UPDATES. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [context](variables.tf#L189) | Context-specific interpolations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
@@ -941,11 +984,13 @@ module "folder" {
 |---|---|:---:|
 | [asset_search_results](outputs.tf#L17) | Cloud Asset Inventory search results. |  |
 | [assured_workload](outputs.tf#L24) | Assured Workloads workload resource. |  |
-| [folder](outputs.tf#L29) | Folder resource. |  |
-| [id](outputs.tf#L34) | Fully qualified folder id. |  |
-| [name](outputs.tf#L45) | Folder name. |  |
-| [organization_policies_ids](outputs.tf#L54) | Map of ORGANIZATION_POLICIES => ID in the folder. |  |
-| [scc_custom_sha_modules_ids](outputs.tf#L59) | Map of SCC CUSTOM SHA MODULES => ID in the folder. |  |
-| [service_agents](outputs.tf#L64) | Identities of all folder-level service agents. |  |
-| [sink_writer_identities](outputs.tf#L72) | Writer identities created for each sink. |  |
+| [boundaries](outputs.tf#L29) | Resource Manager boundary resources. |  |
+| [capability_configs](outputs.tf#L34) | Resource Manager capability config resources. |  |
+| [folder](outputs.tf#L39) | Folder resource. |  |
+| [id](outputs.tf#L44) | Fully qualified folder id. |  |
+| [name](outputs.tf#L55) | Folder name. |  |
+| [organization_policies_ids](outputs.tf#L64) | Map of ORGANIZATION_POLICIES => ID in the folder. |  |
+| [scc_custom_sha_modules_ids](outputs.tf#L69) | Map of SCC CUSTOM SHA MODULES => ID in the folder. |  |
+| [service_agents](outputs.tf#L74) | Identities of all folder-level service agents. |  |
+| [sink_writer_identities](outputs.tf#L82) | Writer identities created for each sink. |  |
 <!-- END TFDOC -->

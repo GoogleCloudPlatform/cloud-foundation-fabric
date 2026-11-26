@@ -1,0 +1,50 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.folder.google_folder.folder[0]:
+    deletion_policy: DELETE
+    deletion_protection: false
+    display_name: Folder name
+    parent: folders/1122334455
+    tags: null
+    timeouts: null
+  module.folder.google_resource_manager_boundary.default["prod-agents"]:
+    boundary_id: prod-agents
+    display_name: Production Agents
+    resource_filter:
+    - tag_filter:
+      - tag_key: 123456789012/environment
+        tag_value: prod
+    timeouts: null
+  module.folder.google_resource_manager_boundary_config.default[0]:
+    tag_key: 123456789012/environment
+    timeouts: null
+  module.folder.google_resource_manager_capability_config.default["prod-agent-registry"]:
+    capability_config_id: prod-agent-registry
+    display_name: Prod Agent Registry
+    management_project: projects/1234567890
+    timeouts: null
+    types:
+    - AGENT_MANAGEMENT
+
+counts:
+  google_folder: 1
+  google_resource_manager_boundary: 1
+  google_resource_manager_boundary_config: 1
+  google_resource_manager_capability_config: 1
+  modules: 1
+  resources: 4
+
+outputs: {}
